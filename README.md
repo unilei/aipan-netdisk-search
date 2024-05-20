@@ -31,7 +31,7 @@ docker build -t unilei/aipan-netdisk-search:latest .
 ##### 运行
 
 ```bash
-docker run -p 3001:3001 unilei/aipan-netdisk-search:latest
+docker run -p 3000:3000 unilei/aipan-netdisk-search:latest
 ```
 ##### 停止
 
