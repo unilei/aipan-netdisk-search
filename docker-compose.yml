@@ -4,7 +4,7 @@ services:
     container_name: aipan-netdisk-search-app
     restart: always
     build:
-        context: .
-        dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile
     ports:
-        - "3001:3001"
+      - "3001:3001"

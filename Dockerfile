@@ -1,14 +1,21 @@
-FROM node:alpine AS builder
+FROM ubuntu:latest
+LABEL authors="Lei"
+
+FROM node:18.17.1-alpine
 
 WORKDIR /app
 
-ADD . .
+COPY package*.json ./
 
-RUN npm install -g pnpm
-RUN pnpm install && pnpm build
+RUN npm install
+RUN npm run build
 
-WORKDIR /app
-
-CMD pnpm run dev
+COPY . .
 
 EXPOSE 3001
+
+# Set NuxtJS system variables so the application can be reached on your network
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3001
+
+CMD [ "npm", "run", "start" ]
