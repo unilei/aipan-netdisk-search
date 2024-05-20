@@ -7,6 +7,46 @@
 
 ## 快速开始
 
+### docker执行
+
+#### docker cli
+
+##### 编译
+
+```bash
+docker build -t unilei/aipan-netdisk-search:latest .
+```
+##### 运行
+
+```bash
+docker run -p 3001:3001 unilei/aipan-netdisk-search:latest
+```
+##### 停止
+
+```bash
+docker stop unilei/aipan-netdisk-search:latest
+```
+
+#### docker-compose
+
+##### 编译
+
+```bash
+docker compose build
+```
+##### 运行
+
+```bash
+docker compose up -d
+```
+
+##### 停止
+
+```bash
+docker compose down
+```
+
+
 ### 在 Vercel 上部署
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/unilei/aipan-netdisk-search.git&project-name=aipan-netdisk-search&repository-name=aipan-netdisk-search)
 
