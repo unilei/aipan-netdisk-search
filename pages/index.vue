@@ -68,10 +68,10 @@ onMounted(() => {
     <div class="max-w-[520px] mx-auto mt-[20px]">
       <div class="flex flex-row flex-wrap gap-1 justify-center">
         <el-tag class="mx-1 cursor-pointer"
+                :effect="colorMode.preference === 'dark' ? 'dark' : 'light'"
                 v-for="keyword in hotKeywords"
                 :key="keyword"
                 type="info"
-                color="#f5f5f5"
                 round
                 @click="search(keyword)"
         >
@@ -86,9 +86,10 @@ onMounted(() => {
         <h1 class="text-[12px] sm:text-[14px] text-slate-600 font-bold dark:text-white mt-[20px]">豆瓣新片榜</h1>
         <div class="grid grid-cols-1 md:grid-cols-2  gap-2  mt-[10px]">
           <el-tag class="mx-1 cursor-pointer"
-                  style="justify-content: flex-start;padding: 14px 20px"
+                  style="justify-content: flex-start;padding: 14px 20px;"
                   v-for="movie in doubanNewMoviesData"
                   :key="movie"
+                  :effect="colorMode.preference === 'dark' ? 'dark' : 'light'"
                   type="info"
                   round
                   @click="search(movie)"

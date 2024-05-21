@@ -7,12 +7,16 @@ defineProps({
   skeletonLoading: {
     type: Boolean,
     default: false
+  },
+  type: {
+    type: String,
+    default: ''
   }
 })
 const emit = defineEmits(['openLink'])
 
-const handleOpenSourceLink = (link: string) => {
-  emit('openLink', link)
+const handleOpenSourceLink = (item:any) => {
+  emit('openLink', item)
 }
 
 const formatDiskType = (type: string) => {
@@ -60,7 +64,7 @@ const formatDate = (date: string) => {
           class="bg-white dark:bg-gray-600 shadow p-[14px] rounded-[6px] cursor-pointer
               hover:bg-[#f5f5f5] dark:hover:bg-gray-700 hover:shadow-lg transition duration-300 ease-in-out"
           v-for="(item,i) in sources?.list" :key="i"
-          @click="handleOpenSourceLink(item.link)"
+          @click="handleOpenSourceLink(item)"
       >
         <div class="flex flex-row gap-2 items-center">
           <img class="w-[20px]" v-if="item.disk_type === 'ALY'" src="@/assets/netdisk/aliyun.png" alt="aliyun">
@@ -69,10 +73,10 @@ const formatDate = (date: string) => {
           <img class="w-[20px]" v-if="item.disk_type === 'XUNLEI'" src="@/assets/netdisk/xunlei.png" alt="xunlei">
           <p class="text-[14px] font-inter font-[600] truncate dark:text-white" v-html="item.disk_name"></p>
         </div>
-        <div class="py-[12px]">
+        <div class="py-[12px]" v-if="type !== 'latest'">
           <p class="text-[12px] text-slate-400 dark:text-slate-200 truncate-3-lines" v-html="item.files"></p>
         </div>
-        <div class="text-[12px] text-slate-600 flex flex-row items-center  justify-between">
+        <div class="text-[12px] text-slate-600 flex flex-row items-center  justify-between mt-1">
           <div class="flex flex-row items-center gap-2">
               <span v-if="item.disk_type" class="bg-blue-500 text-white px-[6px] py-[2px] rounded">
               {{ formatDiskType(item.disk_type) }}

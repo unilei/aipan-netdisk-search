@@ -68,6 +68,7 @@ const exact = ref(false)
 const sources = ref({})
 const skeletonLoading = ref(true)
 const handleSearchByHunhe = async () => {
+
   let res = await $fetch('/api/sources/hh/search', {
     method: 'POST',
     body: {
@@ -149,11 +150,12 @@ const handleGoToLatestSources = () => {
   router.push({path: '/latest-sources'})
 }
 
-const currentEngine = ref(2)
+const currentEngine = ref(8)
 const apiEndpointsData = ref([])
 const getApiEndpoints = async () => {
   apiEndpointsData.value = await $fetch('/api/sources/api-endpoints')
 }
+const colorMode = useColorMode()
 
 onMounted(() => {
   getApiEndpoints()
@@ -173,8 +175,8 @@ onMounted(() => {
           <ul class="flex flex-row gap-3 flex-wrap">
             <li v-for="(item,i) in tabsOptions" :key="i">
               <el-check-tag
-                  class="dark:bg-gray-950"
                   :checked="item.value === currentTabValue"
+                  :effect="colorMode.preference === 'dark' ? 'dark' : 'light'"
                   @click="handleChangeTab(item.value)"
                   type="success">
                 <div class="flex flex-row items-center ">
@@ -183,8 +185,11 @@ onMounted(() => {
               </el-check-tag>
             </li>
             <li>
-              <el-check-tag :checked="exact" @click="handleChangeExact(exact)"
-                            type="success">
+              <el-check-tag
+                  :checked="exact"
+                  :effect="colorMode.preference === 'dark' ? 'dark' : 'light'"
+                  @click="handleChangeExact(exact)"
+                  type="success">
                 <span class="text-[10px] md:text-[14px]">精确搜索</span>
               </el-check-tag>
             </li>
@@ -193,6 +198,7 @@ onMounted(() => {
                   v-model="currentEngine"
                   placeholder="Select"
                   style="width: 140px"
+                  :effect="colorMode.preference === 'dark' ? 'dark' : 'light'"
                   value-key="engine"
                   @change="handleEngineChange"
               >
@@ -205,8 +211,10 @@ onMounted(() => {
           </ul>
         </div>
 
-        <disk-info-list :sources="sources" :skeleton-loading="skeletonLoading"
-                        @open-link="handleOpenSourceLink">
+        <disk-info-list :sources="sources"
+                        :skeleton-loading="skeletonLoading"
+                        @open-link="handleOpenSourceLink"
+        >
         </disk-info-list>
 
         <div class="py-[40px] flex justify-center">
