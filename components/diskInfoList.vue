@@ -19,25 +19,38 @@ const handleOpenSourceLink = (item:any) => {
   emit('openLink', item)
 }
 
-const formatDiskType = (type: string) => {
-  switch (type) {
-    case 'ALY':
-      return '阿里云盘'
-    case 'BDY':
-      return '百度网盘'
-    case 'QUARK':
-      return '夸克网盘'
-    case 'XUNLEI':
-      return '迅雷网盘'
-    default:
-      return '未知类型'
-  }
-}
-
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString()
 }
+const formatAnswer = (inputString)=>{
+  const regex = /https?:\/\/[^\s]+/g;
+  const links = inputString.match(regex);
+  let data = []
+  if (links) {
+    links.forEach((link, index) => {
+      let service = '';
 
+      if (link.includes('pan.baidu.com')) {
+        service = '百度网盘';
+      } else if (link.includes('pan.xunlei.com')) {
+        service = '迅雷网盘';
+      } else if (link.includes('pan.quark.cn')) {
+        service = '夸克网盘';
+      } else {
+        service = '未知网盘';
+      }
+
+      data.push({
+        service: service,
+        link: link
+      })
+
+    });
+  } else {
+    console.log('没有找到链接');
+  }
+  return data
+}
 </script>
 
 <template>
@@ -61,34 +74,16 @@ const formatDate = (date: string) => {
     </template>
     <template #default>
       <div
-          class="bg-white dark:bg-gray-600 shadow p-[14px] rounded-[6px] cursor-pointer
+          class="bg-white dark:bg-gray-600 shadow p-[14px] rounded-[6px]
               hover:bg-[#f5f5f5] dark:hover:bg-gray-700 hover:shadow-lg transition duration-300 ease-in-out"
-          v-for="(item,i) in sources?.list" :key="i"
-          @click="handleOpenSourceLink(item)"
+          v-for="(item,i) in sources" :key="i"
       >
         <div class="flex flex-row gap-2 items-center">
-          <img class="w-[20px]" v-if="item.disk_type === 'ALY'" src="@/assets/netdisk/aliyun.png" alt="aliyun">
-          <img class="w-[20px]" v-if="item.disk_type === 'QUARK'" src="@/assets/netdisk/quark.png" alt="quark">
-          <img class="w-[20px]" v-if="item.disk_type === 'BDY'" src="@/assets/netdisk/baidu.png" alt="baidu">
-          <img class="w-[20px]" v-if="item.disk_type === 'XUNLEI'" src="@/assets/netdisk/xunlei.png" alt="xunlei">
-          <p class="text-[14px] font-inter font-[600] truncate dark:text-white" v-html="item.disk_name"></p>
+          <p class="text-[14px] font-inter font-[600] truncate dark:text-white" v-html="item.question"></p>
         </div>
-        <div class="py-[12px]" v-if="type !== 'latest'">
-          <p class="text-[12px] text-slate-400 dark:text-slate-200 truncate-3-lines" v-html="item.files"></p>
-        </div>
-        <div class="text-[12px] text-slate-600 flex flex-row items-center  justify-between mt-1">
-          <div class="flex flex-row items-center gap-2">
-              <span v-if="item.disk_type" class="bg-blue-500 text-white px-[6px] py-[2px] rounded">
-              {{ formatDiskType(item.disk_type) }}
-            </span>
-            <span v-if="item.disk_pass" class=" bg-purple-500 text-white px-[6px] py-[2px] rounded">
-              {{ item.disk_pass }}
-            </span>
-          </div>
-          <div>
-              <span v-if="item.update_time" class="text-slate-600 px-[6px] py-[2px] rounded">
-              {{ formatDate(item.update_time) }}
-            </span>
+        <div class="text-[12px] text-slate-600 mt-1">
+          <div v-for="(item,i) in formatAnswer(item.answer)" :key="i">
+            <nuxt-link :to="item.link" target="_blank"><span class="text-blue-700">{{item.service}}: </span>{{item.link}}</nuxt-link>
           </div>
         </div>
       </div>
