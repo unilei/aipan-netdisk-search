@@ -29,13 +29,19 @@ export default defineEventHandler(async (event) => {
     try {
         const body: Body = await readBody(event);
 
-        const token: Token = await $fetch('http://m.ssr021.cn/v/api/gettoken')
+        const token: Token = await $fetch('http://i.ishangjing.me/v/api/gettoken')
 
-        const result: Result = await $fetch('http://m.ssr021.cn/v/api/getTTZJB', {
+        const result: Result = await $fetch('http://i.ishangjing.me/v/api/sortWeb', {
             method: 'POST',
             body: {
                 ...body,
-                token: token.token
+                token: token.token,
+                tabN: "movie_200317xlb",
+                topNo: 10,
+                whr: `question like "%${body.name}%"`,
+                orderBy: "isTop DESC, date_time",
+                orderType: "DESC",
+                keys: "question,answer,isTop,id"
             }
         });
 

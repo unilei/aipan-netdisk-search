@@ -6,8 +6,6 @@ definePageMeta({
   layout: 'custom',
 })
 
-const router = useRouter()
-
 const route = useRoute()
 const keyword = ref(decodeURIComponent(route.query.keyword))
 
@@ -15,12 +13,10 @@ const sources = ref([])
 const skeletonLoading = ref(true)
 const handleSearch = async () => {
 
-  let token = 'i69'
   let res = await $fetch('/api/sources', {
     method: 'POST',
     body: {
-      "name": keyword.value,
-      "token": token
+      "name": keyword.value
     }
   })
   if (res.list && res.list.length) {
@@ -33,13 +29,10 @@ const handleSearch = async () => {
 
 const sourcesA = ref([])
 const handleSearchA = async () => {
-
-  let token = 'i69'
   let res = await $fetch('/api/sources/indexA', {
     method: 'POST',
     body: {
-      "name": keyword.value,
-      "token": token
+      "name": keyword.value
     }
   })
   if (res.list && res.list.length) {
@@ -50,12 +43,80 @@ const handleSearchA = async () => {
   }
 }
 
+const sourcesB = ref([])
+const handleSearchB = async () => {
+  let res = await $fetch('/api/sources/indexB', {
+    method: 'POST',
+    body: {
+      "name": keyword.value
+    }
+  })
+  if (res.list && res.list.length) {
+    skeletonLoading.value = false
+    sourcesB.value = res.list
+  } else {
+    skeletonLoading.value = false
+  }
+}
+const sourcesC = ref([])
+const handleSearchC = async () => {
+  let res = await $fetch('/api/sources/indexC', {
+    method: 'POST',
+    body: {
+      "name": keyword.value
+    }
+  })
+  if (res.list && res.list.length) {
+    skeletonLoading.value = false
+    sourcesC.value = res.list
+  } else {
+    skeletonLoading.value = false
+  }
+}
+const sourcesD = ref([])
+const handleSearchD = async () => {
+  let res = await $fetch('/api/sources/indexD', {
+    method: 'POST',
+    body: {
+      "name": keyword.value
+    }
+  })
+  if (res.list && res.list.length) {
+    skeletonLoading.value = false
+    sourcesD.value = res.list
+  } else {
+    skeletonLoading.value = false
+  }
+}
+const sourcesE = ref([])
+const handleSearchE = async () => {
+  let res = await $fetch('/api/sources/indexE', {
+    method: 'POST',
+    body: {
+      "name": keyword.value
+    }
+  })
+  if (res.list && res.list.length) {
+    skeletonLoading.value = false
+    sourcesE.value = res.list
+  } else {
+    skeletonLoading.value = false
+  }
+}
 const search = (e) => {
-  sources.value = []
   keyword.value = e
   skeletonLoading.value = true
+  sources.value = []
+  sourcesA.value = []
+  sourcesB.value = []
+  sourcesC.value = []
+  sourcesD.value = []
   handleSearch()
   handleSearchA()
+  handleSearchB()
+  handleSearchC()
+  handleSearchD()
+  handleSearchE()
 }
 
 const colorMode = useColorMode()
@@ -63,6 +124,10 @@ const colorMode = useColorMode()
 onMounted(() => {
   handleSearch()
   handleSearchA()
+  handleSearchB()
+  handleSearchC()
+  handleSearchD()
+  handleSearchE()
 })
 
 </script>
@@ -70,20 +135,13 @@ onMounted(() => {
 <template>
   <div class="dark:bg-gray-400">
     <search-header :keyword="keyword" @search="search"></search-header>
-
-    <div class="max-w-[1240px] mx-auto grid grid-cols-1 md:grid-cols-[1fr_400px] gap-8 pb-8">
-      <div class="flex flex-col gap-3 sm:mt-3 sm:pb-[60px] p-[20px] md:p-0">
-        
-        <disk-info-list :sources="sources"
-                        :skeleton-loading="skeletonLoading"
-        >
-        </disk-info-list>
-        <disk-info-list :sources="sourcesA"
+    <div class="max-w-[1240px] mx-auto grid grid-cols-1 pb-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 p-[20px]">
+        <disk-info-list :sources="[sources, sourcesA, sourcesB, sourcesC, sourcesD, sourcesE]"
                         :skeleton-loading="skeletonLoading"
         >
         </disk-info-list>
       </div>
-       
     </div>
     <el-backtop></el-backtop>
   </div>

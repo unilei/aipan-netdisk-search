@@ -1,8 +1,9 @@
-<script setup lang="ts">
+<script setup>
+
 defineProps({
   sources: {
-    type: Object,
-    default: () => {}
+    type: Array,
+    default: () => []
   },
   skeletonLoading: {
     type: Boolean,
@@ -13,90 +14,37 @@ defineProps({
     default: ''
   }
 })
-const emit = defineEmits(['openLink'])
 
-const handleOpenSourceLink = (item:any) => {
-  emit('openLink', item)
-}
-
-const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString()
-}
-const formatAnswer = (inputString)=>{
-  const regex = /https?:\/\/[^\s]+/g;
-  const links = inputString.match(regex);
-  let data = []
-  if (links) {
-    links.forEach((link, index) => {
-      let service = '';
-
-      if (link.includes('pan.baidu.com')) {
-        service = '百度网盘';
-      } else if (link.includes('pan.xunlei.com')) {
-        service = '迅雷网盘';
-      } else if (link.includes('pan.quark.cn')) {
-        service = '夸克网盘';
-      } else {
-        service = '未知网盘';
-      }
-
-      data.push({
-        service: service,
-        link: link
-      })
-
-    });
-  } else {
-    console.log('没有找到链接');
-  }
-  return data
-}
 </script>
 
 <template>
-  <el-skeleton :loading="skeletonLoading" animated :count="20">
-    <template #template>
-      <div
-          class="bg-white dark:bg-gray-600 shadow p-[14px] rounded-[6px] cursor-pointer mb-3
-                  hover:bg-[#f5f5f5] hover:shadow-lg transition duration-300 ease-in-out"
-      >
-        <div class="flex flex-row gap-2 items-center">
-          <el-skeleton-item variant="image" style="width: 20px; height: 20px" />
-          <el-skeleton-item variant="text" style="width: 100px;" />
-        </div>
-        <div>
-          <el-skeleton-item variant="text" style="width: 100%;" />
-        </div>
-        <div>
-          <el-skeleton-item variant="text" style="width: 100%;" />
-        </div>
-      </div>
-    </template>
-    <template #default>
-      <div
-          class="bg-white dark:bg-gray-600 shadow p-[14px] rounded-[6px]
+  <div class="bg-white dark:bg-gray-600 shadow p-[14px] rounded-[6px]
               hover:bg-[#f5f5f5] dark:hover:bg-gray-700 hover:shadow-lg transition duration-300 ease-in-out"
-          v-for="(item,i) in sources" :key="i"
-      >
-        <div class="flex flex-row gap-2 items-center">
-          <p class="text-[14px] font-inter font-[600] truncate dark:text-white" v-html="item.question"></p>
-        </div>
-        <div class="text-[12px] text-slate-600 mt-1">
-          <div v-for="(item,i) in formatAnswer(item.answer)" :key="i">
-            <nuxt-link :to="item.link" target="_blank"><span class="text-blue-700">{{item.service}}: </span>{{item.link}}</nuxt-link>
-          </div>
-        </div>
+       v-for="(item, i) in sources.flat(Infinity)" :key="i"
+  >
+    <div class="flex flex-row gap-2 items-center">
+      <p class="text-[14px] font-inter font-[600] truncate dark:text-white" v-html="item.name"></p>
+    </div>
+    <div class="text-[12px] text-slate-600 mt-1 flex flex-row gap-3">
+      <div v-for="(link,i) in item.links" :key="i">
+        <nuxt-link class="flex flex-row items-center p-1 border border-slate-500 rounded gap-2" :to="link.link" target="_blank">
+          <img class="w-[20px]" v-if="link.service === 'ALIYUN'" src="@/assets/netdisk/aliyun.png" alt="aliyun">
+          <img class="w-[20px]" v-if="link.service === 'QUARK'" src="@/assets/netdisk/quark.png" alt="quark">
+          <img class="w-[20px]" v-if="link.service === 'BAIDU'" src="@/assets/netdisk/baidu.png" alt="baidu">
+          <img class="w-[20px]" v-if="link.service === 'XUNLEI'" src="@/assets/netdisk/xunlei.png" alt="xunlei">
+          <img class="w-[20px]" v-if="link.service === 'OTHER'" src="@/assets/netdisk/xunlei.png" alt="xunlei">
+          <span class="dark:text-white" v-if="link.pwd">提取码：{{ link.pwd }}</span>
+        </nuxt-link>
       </div>
-    </template>
-
-  </el-skeleton>
-
+    </div>
+  </div>
 </template>
 <style>
 em {
   color: blue;
   margin: 0 2px;
 }
+
 .dark em {
   color: deepskyblue;
 }

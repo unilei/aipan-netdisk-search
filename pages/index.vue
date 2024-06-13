@@ -6,26 +6,24 @@ const searchKeyword = ref('')
 const router = useRouter()
 
 const search = (keyword) => {
-  router.push({path:'/search',query:{keyword:encodeURIComponent(keyword)}})
+  router.push({path: '/search', query: {keyword: encodeURIComponent(keyword)}})
 }
 const donate = () => {
-  router.push({path:'/donate'})
+  router.push({path: '/donate'})
 }
-const hotKeywords = ref(['庆余年','歌手2024','我的阿勒泰','新生','周处除三害','热辣滚烫','第二十条','承欢记','哈哈哈哈哈'])
+const hotKeywords = ref(['庆余年', '歌手2024', '我的阿勒泰', '新生', '周处除三害', '热辣滚烫', '第二十条', '承欢记', '哈哈哈哈哈'])
 const doubanNewMoviesData = ref([])
 
 const colorMode = useColorMode()
 
-console.log(colorMode.preference)
-
 const getDouBanNewMovies = async () => {
   let res = await $fetch('/api/douban/new')
-  console.log(res)
-  if(res.code === 200){
-    let resData = res.data;
-    resData = resData.map(item => item.title)
-    doubanNewMoviesData.value = resData
+  if (res.code === 200) {
+    doubanNewMoviesData.value = res.data;
   }
+}
+const goDouban = (movie) => {
+  window.open(movie.url, '_blank')
 }
 onMounted(() => {
   getDouBanNewMovies()
@@ -52,13 +50,14 @@ onMounted(() => {
     </div>
 
     <div class="max-w-[1240px] mx-auto mt-[20px]">
-      <div class="w-[80%] md:w-[700px] mx-auto h-[40px] sm:h-[50px] border border-slate-300 font-mono overflow-hidden rounded-[50px]">
+      <div
+          class="w-[80%] md:w-[700px] mx-auto h-[40px] sm:h-[50px] border border-slate-300 font-mono overflow-hidden rounded-[50px]">
         <client-only>
           <el-input
-                    v-model="searchKeyword"
-                    placeholder="请输入关键词搜索"
-                    @keydown.enter="search(searchKeyword)"
-                    prefix-icon="Search"
+              v-model="searchKeyword"
+              placeholder="请输入关键词搜索"
+              @keydown.enter="search(searchKeyword)"
+              prefix-icon="Search"
           >
           </el-input>
         </client-only>
@@ -87,14 +86,14 @@ onMounted(() => {
         <div class="grid grid-cols-1 md:grid-cols-2  gap-2  mt-[10px]">
           <el-tag class="mx-1 cursor-pointer"
                   style="justify-content: flex-start;padding: 14px 20px;"
-                  v-for="movie in doubanNewMoviesData"
-                  :key="movie"
+                  v-for="(movie,index) in doubanNewMoviesData"
+                  :key="index"
                   :effect="colorMode.preference === 'dark' ? 'dark' : 'light'"
                   type="info"
                   round
-                  @click="search(movie)"
+                  @click="goDouban(movie)"
           >
-            {{ movie }}
+            {{ movie.title }}
           </el-tag>
         </div>
       </div>
@@ -106,7 +105,7 @@ onMounted(() => {
           <img class="w-[30px] h-[30px]" src="@/assets/skill-icons--github-dark.svg" alt="github">
         </a>
         <el-button link color="#ffffff" @click="donate()">
-          <img  class="w-[30px] h-[30px]" src="@/assets/donation/dashang.svg" alt="打赏">
+          <img class="w-[30px] h-[30px]" src="@/assets/donation/dashang.svg" alt="打赏">
         </el-button>
       </div>
       <p class="text-center text-[8px] sm:text-[12px] text-slate-400">
@@ -120,12 +119,14 @@ onMounted(() => {
 :deep(.el-input__inner) {
   height: 48px;
 }
+
 @media screen and (max-width: 768px) {
   :deep(.el-input__inner) {
     height: 37px;
   }
 
 }
+
 :deep(.el-input__wrapper) {
   box-shadow: none;
 }
