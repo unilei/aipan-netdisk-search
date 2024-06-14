@@ -1,65 +1,65 @@
-import cloudscraper from 'cloudscraper';
-import * as cheerio from 'cheerio';
-
 interface Body {
-    name: string;
+    name: string
 }
 
 interface Link {
-    service: string;
-    link: string | undefined;
+    service: string,
+    link: string
 }
 
 interface TransformedItem {
-    name: string;
-    links: Link[];
+    name: string,
+    links: Link[]
 }
 
 interface TransformedResult {
-    list: TransformedItem[];
+    list: TransformedItem[]
 }
 
+import * as cheerio from 'cheerio';
+
 export default defineEventHandler(async (event) => {
+
     try {
         const body: Body = await readBody(event);
-        const searchTerm = encodeURIComponent(body.name);
 
-        const result = await cloudscraper({
+        const result: string = await $fetch('https://www.wogg.net/index.php/vodsearch/-------------.html', {
             method: 'GET',
-            url:`https://www.wogg.net/index.php/vodsearch/-------------.html?wd=${searchTerm}`,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
+                'User-Agent': 'Mozilla/5.0(WindowsNT10.0;Win64;x64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/120.0.0.0Safari/537.36Edg/120.0.0.0'
+            },
+            query: {
+                wd: body.name
             }
-        })
+        });
 
         const $ = cheerio.load(result);
         const items = $('.module-search-item').toArray();
 
-        const transformedList: Awaited<null | {
+        const transformedList: Awaited<{
             name: string;
-            links: Link[]
-        }>[] = await Promise.all(items.map(async (item) => {
+            links: { service: string; link: string | undefined }[]
+        } | null>[] = await Promise.all(items.map(async (item) => {
             try {
                 const name = $(item).find('.video-info-header h3 a').text();
                 const link = $(item).find('.video-info-footer a').attr('href');
 
-                if (!link) {
-                    return null;
-                }
-
-                const res = await cloudscraper({
-                    url:`https://www.wogg.net/${link}`,
+                const res: string = await $fetch('https://www.wogg.net/' + link, {
+                    method: 'GET',
                     headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
-                    }
+                        'User-Agent': 'Mozilla/5.0(WindowsNT10.0;Win64;x64)AppleWebKit/537.36(KHTML,likeGecko)Chrome/120.0.0.0Safari/537.36Edg/120.0.0.0'
+                    },
                 });
 
                 const $$ = cheerio.load(res);
 
-                const links: Link[] = $$('.module-row-one').toArray().map((item) => {
-                    const link = $$(item).find('.btn-pc.btn-down.fzlj').attr('href');
-                    let service = '';
+                const links: {
+                    service: string;
+                    link: string | undefined
+                }[] = $$('.module-row-one').toArray().map((item) => {
+                    const link = $(item).find('.btn-pc.btn-down.fzlj').attr('href');
 
+                    let service = '';
                     if (link) {
                         if (link.includes('pan.baidu.com')) {
                             service = 'BAIDU';
@@ -73,18 +73,26 @@ export default defineEventHandler(async (event) => {
                             service = 'OTHER';
                         }
                     }
-                    return { link, service };
+                    return {
+                        link,
+                        service
+                    };
                 });
 
-                return { name, links };
+                return {
+                    name,
+                    links
+                };
             } catch (error) {
                 console.error(`Error processing item: ${error}`);
                 return null;
             }
         }));
 
+        // Filter out any null items from the transformed list
         const filteredList = transformedList.filter(item => item !== null) as TransformedItem[];
-        const transformedResult: TransformedResult = { list: filteredList };
+
+        const transformedResult: TransformedResult = {list: filteredList};
 
         return transformedResult;
 
@@ -95,4 +103,4 @@ export default defineEventHandler(async (event) => {
             msg: 'error',
         };
     }
-});
+})
