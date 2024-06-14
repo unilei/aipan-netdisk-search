@@ -25,6 +25,9 @@ export default defineEventHandler(async (event) => {
 
         const result: string = await $fetch('https://www.wogg.net/index.php/vodsearch/-------------.html', {
             method: 'GET',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36'
+            },
             query: {
                 wd: body.name
             }
@@ -41,7 +44,12 @@ export default defineEventHandler(async (event) => {
                 const name = $(item).find('.video-info-header h3 a').text();
                 const link = $(item).find('.video-info-footer a').attr('href');
 
-                const res: string = await $fetch('https://www.wogg.net/' + link);
+                const res: string = await $fetch('https://www.wogg.net/' + link, {
+                    method: 'GET',
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36'
+                    }
+                });
 
                 const $$ = cheerio.load(res);
 
