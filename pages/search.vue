@@ -103,6 +103,23 @@ const handleSearchE = async () => {
     skeletonLoading.value = false
   }
 }
+
+const sourcesF = ref([])
+const handleSearchF = async () => {
+  let res = await $fetch('/api/sources/indexF', {
+    method: 'POST',
+    body: {
+      "name": keyword.value
+    }
+  })
+  if (res.list && res.list.length) {
+    skeletonLoading.value = false
+    sourcesF.value = res.list
+  } else {
+    skeletonLoading.value = false
+  }
+}
+
 const search = (e) => {
   keyword.value = e
   skeletonLoading.value = true
@@ -117,6 +134,7 @@ const search = (e) => {
   handleSearchC()
   handleSearchD()
   handleSearchE()
+  handleSearchF()
 }
 
 const colorMode = useColorMode()
@@ -128,6 +146,7 @@ onMounted(() => {
   handleSearchC()
   handleSearchD()
   handleSearchE()
+  handleSearchF()
 })
 
 </script>
@@ -137,7 +156,7 @@ onMounted(() => {
     <search-header :keyword="keyword" @search="search"></search-header>
     <div class="max-w-[1240px] mx-auto grid grid-cols-1 pb-8">
       <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 p-[20px]">
-        <disk-info-list :sources="[sources, sourcesA, sourcesB, sourcesC, sourcesD, sourcesE]"
+        <disk-info-list :sources="[sourcesF, sources,  sourcesA, sourcesB, sourcesC, sourcesD, sourcesE]"
                         :skeleton-loading="skeletonLoading"
         >
         </disk-info-list>
