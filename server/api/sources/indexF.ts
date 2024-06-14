@@ -28,7 +28,8 @@ export default defineEventHandler(async (event) => {
             method: 'GET',
             url:`https://www.wogg.net/index.php/vodsearch/-------------.html?wd=${searchTerm}`,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
+                'Cookie' : '_ga=GA1.1.104026464.1718349413; cf_clearance=iwtP6wrRLa7szOTtY.S1jbaBmR1d4i2cOh9KxiBu9n0-1718368306-1.0.1.1-CmoCr1k.pEtQFK.vcG4ITkLAehxxB2nx85UZyHbQijBMU98IyA17TIVFJFzrFMEDPtxlrBYC4I270QsY03Qyxw; closeclick=closeclick; _ga_JSCFX80PZS=GS1.1.1718368315.2.1.1718368416.0.0.0',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
             }
         })
 
@@ -50,7 +51,8 @@ export default defineEventHandler(async (event) => {
                 const res = await cloudscraper({
                     url:`https://www.wogg.net/${link}`,
                     headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
+                        'Cookie' : '_ga=GA1.1.104026464.1718349413; cf_clearance=iwtP6wrRLa7szOTtY.S1jbaBmR1d4i2cOh9KxiBu9n0-1718368306-1.0.1.1-CmoCr1k.pEtQFK.vcG4ITkLAehxxB2nx85UZyHbQijBMU98IyA17TIVFJFzrFMEDPtxlrBYC4I270QsY03Qyxw; closeclick=closeclick; _ga_JSCFX80PZS=GS1.1.1718368315.2.1.1718368416.0.0.0',
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36'
                     }
                 });
 
