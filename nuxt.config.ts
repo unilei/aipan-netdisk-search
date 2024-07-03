@@ -50,7 +50,9 @@ export default defineNuxtConfig({
         '@nuxtjs/device',
         '@nuxtjs/i18n',
         '@nuxtjs/google-fonts',
-        '@nuxtjs/color-mode'
+        '@nuxtjs/color-mode',
+        '@pinia/nuxt',
+        '@pinia-plugin-persistedstate/nuxt',
 
     ],
     colorMode: {

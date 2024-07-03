@@ -1,7 +1,15 @@
 <script setup>
+import {useCookie} from "#app";
+
 definePageMeta({
   layout: 'custom',
 })
+import {useDoubanStore} from "~/stores/douban";
+
+const doubanCache = useCookie('doubanCache', {
+  maxAge: 60 * 60 * 24
+})
+const doubanStore = useDoubanStore()
 const searchKeyword = ref('')
 const router = useRouter()
 
@@ -12,21 +20,26 @@ const donate = () => {
   router.push({path: '/donate'})
 }
 const hotKeywords = ref(['庆余年', '歌手2024', '我的阿勒泰', '新生', '周处除三害', '热辣滚烫', '第二十条', '承欢记', '哈哈哈哈哈'])
-const doubanNewMoviesData = ref([])
+const doubanData = ref([])
+
+watch(doubanData, (newValue, oldValue) => {
+  doubanData.value = newValue
+})
 
 const colorMode = useColorMode()
 
-const getDouBanNewMovies = async () => {
-  let res = await $fetch('/api/douban/new')
-  if (res.code === 200) {
-    doubanNewMoviesData.value = res.data;
-  }
-}
 const goDouban = (movie) => {
-  window.open(movie.url, '_blank')
+  // window.open(movie.url, '_blank')
+  router.push({path: '/search', query: {keyword: encodeURIComponent(movie.title)}})
 }
-onMounted(() => {
-  getDouBanNewMovies()
+onMounted(async () => {
+  if (doubanCache.value === 'exist') {
+    doubanData.value = doubanStore.doubanData
+  } else {
+    await doubanStore.getDoubanData()
+    doubanData.value = doubanStore.doubanData
+    doubanCache.value = 'exist'
+  }
 })
 </script>
 
@@ -64,37 +77,17 @@ onMounted(() => {
       </div>
     </div>
 
-    <div class="max-w-[520px] mx-auto mt-[20px]">
-      <div class="flex flex-row flex-wrap gap-1 justify-center">
-        <el-tag class="mx-1 cursor-pointer"
-                :effect="colorMode.preference === 'dark' ? 'dark' : 'light'"
-                v-for="keyword in hotKeywords"
-                :key="keyword"
-                type="info"
-                round
-                @click="search(keyword)"
+    <div class="max-w-[80%] md:max-w-[1200px] mx-auto mt-[50px]">
+      <h1 class="text-[12px] sm:text-sm text-slate-600 font-bold dark:text-white mt-[20px]">豆瓣热门影视榜单</h1>
+      <div class="grid grid-cols-1 md:grid-cols-4  gap-3  mt-[10px]">
+        <div
+            class="mx-1 cursor-pointer truncate text-xs font-bold dark:bg-slate-700 dark:text-slate-100 rounded-[5px] p-2"
+            v-for="(movie,index) in doubanData"
+            :key="index"
+            type="info"
+            @click="goDouban(movie)"
         >
-          {{ keyword }}
-        </el-tag>
-      </div>
-    </div>
-
-    <div>
-
-      <div class="max-w-[80%] md:max-w-[700px] mx-auto mt-[20px]">
-        <h1 class="text-[12px] sm:text-[14px] text-slate-600 font-bold dark:text-white mt-[20px]">豆瓣新片榜</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2  gap-2  mt-[10px]">
-          <el-tag class="mx-1 cursor-pointer truncate"
-                  style="justify-content: flex-start;padding: 14px 20px;"
-                  v-for="(movie,index) in doubanNewMoviesData"
-                  :key="index"
-                  :effect="colorMode.preference === 'dark' ? 'dark' : 'light'"
-                  type="info"
-                  round
-                  @click="goDouban(movie)"
-          >
-            {{ movie.title }}
-          </el-tag>
+          {{ movie.title }}
         </div>
       </div>
     </div>
