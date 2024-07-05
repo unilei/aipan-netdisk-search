@@ -32,6 +32,7 @@ const goDouban = (movie) => {
   // window.open(movie.url, '_blank')
   router.push({path: '/search', query: {keyword: encodeURIComponent(movie.title)}})
 }
+
 onMounted(async () => {
   if (doubanCache.value === 'exist') {
     doubanData.value = doubanStore.doubanData
@@ -44,7 +45,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-[#ffffff] dark:bg-gray-800 min-h-screen py-[60px]">
+  <div class="bg-[#ffffff] dark:bg-gray-800  min-h-screen py-[60px]">
 
     <div class="max-w-[1240px] mx-auto text-right px-[20px]">
       <client-only>
@@ -59,7 +60,7 @@ onMounted(async () => {
     </div>
     <div class="flex flex-row items-center justify-center gap-3 mt-[80px]">
       <img class="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px]" src="@/assets/my-logo.png" alt="logo">
-      <h1 class="text-[18px] sm:text-[24px] font-serif font-bold dark:text-white ">爱盼-网盘资源搜索</h1>
+      <h1 class="text-[18px] sm:text-[22px] font-serif font-bold dark:text-white ">爱盼-网盘资源搜索</h1>
     </div>
 
     <div class="max-w-[1240px] mx-auto mt-[20px]">
@@ -79,7 +80,7 @@ onMounted(async () => {
 
     <div class="max-w-[80%] md:max-w-[1200px] mx-auto mt-[50px]">
       <h1 class="text-[12px] sm:text-sm text-slate-600 font-bold dark:text-white mt-[20px]">豆瓣热门影视榜单</h1>
-      <div class="grid grid-cols-1 md:grid-cols-4  gap-3  mt-[10px]">
+      <div class="grid grid-cols-2 md:grid-cols-8  gap-3  mt-[10px]">
         <div
             class="mx-1 cursor-pointer truncate text-xs font-bold dark:bg-slate-700 dark:text-slate-100 rounded-[5px] p-2"
             v-for="(movie,index) in doubanData"
@@ -87,12 +88,17 @@ onMounted(async () => {
             type="info"
             @click="goDouban(movie)"
         >
-          {{ movie.title }}
+          <img class="w-full h-[161px] rounded-[5px] object-cover" :src="'https://images.weserv.nl/?url='+ movie.cover"
+               alt="" referrerpolicy="never">
+          <p class="mt-1  text-center truncate">
+            {{ movie.title }}
+            {{ movie.rate }}
+          </p>
         </div>
       </div>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 p-3">
+    <div class="p-4">
       <div class="flex flex-row items-center justify-center  gap-3 my-3">
         <a class="" href="https://github.com/unilei/aipan-netdisk-search">
           <img class="w-[30px] h-[30px]" src="@/assets/skill-icons--github-dark.svg" alt="github">
