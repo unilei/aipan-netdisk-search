@@ -1,9 +1,23 @@
 [
   {
-    "key": "ikunzy",
-    "name": "爱坤联盟资源网",
-    "api": "https://ikunzyapi.com/api.php/provide/vod",
-    "playUrl": "https://www.ikdmjx.com/?url=",
+    "key": "cjhwba",
+    "name": "华为吧",
+    "api": "https://cjhwba.com/api.php/provide/vod",
+    "playUrl": "https://player.hw8.lol/player?url=",
+    "type": "json"
+  },
+  {
+    "key": "huyaapi",
+    "name": "虎牙资源M3u8",
+    "api": "https://www.huyaapi.com/api.php/provide/vod/from/hym3u8/at/json",
+    "playUrl": "https://huyajx.com/play/?url=",
+    "type": "json"
+  },
+  {
+    "key": "bfzyapi",
+    "name": "暴风资源(外)",
+    "api": "https://bfzyapi.com/api.php/provide/vod/",
+    "playUrl": "https://vip.vipuuvip.com/?url=",
     "type": "json"
   },
   {
@@ -12,6 +26,13 @@
     "api": "https://api.haiwaikan.com/v1/vod",
     "playUrl": "https://dp.haiwaikan.com/index.html?url=",
     "type": "json"
+  },
+  {
+    "key": "tiankongapi",
+    "name": "天空资源网",
+    "api": "https://api.tiankongapi.com/api.php/provide/vod/from/tkm3u8/at/xml/",
+    "playUrl": "https://jx.huishij.com/yun/?url=",
+    "type": "xml"
   },
   {
     "key": "moduzy",

@@ -1,0 +1,29 @@
+[
+  {
+    "api": "/api/sources"
+  },
+  {
+    "api": "/api/sources/indexA"
+  },
+  {
+    "api": "/api/sources/indexB"
+  },
+  {
+    "api": "/api/sources/indexC"
+  },
+  {
+    "api": "/api/sources/indexD"
+  },
+  {
+    "api": "/api/sources/indexE"
+  },
+  {
+    "api": "/api/sources/indexF"
+  },
+  {
+    "api": "/api/sources/indexG"
+  },
+  {
+    "api": "/api/sources/indexH"
+  }
+]

@@ -78,7 +78,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="max-w-[80%] md:max-w-[1200px] mx-auto mt-[50px]">
+    <div class="max-w-[80%] md:max-w-[1200px] mx-auto mt-[50px]" v-if="doubanData.length > 0">
       <h1 class="text-[12px] sm:text-sm text-slate-600 font-bold dark:text-white mt-[20px]">豆瓣热门影视榜单</h1>
       <div class="grid grid-cols-2 md:grid-cols-8  gap-3  mt-[10px]">
         <div
