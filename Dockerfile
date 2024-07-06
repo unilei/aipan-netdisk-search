@@ -1,4 +1,4 @@
-FROM docker.io/node:alpine
+FROM node:18-alpine
 
 LABEL authors="Lei"
 
