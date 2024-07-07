@@ -34,13 +34,15 @@ console.log(colorMode.preference)
           <h1 class="hidden md:block text-[14px] font-serif font-bold cursor-pointer dark:text-white" @click="goHome()" >爱盼-网盘资源搜索</h1>
         </div>
 
-        <div class="w-[220px] md:w-[400px] border border-slate-300 font-mono overflow-hidden rounded-[50px]">
+        <div class="w-[220px] md:w-[400px]">
           <client-only>
             <el-input class="h-[30px]"
                       v-model="searchKeyword"
                       placeholder="请输入关键词搜索"
                       @keydown.enter="search()"
                       prefix-icon="Search"
+                      size="small"
+                      clearable
             >
             </el-input>
           </client-only>
@@ -65,35 +67,8 @@ console.log(colorMode.preference)
   </el-affix>
 </template>
 
-<style scoped lang="scss">
-:deep(.el-input__inner) {
-  height: 48px;
-}
-
-:deep(.el-input__wrapper) {
-  box-shadow: none;
-}
-
-:deep(.el-input-group__prepend) {
-  box-shadow: none;
-}
-
-:deep(.el-input) {
-  --el-input-focus-border: transparent;
-  --el-input-border-color: transparent;
-  --el-input-focus-border-color: transparent;
-  --el-input-hover-border-color: transparent;
-}
-
-:deep(.el-input-group--prepend .el-input-group__prepend .el-select .el-input.is-focus .el-input__wrapper) {
-  box-shadow: none !important;
-}
-
-:deep(.el-input-group--prepend .el-input-group__prepend .el-select .el-input .el-input__inner) {
-  text-align: center;
-}
-
-:deep(.el-select .el-input__wrapper.is-focus) {
-  box-shadow: none !important;
+<style scoped>
+:deep(.el-input__wrapper.is-focus) {
+  --el-input-focus-border-color: #6648ff;
 }
 </style>

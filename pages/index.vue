@@ -1,17 +1,15 @@
 <script setup>
-import {useCookie} from "#app";
+import {useDoubanStore} from "~/stores/douban";
 
 definePageMeta({
   layout: 'custom',
 })
-import {useDoubanStore} from "~/stores/douban";
-
-const doubanCache = useCookie('doubanCache', {
-  maxAge: 60 * 60 * 24
-})
 const doubanStore = useDoubanStore()
 const searchKeyword = ref('')
 const router = useRouter()
+const doubanCache = useCookie('doubanCache', {
+  maxAge: 60 * 60 * 24
+})
 
 const search = (keyword) => {
   router.push({path: '/search', query: {keyword: encodeURIComponent(keyword)}})
@@ -56,7 +54,6 @@ onMounted(async () => {
           <img class="w-[20px] h-[20px]" src="@/assets/theme/icon-park-solid--dark-mode.svg" alt="">
         </el-button>
       </client-only>
-
     </div>
     <div class="flex flex-row items-center justify-center gap-3 mt-[80px]">
       <img class="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px]" src="@/assets/my-logo.png" alt="logo">
@@ -65,22 +62,25 @@ onMounted(async () => {
 
     <div class="max-w-[1240px] mx-auto mt-[20px]">
       <div
-          class="w-[80%] md:w-[700px] mx-auto h-[40px] sm:h-[50px] border border-slate-300 font-mono overflow-hidden rounded-[50px]">
+          class="w-[80%] md:w-[700px] mx-auto">
         <client-only>
           <el-input
               v-model="searchKeyword"
               placeholder="请输入关键词搜索"
               @keydown.enter="search(searchKeyword)"
               prefix-icon="Search"
+              size="large"
+              input-style=" height: 48px;"
+              clearable
           >
           </el-input>
         </client-only>
       </div>
     </div>
 
-    <div class="max-w-[80%] md:max-w-[1200px] mx-auto mt-[50px]" v-if="doubanData.length > 0">
+    <div class="mx-5 xl:max-w-[1200px] xl:mx-auto mt-[50px]" v-if="doubanData.length > 0">
       <h1 class="text-[12px] sm:text-sm text-slate-600 font-bold dark:text-white mt-[20px]">豆瓣热门影视榜单</h1>
-      <div class="grid grid-cols-2 md:grid-cols-8  gap-3  mt-[10px]">
+      <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8  gap-3  mt-[10px]">
         <div
             class="mx-1 cursor-pointer truncate text-xs font-bold dark:bg-slate-700 dark:text-slate-100 rounded-[5px] p-2"
             v-for="(movie,index) in doubanData"
@@ -88,7 +88,8 @@ onMounted(async () => {
             type="info"
             @click="goDouban(movie)"
         >
-          <img class="w-full h-[161px] rounded-[5px] object-cover" :src="'https://images.weserv.nl/?url='+ movie.cover"
+          <img class="w-full h-[180px] lg:h-[220px] xl:h-[161px] rounded-[5px] object-cover"
+               :src="'https://images.weserv.nl/?url='+ movie.cover"
                alt="" referrerpolicy="never">
           <p class="mt-1  text-center truncate">
             {{ movie.title }}
@@ -115,41 +116,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-:deep(.el-input__inner) {
-  height: 48px;
-}
-
-@media screen and (max-width: 768px) {
-  :deep(.el-input__inner) {
-    height: 37px;
-  }
-
-}
-
-:deep(.el-input__wrapper) {
-  box-shadow: none;
-}
-
-:deep(.el-input-group__prepend) {
-  box-shadow: none;
-}
-
-:deep(.el-input) {
-  --el-input-focus-border: transparent;
-  --el-input-border-color: transparent;
-  --el-input-focus-border-color: transparent;
-  --el-input-hover-border-color: transparent;
-}
-
-:deep(.el-input-group--prepend .el-input-group__prepend .el-select .el-input.is-focus .el-input__wrapper) {
-  box-shadow: none !important;
-}
-
-:deep(.el-input-group--prepend .el-input-group__prepend .el-select .el-input .el-input__inner) {
-  text-align: center;
-}
-
-:deep(.el-select .el-input__wrapper.is-focus) {
-  box-shadow: none !important;
-}
+ :deep(.el-input__wrapper.is-focus) {
+   --el-input-focus-border-color: #6648ff;
+ }
 </style>

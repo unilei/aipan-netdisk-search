@@ -70,7 +70,7 @@ const changeVodUrl = (vod, item, index) => {
 </script>
 
 <template>
-  <div class="border-t border-gray-300 dark:border-gray-600 py-3">
+  <div class="dark:border-gray-600 p-3">
     <div class="flex flex-col sm:flex-row gap-3 items-center pb-3">
       <h1 class="text-xs sm:text-sm font-bold text-center">
         正在播放：{{ currentVod.name }}

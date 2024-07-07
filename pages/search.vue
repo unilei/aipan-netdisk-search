@@ -89,7 +89,7 @@ onMounted(() => {
   <div class="dark:bg-gray-400 min-h-screen ">
     <search-header :keyword="keyword" @search="search"></search-header>
     <div class="max-w-[1240px] mx-auto grid grid-cols-1 pb-8">
-      <div class="w-auto sm:w-full py-3 sm:mx-auto mx-3">
+      <div class="w-full p-3">
         <el-button
             type="primary"
             :plain="category !== 'clouddrive'"
@@ -107,7 +107,7 @@ onMounted(() => {
         </el-button>
       </div>
       <div v-if="category === 'clouddrive'"
-           class="w-auto sm:w-full border-t border-gray-300 space-y-3 py-3 sm:mx-auto mx-3">
+           class="w-full space-y-3 p-3 ">
         <disk-info-list
             :sources="[sources]"
             :skeleton-loading="skeletonLoading"
