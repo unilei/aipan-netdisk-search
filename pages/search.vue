@@ -30,8 +30,12 @@ const handleSearch = async () => {
     })
   })
 }
+import {badWords} from "~/utils/sensitiveWords";
 
 const search = (e) => {
+  if(badWords.includes(e)) {
+    return alert('请勿输入敏感词')
+  }
   keyword.value = e
   skeletonLoading.value = true
   sources.value = []
@@ -57,11 +61,12 @@ const searchByVod = async () => {
       }
     }).then(res => {
       if (res.code === 500) return;
-      if (res.pagecount > 1) return;
+      // if (res.pagecount > 1) return;
+      if (!res.list || !res.list.length) return;
       res.list.forEach(item => {
         vodData.value.push(Object.assign({playUrl: vodApi.playUrl}, item))
       })
-      console.log(vodData.value)
+      // console.log(vodData.value)
     }).catch(err => {
       console.log(err)
     })

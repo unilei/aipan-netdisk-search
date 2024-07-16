@@ -106,7 +106,6 @@ export const badWords = [
     "刘明康",
     "尚福林",
     "孔丹",
-
     "习近平",
     "平近习",
     "xjp",
@@ -1176,5 +1175,4 @@ export const badWords = [
     "h动漫",
     "失身粉",
     "淫荡自慰器"
-
 ]

@@ -53,13 +53,12 @@ const formatVodPlayUrl = (vod) => {
       }
     }
   }
-
   return episodes
 }
 
 const currentIndex = ref(0)
 const changeVodUrl = (vod, item, index) => {
-  console.log(item)
+  // console.log(item)
   currentIndex.value = index
   if (checkIsM3u8(item.link)) {
     currentVod.value.url = `${vod.playUrl}${item.link}`
@@ -67,6 +66,9 @@ const changeVodUrl = (vod, item, index) => {
     currentVod.value.url = item.link;
   }
 }
+
+const vodTab = ref(0)
+
 </script>
 
 <template>
@@ -90,15 +92,25 @@ const changeVodUrl = (vod, item, index) => {
         </iframe>
       </div>
     </div>
-    <div class="flex flex-row flex-wrap gap-3 mx-3 sm:mx-auto">
-      <ul class="flex flex-row flex-wrap gap-2 mt-[20px]"
-          v-for="(vod,index) in vodData" :key="index"
-      >
+    <div class="mx-3 sm:mx-auto" v-if="vodData && vodData.length > 0">
+      <ul class="flex flex-row items-center flex-wrap gap-2 mt-6">
+        <li class="p-3 text-xs sm:text-sm font-bold text-center
+        border border-gray-300
+        rounded-xl cursor-pointer
+        hover:bg-gray-950 hover:text-[#fff]"
+            v-for="(vod,index) in vodData" :key="index"
+            :class="vodTab === index ? 'bg-gray-950 text-[#fff] dark:bg-gray-950': ''"
+            @click="vodTab = index"
+        >
+          {{ vod.vod_name }} {{ `(源${index + 1})` }}
+        </li>
+      </ul>
+      <ul class="grid grid-cols-6 gap-2 mt-[20px] bg-slate-100 dark:bg-gray-700 rounded-xl p-2">
         <li class="min-w-20 p-[10px] cursor-pointer text-center
-         border-[1px] bg-gray-300 text-[14px] rounded-xl hover:bg-gray-950 hover:text-[#fff]"
-            v-for="(item,index) in formatVodPlayUrl(vod)" :key="index"
-            @click="changeVodUrl(vod,item,index)"
-            :class="currentVod.url === `${vod.playUrl}${item.link}` ? 'bg-gray-950 text-[#fff]': ''"
+         border border-gray-300 text-xs rounded-xl hover:bg-gray-950 hover:text-[#fff]"
+            v-for="(item,index) in formatVodPlayUrl(vodData[vodTab])" :key="index"
+            @click="changeVodUrl(vodData[vodTab],item,index)"
+            :class="currentVod.url === `${vodData[vodTab].playUrl}${item.link}` ? 'bg-gray-950  dark:bg-gray-950 text-[#fff]': ''"
         >
           {{ item.number }}
         </li>

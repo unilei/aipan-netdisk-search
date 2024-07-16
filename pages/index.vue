@@ -1,5 +1,6 @@
 <script setup>
 import {useDoubanStore} from "~/stores/douban";
+import {badWords} from "~/utils/sensitiveWords";
 
 definePageMeta({
   layout: 'custom',
@@ -12,6 +13,9 @@ const doubanCache = useCookie('doubanCache', {
 })
 
 const search = (keyword) => {
+  if(badWords.includes(keyword)) {
+    return alert('请勿输入敏感词')
+  }
   router.push({path: '/search', query: {keyword: encodeURIComponent(keyword)}})
 }
 const donate = () => {
