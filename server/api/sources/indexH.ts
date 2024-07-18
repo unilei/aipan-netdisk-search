@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
                 const name = $(element).find('div:first-child').text().trim();
                 const links: Link[] = [];
                 const link = $(element).find('object a').attr('href');
-                links.push({service: 'QUARK', link});
+                links.push({ service: 'QUARK', link });
 
                 return {
                     name,

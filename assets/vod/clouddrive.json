@@ -25,5 +25,8 @@
   },
   {
     "api": "/api/sources/indexH"
+  },
+  {
+    "api": "/api/sources/indexI"
   }
 ]

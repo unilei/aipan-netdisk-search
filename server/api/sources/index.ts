@@ -60,7 +60,7 @@ export default defineEventHandler(async (event) => {
                         service = 'XUNLEI';
                     } else if (url.includes('pan.quark.cn')) {
                         service = 'QUARK';
-                    } else if(url.includes('www.aliyundrive.com')){
+                    } else if (url.includes('www.aliyundrive.com')) {
                         service = 'ALIYUN'
                     } else {
                         service = 'OTHER';
@@ -80,7 +80,7 @@ export default defineEventHandler(async (event) => {
             };
         });
 
-        const transformedResult: TransformedResult = {list: transformedList};
+        const transformedResult: TransformedResult = { list: transformedList };
 
         return transformedResult;
 

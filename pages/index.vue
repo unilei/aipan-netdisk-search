@@ -1,6 +1,6 @@
 <script setup>
-import {useDoubanStore} from "~/stores/douban";
-import {badWords} from "~/utils/sensitiveWords";
+import { useDoubanStore } from "~/stores/douban";
+import { badWords } from "~/utils/sensitiveWords";
 
 definePageMeta({
   layout: 'custom',
@@ -13,13 +13,13 @@ const doubanCache = useCookie('doubanCache', {
 })
 
 const search = (keyword) => {
-  if(badWords.includes(keyword)) {
+  if (badWords.includes(keyword)) {
     return alert('请勿输入敏感词')
   }
-  router.push({path: '/search', query: {keyword: encodeURIComponent(keyword)}})
+  router.push({ path: '/search', query: { keyword: encodeURIComponent(keyword) } })
 }
 const donate = () => {
-  router.push({path: '/donate'})
+  router.push({ path: '/donate' })
 }
 const hotKeywords = ref(['庆余年', '歌手2024', '我的阿勒泰', '新生', '周处除三害', '热辣滚烫', '第二十条', '承欢记', '哈哈哈哈哈'])
 const doubanData = ref([])
@@ -32,7 +32,7 @@ const colorMode = useColorMode()
 
 const goDouban = (movie) => {
   // window.open(movie.url, '_blank')
-  router.push({path: '/search', query: {keyword: encodeURIComponent(movie.title)}})
+  router.push({ path: '/search', query: { keyword: encodeURIComponent(movie.title) } })
 }
 
 onMounted(async () => {
@@ -48,7 +48,6 @@ onMounted(async () => {
 
 <template>
   <div class="bg-[#ffffff] dark:bg-gray-800  min-h-screen py-[60px]">
-
     <div class="max-w-[1240px] mx-auto text-right px-[20px]">
       <client-only>
         <el-button v-if="colorMode.preference === 'dark'" link @click="colorMode.preference = 'light'">
@@ -63,38 +62,23 @@ onMounted(async () => {
       <img class="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px]" src="@/assets/my-logo.png" alt="logo">
       <h1 class="text-[18px] sm:text-[22px] font-serif font-bold dark:text-white ">爱盼-网盘资源搜索</h1>
     </div>
-
     <div class="max-w-[1240px] mx-auto mt-[20px]">
-      <div
-          class="w-[80%] md:w-[700px] mx-auto">
+      <div class="w-[80%] md:w-[700px] mx-auto">
         <client-only>
-          <el-input
-              v-model="searchKeyword"
-              placeholder="请输入关键词搜索"
-              @keydown.enter="search(searchKeyword)"
-              prefix-icon="Search"
-              size="large"
-              input-style=" height: 48px;"
-              clearable
-          >
+          <el-input v-model="searchKeyword" placeholder="请输入关键词搜索" @keydown.enter="search(searchKeyword)"
+            prefix-icon="Search" size="large" input-style=" height: 48px;" clearable>
           </el-input>
         </client-only>
       </div>
     </div>
-
     <div class="mx-5 xl:max-w-[1200px] xl:mx-auto mt-[50px]" v-if="doubanData.length > 0">
       <h1 class="text-[12px] sm:text-sm text-slate-600 font-bold dark:text-white mt-[20px]">豆瓣热门影视榜单</h1>
       <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8  gap-3  mt-[10px]">
         <div
-            class="mx-1 cursor-pointer truncate text-xs font-bold dark:bg-slate-700 dark:text-slate-100 rounded-[5px] p-2"
-            v-for="(movie,index) in doubanData"
-            :key="index"
-            type="info"
-            @click="goDouban(movie)"
-        >
+          class="mx-1 cursor-pointer truncate text-xs font-bold dark:bg-slate-700 dark:text-slate-100 rounded-[5px] p-2"
+          v-for="(movie, index) in doubanData" :key="index" type="info" @click="goDouban(movie)">
           <img class="w-full h-[180px] lg:h-[220px] xl:h-[161px] rounded-[5px] object-cover"
-               :src="'https://images.weserv.nl/?url='+ movie.cover"
-               alt="" referrerpolicy="never">
+            :src="'https://images.weserv.nl/?url=' + movie.cover" alt="" referrerpolicy="never">
           <p class="mt-1  text-center truncate">
             {{ movie.title }}
             {{ movie.rate }}
@@ -113,14 +97,16 @@ onMounted(async () => {
         </el-button>
       </div>
       <p class="text-center text-[8px] sm:text-[12px] text-slate-400">
-        声明：本站不产生/存储任何数据，也从未参与录制、上传，所有资源均来自网络。
+        声明：本站内容皆来自网络公开资源。本站不储存、复制、传播任何文件，不做任何盈利，仅作个人公益学习，请勿非法&商业传播，如有侵权，请及时
+        <a class="text-blue-500 underline" href="mailto:ahagwybwqs@gmail.com" title="点击留言"> 留言 </a> 告知删除。
+
       </p>
     </div>
   </div>
 </template>
 
 <style scoped>
- :deep(.el-input__wrapper.is-focus) {
-   --el-input-focus-border-color: #6648ff;
- }
+:deep(.el-input__wrapper.is-focus) {
+  --el-input-focus-border-color: #6648ff;
+}
 </style>
