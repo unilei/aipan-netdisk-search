@@ -48,14 +48,26 @@ onMounted(async () => {
 
 <template>
   <div class="bg-[#ffffff] dark:bg-gray-800  min-h-screen py-[60px]">
-    <div class="max-w-[1240px] mx-auto text-right px-[20px]">
+    <div class="max-w-[1240px] mx-auto flex flex-row items-center justify-between px-[20px]">
       <client-only>
-        <el-button v-if="colorMode.preference === 'dark'" link @click="colorMode.preference = 'light'">
-          <img class="w-[20px] h-[20px]" src="@/assets/theme/entypo--light-up.svg" alt="">
-        </el-button>
-        <el-button v-if="colorMode.preference === 'light'" link @click="colorMode.preference = 'dark'">
-          <img class="w-[20px] h-[20px]" src="@/assets/theme/icon-park-solid--dark-mode.svg" alt="">
-        </el-button>
+        <div>
+
+        </div>
+        <div class="flex flex-row items-center gap-2">
+          <el-button v-if="colorMode.preference === 'dark'" link @click="colorMode.preference = 'light'">
+            <img class="w-[20px] h-[20px]" src="@/assets/theme/entypo--light-up.svg" alt="">
+          </el-button>
+          <el-button v-if="colorMode.preference === 'light'" link @click="colorMode.preference = 'dark'">
+            <img class="w-[20px] h-[20px]" src="@/assets/theme/icon-park-solid--dark-mode.svg" alt="">
+          </el-button>
+
+          <nuxt-link class="text-sm text-slate-600 font-bold dark:text-white" href="/music" title="音乐搜索小助手">
+            <img v-if="colorMode.preference === 'light'" class="w-[20px] h-[20px]" src="@/assets/theme/music-dark.svg"
+              alt="">
+            <img v-if="colorMode.preference === 'dark'" class="w-[20px] h-[20px]" src="@/assets/theme/music-light.svg"
+              alt="">
+          </nuxt-link>
+        </div>
       </client-only>
     </div>
     <div class="flex flex-row items-center justify-center gap-3 mt-[80px]">
