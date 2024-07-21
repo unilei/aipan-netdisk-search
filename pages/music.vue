@@ -41,6 +41,7 @@ const kwGetUrl = async (id) => {
 const searchLoading = ref(false)
 const handleSearch = () => {
     page.value = 1
+    kwData.value = []
     kwSearch()
 }
 const handleNextPage = () => {
@@ -101,7 +102,7 @@ const handleCopySongName = (song) => {
             <button class="bg-gray-900 text-white px-4 py-2 rounded-md" @click="handleSearch()">搜索</button>
         </div>
 
-        <div class="space-y-2 mt-5" v-if="kwData.length > 0">
+        <div class="space-y-2 mt-5" v-if="kwData && kwData.length > 0">
             <div class="flex flex-row gap-2 items-center justify-between p-2 border-b border-gray-300">
                 <h1 class="text-xl font-bold">搜索结果</h1>
                 <div class="space-x-2">
