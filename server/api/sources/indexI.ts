@@ -10,7 +10,6 @@ export default defineEventHandler(async (event) => {
 
     try {
         const body: Body = await readBody(event);
-
         const result: Result = await $fetch('https://netdisk.kkwnhub.com/api/search/a', {
             method: 'GET',
             query: {

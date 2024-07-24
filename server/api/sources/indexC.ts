@@ -29,9 +29,9 @@ export default defineEventHandler(async (event) => {
     try {
         const body: Body = await readBody(event);
 
-        const token: Token = await $fetch('http://i.ishangjing.me/v/api/gettoken')
+        const token: Token = await $fetch('http://wzrbs.com/v/api/gettoken')
 
-        const result: Result = await $fetch('http://i.ishangjing.me/v/api/sortWeb', {
+        const result: Result = await $fetch('http://wzrbs.com/v/api/sortWeb', {
             method: 'POST',
             body: {
                 ...body,
