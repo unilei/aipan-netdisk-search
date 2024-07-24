@@ -34,7 +34,7 @@ const kwGetUrl = async (id) => {
     if (res.msg === 'success') {
         return res.url;
     } else {
-        return alert(res.msg)
+        return alert('获取链接失败, 请重试')
     }
 
 }
@@ -81,6 +81,14 @@ const copyTipsMsg = (type) => {
 }
 const handleCopySongName = (song) => {
     navigator.clipboard.writeText(song.name + ' - ' + song.artist)
+    copyTipsMsg('success')
+    setTimeout(() => {
+        copyTipsMsg('reset')
+    }, 3000);
+}
+const handleCopySongUrl = async (song) => {
+    let downloadUrl = await kwGetUrl(song.id)
+    navigator.clipboard.writeText(downloadUrl)
     copyTipsMsg('success')
     setTimeout(() => {
         copyTipsMsg('reset')
@@ -148,8 +156,11 @@ const handleCopySongName = (song) => {
                 <div class="space-x-2 text-center">
                     <button class="bg-gray-900 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                         @click="handleCopySongName(currentDownloadSong)">复制歌曲名字</button>
+                        <!-- 因为https协议不能直接下载http协议的歌曲，所以暂时不开放 -->
+                    <!-- <button class="bg-gray-900 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                        @click="handleDownload(currentDownloadSong)">下载</button> -->
                     <button class="bg-gray-900 text-white px-2 py-1 rounded-md text-xs hover:text-md"
-                        @click="handleDownload(currentDownloadSong)">下载</button>
+                        @click="handleCopySongUrl(currentDownloadSong)">复制歌曲链接</button>
                     <button class="bg-gray-900 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                         @click="downloadVisible = false">关闭</button>
                 </div>
