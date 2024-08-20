@@ -43,7 +43,6 @@ docker build \
   --build-arg JWT_SECRET=your_jwt_secret \
   --build-arg DATABASE_URL=your_database_url \
   -t unilei/aipan-netdisk-search:latest .
-
 ```
 
 ##### 运行

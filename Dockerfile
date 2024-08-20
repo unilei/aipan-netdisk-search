@@ -20,6 +20,9 @@ ENV ADMIN_EMAIL=${ADMIN_EMAIL}
 ENV JWT_SECRET=${JWT_SECRET}
 ENV DATABASE_URL=${DATABASE_URL}
 
+# 使用淘宝 npm 镜像
+RUN npm config set registry https://registry.npmmirror.com
+
 RUN npm install
 RUN npx prisma generate
 RUN npx prisma migrate deploy
