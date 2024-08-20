@@ -25,8 +25,8 @@ export default defineEventHandler(async (event) => {
     try {
         const body: Body = await readBody(event);
 
-        const result: Result = await $fetch('http://m.ssr021.cn/v/api/sortWeb', {
-            method: 'POST',
+        const result: Result = await $fetch("http://m.ssr021.cn/v/api/sortWeb", {
+            method: "POST",
             body: {
                 ...body,
                 token: "i69",

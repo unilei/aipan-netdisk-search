@@ -104,11 +104,16 @@ export default defineNuxtConfig({
     ],
     nitro: {
         devProxy: {
-           
-        }
+
+        },
+        experimental: {
+            wasm: true,
+        },
     },
     runtimeConfig: {
-        openaiApiKey: '',
-        proxyUrl: ''
+        adminUser: process.env.ADMIN_USER,
+        adminPassword: process.env.ADMIN_PASSWORD,
+        adminEmail: process.env.ADMIN_EMAIL,
+        jwtSecret: process.env.JWT_SECRET
     }
 })
