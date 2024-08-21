@@ -43,4 +43,4 @@ WORKDIR /app
 EXPOSE 3000
 
 # CMD [ "npm", "run", "start" ]
-CMD [ "sh", "-c", "npx prisma migrate deploy && npm run start" ]
+CMD [ "npx", "prisma", "migrate","migrate", "npm", "run", "start"   ]
