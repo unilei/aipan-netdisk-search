@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// npx prisma migrate dev --name add_resource_table
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  email      String   @unique
+  password   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  isVerified Boolean  @default(false)
+
+  resources    Resource[] // 一个用户可以有多个资源
+  ResourceType ResourceType[]
+}
+
+model ResourceType {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+
+  resources Resource[] // 一个资源类型可以对应多个资源
+  creatorId Int
+  creator   User       @relation(fields: [creatorId], references: [id])
+}
+
+model Resource {
+  id        Int      @id @default(autoincrement())
+  name      String
+  links     String
+  typeId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  creatorId Int
+
+  creator User         @relation(fields: [creatorId], references: [id])
+  type    ResourceType @relation(fields: [typeId], references: [id])
+}

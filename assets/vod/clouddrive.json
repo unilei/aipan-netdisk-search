@@ -1,5 +1,8 @@
 [
   {
+    "api": "/api/sources/aipan-search"
+  },
+  {
     "api": "/api/sources"
   },
   {
