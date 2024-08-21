@@ -45,6 +45,20 @@ docker build \
   -t unilei/aipan-netdisk-search:latest .
 ```
 
+### 这是个例子
+
+``` bash
+
+docker build \
+  --build-arg ADMIN_USER=aipan \
+  --build-arg ADMIN_PASSWORD=aipan123 \
+  --build-arg ADMIN_EMAIL=<aipan@email.com> \
+  --build-arg JWT_SECRET='aipannetdisk' \
+  --build-arg DATABASE_URL=postgresql://数据库用户名:数据库密码@你的服务器ip:5432/数据库名字?schema=你创建的schema \
+  -t unilei/aipan-netdisk-search:latest .
+
+```
+
 ##### 运行
 
 ```bash

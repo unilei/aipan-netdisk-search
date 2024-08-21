@@ -155,7 +155,10 @@ const handleSubmitAddResourceType = () => {
             }
         })
         typeDialogShow.value = false
-        getResourceTypes()
+        setTimeout(() => {
+            getResourceTypes()
+        }, 3000);
+
     })
 }
 const handleDeleteResourceType = (resourceType, index) => {
