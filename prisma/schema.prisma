@@ -6,8 +6,7 @@
 // npx prisma migrate dev --name add_resource_table
 
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
