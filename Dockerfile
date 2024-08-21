@@ -31,7 +31,7 @@ ENV DATABASE_URL=${DATABASE_URL}
 
 # RUN npm install
 RUN npx prisma generate
-RUN npx prisma migrate deploy
+# RUN npx prisma migrate deploy
 RUN npm run build
 
 # Set NuxtJS system variables so the application can be reached on your network
@@ -42,4 +42,5 @@ WORKDIR /app
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "start" ]
+# CMD [ "npm", "run", "start" ]
+CMD [ "sh", "-c", "npx prisma migrate deploy && npm run start" ]
