@@ -32,7 +32,7 @@ const login = async () => {
 </script>
 <template>
     <div class="p-20 space-y-10">
-        <h1 class="text-center">登录</h1>
+        <h1 class="text-center">后台管理面板</h1>
         <div class="max-w-sm mx-auto space-y-10">
             <el-form ref="formRef" :model="form" :rules="formRules" label-width="auto" label-position="top">
                 <el-form-item label="邮箱" prop="email">
@@ -43,7 +43,7 @@ const login = async () => {
                 </el-form-item>
             </el-form>
             <div class="text-center">
-                <el-button @click="login()">登录</el-button>
+                <el-button type="primary" @click="login()">登录</el-button>
             </div>
         </div>
     </div>
