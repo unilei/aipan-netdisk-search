@@ -6,6 +6,9 @@
 - 增加后台管理, 访问路径：/login | /admin/dashboard | /admin/clouddrive
 - 后台可以增加自己的网盘资源
 
+### 视频介绍
+[观看视频](/assets/readme/intro/aipan-intro.mp4)
+ 
 ### 建议
 项目使用的是第三方的API，对ip有访问限制，建议自己部署使用。
 
@@ -13,7 +16,9 @@
 
 ### 在 Vercel 上部署
 
-[一定查看此文档](/README_VERCEL.md)
+`手动安装一样的，只需要配置对应的env就行了`
+
+[之前部署过的，一定查看此文档](/README_VERCEL.md)
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/unilei/aipan-netdisk-search.git&project-name=aipan-netdisk-search&repository-name=aipan-netdisk-search)
 
