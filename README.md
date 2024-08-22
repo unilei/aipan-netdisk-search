@@ -1,14 +1,28 @@
 # 爱盼-网盘资源搜索Web
-爱盼-网盘资源搜索：是一个免费开源项目!
+
+🔥 爱盼-网盘资源搜索：是一个免费开源项目!
+
+-------------------
 👉 [爱盼-网盘资源搜索](https://so.aicompasspro.com)
 
-### 更新
-- 增加后台管理, 访问路径：/login | /admin/dashboard | /admin/clouddrive
+### 🔥更新日志
+
+- 增加后台管理, 访问路径：`/login` | `/admin/dashboard` | `/admin/clouddrive`
 - 后台可以增加自己的网盘资源
 
-### 视频介绍
-[观看视频](/assets/readme/intro/aipan-intro.mp4)
- 
+### 测试账号
+
+- 网址：https://so.aicompasspro.com
+- 邮箱：your@email.com
+- 密码：admin123
+
+### 🔥视频介绍
+
+[观看视频](https://r2music.kkpans.com/aipannetdisk-intro.mp4)
+
+---- 
+<video src="https://r2music.kkpans.com/aipannetdisk-intro.mp4" controls ></video>
+
 ### 建议
 项目使用的是第三方的API，对ip有访问限制，建议自己部署使用。
 
