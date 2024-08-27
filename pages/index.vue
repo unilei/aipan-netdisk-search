@@ -98,7 +98,15 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-
+<div class="p-4">
+      <div class="flex flex-row items-center justify-center  gap-3 my-3">
+        <a class="" href="https://github.com/">
+          <img class="w-[30px] h-[30px]" src="@/assets/skill-icons--github-dark.svg" alt="github">
+        </a>
+        <el-button link color="#ffffff" @click="donate()">
+          <img class="w-[30px] h-[30px]" src=" https://image.vredu.icu/img/9ca6ea1d3449b25ee97818211932c42.jpg" alt="打赏">
+        </el-button>
+      </div>
    
       <p class="text-center text-[8px] sm:text-[12px] text-slate-400">
         声明：本站内容皆来自网络公开资源。本站不储存、复制、传播任何文件，不做任何盈利，仅作个人公益学习，请勿非法&商业传播，如有侵权，请及时
