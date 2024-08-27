@@ -104,7 +104,7 @@ onMounted(async () => {
           <img class="w-[30px] h-[30px]" src="@/assets/skill-icons--github-dark.svg" alt="github">
         </a>
         <el-button link color="#ffffff" @click="donate()">
-          <img class="w-[30px] h-[30px]" src=" " alt="打赏">
+          <img class="w-[30px] h-[30px]" src="@/assets/donation/dashang.svg " alt="打赏">
         </el-button>
       </div>
    
