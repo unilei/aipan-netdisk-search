@@ -101,7 +101,7 @@ const handleCopySongUrl = async (song) => {
             <a href="/">
                 <img class="w-[40px] h-[40px] sm:w-[40px] sm:h-[40px]" src="@/assets/my-logo.png" alt="logo">
             </a>
-            <h1 class="text-[18px] sm:text-[22px] font-serif font-bold dark:text-white ">爱盼-音乐搜索下载</h1>
+            <h1 class="text-[18px] sm:text-[22px] font-serif font-bold dark:text-white ">zdDown-音乐搜索下载</h1>
         </div>
 
         <div class="flex flex-row items-center justify-center gap-2 mt-5">
@@ -118,7 +118,7 @@ const handleCopySongUrl = async (song) => {
                     <button class="text-gray-950 text-sm hover:underline" @click="handleNextPage()">下一页</button>
                 </div>
             </div>
-            <div class="text-purple-500" v-if="searchLoading">爱盼，正在努力搜索中...</div>
+            <div class="text-purple-500" v-if="searchLoading">zdDown，正在努力搜索中...</div>
             <ul class="space-y-2">
                 <li class="flex flex-row justify-between items-center text-sm p-2 bg-gray-100 "
                     v-for="(item, index) in kwData" :key="index">
