@@ -3,11 +3,11 @@ export default defineNuxtConfig({
     app: {
         // head
         head: {
-            title: '爱盼-网盘资源搜索',
+            title: 'zdDown-网盘资源搜索',
             meta: [
                 {
                     name: 'description',
-                    content: '爱盼-网盘资源搜索， 一个开源免费的网盘资源搜索程序，仅供学习使用，不支持商业用途。'
+                    content: 'zdDown-网盘资源搜索， 一个开源免费的网盘资源搜索程序，仅供学习使用，不支持商业用途。'
                 },
                 { name: 'viewport', content: 'width=device-width, initial-scale=1' },
                 {
