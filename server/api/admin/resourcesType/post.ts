@@ -10,7 +10,12 @@ export default defineEventHandler(async (event) => {
             }
         })
         if (resourceExists) {
-            throw createError({ statusCode: 400, statusMessage: '资源类型已存在' });
+            // throw createError({ statusCode: 400, statusMessage: '资源类型已存在' });
+            return {
+                code: 200,
+                msg: '资源类型已存在',
+                data: resourceExists
+            }
         }
         const resource = await prisma.resourceType.create({
             data: {

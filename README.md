@@ -7,12 +7,13 @@
 
 ### 🔥更新日志
 
+- 新增批量上传数据 [csv示例](/assets//readme//demo/demo-multi.csv) [xlsx 示例](/assets/readme/demo/demo-multi.xls)
 - 增加后台管理, 访问路径：`/login` | `/admin/dashboard` | `/admin/clouddrive`
 - 后台可以增加自己的网盘资源
 
 ### 测试账号
 
-- 网址：https://so.aicompasspro.com
+- 网址：https://so.aicompasspro.com/login
 - 邮箱：your@email.com
 - 密码：admin123
 
