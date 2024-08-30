@@ -2,6 +2,9 @@
 definePageMeta({
     middleware: ['auth']
 })
+import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
+
 const resourceDialogShow = ref(false)
 const handleAddClouddrive = () => {
     resourceDialogShow.value = true
@@ -170,6 +173,117 @@ const handleDeleteResourceType = (resourceType, index) => {
     })
     getResourceTypes()
 }
+
+const multiUploadDialogShow = ref(false)
+const multiUploading = ref(false)
+const multiProgress = ref(0)
+
+const handleMultiUpload = () => {
+    multiUploadDialogShow.value = true
+}
+const readExcel = (file) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result)
+        const workbook = XLSX.read(data, { type: 'array' })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
+        const jsonData = XLSX.utils.sheet_to_json(worksheet)
+
+        multiRequests(jsonData)
+    }
+    reader.readAsArrayBuffer(file);
+}
+const readCSV = (file) => {
+    Papa.parse(file, {
+        header: true,
+        complete: (results) => {
+            console.log(results.data)
+            multiRequests(results.data)
+        },
+        error: (error) => {
+            console.error('读取 CSV 文件时出错:', error);
+        }
+    })
+}
+const multiRequests = (jsonData) => {
+    multiUploading.value = true
+
+    // 创建一个数组来存储所有的 Promise
+    const promises = jsonData.map((item, index) => {
+        const linksArray = Object.keys(item)
+            .filter((key) => key.includes('link'))
+            .map((key) => ({ key: Date.now(), value: item[key] }));
+        const category = item.category;
+
+        // 返回一个 Promise
+        return $fetch("/api/admin/resourcesType/post", {
+            method: "POST",
+            body: {
+                name: category
+            },
+            headers: {
+                "authorization": "Bearer " + useCookie('token').value
+            }
+        }).then((res) => {
+            // console.log(res);
+            // 处理每个 JSON 对象
+            return $fetch('/api/admin/resources/post', {
+                method: 'POST',
+                body: {
+                    name: item.name,
+                    links: JSON.stringify(linksArray),
+                    typeId: res.data.id
+                },
+                headers: {
+                    "authorization": "Bearer " + useCookie('token').value
+                }
+            }).then(() => {
+                multiProgress.value = Math.round((index + 1) / jsonData.length * 100);
+            })
+        });
+    });
+    // 使用 Promise.all 等待所有请求完成
+    Promise.allSettled(promises)
+        .then((results) => {
+            console.log('所有请求完成:', results);
+            multiUploading.value = false;
+            multiProgress.value = 100;
+            getResources(); // 在所有请求完成后获取列表
+            multiUploadDialogShow.value = false;
+        })
+        .catch((err) => {
+            console.log('请求出错:', err);
+            multiUploading.value = false;
+            multiProgress.value = 0;
+        });
+}
+const multiFile = ref(null)
+const handleFileUpload = (e) => {
+    const file = e.target.files[0]
+    console.log(file)
+    multiFile.value = file
+}
+const handleSubmitMultiUpload = () => {
+    // console.log(multiFile.value)
+    if (!multiFile.value) {
+        ElMessage({
+            message: '请选择文件',
+            type: 'error'
+        })
+        return;
+    }
+    if (multiFile.value) {
+        const fileType = multiFile.value.name.split('.').pop().toLowerCase()
+        if (fileType === 'xlsx' || fileType === 'xls') {
+            readExcel(multiFile.value)
+        } else if (fileType === 'csv') {
+            readCSV(multiFile.value)
+        } else {
+            alert('请上传正确的文件格式')
+        }
+    }
+}
 onMounted(() => {
     getResources()
 })
@@ -184,6 +298,7 @@ onMounted(() => {
         <div class="h-[1px] bg-slate-300 mt-6"></div>
         <div class="mt-6 grid grid-cols-4 gap-4">
             <el-button type="primary" @click="handleAddClouddrive()">添加数据</el-button>
+            <el-button type="primary" @click="handleMultiUpload()">批量添加数据</el-button>
         </div>
 
         <div class="mt-6">
@@ -279,6 +394,22 @@ onMounted(() => {
             <span class="dialog-footer">
                 <el-button @click="typeDialogShow = false">取消</el-button>
                 <el-button type="primary" @click="handleSubmitAddResourceType()"> 确认 </el-button>
+            </span>
+        </template>
+    </el-dialog>
+    <el-dialog v-model="multiUploadDialogShow" title="批量上传">
+        <main>
+            <p class="font-bold">支持类型(csv, xlsx, xls)</p>
+            <input class="w-full mt-4" accept=".csv,.xlsx,.xls" type="file" @change="handleFileUpload">
+            <div class="mt-4">
+                <p class="font-bold">进度: {{ multiProgress }}</p>
+            </div>
+        </main>
+        <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="multiUploadDialogShow = false">取消</el-button>
+                <el-button type="primary" @click="handleSubmitMultiUpload()" :loading="multiUploading">确认
+                </el-button>
             </span>
         </template>
     </el-dialog>

@@ -15,16 +15,24 @@ const formRules = reactive({
 const token = useCookie('token', {
     maxAge: 60 * 60
 })
+const loginBtnLoading = ref(false)
 const login = async () => {
 
     formRef.value.validate(async (valid) => {
         if (!valid) return
+        loginBtnLoading.value = true
         const res = await $fetch('/api/user/register', {
             method: 'POST',
             body: form
         })
-        token.value = res.token;
+        if (res.code !== 200) {
+            ElMessage.error(res.msg)
+            loginBtnLoading.value = false
+            return
+        }
+        token.value = res.data.token;
         navigateTo({ path: '/admin/dashboard' })
+        loginBtnLoading.value = false
     })
 
 }
@@ -43,7 +51,7 @@ const login = async () => {
                 </el-form-item>
             </el-form>
             <div class="text-center">
-                <el-button type="primary" @click="login()">登录</el-button>
+                <el-button type="primary" @click="login()" :loading="loginBtnLoading">登录</el-button>
             </div>
         </div>
     </div>
