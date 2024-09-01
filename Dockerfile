@@ -31,6 +31,8 @@ ENV JWT_SECRET=${JWT_SECRET}
 ENV DATABASE_URL=${DATABASE_URL}
 ENV DATABASE_URL=${DATABASE_SCHEMA}
 
+RUN echo $DATABASE_URL
+
 # RUN npm install
 RUN npx prisma generate
 RUN npx prisma migrate deploy
