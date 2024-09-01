@@ -70,12 +70,12 @@ docker build \
 ``` bash
 
 docker build \
-  --build-arg ADMIN_USER=aipan \
-  --build-arg ADMIN_PASSWORD=aipan123 \
-  --build-arg ADMIN_EMAIL=<aipan@email.com> \
+  --build-arg ADMIN_USER="aipan" \
+  --build-arg ADMIN_PASSWORD="aipan123" \
+  --build-arg ADMIN_EMAIL="aipan@email.com" \
   --build-arg JWT_SECRET='aipannetdisk' \
   --build-arg DATABASE_SCHEMA="你创建的schema" \
-  --build-arg "DATABASE_URL=postgresql://数据库用户名:数据库密码@你的服务器ip:5432/数据库名字?schema=你创建的schema&pgbouncer=true&connect_timeout=15" \
+  --build-arg DATABASE_URL="postgresql://数据库用户名:数据库密码@你的服务器ip:5432/数据库名字?schema=你创建的schema&pgbouncer=true&connect_timeout=15" \
   -t unilei/aipan-netdisk-search:latest .
 
 ```
