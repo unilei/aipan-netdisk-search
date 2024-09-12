@@ -123,5 +123,5 @@ export default defineNuxtConfig({
         jwtSecret: process.env.JWT_SECRET
     },
 
-    compatibilityDate: '2024-09-10'
+    compatibilityDate: '2024-09-12'
 })
