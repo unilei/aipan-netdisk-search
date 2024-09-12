@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
     devtools: { enabled: false },
+
     app: {
         // head
         head: {
@@ -47,6 +48,7 @@ export default defineNuxtConfig({
 
         }
     },
+
     // build modules
     modules: [
         '@element-plus/nuxt',
@@ -59,13 +61,16 @@ export default defineNuxtConfig({
         '@pinia-plugin-persistedstate/nuxt',
 
     ],
+
     colorMode: {
         preference: 'light',
         classSuffix: ''
     },
+
     tailwindcss: {
         configPath: 'tailwind.config.js'
     },
+
     googleFonts: {
         display: 'swap',
         prefetch: false,
@@ -81,6 +86,7 @@ export default defineNuxtConfig({
             'Noto Sans Simplified Chinese': [100, 200, 300, 400, 500, 600, 700, 800, 900]
         }
     },
+
     i18n: {
         defaultLocale: 'cn',
         langDir: './assets/lang/',
@@ -115,5 +121,7 @@ export default defineNuxtConfig({
         adminPassword: process.env.ADMIN_PASSWORD,
         adminEmail: process.env.ADMIN_EMAIL,
         jwtSecret: process.env.JWT_SECRET
-    }
+    },
+
+    compatibilityDate: '2024-09-10'
 })
