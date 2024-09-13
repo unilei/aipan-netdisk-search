@@ -59,7 +59,7 @@ export default defineNuxtConfig({
         '@nuxtjs/color-mode',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
-
+        '@nuxtjs/sitemap'
     ],
 
     colorMode: {
@@ -122,6 +122,18 @@ export default defineNuxtConfig({
         adminEmail: process.env.ADMIN_EMAIL,
         jwtSecret: process.env.JWT_SECRET
     },
-
+    sitemap: {
+        sources: [
+            '/api/__sitemap__/urls',
+        ],
+        exclude: [
+            '/admin/**'
+        ]
+    },
+    site: {
+        name: '爱盼-网盘资源搜索',
+        url: 'https://www.aipan.me',
+        description: '爱盼-网盘资源搜索， 一个开源免费的网盘资源搜索程序，仅供学习使用，不支持商业用途。'
+    },
     compatibilityDate: '2024-09-12'
 })
