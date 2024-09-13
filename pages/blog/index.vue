@@ -35,11 +35,13 @@ const getPosts = async () => {
     // return res.posts;
     postsData.value = res.posts
 }
-const handleCurrentChange = (val) => {
+const handleCurrentChange = async (val) => {
     page.value = val
+    await getPosts()
 }
-const handleSizeChange = (val) => {
+const handleSizeChange = async (val) => {
     pageSize.value = val
+    await getPosts()
 }
 const handleSelectCategory = (val) => {
     categoryId.value = val
