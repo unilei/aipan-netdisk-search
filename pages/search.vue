@@ -2,6 +2,7 @@
 import SearchHeader from "~/components/search/SearchHeader.vue";
 import DiskInfoList from "~/components/diskInfoList.vue";
 import sourcesApiEndpoints from "~/assets/vod/clouddrive.json";
+import { badWords } from "~/utils/sensitiveWords";
 
 definePageMeta({
   layout: 'custom',
@@ -13,27 +14,33 @@ const sources = ref([])
 const skeletonLoading = ref(true)
 
 const handleSearch = async () => {
-  sourcesApiEndpoints.forEach((item) => {
-    $fetch(item.api, {
-      method: "POST",
-      body: {
-        "name": keyword.value
-      }
-    }).then(res => {
+  skeletonLoading.value = true; // 开始加载状态
+
+  for (const item of sourcesApiEndpoints) {
+    try {
+      const res = await $fetch(item.api, {
+        method: "POST",
+        body: {
+          "name": keyword.value
+        }
+      });
+
       if (res.list && res.list.length) {
-        sources.value = sources.value.concat(res.list)
-      } else {
-        skeletonLoading.value = false
+        sources.value = sources.value.concat(res.list);
       }
-    }).catch(err => {
-      console.log(err)
-    })
-  })
+
+      // 设置间隔时间，例如 1000 毫秒（1秒）
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  skeletonLoading.value = false; // 结束加载状态
 }
-import {badWords} from "~/utils/sensitiveWords";
 
 const search = (e) => {
-  if(badWords.includes(e)) {
+  if (badWords.includes(e)) {
     return alert('请勿输入敏感词')
   }
   keyword.value = e
@@ -64,7 +71,7 @@ const searchByVod = async () => {
       // if (res.pagecount > 1) return;
       if (!res.list || !res.list.length) return;
       res.list.forEach(item => {
-        vodData.value.push(Object.assign({playUrl: vodApi.playUrl}, item))
+        vodData.value.push(Object.assign({ playUrl: vodApi.playUrl }, item))
       })
       // console.log(vodData.value)
     }).catch(err => {
@@ -95,28 +102,17 @@ onMounted(() => {
     <search-header :keyword="keyword" @search="search"></search-header>
     <div class="max-w-[1240px] mx-auto grid grid-cols-1 pb-8">
       <div class="w-full p-3">
-        <el-button
-            type="primary"
-            :plain="category !== 'clouddrive'"
-            color="#6648ff"
-            @click="switchCategory('clouddrive')"
-        >网盘资源
+        <el-button type="primary" :plain="category !== 'clouddrive'" color="#6648ff"
+          @click="switchCategory('clouddrive')">网盘资源
         </el-button>
-        <el-button
-            type="primary"
-            :plain="category !== 'onlineVod'"
-            color="#6648ff"
-            @click="switchCategory('onlineVod')"
-        >
+        <el-button type="primary" :plain="category !== 'onlineVod'" color="#6648ff"
+          @click="switchCategory('onlineVod')">
           在线观影
         </el-button>
       </div>
-      <div v-if="category === 'clouddrive'"
-           class="w-full space-y-3 p-3 ">
-        <disk-info-list
-            :sources="[sources]"
-            :skeleton-loading="skeletonLoading"
-        >
+      <div v-if="category === 'clouddrive'" class="w-full space-y-3 p-3 ">
+        <div class="text-purple-500 text-xs" v-if="skeletonLoading">资源正在加载中...</div>
+        <disk-info-list :sources="[sources]" :skeleton-loading="skeletonLoading">
         </disk-info-list>
       </div>
       <vod-list v-if="category === 'onlineVod'" :vod-data="vodData"></vod-list>
@@ -125,6 +121,4 @@ onMounted(() => {
   </div>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
