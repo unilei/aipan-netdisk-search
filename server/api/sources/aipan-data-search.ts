@@ -80,6 +80,7 @@ export default defineEventHandler(async (event) => {
             key: '2e9096e311ab53f32776f87f669dbf9b04e2e4a12cd10db47b8d814ff7af605b',
             encryptedData: 'ee7b334d32778411441fdf6e891e51d4143558b6027a0b06a45f4e1fe9a9d137'
         });
+        console.log(decryptedData);
         // 获取 token
         const token: Token = await $fetch(`${decryptedData}/v/api/gettoken`);
         // 使用通用 fetchApi 函数并行请求多个 API
