@@ -20,7 +20,7 @@ const { data: blog } = useAsyncData('blog', async () => {
                 <h1 class="ml-4 sm:ml-0 font-bold text-xl text-center dark:text-white">{{ blog?.title }}</h1>
             </div>
         </div>
-        <div class="sm:py-5 max-w-[1240px] mx-auto">
+        <div class="sm:py-5 max-w-[1240px] mx-auto" v-if="blog && blog.content">
             <client-only>
                 <mavon-editor v-model="blog.content" class="w-full h-full sm:mt-4" :boxShadow="false" :subfield="false"
                     previewBackground="transparent" :toolbarsFlag="false" :editable="false"

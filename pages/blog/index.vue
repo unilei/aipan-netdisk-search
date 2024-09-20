@@ -66,7 +66,7 @@ onMounted(async () => {
             这里是精彩的博客天地，时常发布一些妙趣横生的内容。欢迎各位朋友拨冗光临，一同感受这里的独特魅力。
         </div>
         <div class="grid grid-cols-5 max-w-[1240px] mx-auto">
-            <div class="col-span-3 border-r border-slate-100 py-5 pr-5">
+            <div class="col-span-3 border-r border-slate-100 py-5 pr-5 min-h-screen">
                 <div class="space-y-3 ">
                     <div class="p-3 space-y-3  border-b border-slate-200 " v-for="(item, index) in postsData"
                         :key="index">

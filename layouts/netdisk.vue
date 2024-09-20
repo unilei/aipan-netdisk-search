@@ -5,7 +5,9 @@ import Footer from "~/components/layout/netdisk/Footer.vue";
 <template>
     <div>
         <Header></Header>
-        <slot></slot>
+        <div>
+            <slot></slot>
+        </div>
         <Footer></Footer>
     </div>
 </template>
