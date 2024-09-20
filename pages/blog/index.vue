@@ -45,6 +45,7 @@ const handleSizeChange = async (val) => {
 }
 const handleSelectCategory = (val) => {
     categoryId.value = val
+    getPosts()
 }
 
 const { data: categoriesData } = await useAsyncData('categories', async () => {
