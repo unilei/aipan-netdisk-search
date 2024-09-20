@@ -7,6 +7,7 @@
 
 ### 🔥更新日志
 
+- 新增批量删除功能
 - 新增博客功能 （分支：[feat-admin-panel](https://github.com/unilei/aipan-netdisk-search/tree/feat-add-admin-panel)）
 - 新增批量上传数据 [csv示例](/assets//readme//demo/demo-multi.csv) [xlsx 示例](/assets/readme/demo/demo-multi.xls)
 - 增加后台管理, 访问路径：`/login` | `/admin/dashboard` | `/admin/clouddrive`

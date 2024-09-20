@@ -3,7 +3,6 @@
     <p class="font-mono text-[12px] text-center text-gray-400">
       爱盼-网盘资源搜索
     </p>
-
   </div>
 </template>
 

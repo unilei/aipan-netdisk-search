@@ -284,6 +284,83 @@ const handleSubmitMultiUpload = () => {
         }
     }
 }
+
+const multipleTableRef = ref()
+const multipleSelection = ref([])
+const selectable = (row) => ![].includes(row.id)
+const toggleSelection = (rows, ignoreSelectable) => {
+    if (rows) {
+        rows.forEach((row) => {
+            multipleTableRef.value.toggleRowSelection(
+                row,
+                undefined,
+                ignoreSelectable
+            )
+        })
+    } else {
+        multipleTableRef.value.clearSelection()
+    }
+}
+const handleSelectionChange = (val) => {
+    multipleSelection.value = val
+
+}
+const handleMultiDelete = async () => {
+    if (multipleSelection.value.length === 0) {
+        ElMessage({
+            message: '请选择要删除的数据',
+            type: 'error'
+        });
+        return;
+    }
+
+    try {
+        await ElMessageBox.confirm(
+            '确定要删除这些数据吗？',
+            '提示',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning',
+            }
+        );
+
+        const idsToDelete = multipleSelection.value.map(item => item.id);
+        const res = await $fetch('/api/admin/resources/batch-delete', {
+            method: 'DELETE',
+            body: { ids: idsToDelete },
+            headers: {
+                "authorization": "Bearer " + useCookie('token').value
+            }
+        });
+
+        if (res.code === 200) {
+            ElMessage({
+                message: '删除成功',
+                type: 'success'
+            });
+            // 清空选择
+            toggleSelection([], true);
+            await getResources(); // 刷新资源列表
+        } else {
+            throw new Error('删除失败');
+        }
+    } catch (error) {
+        if (error.message === '已取消删除') {
+            ElMessage({
+                type: 'info',
+                message: '已取消删除',
+            });
+        } else {
+            ElMessage({
+                type: 'error',
+                message: '删除失败: ' + (error.response?.data?.message || '未知错误'),
+            });
+        }
+    }
+};
+
+
 onMounted(() => {
     getResources()
 })
@@ -299,25 +376,30 @@ onMounted(() => {
         <div class="mt-6 grid grid-cols-4 gap-4">
             <el-button type="primary" @click="handleAddClouddrive()">添加数据</el-button>
             <el-button type="primary" @click="handleMultiUpload()">批量添加数据</el-button>
+            <el-button type="danger" @click="handleMultiDelete()">批量删除数据( {{ multipleSelection.length }} )</el-button>
         </div>
-
-        <div class="mt-6">
-            <el-table :data="resourcesData">
-                <el-table-column prop="name" label="资源名字"></el-table-column>
-                <el-table-column prop="type.name" label="资源类型"></el-table-column>
-                <el-table-column label="操作" width="200">
-                    <template #default="scope">
-                        <el-button type="primary" @click="handleEditClouddrive(scope.row, scope.$index)">编辑</el-button>
-                        <el-button type="danger" @click="handleDeleteClouddrive(scope.row, scope.$index)">删除</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div class="mt-6 flex items-center justify-center">
-                <el-pagination v-model:current-page="page" v-model:page-size="pageSize"
-                    :page-sizes="[100, 200, 300, 400]" background layout="total, sizes, prev, pager, next, jumper"
-                    :total="totalCount" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+        <client-only>
+            <div class="mt-6">
+                <el-table ref="multipleTableRef" :data="resourcesData" @selection-change="handleSelectionChange">
+                    <el-table-column type="selection" :selectable="selectable" width="55" />
+                    <el-table-column prop="name" label="资源名字"></el-table-column>
+                    <el-table-column prop="type.name" label="资源类型"></el-table-column>
+                    <el-table-column label="操作" width="200">
+                        <template #default="scope">
+                            <el-button type="primary"
+                                @click="handleEditClouddrive(scope.row, scope.$index)">编辑</el-button>
+                            <el-button type="danger"
+                                @click="handleDeleteClouddrive(scope.row, scope.$index)">删除</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div class="mt-6 flex items-center justify-center">
+                    <el-pagination v-model:current-page="page" v-model:page-size="pageSize"
+                        :page-sizes="[100, 200, 300, 400]" background layout="total, sizes, prev, pager, next, jumper"
+                        :total="totalCount" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+                </div>
             </div>
-        </div>
+        </client-only>
     </div>
     <el-dialog v-model="resourceDialogShow" :title="form.id ? '编辑资源' : '添加资源'">
         <main>
