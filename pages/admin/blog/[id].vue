@@ -213,10 +213,8 @@ onMounted(async () => {
                         </div>
                     </el-form-item>
                     <el-form-item label="内容" prop="content">
-                        <client-only>
-                            <mavon-editor v-model="form.content" class="mt-2 w-full h-screen"
-                                :toolbars="toolbars"></mavon-editor>
-                        </client-only>
+                        <mavon-editor v-model="form.content" class="mt-2 w-full h-screen"
+                            :toolbars="toolbars"></mavon-editor>
                     </el-form-item>
                     <div>
                         <el-button type="primary" @click="submit">提交</el-button>
