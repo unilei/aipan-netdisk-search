@@ -26,6 +26,7 @@
     "prisma": "^5.18.0",
     "sass": "^1.77.1",
     "typescript": "^5.1.6",
+    "video.js": "^8.17.4",
     "vue-tsc": "^1.8.5"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "cloudscraper": "^4.6.0",
     "fast-xml-parser": "^4.4.0",
     "github-slugger": "^2.0.0",
+    "hls.js": "^1.5.15",
     "https-proxy-agent": "^7.0.5",
     "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",

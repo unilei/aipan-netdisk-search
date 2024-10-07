@@ -95,13 +95,13 @@ export default defineNuxtConfig({
             {
                 code: 'en',
                 name: 'English',
-                iso: 'en-US',
+                language: 'en-US',
                 file: 'en-US.json'
             },
             {
                 code: 'cn',
                 name: '中文',
-                iso: 'zh-CN',
+                language: 'zh-CN',
                 file: 'zh-CN.json'
             }
         ],
@@ -122,7 +122,11 @@ export default defineNuxtConfig({
         adminUser: process.env.ADMIN_USER,
         adminPassword: process.env.ADMIN_PASSWORD,
         adminEmail: process.env.ADMIN_EMAIL,
-        jwtSecret: process.env.JWT_SECRET
+        jwtSecret: process.env.JWT_SECRET,
+        public: {
+            liveBaseUrlForTv: process.env.LIVE_BASE_URL_FOR_TV,
+        }
+
     },
     sitemap: {
         sources: [
