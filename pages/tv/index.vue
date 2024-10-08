@@ -1,150 +1,145 @@
 <script setup>
-import { tvSources } from '~/assets/vod/tv.js';
-import Hls from "hls.js"
-import bgImage from '~/assets/tv-bg-1.jpg'
+import Hls from "hls.js";
+import bgImage from '~/assets/tv-bg-1.jpg';
 
-const config = useRuntimeConfig();
 definePageMeta({
     layout: 'custom',
-})
+});
+
+const tvSources = ref([]);
 const videoPlayer = ref(null);
-const sourceIndex = ref(0);
-const videoSrc = ref(tvSources[0]['sources'][0]['url']);
+const videoSrc = ref('');
 const modalShow = ref(false);
-const videoPlayStatus = ref(false)
-const videoLoading = ref(false)
-const liveBaseUrl = config.public.liveBaseUrlForTv
+const videoPlayStatus = ref(false);
+const videoLoading = ref(false);
 
-const verifyIncludeHttpsOrHttp = (url) => {
-    if (url.startsWith('https://') || url.startsWith('http://')) {
-        return true
-    }
-    return false
-}
-
-onMounted(() => {
-
-    // Video events to manage loading state
-    videoPlayer.value.addEventListener('waiting', () => {
-        videoLoading.value = true;  // Show loading text
-    });
-
-    videoPlayer.value.addEventListener('playing', () => {
-        videoLoading.value = false;  // Hide loading text when video starts playing
-    });
-
-    if (Hls.isSupported()) {
-        var hls = new Hls();
-        hls.loadSource(verifyIncludeHttpsOrHttp(videoSrc.value) ? videoSrc.value : liveBaseUrl + videoSrc.value);
-        hls.attachMedia(videoPlayer.value);
-        if (videoPlayer.value) {
-            videoPlayer.value.play();
-            videoPlayStatus.value = true
-        }
-    }
-    // HLS.js is not supported on platforms that do not have Media Source
-    // Extensions (MSE) enabled.
-    //
-    // When the browser has built-in HLS support (check using `canPlayType`),
-    // we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video
-    // element through the `src` property. This is using the built-in support
-    // of the plain video element, without using HLS.js.
-    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-
-        if (videoPlayer.value) {
-            videoPlayer.value.src = verifyIncludeHttpsOrHttp(videoSrc.value) ? videoSrc.value : liveBaseUrl + videoSrc.value;
-            videoPlayer.value.play();
-            videoPlayStatus.value = true
-        }
-    }
-
-})
-
-
-onUnmounted(() => {
-    if (videoPlayer.value) {
-        videoPlayer.value.dispose();
-    }
-})
-const handleSwithcSource = (url) => {
-    videoLoading.value = true
-    videoSrc.value = url
-    if (Hls.isSupported()) {
-        var hls = new Hls();
-        hls.loadSource(verifyIncludeHttpsOrHttp(url) ? url : liveBaseUrl + url);
-        hls.attachMedia(videoPlayer.value);
-        videoPlayer.value.play();
-        videoPlayStatus.value = true
-        modalShow.value = false
-    }
-    // HLS.js is not supported on platforms that do not have Media Source
-    // Extensions (MSE) enabled.
-    //
-    // When the browser has built-in HLS support (check using `canPlayType`),
-    // we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video
-    // element through the `src` property. This is using the built-in support
-    // of the plain video element, without using HLS.js.
-    else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        videoPlayer.value.src = verifyIncludeHttpsOrHttp(url) ? url : liveBaseUrl + url;
-        videoPlayer.value.play();
-        videoPlayStatus.value = true
-        modalShow.value = false
-    }
-}
-
-
-const handleSwitchVideoStatus = () => {
-
-    if (videoPlayer.value.paused) {
-        videoPlayer.value.play();
-        videoPlayStatus.value = true
-    } else {
-        videoPlayer.value.pause();
-        videoPlayStatus.value = false
-    }
-}
-
+let hls = null;  // 缓存 HLS 实例
 let currentEffectIndex = 0;
 
+// 获取视频源
+const getTvSources = async () => {
+    try {
+        const res = await $fetch('https://r2cf.aipan.me/tv.json');
+        if (videoSrc.value === '') {
+            videoSrc.value = res[0].url;
+            loadHLS(videoSrc.value);  // 初始化第一个视频源
+        }
+        tvSources.value = res;
+    } catch (error) {
+        console.error('Error fetching TV sources:', error);
+    }
+};
+
+// 加载 HLS 视频
+const loadHLS = (url) => {
+    if (!hls && Hls.isSupported()) {
+        hls = new Hls();
+        hls.attachMedia(videoPlayer.value);
+    }
+
+    if (Hls.isSupported()) {
+        hls.loadSource(url);
+        videoPlayer.value.play();
+        videoPlayStatus.value = true;
+        videoLoading.value = false;
+        modalShow.value = false;
+    } else if (videoPlayer.value.canPlayType('application/vnd.apple.mpegurl')) {
+        videoPlayer.value.src = url;
+        videoPlayer.value.play();
+        videoPlayStatus.value = true;
+        videoLoading.value = false;
+        modalShow.value = false;
+    }
+};
+
+// 视频切换处理
+const handleSwithcSource = (url) => {
+    videoLoading.value = true;
+    videoSrc.value = url;
+    loadHLS(url);
+};
+
+// 视频播放和暂停
+const handleSwitchVideoStatus = () => {
+    if (videoPlayer.value.paused) {
+        videoPlayer.value.play();
+        videoPlayStatus.value = true;
+    } else {
+        videoPlayer.value.pause();
+        videoPlayStatus.value = false;
+    }
+};
+
+// 切换视频主题效果
+const videoEffects = [
+    'nostalgia-video', 'nostalgia2-video', 'vintage-video', 'dreamy-video',
+    'cinematic-video', 'high-contrast-bw-video', 'neon-night-video',
+    'film-video', 'sunset-video', 'cool-tone-video', 'gothic-video',
+    'psychedelic-video'
+];
+
 const handleSwitchVideoTheme = () => {
-    const videoEffects = [
-        'nostalgia-video',
-        'nostalgia2-video',
-        'vintage-video',
-        'dreamy-video',
-        'cinematic-video',
-        'high-contrast-bw-video',
-        'neon-night-video',
-        'film-video',
-        'sunset-video',
-        'cool-tone-video',
-        'gothic-video',
-        'psychedelic-video'
-    ];
-
-    // Remove the current effect
     videoPlayer.value.classList.remove(videoEffects[currentEffectIndex]);
-
-    // Increment the index to loop through effects
     currentEffectIndex = (currentEffectIndex + 1) % videoEffects.length;
-
-    // Add the new effect
     videoPlayer.value.classList.add(videoEffects[currentEffectIndex]);
-}
+};
+
+// 重置视频主题
 const handleResetTheme = () => {
-    videoPlayer.value.classList.remove('nostalgia-video');
-    videoPlayer.value.classList.remove('nostalgia2-video');
-    videoPlayer.value.classList.remove('vintage-video');
-    videoPlayer.value.classList.remove('dreamy-video');
-    videoPlayer.value.classList.remove('cinematic-video');
-    videoPlayer.value.classList.remove('high-contrast-bw-video');
-    videoPlayer.value.classList.remove('neon-night-video');
-    videoPlayer.value.classList.remove('film-video');
-    videoPlayer.value.classList.remove('sunset-video');
-    videoPlayer.value.classList.remove('cool-tone-video');
-    videoPlayer.value.classList.remove('gothic-video');
-    videoPlayer.value.classList.remove('psychedelic-video');
-}
+    videoEffects.forEach(effect => {
+        videoPlayer.value.classList.remove(effect);
+    });
+};
+
+// 全屏功能
+const handleFullscreen = () => {
+    if (!document.fullscreenElement) {
+        if (videoPlayer.value.requestFullscreen) {
+            videoPlayer.value.requestFullscreen();
+        } else if (videoPlayer.value.mozRequestFullScreen) {
+            videoPlayer.value.mozRequestFullScreen();
+        } else if (videoPlayer.value.webkitRequestFullscreen) {
+            videoPlayer.value.webkitRequestFullscreen();
+        } else if (videoPlayer.value.msRequestFullscreen) {
+            videoPlayer.value.msRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+};
+
+// 处理视频加载和播放状态
+const handleWaiting = () => {
+    videoLoading.value = true;
+};
+
+const handlePlaying = () => {
+    videoLoading.value = false;
+};
+
+// 页面挂载和销毁
+onMounted(() => {
+    getTvSources();
+
+    videoPlayer.value.addEventListener('waiting', handleWaiting);
+    videoPlayer.value.addEventListener('playing', handlePlaying);
+});
+
+onBeforeUnmount(() => {
+    if (videoPlayer.value) {
+        videoPlayer.value.removeEventListener('waiting', handleWaiting);
+        videoPlayer.value.removeEventListener('playing', handlePlaying);
+        videoPlayer.value = null;
+    }
+});
 </script>
 
 <template>
@@ -159,7 +154,7 @@ const handleResetTheme = () => {
         </div>
         <div class="fixed bottom-10 left-0 right-0 w-full h-ful">
             <div class="bg-black max-w-screen-lg mx-auto px-10 pt-10 pb-4 rounded-xl">
-                <video ref="videoPlayer" id="video" class="w-full relative"></video>
+                <video ref="videoPlayer" id="video" class="w-full relative shadow-md"></video>
                 <div class="mt-4 grid grid-cols-12">
                     <div class="col-span-4">
                         <button class="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
@@ -167,7 +162,7 @@ const handleResetTheme = () => {
                     </div>
                     <div class="col-span-4">
                         <div class="text-center text-white text-sm font-semibold">
-                            AIPAN
+                            <nuxt-link to="/">AIPAN</nuxt-link>
                         </div>
                     </div>
                     <div class="col-span-4 flex justify-end">
@@ -186,6 +181,11 @@ const handleResetTheme = () => {
                             @click="handleResetTheme">
                             重置
                         </button>
+                        <button type="button"
+                            class=" ml-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                            @click="handleFullscreen">
+                            全屏
+                        </button>
                     </div>
                 </div>
             </div>
@@ -197,19 +197,16 @@ const handleResetTheme = () => {
         <div v-if="modalShow"
             class="fixed bottom-0 left-0 right-0 w-full h-full bg-black/50 flex flex-col items-center justify-center">
             <div class="bg-white p-10 rounded-xl dark:bg-black dark:text-white">
-                <div class="flex flex-row flex-wrap items-center justify-center max-w-screen-lg mx-auto gap-4 ">
-                    <div class="text-sm font-semibold border border-gray-300 text-slate-600 dark:text-white dark:bg-slate-700 rounded-full p-2 cursor-pointer  hover:bg-black hover:text-white transition duration-300"
-                        :class="{ 'bg-black text-white': sourceIndex === index }" v-for=" (item, index) in tvSources"
-                        :key="index" @click="sourceIndex = index">
-                        {{ item.label }}
-                    </div>
+                <div class="flex flex-row items-center justify-center gap-2">
+                    <input class="border border-gray-300 px-4 py-2 rounded-md w-2/3" type="text" v-model="videoSrc"
+                        placeholder="请输入视频链接">
+                    <button class="bg-red-500 text-white px-2 py-2 rounded-md text-xs hover:text-md" type="button"
+                        @click="handleSwithcSource(videoSrc)">切换视频</button>
                 </div>
-
                 <div class="flex flex-row flex-wrap items-center justify-center max-w-screen-sm mx-auto gap-4 mt-5">
                     <div class="text-sm font-semibold border border-gray-300 text-slate-600 dark:text-white dark:bg-slate-700 rounded-full p-2 cursor-pointer  hover:bg-black hover:text-white transition duration-300"
-                        :class="{ 'bg-black text-white': item.url === videoSrc }"
-                        v-for=" (item, index) in tvSources[sourceIndex]['sources']" :key="index"
-                        @click="handleSwithcSource(item.url)">
+                        :class="{ 'bg-black text-white': item.url === videoSrc }" v-for=" (item, index) in tvSources"
+                        :key="index" @click="handleSwithcSource(item.url)">
                         {{ item.name }}
                     </div>
                 </div>

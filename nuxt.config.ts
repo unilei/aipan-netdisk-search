@@ -112,6 +112,10 @@ export default defineNuxtConfig({
 
     nitro: {
         devProxy: {
+            '/aipanme': {
+                target: '',
+                changeOrigin: true
+            },
 
         },
         experimental: {
@@ -123,10 +127,6 @@ export default defineNuxtConfig({
         adminPassword: process.env.ADMIN_PASSWORD,
         adminEmail: process.env.ADMIN_EMAIL,
         jwtSecret: process.env.JWT_SECRET,
-        public: {
-            liveBaseUrlForTv: process.env.LIVE_BASE_URL_FOR_TV,
-        }
-
     },
     sitemap: {
         sources: [

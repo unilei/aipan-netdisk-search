@@ -8,3 +8,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - SHADOW_DATABASE_URL=${SHADOW_DATABASE_URL}
