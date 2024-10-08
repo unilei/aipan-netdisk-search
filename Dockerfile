@@ -32,17 +32,13 @@ ENV JWT_SECRET=${JWT_SECRET}
 ENV DATABASE_URL=${DATABASE_URL}
 ENV DATABASE_SCHEMA=${DATABASE_SCHEMA}
 ENV SHADOW_DATABASE_URL=${SHADOW_DATABASE_URL}
- 
+ENV NUXT_HOST=0.0.0.0
+ENV NUXT_PORT=3000
+
 # RUN npm install
 RUN npx prisma generate
 RUN npx prisma migrate deploy
 RUN npm run build
-
-# Set NuxtJS system variables so the application can be reached on your network
-ENV NUXT_HOST=0.0.0.0
-ENV NUXT_PORT=3000
-
-WORKDIR /app
 
 EXPOSE 3000
 
