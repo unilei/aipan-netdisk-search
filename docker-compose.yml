@@ -8,15 +8,15 @@ services:
     build:
       context: . # 构建上下文，通常是 Dockerfile 所在的目录
       dockerfile: Dockerfile # Dockerfile 的名称
+      args:
+        ADMIN_USER: ${ADMIN_USER}
+        ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+        ADMIN_EMAIL: ${ADMIN_EMAIL}
+        JWT_SECRET: ${JWT_SECRET}
+        DATABASE_URL: ${DATABASE_URL}
+        DATABASE_SCHEMA: ${DATABASE_SCHEMA}
+        SHADOW_DATABASE_URL: ${SHADOW_DATABASE_URL}
     ports:
       - "3000:3000" # 映射容器的 3000 端口到宿主机的 3000 端口
     env_file:
       - .env
-    environment: # 定义环境变量
-      - ADMIN_USER=${ADMIN_USER}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - JWT_SECRET=${JWT_SECRET}
-      - DATABASE_URL=${DATABASE_URL}
-      - DATABASE_SCHEMA=${DATABASE_SCHEMA}
-      - SHADOW_DATABASE_URL=${SHADOW_DATABASE_URL}

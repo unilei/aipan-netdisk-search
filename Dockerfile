@@ -35,6 +35,14 @@ ENV SHADOW_DATABASE_URL=${SHADOW_DATABASE_URL}
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 
+run echo ${ADMIN_USER}
+run echo ${ADMIN_PASSWORD}
+run echo ${ADMIN_EMAIL}
+run echo ${JWT_SECRET}
+run echo ${DATABASE_URL}
+run echo ${DATABASE_SCHEMA}
+run echo ${SHADOW_DATABASE_URL}
+
 # RUN npm install
 RUN npx prisma generate
 RUN npx prisma migrate deploy
