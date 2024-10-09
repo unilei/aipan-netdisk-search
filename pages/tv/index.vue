@@ -12,6 +12,7 @@ const videoSrc = ref('');
 const modalShow = ref(false);
 const videoPlayStatus = ref(false);
 const videoLoading = ref(false);
+const videoMuted = ref(true);
 
 let hls = null;  // 缓存 HLS 实例
 let currentEffectIndex = 0;
@@ -40,12 +41,14 @@ const loadHLS = (url) => {
     if (Hls.isSupported()) {
         hls.loadSource(url);
         videoPlayer.value.play();
+        videoPlayer.value.muted = videoMuted.value;
         videoPlayStatus.value = true;
         videoLoading.value = false;
         modalShow.value = false;
     } else if (videoPlayer.value.canPlayType('application/vnd.apple.mpegurl')) {
         videoPlayer.value.src = url;
         videoPlayer.value.play();
+        videoPlayer.value.muted = videoMuted.value;
         videoPlayStatus.value = true;
         videoLoading.value = false;
         modalShow.value = false;
@@ -124,7 +127,15 @@ const handleWaiting = () => {
 const handlePlaying = () => {
     videoLoading.value = false;
 };
-
+const handleMute = () => {
+    if (videoPlayer.value.muted) {
+        videoPlayer.value.muted = false;
+        videoMuted.value = false
+    } else {
+        videoPlayer.value.muted = true;
+        videoMuted.value = true
+    }
+}
 // 页面挂载和销毁
 onMounted(() => {
     getTvSources();
@@ -153,12 +164,14 @@ onBeforeUnmount(() => {
                     @click="videoLoading = !videoLoading">关闭</button></div>
         </div>
         <div class="fixed bottom-10 left-0 right-0 w-full h-ful">
-            <div class="bg-black max-w-screen-lg mx-auto px-10 pt-10 pb-4 rounded-xl">
+            <div class="bg-black w-full sm:max-w-screen-md 2xl:max-w-screen-lg mx-auto px-10 pt-10 pb-4 rounded-xl">
                 <video ref="videoPlayer" id="video" class="w-full relative shadow-md"></video>
                 <div class="mt-4 grid grid-cols-12">
-                    <div class="col-span-4">
+                    <div class="col-span-4 space-x-2">
                         <button class="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
-                            @click="modalShow = !modalShow">切换频道</button>
+                            @click="modalShow = !modalShow">频道</button>
+                        <button class="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
+                            @click="handleMute">{{ !videoMuted ? '静音' : '取消静音' }}</button>
                     </div>
                     <div class="col-span-4">
                         <div class="text-center text-white text-sm font-semibold">
