@@ -12,7 +12,7 @@ const videoSrc = ref('');
 const modalShow = ref(false);
 const videoPlayStatus = ref(false);
 const videoLoading = ref(false);
-const videoMuted = ref(true);
+const videoMuted = ref(false);
 
 let hls = null;  // 缓存 HLS 实例
 let currentEffectIndex = 0;
@@ -23,7 +23,7 @@ const getTvSources = async () => {
         const res = await $fetch('https://r2cf.aipan.me/tv.json');
         if (videoSrc.value === '') {
             videoSrc.value = res[0].url;
-            loadHLS(videoSrc.value);  // 初始化第一个视频源
+            // loadHLS(videoSrc.value);  // 初始化第一个视频源
         }
         tvSources.value = res;
     } catch (error) {
@@ -33,20 +33,36 @@ const getTvSources = async () => {
 
 // 加载 HLS 视频
 const loadHLS = (url) => {
-    if (!hls && Hls.isSupported()) {
-        hls = new Hls();
-        hls.attachMedia(videoPlayer.value);
-    }
-
-    if (Hls.isSupported()) {
-        hls.loadSource(url);
-        videoPlayer.value.play();
-        videoPlayer.value.muted = videoMuted.value;
-        videoPlayStatus.value = true;
-        videoLoading.value = false;
-        modalShow.value = false;
-    } else if (videoPlayer.value.canPlayType('application/vnd.apple.mpegurl')) {
+    // 判断是否是 m3u8 格式
+    if (url.endsWith('.m3u8')) {
+        if (!hls && Hls.isSupported()) {
+            hls = new Hls();
+            hls.attachMedia(videoPlayer.value);
+        }
+        if (Hls.isSupported()) {
+            hls.loadSource(url);
+            videoPlayer.value.play();
+            videoPlayer.value.muted = videoMuted.value;
+            videoPlayStatus.value = true;
+            videoLoading.value = false;
+            modalShow.value = false;
+        } else if (videoPlayer.value.canPlayType('application/vnd.apple.mpegurl')) {
+            // 对于 Safari 或其他原生支持 HLS 的浏览器
+            videoPlayer.value.src = url;
+            videoPlayer.value.play();
+            videoPlayer.value.muted = videoMuted.value;
+            videoPlayStatus.value = true;
+            videoLoading.value = false;
+            modalShow.value = false;
+        }
+    } else {
+        // 如果不是 m3u8，直接将 URL 赋值给 videoPlayer 的 src
+        if (hls) {
+            hls.destroy();
+            hls = null; // 确保 HLS 实例不再被使用
+        }
         videoPlayer.value.src = url;
+        videoPlayer.value.load();  // 加载新视频
         videoPlayer.value.play();
         videoPlayer.value.muted = videoMuted.value;
         videoPlayStatus.value = true;
@@ -58,10 +74,17 @@ const loadHLS = (url) => {
 // 视频切换处理
 const handleSwithcSource = (url) => {
     videoLoading.value = true;
+
+    // 在切换视频源之前，停止当前视频播放，并清除旧的src
+    if (videoPlayer.value) {
+        videoPlayer.value.pause();
+        videoPlayer.value.removeAttribute('src'); // 清空旧视频源
+        videoPlayer.value.load();  // 重置 <video> 标签
+    }
+
     videoSrc.value = url;
     loadHLS(url);
 };
-
 // 视频播放和暂停
 const handleSwitchVideoStatus = () => {
     if (videoPlayer.value.paused) {
@@ -145,6 +168,10 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+    if (hls) {
+        hls.destroy();
+        hls = null;  // 确保不再引用该实例
+    }
     if (videoPlayer.value) {
         videoPlayer.value.removeEventListener('waiting', handleWaiting);
         videoPlayer.value.removeEventListener('playing', handlePlaying);
@@ -156,21 +183,29 @@ onBeforeUnmount(() => {
 <template>
     <div class="pt-20 dark:bg-slate-800 min-h-screen bg-no-repeat bg-cover bg-center"
         :style="{ 'background-image': `url(${bgImage})` }">
-        <!-- Loading text -->
-        <div v-if="videoLoading"
-            class="fixed top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/50 z-50">
-            <div class="text-white text-lg font-semibold">正在加载视频，请稍候... <button
-                    class="ml-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
-                    @click="videoLoading = !videoLoading">关闭</button></div>
-        </div>
         <div class="fixed bottom-10 left-0 right-0 w-full h-ful">
             <div class="bg-black w-full sm:max-w-screen-md 2xl:max-w-screen-lg mx-auto px-10 pt-10 pb-4 rounded-xl">
-                <video ref="videoPlayer" id="video" class="w-full relative shadow-md"></video>
+                <div class="relative">
+                    <video ref="videoPlayer" id="video" class="w-full relative shadow-md"></video>
+                    <div v-if="!videoPlayStatus"
+                        class="absolute top-0 left-0 right-0 bottom-0 video-mask shadow-xl rounded-md flex items-center justify-center">
+                        <button class="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                            @click="handleSwithcSource(videoSrc)">开机</button>
+                    </div>
+                    <div v-if="videoLoading"
+                        class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/50 z-50 bg-[url('@/assets/tvstatic.gif')]">
+                        <div class="text-white text-lg font-semibold">
+                            <button class="ml-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                                @click="videoLoading = !videoLoading">关闭</button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mt-4 grid grid-cols-12">
                     <div class="col-span-4 space-x-2">
-                        <button class="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
+                        <button class="bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
                             @click="modalShow = !modalShow">频道</button>
-                        <button class="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
+                        <button class="bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
                             @click="handleMute">{{ !videoMuted ? '静音' : '取消静音' }}</button>
                     </div>
                     <div class="col-span-4">
@@ -180,22 +215,22 @@ onBeforeUnmount(() => {
                     </div>
                     <div class="col-span-4 flex justify-end">
                         <button type="button"
-                            class=" ml-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                            class=" ml-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleSwitchVideoStatus">
                             {{ !videoPlayStatus ? '播放' : '暂停' }}
                         </button>
                         <button type="button"
-                            class=" ml-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                            class=" ml-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleSwitchVideoTheme">
                             换肤
                         </button>
                         <button type="button"
-                            class=" ml-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                            class=" ml-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleResetTheme">
                             重置
                         </button>
                         <button type="button"
-                            class=" ml-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                            class=" ml-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleFullscreen">
                             全屏
                         </button>
@@ -234,6 +269,10 @@ onBeforeUnmount(() => {
 
 </template>
 <style scoped>
+.video-mask {
+    background: repeating-linear-gradient(0deg, #000, #302e2e 4px, #000);
+}
+
 .nostalgia-video {
     width: 100%;
     height: auto;

@@ -118,7 +118,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="dark:bg-gray-400 min-h-screen ">
+  <div class="dark:bg-gray-400 min-h-screen">
     <search-header :keyword="keyword" @search="search"></search-header>
     <div class="max-w-[1240px] mx-auto grid grid-cols-1 pb-8">
       <div class="w-full p-3">
