@@ -181,64 +181,65 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="pt-20 dark:bg-slate-800 min-h-screen bg-no-repeat bg-cover bg-center"
+    <div class="dark:bg-slate-800 min-h-screen bg-no-repeat bg-cover bg-center relative"
         :style="{ 'background-image': `url(${bgImage})` }">
-        <div class="fixed bottom-10 left-0 right-0 w-full h-ful">
-            <div class="bg-black w-full sm:max-w-screen-md 2xl:max-w-screen-lg mx-auto px-10 pt-10 pb-4 rounded-xl">
-                <div class="relative">
-                    <video ref="videoPlayer" id="video" class="w-full relative shadow-md"></video>
+        <div class="absolute top-0 left-0 right-0 bottom-0 bg-black/20 backdrop-blur-sm"></div>
+        <div class="fixed bottom-10 left-10 right-10 top-10 rounded-xl max-w-screen-lg mx-auto">
+            <div class="w-full rounded-t-xl dark:bg-slate-700">
+                <div
+                    class="relative w-full h-full bg-black rounded-t-md overflow-hidden px-6 pt-6 flex items-center justify-center aspect-video">
+                    <video ref="videoPlayer" id="video"
+                        class="w-full h-full relative shadow-md border border-gray-900 rounded-md"></video>
                     <div v-if="!videoPlayStatus"
-                        class="absolute top-0 left-0 right-0 bottom-0 video-mask shadow-xl rounded-md flex items-center justify-center">
+                        class="absolute top-6 left-6 right-6 bottom-0 video-mask shadow-xl rounded-md flex items-center justify-center">
                         <button class="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleSwithcSource(videoSrc)">开机</button>
                     </div>
                     <div v-if="videoLoading"
-                        class="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black/50 z-50 bg-[url('@/assets/tvstatic.gif')]">
+                        class="absolute top-6 left-6 right-6 bottom-0  flex items-center justify-center bg-black/50 z-50 bg-[url('@/assets/tvstatic.gif')]">
                         <div class="text-white text-lg font-semibold">
                             <button class="ml-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                                 @click="videoLoading = !videoLoading">关闭</button>
                         </div>
                     </div>
                 </div>
+                <div class="p-4 rounded-b-xl bg-black text-center text-white text-sm font-semibold">
+                    <nuxt-link to="/">AIPAN</nuxt-link>
+                </div>
 
-                <div class="mt-4 grid grid-cols-12">
-                    <div class="col-span-4 space-x-2">
+                <div class="grid grid-cols-12">
+                    <div class="col-span-4 flex items-center gap-2">
+
+                    </div>
+                    <div class="col-span-4">
+                        <div class="bg-black w-10 h-10 mx-auto"></div>
+                        <div class="bg-black w-full h-10"></div>
+                    </div>
+                    <div class="col-span-4 flex items-center justify-end gap-2">
                         <button class="bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
                             @click="modalShow = !modalShow">频道</button>
                         <button class="bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
                             @click="handleMute">{{ !videoMuted ? '静音' : '取消静音' }}</button>
-                    </div>
-                    <div class="col-span-4">
-                        <div class="text-center text-white text-sm font-semibold">
-                            <nuxt-link to="/">AIPAN</nuxt-link>
-                        </div>
-                    </div>
-                    <div class="col-span-4 flex justify-end">
-                        <button type="button"
-                            class=" ml-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                        <button type="button" class=" bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleSwitchVideoStatus">
                             {{ !videoPlayStatus ? '播放' : '暂停' }}
                         </button>
-                        <button type="button"
-                            class=" ml-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                        <button type="button" class="bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleSwitchVideoTheme">
                             换肤
                         </button>
-                        <button type="button"
-                            class=" ml-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                        <button type="button" class=" bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleResetTheme">
                             重置
                         </button>
-                        <button type="button"
-                            class=" ml-2 bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                        <button type="button" class=" bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
                             @click="handleFullscreen">
                             全屏
                         </button>
                     </div>
                 </div>
             </div>
-            <div class="w-14 h-20 bg-black mx-auto"></div>
-            <div class="w-1/4 h-14 bg-black mx-auto"></div>
+
         </div>
 
 

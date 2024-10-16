@@ -13,6 +13,9 @@ const colorMode = useColorMode()
                 <nuxt-link to="/tv" class="text-sm text-slate-600 font-bold dark:text-white ">
                     📺 电视TV
                 </nuxt-link>
+                <nuxt-link to="/tvbox" class="text-sm text-slate-600 font-bold dark:text-white ">
+                    📺 TVbox接口
+                </nuxt-link>
             </div>
             <div class="flex flex-row items-center gap-4">
                 <el-button v-if="colorMode.preference === 'dark'" link @click="colorMode.preference = 'light'">
