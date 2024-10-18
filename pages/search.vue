@@ -13,24 +13,44 @@ const keyword = ref(decodeURIComponent(route.query.keyword))
 const sources = ref([])
 const skeletonLoading = ref(true)
 
+const cache = new Map(); // 创建一个缓存对象
+const CACHE_EXPIRY_TIME = 60000; // 设置缓存过期时间，例如 60 秒
+
 const handleSearch = async () => {
   skeletonLoading.value = true; // 开始加载状态
 
   for (const item of sourcesApiEndpoints) {
     try {
-      const res = await $fetch(item.api, {
-        method: "POST",
-        body: {
-          "name": keyword.value
+      const cacheKey = `${item.api}-${keyword.value}`; // 创建一个唯一的缓存键
+      const cachedData = cache.get(cacheKey);
+      // console.log(cachedData)
+      // 检查缓存是否存在且未过期
+      if (cachedData && (Date.now() < cachedData.expiry)) {
+        // 如果缓存中有数据且未过期，直接使用缓存数据
+        if (cachedData.list && cachedData.list.length) {
+          sources.value = sources.value.concat(cachedData.list);
         }
-      });
+      } else {
+        // 如果缓存中没有数据或已过期，发送请求
+        const res = await $fetch(item.api, {
+          method: "POST",
+          body: {
+            "name": keyword.value
+          }
+        });
 
-      if (res.list && res.list.length) {
-        sources.value = sources.value.concat(res.list);
+        if (res.list && res.list.length) {
+          sources.value = sources.value.concat(res.list);
+          // 将请求结果和过期时间存入缓存
+          cache.set(cacheKey, {
+            list: res.list,
+            expiry: Date.now() + CACHE_EXPIRY_TIME // 设置过期时间
+          });
+        }
+
+        // 设置间隔时间，例如 500 毫秒
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
-
-      // 设置间隔时间，例如 1000 毫秒（1秒）
-      await new Promise(resolve => setTimeout(resolve, 500));
     } catch (err) {
       console.log(err);
     }
@@ -98,7 +118,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="dark:bg-gray-400 min-h-screen ">
+  <div class="dark:bg-gray-400 min-h-screen">
     <search-header :keyword="keyword" @search="search"></search-header>
     <div class="max-w-[1240px] mx-auto grid grid-cols-1 pb-8">
       <div class="w-full p-3">

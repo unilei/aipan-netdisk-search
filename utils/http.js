@@ -32,6 +32,7 @@ async function getProxyIp() {
   ];
   // Randomly select one URL
   const randomUrl = urls[Math.floor(Math.random() * urls.length)];
+
   try {
     const res = await http.get(randomUrl, { noProxy: true });
     return res.proxy; // 确保这里的 res.proxy 是有效的
