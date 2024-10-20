@@ -1,10 +1,10 @@
 import { verifyToken } from "../model/user";
 
 export default defineEventHandler((event) => {
-  if (!event.req.url.startsWith("/api/admin")) {
+  if (!event.node.req.url.startsWith("/api/admin")) {
     return;
   }
-  const authHeader = event.req.headers["authorization"];
+  const authHeader = event.node.req.headers["authorization"];
 
   if (!authHeader) {
     throw createError({ statusCode: 401, statusMessage: "Unauthorized" });

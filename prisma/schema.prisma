@@ -11,8 +11,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL") // 添加这一行
 }
 
 model User {
@@ -24,8 +25,9 @@ model User {
   updatedAt  DateTime @updatedAt
   isVerified Boolean  @default(false)
 
-  resources    Resource[] // 一个用户可以有多个资源
-  ResourceType ResourceType[]
+  resources     Resource[] // 一个用户可以有多个资源
+  resourceTypes ResourceType[] // 一个用户可以创建多种资源类型
+  Post          Post[]
 }
 
 model ResourceType {
@@ -41,7 +43,7 @@ model ResourceType {
 model Resource {
   id        Int      @id @default(autoincrement())
   name      String
-  links     String
+  links     String // 资源链接
   typeId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,4 +51,36 @@ model Resource {
 
   creator User         @relation(fields: [creatorId], references: [id])
   type    ResourceType @relation(fields: [typeId], references: [id])
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  slug      String   @unique
+  content   String   @db.Text // 文章内容
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  creatorId Int
+
+  categories PostToCategory[]
+
+  creator User @relation(fields: [creatorId], references: [id])
+}
+
+model PostCategory {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(255)
+
+  posts PostToCategory[] // 使用中间表实现多对多关系
+}
+
+// 中间表，用于表示文章和分类的多对多关系
+model PostToCategory {
+  postId     Int
+  categoryId Int
+
+  post     Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category PostCategory @relation(fields: [categoryId], references: [id])
+
+  @@id([postId, categoryId]) // 组合主键，确保唯一性
 }

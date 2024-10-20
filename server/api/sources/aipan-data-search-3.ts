@@ -78,7 +78,7 @@ export default defineEventHandler(async (event) => {
             key: '5516ed9c11ea4ac872c3da09a83be841b4d60ecd94a9007a85a962a9dda01957',
             encryptedData: '9f53109a927abbbafe5c7cd79774d46f55613ef21e140528423867daaac83150'
         });
-
+        console.log(decryptedData);
         const token = "i69";
         // 使用通用 fetchApi 函数并行请求多个 API
         const apiUrls = [

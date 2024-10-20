@@ -1,6 +1,8 @@
 <template>
   <Header></Header>
-  <slot></slot>
+  <div>
+    <slot></slot>
+  </div>
   <Footer></Footer>
 </template>
 
@@ -10,6 +12,4 @@ import Header from "~/components/layout/Header.vue";
 
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
