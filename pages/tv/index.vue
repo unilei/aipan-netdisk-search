@@ -1,11 +1,11 @@
 <script setup>
 import Hls from "hls.js";
 import bgImage from '~/assets/tv-bg-1.jpg';
-
+import { sourcesAipan } from "~/assets/vod/tv";
 definePageMeta({
     layout: 'custom',
 });
-
+const sourceIndex = ref(0);
 const tvSources = ref([]);
 const videoPlayer = ref(null);
 const videoSrc = ref('');
@@ -16,6 +16,8 @@ const videoMuted = ref(false);
 
 let hls = null;  // 缓存 HLS 实例
 let currentEffectIndex = 0;
+const tvPassword = ref("");
+const tvPasswordInputShow = ref(false);
 
 // 获取视频源
 const getTvSources = async () => {
@@ -85,6 +87,29 @@ const handleSwithcSource = (url) => {
     videoSrc.value = url;
     loadHLS(url);
 };
+
+const handleInputPassword = () => {
+    if (tvPassword.value === 'aipan.me') {
+        alert('密码正确')
+        tvPasswordInputShow.value = false
+    } else {
+        alert('密码错误')
+    }
+}
+const handleSwithcSourceAipan = (url) => {
+    if (tvPassword.value) {
+        if (tvPassword.value === 'aipan.me') {
+            handleSwithcSource(url)
+        } else {
+            alert('请输入密码', '提示')
+            tvPasswordInputShow.value = true
+        }
+    } else {
+        alert('请输入密码', '提示')
+        tvPasswordInputShow.value = true
+
+    }
+}
 // 视频播放和暂停
 const handleSwitchVideoStatus = () => {
     if (videoPlayer.value.paused) {
@@ -162,7 +187,7 @@ const handleMute = () => {
 // 页面挂载和销毁
 onMounted(() => {
     getTvSources();
-
+    tvPassword.value = localStorage.getItem('tvPassword') || '';
     videoPlayer.value.addEventListener('waiting', handleWaiting);
     videoPlayer.value.addEventListener('playing', handlePlaying);
 });
@@ -239,10 +264,7 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
             </div>
-
         </div>
-
-
         <div v-if="modalShow"
             class="fixed bottom-0 left-0 right-0 w-full h-full bg-black/50 flex flex-col items-center justify-center">
             <div class="bg-white p-10 rounded-xl dark:bg-black dark:text-white">
@@ -260,6 +282,28 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
 
+                <div v-if="tvPasswordInputShow" class="flex flex-row items-center justify-center gap-2 mt-10">
+                    <input class="border border-gray-300 px-4 py-2 rounded-md w-2/3" type="text" v-model="tvPassword"
+                        placeholder="请输入密码">
+                    <button class="bg-red-500 text-white px-2 py-2 rounded-md text-xs hover:text-md" type="button"
+                        @click="handleInputPassword">输入密码</button>
+                </div>
+                <div class="flex flex-row flex-wrap items-center justify-center max-w-screen-lg mx-auto gap-4 mt-4">
+                    <div class="text-sm font-semibold border border-gray-300 text-slate-600 dark:text-white dark:bg-slate-700 rounded-full p-2 cursor-pointer  hover:bg-black hover:text-white transition duration-300"
+                        :class="{ 'bg-black text-white': sourceIndex === index }" v-for=" (item, index) in sourcesAipan"
+                        :key="index" @click="sourceIndex = index">
+                        {{ item.label }}
+                    </div>
+                </div>
+
+                <div class="flex flex-row flex-wrap items-center justify-center max-w-screen-sm mx-auto gap-4 mt-5">
+                    <div class="text-sm font-semibold border border-gray-300 text-slate-600 dark:text-white dark:bg-slate-700 rounded-full p-2 cursor-pointer  hover:bg-black hover:text-white transition duration-300"
+                        :class="{ 'bg-black text-white': item.url === videoSrc }"
+                        v-for=" (item, index) in sourcesAipan[sourceIndex]['sources']" :key="index"
+                        @click="handleSwithcSourceAipan(item.url)">
+                        {{ item.name }}
+                    </div>
+                </div>
                 <div class="flex flex-row items-center justify-center gap-2 mt-5">
                     <button class="bg-red-500 text-white px-2 py-1 rounded-md text-xs hover:text-md" type="button"
                         @click="modalShow = false">关闭</button>
