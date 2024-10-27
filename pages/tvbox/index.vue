@@ -9,8 +9,12 @@ useHead({
         { name: 'format-detection', content: 'telephone=no' }
     ]
 })
+const getData = async () => {
+    const res = await $fetch('/api/tvbox')
+    tvbox.value = res.list || [];
+}
 onMounted(() => {
-
+    getData()
 })
 const { data: tvbox } = await useAsyncData('tvbox', async () => {
     const res = await $fetch('/api/tvbox')

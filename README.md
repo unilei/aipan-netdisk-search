@@ -8,7 +8,8 @@
 👉 [爱盼-网盘资源搜索](https://www.aipan.me)
  
 ### 🔥更新日志
-
+- tv播放 
+- 新增Alist源聚合播放
 - 新增批量删除功能
 - 新增博客功能 （分支：[feat-admin-panel](https://github.com/unilei/aipan-netdisk-search/tree/feat-add-admin-panel)）
 - 新增批量上传数据 [csv示例](/assets//readme//demo/demo-multi.csv) [xlsx 示例](/assets/readme/demo/demo-multi.xls)
@@ -97,6 +98,8 @@ yarn dev
 
 ### 4. 在浏览器打开 [http://localhost:3001](http://localhost:3001)
 
+![success_deploy.jpg](/assets/readme/screen-6.png)
+![success_deploy.jpg](/assets/readme/screen-5.png)
 ![success_deploy.jpg](/assets/readme/screen-1.png)
 ![success_deploy.jpg](/assets/readme/screen-2.png)
 ![success_deploy.jpg](/assets/readme/screen-3.png)

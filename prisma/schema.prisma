@@ -28,6 +28,7 @@ model User {
   resources     Resource[] // 一个用户可以有多个资源
   resourceTypes ResourceType[] // 一个用户可以创建多种资源类型
   Post          Post[]
+  Alist         Alist[]
 }
 
 model ResourceType {
@@ -83,4 +84,15 @@ model PostToCategory {
   category PostCategory @relation(fields: [categoryId], references: [id])
 
   @@id([postId, categoryId]) // 组合主键，确保唯一性
+}
+
+model Alist {
+  id        Int      @id @default(autoincrement())
+  name      String
+  link      String // alist 源链接
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  creatorId Int
+
+  creator User @relation(fields: [creatorId], references: [id])
 }
