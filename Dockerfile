@@ -1,5 +1,5 @@
-FROM node:18-alpine
-
+# FROM node:18-alpine
+FROM node:18 
 LABEL authors="Lei"
 
 WORKDIR /app
@@ -23,7 +23,7 @@ ARG JWT_SECRET
 ARG DATABASE_URL
 ARG DATABASE_SCHEMA
 ARG SHADOW_DATABASE_URL
- 
+
 # 将构建时的变量设置为环境变量
 ENV ADMIN_USER=${ADMIN_USER}
 ENV ADMIN_PASSWORD=${ADMIN_PASSWORD}
@@ -35,14 +35,14 @@ ENV SHADOW_DATABASE_URL=${SHADOW_DATABASE_URL}
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 
-run echo ${ADMIN_USER}
-run echo ${ADMIN_PASSWORD}
-run echo ${ADMIN_EMAIL}
-run echo ${JWT_SECRET}
-run echo ${DATABASE_URL}
-run echo ${DATABASE_SCHEMA}
-run echo ${SHADOW_DATABASE_URL}
-
+# run echo ${ADMIN_USER}
+# run echo ${ADMIN_PASSWORD}
+# run echo ${ADMIN_EMAIL}
+# run echo ${JWT_SECRET}
+# run echo ${DATABASE_URL}
+# run echo ${DATABASE_SCHEMA}
+# run echo ${SHADOW_DATABASE_URL}
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 # RUN npm install
 RUN npx prisma generate
 RUN npx prisma migrate deploy
