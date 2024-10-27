@@ -1,5 +1,6 @@
-# FROM node:18-alpine
-FROM node:18 
+FROM node:18-alpine
+# FROM node:18 
+# FROM node:18-buster
 LABEL authors="Lei"
 
 WORKDIR /app
