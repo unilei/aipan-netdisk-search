@@ -14,7 +14,7 @@
       <img class="w-[300px] rounded-md bg-slate-500 p-4" src="@/assets/donation/alipay.png" alt="支付宝">
     </div>
     <p class="mt-4 text-center max-w-screen-md mx-auto">
-      感谢您与我同行，让我们一起创造更多美好的瞬间！您的支持是我不断前行的动力，期待与您分享更多精彩的作品！
+      感谢您与我同行，让我们一起创造更多美好的瞬间！您的支持是我不断前行的动力！
     </p>
   </div>
 </template>

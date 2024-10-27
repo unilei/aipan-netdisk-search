@@ -114,7 +114,7 @@ onMounted(async () => {
                 </div>
                 <div class="mt-5 border-t border-slate-100 py-4 flex flex-row flex-wrap gap-2">
                     <nuxt-link class="flex flex-col items-center justify-center gap-1"
-                        to="https://github.com/unilei/aipan-netdisk-search">
+                        to="https://github.com/xneason/aipan-netdisk-search.git">
                         <img class="w-8 h-8" src="@/assets/skill-icons--github-dark.svg" alt="github">
                         <span class="text-xs text-slate-500">GitHub</span>
                     </nuxt-link>

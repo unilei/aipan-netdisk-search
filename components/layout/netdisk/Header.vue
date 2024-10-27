@@ -7,9 +7,9 @@ const colorMode = useColorMode()
         class="bg-white/70 backdrop-blur dark:bg-gray-800 py-4 fixed top-0 left-0 w-full border-b border-slate-150 z-50">
         <div class="max-w-[1240px] mx-auto flex flex-row items-center justify-between px-[20px]">
             <div class="flex flex-row items-center gap-4">
-                <nuxt-link to="/blog" class="text-sm text-slate-600 font-bold dark:text-white">
+                <!--<nuxt-link to="/blog" class="text-sm text-slate-600 font-bold dark:text-white">
                     📚 我的博客
-                </nuxt-link>
+                </nuxt-link> -->
                 <nuxt-link to="/tv" class="text-sm text-slate-600 font-bold dark:text-white ">
                     📺 电视TV
                 </nuxt-link>

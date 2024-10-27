@@ -5,11 +5,11 @@ export default defineNuxtConfig({
         // head
         pageTransition: { name: 'page', mode: 'out-in' },
         head: {
-            title: '爱盼-网盘资源搜索',
+            title: '酷搜-网盘资源搜索',
             meta: [
                 {
                     name: 'description',
-                    content: '爱盼-网盘资源搜索， 一个开源免费的网盘资源搜索程序，仅供学习使用，不支持商业用途。'
+                    content: '酷搜-网盘资源搜索，一个开源免费的网盘资源搜索程序，仅供学习使用，不支持商业用途。'
                 },
                 { name: 'viewport', content: 'width=device-width, initial-scale=1' },
                 {
@@ -137,9 +137,9 @@ export default defineNuxtConfig({
         ]
     },
     site: {
-        name: '爱盼-网盘资源搜索',
-        url: 'https://www.aipan.me',
-        description: '爱盼-网盘资源搜索， 一个开源免费的网盘资源搜索程序，仅供学习使用，不支持商业用途。'
+        name: '酷搜-网盘资源搜索',
+        url: 'https://www.ksu.one',
+        description: '酷搜-网盘资源搜索,一个开源免费的网盘资源搜索程序，仅供学习使用，不支持商业用途。'
     },
     compatibilityDate: '2024-09-12'
 })
