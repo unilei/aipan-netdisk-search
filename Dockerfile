@@ -17,6 +17,7 @@ RUN pnpm install
 # 复制所有项目文件
 COPY . .
 
+ENV NODE_ENV=production
 # 定义构建时的变量
 ARG ADMIN_USER
 ARG ADMIN_PASSWORD
