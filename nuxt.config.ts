@@ -4,6 +4,7 @@ export default defineNuxtConfig({
         build: {
             chunkSizeWarningLimit: 3000,  // 适当调高限制以避免 chunk 警告
             rollupOptions: {
+                treeshake: true,  // 启用 Tree Shaking
                 output: {
                     manualChunks(id) {
                         if (id.includes('node_modules')) {
