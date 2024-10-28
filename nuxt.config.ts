@@ -2,7 +2,7 @@ export default defineNuxtConfig({
     devtools: { enabled: false },
     vite: {
         build: {
-            chunkSizeWarningLimit: 1500, // 单位是 KB，根据需要调整
+            chunkSizeWarningLimit: 3000,  // 适当调高限制以避免 chunk 警告
             rollupOptions: {
                 output: {
                     manualChunks(id) {
