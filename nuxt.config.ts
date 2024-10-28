@@ -8,7 +8,13 @@ export default defineNuxtConfig({
                 output: {
                     manualChunks(id) {
                         if (id.includes('node_modules')) {
-                            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                            if (id.includes('video.js')) {
+                                return 'video-js'; // 将 video.js 单独拆分
+                            }
+                            if (id.includes('mavon-editor')) {
+                                return 'mavon-editor'; // 将 mavon-editor 单独拆分
+                            }
+                            // 针对其他包进行类似处理
                         }
                     },
                 },
