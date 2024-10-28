@@ -1,6 +1,19 @@
 export default defineNuxtConfig({
     devtools: { enabled: false },
-
+    vite: {
+        build: {
+            chunkSizeWarningLimit: 1500, // 单位是 KB，根据需要调整
+            rollupOptions: {
+                output: {
+                    manualChunks(id) {
+                        if (id.includes('node_modules')) {
+                            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                        }
+                    },
+                },
+            },
+        },
+    },
     app: {
         // head
         pageTransition: { name: 'page', mode: 'out-in' },
