@@ -5,7 +5,7 @@ export default defineNuxtConfig({
         // head
         pageTransition: { name: 'page', mode: 'out-in' },
         head: {
-            title: '酷搜 - Ksu.one',
+            title: '酷搜 - KSU.one',
             meta: [
                 {
                     name: 'description',
