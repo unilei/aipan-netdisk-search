@@ -1,11 +1,11 @@
-# 爱盼-网盘资源搜索Web [欢迎打赏](https://www.aipan.me/donate)
+# 酷搜-网盘资源搜索Web [欢迎打赏](https://www.ksu.one/donate)
 
-🔥 爱盼-网盘资源搜索：是一个免费开源项目!
+🔥 酷搜-网盘资源搜索：是一个免费开源项目!
 
-[欢迎打赏](https://www.aipan.me/donate)
+[欢迎打赏](https://www.ksu.one/donate)
 
 -------------------
-👉 [爱盼-网盘资源搜索](https://www.aipan.me)
+👉 [酷搜-网盘资源搜索](https://www.ksu.one)
  
 ### 🔥更新日志
 
