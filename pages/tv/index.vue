@@ -414,8 +414,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="custom-bg dark:bg-slate-800 min-h-screen bg-no-repeat bg-cover bg-center relative"
-        :style="{ 'background-image': `url(${bgImage})` }">
+    <div class="custom-bg dark:bg-slate-800 min-h-screen bg-no-repeat bg-cover bg-center relative">
         <div class="absolute top-0 left-0 right-0 bottom-0 bg-black/20 backdrop-blur-sm"></div>
         <div class="fixed bottom-10 left-10 right-10 top-10 rounded-xl max-w-screen-lg mx-auto flex items-center ">
             <div class="w-full rounded-t-xl dark:bg-slate-700">
@@ -474,7 +473,7 @@ onBeforeUnmount(() => {
             </div>
         </div>
         <div v-if="modalShow"
-            class="fixed bottom-0 top-0 left-0 p-5 w-full md:w-[520px] h-full bg-black/80 overflow-y-scroll">
+            class="fixed bottom-0 top-0 left-0 p-5 w-full md:w-[520px] h-full bg-black overflow-y-scroll">
             <div class="flex flex-row items-center justify-center gap-2">
                 <input class="border border-gray-300 px-4 py-2 rounded-md w-2/3" type="text" v-model="videoSrc"
                     placeholder="请输入视频链接">
@@ -527,7 +526,7 @@ onBeforeUnmount(() => {
                     <div class="space-y-2" v-if="channelCategory === 3">
                         <div class="space-x-2">
                             <button class="border-gray-800 text-white px-2 py-1 rounded-md text-xs hover:text-md"
-                                type="button" @click="handleBackAlist">
+                                type="button" @click="handleBackAlist()">
                                 返回上级
                             </button>
                             <button class="border border-gray-800 text-white px-2 py-1 rounded-md text-xs hover:text-md"
@@ -539,7 +538,8 @@ onBeforeUnmount(() => {
                                 主页
                             </button>
                             <button class="border border-gray-800 text-white px-2 py-1 rounded-md text-xs hover:text-md"
-                                :class="alistSettingShow ? 'bg-red-500' : ''" type="button" @click="handleAlistSetting">
+                                :class="alistSettingShow ? 'bg-red-500' : ''" type="button"
+                                @click="handleAlistSetting()">
                                 设置
                             </button>
                         </div>
@@ -567,6 +567,10 @@ onBeforeUnmount(() => {
     </div>
 </template>
 <style scoped>
+.custom-bg {
+    background-image: linear-gradient(135deg, #FFCF71 10%, #2376DD 100%);
+}
+
 .video-mask {
     background: repeating-linear-gradient(0deg, #000, #302e2e 4px, #000);
 }
