@@ -9,8 +9,12 @@ useHead({
         { name: 'format-detection', content: 'telephone=no' }
     ]
 })
+const getData = async () => {
+    const res = await $fetch('/api/tvbox')
+    tvbox.value = res.list || [];
+}
 onMounted(() => {
-
+    getData()
 })
 const { data: tvbox } = await useAsyncData('tvbox', async () => {
     const res = await $fetch('/api/tvbox')
@@ -23,6 +27,27 @@ const copyTipsMsg = (type) => {
     })
 }
 const copy = (text) => {
+    // if copy in mobile browser
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        const textarea = document.createElement('textarea')
+        textarea.value = text
+        textarea.readOnly = true
+        textarea.style.position = 'absolute'
+        textarea.style.left = '-9999px'
+        document.body.appendChild(textarea)
+        const selection = document.getSelection()
+        const selected = selection.rangeCount > 0 ? selection.getRangeAt(0) : false
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+        if (selected) {
+            selection.removeAllRanges()
+            selection.addRange(selected)
+        }
+        copyTipsMsg('success')
+        return
+    }
+
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
             copyTipsMsg('success')

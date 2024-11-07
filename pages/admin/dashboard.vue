@@ -14,6 +14,9 @@ definePageMeta({
             <NuxtLink class="bg-slate-500 p-3 text-white rounded-lg hover:bg-black" to="/admin/blog">
                 博客管理
             </NuxtLink>
+            <NuxtLink class="bg-slate-500 p-3 text-white rounded-lg hover:bg-black" to="/admin/alist">
+                Alist源管理
+            </NuxtLink>
         </div>
     </div>
 </template>

@@ -1,6 +1,7 @@
 <script setup>
 import { useDoubanStore } from "~/stores/douban";
 import { badWords } from "~/utils/sensitiveWords";
+import doubanDefaultData from "~/assets/vod/douban-default.json"
 
 definePageMeta({
   layout: 'netdisk',
@@ -20,7 +21,7 @@ const search = (keyword) => {
   router.push({ path: '/search', query: { keyword: encodeURIComponent(keyword) } })
 }
 
-const doubanData = ref([])
+const doubanData = ref(doubanDefaultData || [])
 
 watch(doubanData, (newValue, oldValue) => {
   doubanData.value = newValue
@@ -46,9 +47,14 @@ onMounted(async () => {
 
 <template>
   <div class="bg-[#ffffff] dark:bg-gray-800  min-h-screen py-[60px]">
+    <div class=" bg-slate-100 p-2 fixed top-14 left-0 right-0 z-[999] dark:bg-gray-800">
+      <p class="text-xs sm:text-sm   text-center dark:text-white "> 🥳 新功能：支持Alist聚合播放
+        <nuxt-link class="text-blue-600 underline" href="/tv">点击进入</nuxt-link>
+      </p>
+    </div>
     <div class="flex flex-row items-center justify-center gap-3 mt-[80px]">
       <img class="w-[40px] h-[40px] sm:w-[60px] sm:h-[60px]" src="@/assets/my-logo.png" alt="logo">
-      <h1 class="text-[18px] sm:text-[22px] font-bold dark:text-white ">爱盼-网盘资源搜索</h1>
+      <h1 class="text-[18px] sm:text-[22px] font-bold dark:text-white ">爱盼 - 资源随心，娱乐无限</h1>
     </div>
     <div class="max-w-[1240px] mx-auto mt-[20px]">
       <div class="w-[80%] md:w-[700px] mx-auto flex flex-row items-center gap-2 relative">
@@ -63,7 +69,8 @@ onMounted(async () => {
         </button>
       </div>
     </div>
-    <div class="mx-5 xl:max-w-[1200px] xl:mx-auto mt-12 mb-[100px]" v-if="doubanData.length > 0">
+
+    <div class="mx-5 xl:max-w-[1200px] xl:mx-auto mt-12 mb-[100px]">
       <h1 class="text-[12px] sm:text-sm text-slate-600 font-bold dark:text-white mt-[20px]">豆瓣热门影视榜单</h1>
       <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8  gap-3  mt-[10px]">
         <div
