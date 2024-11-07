@@ -11,10 +11,6 @@ export default defineNuxtConfig({
                             if (id.includes('video.js')) {
                                 return 'video-js'; // 将 video.js 单独拆分
                             }
-                            if (id.includes('mavon-editor')) {
-                                return 'mavon-editor'; // 将 mavon-editor 单独拆分
-                            }
-                            // 针对其他包进行类似处理
                         }
                     },
                 },

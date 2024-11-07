@@ -400,99 +400,102 @@ onMounted(() => {
                 </div>
             </div>
         </client-only>
-    </div>
-    <el-dialog v-model="resourceDialogShow" :title="form.id ? '编辑资源' : '添加资源'">
-        <main>
-            <el-form ref="formRef" :model="form" label-width="auto">
-                <el-form-item label="资源名字" prop="name" :rules="{
-                    required: true,
-                    message: '资源名字不能为空',
-                    trigger: 'blur'
-                }">
-                    <el-input v-model="form.name" type="textarea"></el-input>
-                </el-form-item>
-                <el-form-item label="资源类型">
-                    <div>
-                        <div class="gap-4 flex flex-row items-center">
-                            <div class="flex flex-col justify-center items-center"
-                                v-for="(resourceType, index) in resourceTypes" :key="index">
-                                <div class="px-2 py-1 border border-slate-300 rounded-md cursor-pointer hover:bg-slate-300"
-                                    :class="form.typeId == resourceType.id ? 'bg-slate-300' : ''"
-                                    @click="handleSelectResourceType(resourceType)">
-                                    {{ resourceType.name }}
-                                </div>
-                                <div>
-                                    <el-button link type="danger"
-                                        @click="handleDeleteResourceType(resourceType, index)">删除</el-button>
+
+        <el-dialog v-model="resourceDialogShow" :title="form.id ? '编辑资源' : '添加资源'">
+            <main>
+                <el-form ref="formRef" :model="form" label-width="auto">
+                    <el-form-item label="资源名字" prop="name" :rules="{
+                        required: true,
+                        message: '资源名字不能为空',
+                        trigger: 'blur'
+                    }">
+                        <el-input v-model="form.name" type="textarea"></el-input>
+                    </el-form-item>
+                    <el-form-item label="资源类型">
+                        <div>
+                            <div class="gap-4 flex flex-row items-center">
+                                <div class="flex flex-col justify-center items-center"
+                                    v-for="(resourceType, index) in resourceTypes" :key="index">
+                                    <div class="px-2 py-1 border border-slate-300 rounded-md cursor-pointer hover:bg-slate-300"
+                                        :class="form.typeId == resourceType.id ? 'bg-slate-300' : ''"
+                                        @click="handleSelectResourceType(resourceType)">
+                                        {{ resourceType.name }}
+                                    </div>
+                                    <div>
+                                        <el-button link type="danger"
+                                            @click="handleDeleteResourceType(resourceType, index)">删除</el-button>
+                                    </div>
                                 </div>
                             </div>
+                            <div class="mt-2">
+                                <el-button type="primary" @click="handleAddResourceType()">添加类型</el-button>
+                                <el-button type="primary" @click="getResourceTypes()">刷新</el-button>
+                            </div>
+                            <div class="text-red-500 text-sm " v-if="form.typeId == 0">
+                                请选择资源类型, 先刷新资源类型列表
+                            </div>
                         </div>
-                        <div class="mt-2">
-                            <el-button type="primary" @click="handleAddResourceType()">添加类型</el-button>
-                            <el-button type="primary" @click="getResourceTypes()">刷新</el-button>
-                        </div>
-                        <div class="text-red-500 text-sm " v-if="form.typeId == 0">
-                            请选择资源类型, 先刷新资源类型列表
-                        </div>
-                    </div>
-                </el-form-item>
-                <el-form-item v-for="(link, index) in form.links" :key="link.key" :label="'资源链接' + (index + 1)"
-                    :prop="'links.' + index + '.value'" :rules="{ required: true, message: '链接不能为空', trigger: 'blur' }">
-                    <el-input v-model="link.value" type="textarea"></el-input>
-                    <el-button class="mt-2" type="danger" @click.prevent="removeLink(link)">删除</el-button>
-                </el-form-item>
-            </el-form>
-            <div>
-                <el-button type="primary" @click="addLink()">添加链接</el-button>
-            </div>
-        </main>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="resourceDialogShow = false">取消</el-button>
-                <el-button type="primary" @click="handleSubmitAddClouddrive()"> 确认 </el-button>
-            </span>
-        </template>
-    </el-dialog>
-    <el-dialog v-model="typeDialogShow" title="添加资源类型">
-        <main>
-            <el-form ref="typeFormRef" :model="typeForm" label-width="auto">
-                <el-form-item label="类型名字" prop="name" :rules="{
-                    required: true,
-                    message: '类型名字不能为空',
-                    trigger: 'blur'
-                }">
-                    <el-input v-model="typeForm.name" type="textarea"></el-input>
-                </el-form-item>
-                <el-form-item label="类型描述" prop="description" :rules="{
-                    required: false,
-                    message: '类型描述不能为空',
-                    trigger: 'blur'
-                }">
-                    <el-input v-model="typeForm.description" type="textarea"></el-input>
-                </el-form-item>
-            </el-form>
-        </main>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="typeDialogShow = false">取消</el-button>
-                <el-button type="primary" @click="handleSubmitAddResourceType()"> 确认 </el-button>
-            </span>
-        </template>
-    </el-dialog>
-    <el-dialog v-model="multiUploadDialogShow" title="批量上传">
-        <main>
-            <p class="font-bold">支持类型(csv, xlsx, xls)</p>
-            <input class="w-full mt-4" accept=".csv,.xlsx,.xls" type="file" @change="handleFileUpload">
-            <div class="mt-4">
-                <p class="font-bold">进度: {{ multiProgress }}</p>
-            </div>
-        </main>
-        <template #footer>
-            <span class="dialog-footer">
-                <el-button @click="multiUploadDialogShow = false">取消</el-button>
-                <el-button type="primary" @click="handleSubmitMultiUpload()" :loading="multiUploading">确认
-                </el-button>
-            </span>
-        </template>
-    </el-dialog>
+                    </el-form-item>
+                    <el-form-item v-for="(link, index) in form.links" :key="link.key" :label="'资源链接' + (index + 1)"
+                        :prop="'links.' + index + '.value'"
+                        :rules="{ required: true, message: '链接不能为空', trigger: 'blur' }">
+                        <el-input v-model="link.value" type="textarea"></el-input>
+                        <el-button class="mt-2" type="danger" @click.prevent="removeLink(link)">删除</el-button>
+                    </el-form-item>
+                </el-form>
+                <div>
+                    <el-button type="primary" @click="addLink()">添加链接</el-button>
+                </div>
+            </main>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="resourceDialogShow = false">取消</el-button>
+                    <el-button type="primary" @click="handleSubmitAddClouddrive()"> 确认 </el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <el-dialog v-model="typeDialogShow" title="添加资源类型">
+            <main>
+                <el-form ref="typeFormRef" :model="typeForm" label-width="auto">
+                    <el-form-item label="类型名字" prop="name" :rules="{
+                        required: true,
+                        message: '类型名字不能为空',
+                        trigger: 'blur'
+                    }">
+                        <el-input v-model="typeForm.name" type="textarea"></el-input>
+                    </el-form-item>
+                    <el-form-item label="类型描述" prop="description" :rules="{
+                        required: false,
+                        message: '类型描述不能为空',
+                        trigger: 'blur'
+                    }">
+                        <el-input v-model="typeForm.description" type="textarea"></el-input>
+                    </el-form-item>
+                </el-form>
+            </main>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="typeDialogShow = false">取消</el-button>
+                    <el-button type="primary" @click="handleSubmitAddResourceType()"> 确认 </el-button>
+                </span>
+            </template>
+        </el-dialog>
+        <el-dialog v-model="multiUploadDialogShow" title="批量上传">
+            <main>
+                <p class="font-bold">支持类型(csv, xlsx, xls)</p>
+                <input class="w-full mt-4" accept=".csv,.xlsx,.xls" type="file" @change="handleFileUpload">
+                <div class="mt-4">
+                    <p class="font-bold">进度: {{ multiProgress }}</p>
+                </div>
+            </main>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="multiUploadDialogShow = false">取消</el-button>
+                    <el-button type="primary" @click="handleSubmitMultiUpload()" :loading="multiUploading">确认
+                    </el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
+
 </template>
