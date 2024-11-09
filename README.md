@@ -100,10 +100,6 @@ yarn dev
 
 ![success_deploy.jpg](https://r2cf.aipan.me/readme/screen-6.png)
 ![success_deploy.jpg](https://r2cf.aipan.me/readme/screen-5.png)
-![success_deploy.jpg](https://r2cf.aipan.me/readme/screen-1.png)
-![success_deploy.jpg](https://r2cf.aipan.me/readme/screen-2.png)
-![success_deploy.jpg](https://r2cf.aipan.me/readme/screen-3.png)
-![success_deploy.jpg](https://r2cf.aipan.me/readme/screen-4.png)
 
 #### 如何部署到自己服务器？ NUXT.JS 打包部署文档
 
