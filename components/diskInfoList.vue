@@ -22,8 +22,8 @@ defineProps({
               flex flex-col sm:flex-row justify-between items-center
               hover:bg-[#f5f5f5] dark:hover:bg-gray-700 hover:shadow-lg transition duration-300 ease-in-out"
     v-for="(item, i) in sources.flat(Infinity)" :key="i">
-    <p class="text-sm text-slate-600 font-semibold truncate text-wrap dark:text-white" v-html="item.name"></p>
-    <div class="text-[12px] text-slate-600 mt-1 flex flex-row gap-3">
+    <p class="text-sm text-slate-600 truncate text-wrap dark:text-white" v-html="item.name"></p>
+    <div class="text-xs text-slate-600 mt-1 flex flex-row gap-3">
       <div v-for="(link, i) in item.links" :key="i">
         <nuxt-link
           class="flex flex-row items-center p-1 bg-slate-200 rounded gap-2 hover:bg-slate-300 dark:bg-gray-700 dark:hover:bg-gray-600"

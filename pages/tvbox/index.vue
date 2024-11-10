@@ -9,6 +9,8 @@ useHead({
         { name: 'format-detection', content: 'telephone=no' }
     ]
 })
+const tvbox = ref([])
+const currentDate = ref(new Date().toLocaleString())
 const getData = async () => {
     const res = await $fetch('/api/tvbox')
     tvbox.value = res.list || [];
@@ -16,10 +18,10 @@ const getData = async () => {
 onMounted(() => {
     getData()
 })
-const { data: tvbox } = await useAsyncData('tvbox', async () => {
-    const res = await $fetch('/api/tvbox')
-    return res.list || [];
-})
+// const { data: tvbox } = await useAsyncData('tvbox', async () => {
+//     const res = await $fetch('/api/tvbox')
+//     return res.list || [];
+// })
 const copyTipsMsg = (type) => {
     ElMessage({
         message: type === 'success' ? '复制成功' : '复制失败',
@@ -59,23 +61,31 @@ const copy = (text) => {
     }
 
 }
-
 </script>
 <template>
-    <div class="mx-4 max-w-[1240px] lg:mx-auto py-10">
-        <h1 class="text-sm text-bold">TVbox系列数据源接口地址 </h1>
-        <p class="text-xs mt-2 text-gray-400">更新时间:{{ new Date().toLocaleString() }}</p>
-        <ul class="mt-6  gap-4 grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3">
-            <li class="flex flex-col items-center gap-2 bg-slate-100 p-2 rounded-md" v-for="(item, index) in tvbox"
-                :key="index">
-                <span class="text-sm">{{ item.name }}</span>
-                <div class="flex flex-row items-center gap-2">
-                    <input class="border border-gray-300 px-4 py-2 rounded-md text-xs" type="text" v-model="item.link">
-                    <button type="button" class="bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
-                        @click="copy(item.link)">复制</button>
-                </div>
+    <div class="bg-[#f5f6f9] min-h-screen">
+        <div class="mx-4 max-w-[1240px] lg:mx-auto py-10">
+            <h1 class="text-sm text-bold">TVbox系列数据源接口地址 </h1>
+            <client-only>
+                <p class="text-xs mt-2 text-gray-400">更新时间:{{ currentDate }}</p>
+            </client-only>
+            <div class="mt-6" v-if="tvbox.length === 0">
+                <p class="text-xs text-gray-400">正在加载中...</p>
+            </div>
+            <ul v-else class="mt-6  gap-4 grid grid-cols-1 sm:grid-cols-2  lg:grid-cols-3">
+                <li class="flex flex-col items-center gap-2 bg-slate-200 p-2 rounded-md" v-for="(item, index) in tvbox"
+                    :key="index">
+                    <span class="text-sm">{{ item.name }}</span>
+                    <div class="flex flex-row items-center gap-2">
+                        <input class="border border-gray-300 px-4 py-2 rounded-md text-xs" type="text"
+                            v-model="item.link">
+                        <button type="button" class="bg-gray-500 text-white px-2 py-1 rounded-md text-xs hover:text-md"
+                            @click="copy(item.link)">复制</button>
+                    </div>
 
-            </li>
-        </ul>
+                </li>
+            </ul>
+        </div>
     </div>
+
 </template>

@@ -7,6 +7,13 @@
     "type": "json"
   },
   {
+    "key": "baofengziyuan",
+    "name": "暴风资源",
+    "api": "https://bfzyapi.com/api.php/provide/vod",
+    "playUrl": "https://vip.vipuuvip.com/?url=",
+    "type": "json"
+  },
+  {
     "key": "360zy",
     "name": "360资源",
     "api": "https://360zy.com/api.php/provide/vod",
@@ -15,7 +22,7 @@
   },
   {
     "key": "wolongzy",
-    "name": "卧龙资源站资源",
+    "name": "卧龙资源",
     "api": "https://collect.wolongzy.cc/api.php/provide/vod/",
     "playUrl": "https://jx.wolongzywcdn.com:65/m3u8.php?url=",
     "type": "json"
@@ -41,5 +48,4 @@
     "playUrl": "https://jsjiexi.com/play/?url=",
     "type": "json"
   }
-
 ]
