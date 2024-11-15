@@ -26,8 +26,8 @@ console.log(colorMode.preference)
 
 <template>
   <el-affix>
-    <div class="bg-white dark:bg-gray-800 shadow p-3 md:px-[20px]">
-      <div class="max-w-[1240px] mx-auto h-[40px]  flex flex-row items-center gap-2 md:gap-6 relative">
+    <div class="bg-white dark:bg-gray-800 shadow px-3 md:px-[20px]">
+      <div class="max-w-[1240px] mx-auto h-14 flex flex-row items-center gap-2 md:gap-6 relative">
         <div class="flex flex-row items-center gap-1">
           <img class="w-[30px] h-[30px] md:w-[40px] md:h-[40px] cursor-pointer" src="@/assets/my-logo.png" alt="logo"
             @click="goHome()">

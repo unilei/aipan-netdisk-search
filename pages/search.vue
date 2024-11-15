@@ -118,27 +118,33 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="dark:bg-gray-400 min-h-screen bg-[#f5f6f9]">
+  <div class="dark:bg-gray-400 h-screen bg-[#f5f6f9]">
     <search-header :keyword="keyword" @search="search"></search-header>
-    <div class="max-w-[1240px] mx-auto grid grid-cols-1 pb-8">
-      <div class="w-full p-3">
-        <el-button type="primary" :plain="category !== 'clouddrive'" color="#6648ff"
-          @click="switchCategory('clouddrive')">网盘资源
-        </el-button>
-        <el-button type="primary" :plain="category !== 'onlineVod'" color="#6648ff"
-          @click="switchCategory('onlineVod')">
-          在线观影
-        </el-button>
-      </div>
-      <div v-if="category === 'clouddrive'" class="w-full space-y-3 p-3 ">
+    <div class="w-full h-12 flex items-center max-w-[1240px] mx-auto px-3">
+      <el-button type="primary" :plain="category !== 'clouddrive'" color="#6648ff"
+        @click="switchCategory('clouddrive')">网盘资源
+      </el-button>
+      <el-button type="primary" :plain="category !== 'onlineVod'" color="#6648ff" @click="switchCategory('onlineVod')">
+        在线观影
+      </el-button>
+      <el-button type="primary" :plain="category !== 'soupian'" color="#6648ff" @click="switchCategory('soupian')">
+        搜片
+      </el-button>
+    </div>
+    <div class="mx-auto h-[calc(100vh-112px)] overflow-y-scroll">
+      <div v-if="category === 'clouddrive'" class="max-w-[1240px] mx-auto space-y-3 p-3">
         <div class="text-purple-500 text-xs" v-if="skeletonLoading">资源正在加载中...</div>
         <disk-info-list :sources="[sources]" :skeleton-loading="skeletonLoading">
         </disk-info-list>
       </div>
-      <vod-list v-if="category === 'onlineVod'" :vod-data="vodData"></vod-list>
+      <div class="max-w-[1240px] mx-auto">
+        <vod-list v-if="category === 'onlineVod'" :vod-data="vodData"></vod-list>
+      </div>
+      <iframe v-if="category === 'soupian'" id="soupian" border="0" :src="'https://soupian.pro/frame?movie=' + keyword"
+        width="100%" height="100%" marginWidth="0" frameSpacing="0" marginHeight="0" frameBorder="0"></iframe>
+
+      <el-backtop></el-backtop>
     </div>
-    <el-backtop></el-backtop>
   </div>
 </template>
-
 <style scoped></style>
