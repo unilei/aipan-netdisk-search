@@ -1,4 +1,4 @@
-import { LRUCache as LRU } from 'lru-cache'
+import { LRUCache } from 'lru-cache';
 import { $fetch } from 'ofetch'
 import { decrypt } from "~/utils/tools"
 
@@ -59,7 +59,7 @@ export const SERVICE_DOMAINS: Record<Link['service'], string | string[]> = {
 } as const
 
 // Cache initialization
-export const searchCache = new LRU<string, Result>({
+export const searchCache = new LRUCache<string, Result>({
     max: CACHE_CONFIG.MAX_SIZE,
     ttl: CACHE_CONFIG.TTL,
     updateAgeOnGet: true,
