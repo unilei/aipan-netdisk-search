@@ -22,6 +22,13 @@ export default defineNuxtConfig({
         pageTransition: { name: 'page', mode: 'out-in' },
         head: {
             title: '爱盼：资源随心，娱乐无限',
+            link: [
+                { 
+                    rel: 'stylesheet',
+                    href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+                },
+                { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+            ],
             meta: [
                 { name: 'keywords', content: '爱盼, 开源, 免费资源搜索, 网盘搜索, 音乐下载, TVBox数据接口, 电视直播, 博客发布, 影视资源, 教学工具, 非商业用途' },
                 { hid: 'description', name: 'description', content: '爱盼是一个开源免费的资源搜索平台，提供网盘资源搜索、音乐下载、TV直播、TVBox接口地址以及博客发布等多项功能，打造丰富的影视音聚合体验，供学习与探索使用，不支持商业用途。' },
@@ -39,7 +46,6 @@ export default defineNuxtConfig({
                 { name: 'referrer', content: 'always' },
                 { name: 'referrer', content: 'strict-origin-when-cross-origin' }
             ],
-            link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
             script: [
                 {
                     src: 'https://www.googletagmanager.com/gtag/js?id=G-17SPF6S871',

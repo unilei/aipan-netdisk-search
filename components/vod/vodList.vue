@@ -72,47 +72,128 @@ const vodTab = ref(0)
 </script>
 
 <template>
-  <div class="dark:border-gray-600 p-3">
-    <div class="flex flex-col sm:flex-row gap-3 items-center pb-3">
-      <h1 class="text-xs sm:text-sm font-normal text-center">
-        正在播放：<span class="text-gray-600">{{ currentVod.name }}</span>
+  <div class="dark:border-gray-600">
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4 px-2">
+      <h1 class="text-sm sm:text-base font-medium flex items-center gap-2">
+        <i class="fas fa-play-circle text-purple-500"></i>
+        <span class="text-gray-700 dark:text-gray-300">{{ currentVod.name }}</span>
       </h1>
-      <p class="text-xs sm:text-sm  text-red-500 text-center font-bold">
-        须知：请勿相信视频里面的广告内容！！！
-      </p>
+      <div class="flex items-center gap-2 text-xs sm:text-sm bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-full">
+        <i class="fas fa-exclamation-circle animate-pulse"></i>
+        <p class="font-medium">请勿相信视频里面的广告内容！</p>
+      </div>
     </div>
-    <div
-      class="mx-3 sm:mx-auto sm:w-full shadow rounded-xl overflow-hidden border border-gray-300 dark:border-gray-600">
+
+    <!-- Video Player -->
+    <div class="relative rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-sm">
       <div class="aspect-video w-full">
-        <iframe width="100%" height="100%" :src="currentVod.url" frameborder="0"
+        <div v-if="!currentVod.url" class="absolute inset-0 flex items-center justify-center bg-black/5 dark:bg-white/5">
+          <div class="text-center">
+            <i class="fas fa-film text-4xl text-gray-400 dark:text-gray-600 mb-2"></i>
+            <p class="text-sm text-gray-500 dark:text-gray-400">请选择播放源和剧集</p>
+          </div>
+        </div>
+        <iframe 
+          v-else
+          width="100%" 
+          height="100%" 
+          :src="currentVod.url" 
+          class="transition-opacity duration-300"
+          frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen="allowfullscreen" mozallowfullscreen="mozallowfullscreen"
-          msallowfullscreen="msallowfullscreen" oallowfullscreen="oallowfullscreen"
+          allowfullscreen="allowfullscreen" 
+          mozallowfullscreen="mozallowfullscreen"
+          msallowfullscreen="msallowfullscreen" 
+          oallowfullscreen="oallowfullscreen"
           webkitallowfullscreen="webkitallowfullscreen">
         </iframe>
       </div>
     </div>
-    <div class="mx-3 sm:mx-auto" v-if="vodData && vodData.length > 0">
-      <ul class="flex flex-row items-center flex-wrap gap-2 mt-6">
-        <li class="p-3 text-xs sm:text-sm font-bold text-center
-        border border-gray-300
-        rounded-xl cursor-pointer
-        hover:bg-gray-950 hover:text-[#fff]" v-for="(vod, index) in vodData" :key="index"
-          :class="vodTab === index ? 'bg-gray-950 text-[#fff] dark:bg-gray-950' : ''" @click="vodTab = index">
-          {{ vod.vod_name }} {{ `(源${index + 1})` }}
-        </li>
-      </ul>
-      <ul class="grid grid-cols-6 gap-2 mt-[20px] bg-white dark:bg-gray-700 rounded-xl p-4">
-        <li class="min-w-20 p-[10px] cursor-pointer text-center
-         border border-gray-300 text-xs rounded-xl hover:bg-gray-950 hover:text-[#fff]"
-          v-for="(item, index) in formatVodPlayUrl(vodData[vodTab])" :key="index"
-          @click="changeVodUrl(vodData[vodTab], item, index)"
-          :class="currentVod.url === `${vodData[vodTab].playUrl}${item.link}` ? 'bg-gray-950  dark:bg-gray-950 text-[#fff]' : ''">
-          {{ item.number }}
-        </li>
-      </ul>
+
+    <!-- Source Selection -->
+    <div class="mt-6" v-if="vodData && vodData.length > 0">
+      <div class="flex flex-wrap gap-2">
+        <button 
+          v-for="(vod, index) in vodData" 
+          :key="index"
+          class="px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200
+                 ring-1 ring-gray-200 dark:ring-gray-700
+                 hover:ring-purple-500 dark:hover:ring-purple-500
+                 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          :class="[
+            vodTab === index 
+              ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white ring-0' 
+              : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+          ]"
+          @click="vodTab = index"
+        >
+          <div class="flex items-center gap-2">
+            <span>{{ vod.vod_name }}</span>
+            <span class="px-1.5 py-0.5 text-xs rounded-md" 
+                  :class="vodTab === index ? 'bg-white/20' : 'bg-gray-100 dark:bg-gray-700'">
+              源{{ index + 1 }}
+            </span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Episode List -->
+      <div class="mt-4 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-xl p-4 
+                  ring-1 ring-black/5 dark:ring-white/5">
+        <div class="grid grid-cols-3 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-2">
+          <button
+            v-for="(item, index) in formatVodPlayUrl(vodData[vodTab])"
+            :key="index"
+            class="relative group px-3 py-2 text-xs font-medium rounded-lg transition-all duration-200
+                   ring-1 ring-gray-200 dark:ring-gray-700 
+                   hover:ring-purple-500 dark:hover:ring-purple-500
+                   focus:outline-none focus:ring-2 focus:ring-purple-500"
+            :class="[
+              currentIndex === index
+                ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white ring-0'
+                : 'hover:bg-gray-50 dark:hover:bg-gray-800'
+            ]"
+            @click="changeVodUrl(vodData[vodTab], item, index)"
+          >
+            <span class="line-clamp-1">{{ item.number }}</span>
+            <div v-if="currentIndex === index" 
+                 class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-white animate-ping">
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Smooth transitions */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Focus styles */
+.focus\:outline-none:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+/* Button hover effects */
+button:hover {
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+</style>

@@ -3,18 +3,18 @@
     "api": "/api/sources/aipan-search"
   },
   {
-    "api": "/api/sources/aipan-data-search"
+    "api": "/api/sources/x"
   },
   {
-    "api": "/api/sources/indexE"
-  },
-  {
-    "api": "/api/sources/aipan-data-search-2"
+    "api": "/api/sources/xx"
   },
     {
     "api": "/api/sources/indexI"
   },
   {
-    "api": "/api/sources/aipan-data-search-3"
+    "api": "/api/sources/xxx"
+  },
+  {
+    "api": "/api/sources/xxxx"
   }
 ]

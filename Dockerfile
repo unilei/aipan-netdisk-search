@@ -1,5 +1,5 @@
 # 第一阶段：构建阶段
-FROM node:18-alpine AS builder
+FROM node:20.18.0-alpine AS builder
 LABEL authors="Lei"
 
 # 设置工作目录
@@ -24,7 +24,7 @@ RUN npx prisma generate
 RUN npm run build
 
 # 第二阶段：运行阶段
-FROM node:18-alpine
+FROM node:20.18.0-alpine
 LABEL authors="Lei"
 
 # 设置工作目录
