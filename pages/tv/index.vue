@@ -496,6 +496,36 @@ onBeforeUnmount(() => {
     }
 });
 
+// 添加缩放比例计算
+const tvContainer = ref(null);
+const scale = ref(1);
+
+// 计算缩放比例
+const calculateScale = () => {
+    if (!tvContainer.value) return;
+    
+    // 获取容器的实际高度（不包括缩放）
+    const containerHeight = tvContainer.value.scrollHeight;
+    // 获取视窗高度
+    const viewportHeight = window.innerHeight;
+    
+    // 计算需要的缩放比例，留出一些边距
+    const padding = 32; // 上下各留 16px 的边距
+    const newScale = (viewportHeight - padding) / containerHeight;
+    
+    // 限制最大缩放为 1
+    scale.value = Math.min(1, newScale);
+};
+
+// 监听窗口大小变化
+onMounted(() => {
+    calculateScale();
+    window.addEventListener('resize', calculateScale);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', calculateScale);
+});
 </script>
 
 <template>
@@ -503,7 +533,8 @@ onBeforeUnmount(() => {
         <div class="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
         
         <!-- TV Set Container -->
-        <div class="relative w-full max-w-6xl mx-auto px-8">
+        <div ref="tvContainer" class="relative w-full max-w-6xl mx-auto px-8 tv-container"
+             :style="{ transform: `scale(${scale})` }">
             <!-- TV Frame -->
             <div class="tv-frame rounded-[2.5rem] shadow-2xl p-8 
                         transform transition-all duration-300 retro-tv-frame">
@@ -1474,5 +1505,11 @@ onBeforeUnmount(() => {
     .channel-search .tv-btn {
         @apply w-full;
     }
+}
+
+/* 添加自适应缩放 */
+.tv-container {
+    transform-origin: center center;
+    transition: transform 0.3s ease;
 }
 </style>
