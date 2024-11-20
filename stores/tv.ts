@@ -35,6 +35,7 @@ export const useTvStore = defineStore('tv', {
         }
     },
     persist: {
-        storage: persistedState.localStorage
+        storage: persistedState.localStorage,
+        paths: ['tvCategory', 'alistUrl', 'alistPath', 'alistCurrentPlayIndex', 'alistData']
     },
 })
