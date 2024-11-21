@@ -265,6 +265,33 @@ pg_dump -U username -h hostname database_name > backup.sql
    - 监控异常访问
    - 限制端口访问
 
+## 8. 数据库配置最佳实践
+
+### 8.1 连接池配置
+
+项目使用了优化的数据库连接池配置，位于 `lib/prisma.js`。主要配置项包括：
+
+```javascript
+const pool = {
+  max: 10,        // 最大连接数
+  min: 2,         // 最小连接数
+  idleTimeoutMillis: 60000,    // 空闲连接超时时间
+  connectionTimeoutMillis: 5000 // 连接超时时间
+}
+```
+
+### 8.2 注意事项
+
+1. **连接池管理**：
+   - 不要在每个API端点创建新的Prisma实例
+   - 使用共享的Prisma客户端（从 `~/lib/prisma` 导入）
+   - 避免创建过多的数据库连接
+
+2. **性能优化**：
+   - 合理配置连接池大小
+   - 使用适当的查询超时设置
+   - 监控数据库连接状态
+
 如有任何问题，请查看：
 - 应用日志
 - Prisma 错误日志
