@@ -43,7 +43,7 @@ onMounted(async () => {
   <div class="custom-bg min-h-screen py-[60px] transition-colors duration-300">
     <div class="flex flex-col items-center justify-center gap-4 mt-[60px] animate-fadeIn">
       <div class="flex items-center justify-center gap-4 hover:scale-105 transition-transform duration-300">
-        <img class="w-24 h-24 rounded-2xl shadow-lg" src="@/assets/my-logo.png" alt="logo">
+        <img class="w-24 h-24" src="@/assets/my-logo.png" alt="logo">
         <div class="text-center">
           <h1 class="text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">AIPAN.ME</h1>
           <p class="text-gray-600 text-sm dark:text-gray-300 mt-2">爱盼 - 资源随心，娱乐无限</p>
