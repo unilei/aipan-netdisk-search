@@ -6,79 +6,31 @@ defineProps({
     }
 })
 const emit = defineEmits(['goDouban'])
-// 图片代理服务配置
-const imageProxies = [
-    (url) => `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=300&h=400&fit=cover&q=70&default=https://images.weserv.nl/?url=${encodeURIComponent('/placeholder.jpg')}`,
-    (url) => `https://proxy.pixivel.moe/img?url=${encodeURIComponent(url)}`,
-    (url) => `https://image.kieng.cn/1.0.0?url=${encodeURIComponent(url)}`,
-    (url) => `https://imageproxy.pimg.tw/resize?url=${encodeURIComponent(url)}`,
-    (url) => `https://pic1.xuehuaimg.com/proxy/${encodeURIComponent(url)}`,
-    (url) => `/api/proxy-image?url=${encodeURIComponent(url)}`,
-]
 
 // 图片加载状态管理
 const imageLoadStatus = ref({})
-const proxyIndex = ref({}) // 记录每个图片当前使用的代理服务索引
+
+// 获取代理图片URL
+const getProxyImageUrl = (url) => {
+    if (!url) return '/placeholder.jpg'
+    return `/api/image-proxy?url=${encodeURIComponent(url)}`
+}
 
 // 处理图片加载完成
 const handleImageLoad = (movieId) => {
-    console.log('Image loaded successfully:', movieId)
     imageLoadStatus.value[movieId] = 'loaded'
 }
 
 // 处理图片加载失败
-const handleImageError = (movieId, imgUrl) => {
-    console.error('Image load failed:', movieId, imgUrl)
-    
-    // 初始化或获取当前代理索引
-    proxyIndex.value[movieId] = proxyIndex.value[movieId] || 0
-    console.log('Current proxy index:', proxyIndex.value[movieId], 'for URL:', imgUrl)
-    
-    // 如果还有下一个代理可以尝试
-    if (proxyIndex.value[movieId] < imageProxies.length - 1) {
-        console.log('Trying next proxy service for:', movieId)
-        proxyIndex.value[movieId]++
-        // 强制重新渲染图片
-        nextTick(() => {
-            imageLoadStatus.value[movieId] = 'loading'
-        })
-    } else {
-        console.error('All proxy services failed for:', movieId)
-        // 所有代理都尝试失败了
-        imageLoadStatus.value[movieId] = 'error'
-        // 重置代理索引，以便下次重试从第一个开始
-        proxyIndex.value[movieId] = 0
-    }
+const handleImageError = (movieId) => {
+    imageLoadStatus.value[movieId] = 'error'
 }
 
-// 获取优化后的图片URL
-const getOptimizedImageUrl = (url, movieId) => {
-    if (!url) return '/placeholder.jpg'
-    
-    // 确保代理索引已初始化
-    proxyIndex.value[movieId] = proxyIndex.value[movieId] || 0
-    const proxyUrl = imageProxies[proxyIndex.value[movieId]](url)
-    console.log('Using proxy URL:', proxyUrl, 'for movieId:', movieId)
-    return proxyUrl
-}
-
-// 获取高质量图片URL
-const getHighQualityImageUrl = (url) => {
-    if (!url) return '/placeholder.jpg'
-    const movieId = url
-    if (!proxyIndex.value[movieId]) {
-        proxyIndex.value[movieId] = 0
-    }
-    return imageProxies[proxyIndex.value[movieId]](url)
-}
-
- 
 const colorMode = useColorMode()
 
-const goDouban = (movie) => { 
+const goDouban = (movie) => {
     emit('goDouban', movie)
 }
- 
 </script>
 
 <template>
@@ -108,8 +60,8 @@ const goDouban = (movie) => {
                         </div>
                     </div>
 
-                    <!-- 高质量图片 -->
-                    <img :src="getOptimizedImageUrl(movie.cover, `${item.name}-${index}`)"
+                    <!-- 图片 -->
+                    <img :src="getProxyImageUrl(movie.cover)"
                         class="w-full h-[180px] lg:h-[220px] xl:h-44 object-cover transition-all duration-300 group-hover:scale-105"
                         :class="{
                             'opacity-0': !imageLoadStatus[`${item.name}-${index}`],
@@ -118,7 +70,7 @@ const goDouban = (movie) => {
                         loading="lazy" 
                         decoding="async" 
                         @load="handleImageLoad(`${item.name}-${index}`)"
-                        @error="handleImageError(`${item.name}-${index}`, movie.cover)" 
+                        @error="handleImageError(`${item.name}-${index}`)" 
                         :alt="movie.title"
                         referrerpolicy="no-referrer" />
 
@@ -129,7 +81,7 @@ const goDouban = (movie) => {
                             <el-icon class="text-gray-400 mb-2" :size="24">
                                 <PictureFilled />
                             </el-icon>
-                            <p class="text-xs text-gray-500">加载失败</p>
+                            <p class="text-xs text-gray-500">暂无图片</p>
                         </div>
                     </div>
 

@@ -1,4 +1,8 @@
 <script setup>
+import { House, Document, Edit, Delete, Plus, ArrowLeft, Refresh } from '@element-plus/icons-vue'
+import { MdEditor } from 'md-editor-v3'
+import 'md-editor-v3/lib/style.css'
+import { uploadImages } from '~/utils/uploadImage'
 
 const route = useRoute();
 const router = useRouter();
@@ -69,6 +73,49 @@ const form = reactive({
 })
 const formRef = ref()
 
+// 上传状态
+const uploadingCount = ref(0)
+
+// Markdown 编辑器配置
+const editorConfig = {
+    toolbars: [
+        'bold', 'underline', 'italic', 'strikethrough', 'sub', 'sup', 'quote', 'unordered-list', 'ordered-list', 
+        'task-list', '-', 'code', 'code-block', 'link', 'image', 'table', 'mermaid', 'katex', '-', 
+        'preview', 'fullscreen'
+    ],
+    uploadImages: true,
+    autoFocus: true,
+    showCodeRowNumber: true
+}
+
+// 处理图片上传
+const onUploadImg = async (files, callback) => {
+    const config = useRuntimeConfig()
+    try {
+        uploadingCount.value += files.length
+        const result = await uploadImages(files, {
+            owner: config.public.GITHUB_OWNER,
+            repo: config.public.GITHUB_REPO,
+            token: config.public.GITHUB_TOKEN,
+            branch: config.public.GITHUB_BRANCH
+        })
+
+        // 显示错误信息
+        result.errors.forEach(error => {
+            ElMessage.error(error)
+        })
+
+        // 如果有成功上传的图片，显示成功消息
+        if (result.urls.length > 0) {
+            ElMessage.success(`成功上传 ${result.urls.length} 张图片`)
+        }
+
+        callback(result.urls)
+    } finally {
+        uploadingCount.value = Math.max(0, uploadingCount.value - files.length)
+    }
+}
+
 const submit = () => {
     formRef.value.validate((valid) => {
         if (!valid) {
@@ -132,88 +179,206 @@ onMounted(async () => {
 })
 </script>
 <template>
-
-    <div class="max-w-[1240px] mx-auto ">
-        <div class="mt-6 flex flex-row justify-between items-center">
-            <div class="text-xl text-bold space-x-2">
-                <nuxt-link to="/admin/dashboard">后台管理面板</nuxt-link>
-                <span>/</span>
-                <nuxt-link to="/admin/blog">博客管理</nuxt-link>
-                <span>/</span>
-                <nuxt-link to="/admin/blog/new" v-if="!isEdit">添加博客</nuxt-link>
-                <nuxt-link :to="'/admin/blog/' + route.params.id" v-else>编辑博客</nuxt-link>
-            </div>
-            <div>
-                <el-button type="primary" @click="submit">提交</el-button>
-            </div>
-        </div>
-        <div class="mt-6">
-            <el-form ref="formRef" :model="form" label-width="auto">
-                <el-form-item label="标题" prop="title">
-                    <el-input v-model="form.title" placeholder="请输入标题" class="w-[300px] mt-2" />
-                </el-form-item>
-                <el-form-item label="分类" prop="categoryIds">
+    <div class="min-h-[calc(100vh-60px)] bg-gray-50 p-6">
+        <div class="max-w-[1240px] mx-auto space-y-6">
+            <!-- 头部区域 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+                <div class="flex items-center justify-between">
                     <div>
-                        <div class="gap-4 flex flex-row items-center">
-                            <div class="flex flex-col justify-center items-center"
-                                v-for="(category, index) in categoriesData" :key="index">
-                                <div class="px-2 py-1 border border-slate-300 rounded-md cursor-pointer hover:bg-slate-300"
-                                    :class="form.categoryIds.includes(category.id) ? 'bg-slate-300' : ''"
-                                    @click="handleSelectCategory(category)">
-                                    {{ category.name }}
-                                </div>
-                                <div>
-                                    <el-button link type="danger"
-                                        @click="handleDeleteCategory(category, index)">删除</el-button>
-                                </div>
+                        <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+                            <nuxt-link to="/admin/dashboard" class="hover:text-primary flex items-center">
+                                <el-icon class="mr-1"><House /></el-icon>
+                                后台管理面板
+                            </nuxt-link>
+                            <span>/</span>
+                            <nuxt-link to="/admin/blog" class="hover:text-primary flex items-center">
+                                博客管理
+                            </nuxt-link>
+                            <span>/</span>
+                            <span class="text-gray-900">{{ isEdit ? '编辑文章' : '新建文章' }}</span>
+                        </div>
+                        <h1 class="text-2xl font-bold text-gray-900">{{ isEdit ? '编辑文章' : '新建文章' }}</h1>
+                        <p class="text-gray-500 mt-1">{{ isEdit ? '修改现有文章内容' : '创建一篇新的博客文章' }}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <el-button @click="() => router.push('/admin/blog')" class="flex items-center">
+                            <el-icon class="mr-1"><ArrowLeft /></el-icon>
+                            返回列表
+                        </el-button>
+                        <el-button type="primary" @click="submit" class="flex items-center">
+                            <el-icon class="mr-1"><Document /></el-icon>
+                            保存文章
+                        </el-button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 表单区域 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm">
+                <el-form ref="formRef" :model="form" label-width="80px" class="space-y-6">
+                    <el-form-item 
+                        label="标题" 
+                        prop="title"
+                        :rules="[
+                            { required: true, message: '请输入文章标题', trigger: 'blur' },
+                        ]"
+                    >
+                        <el-input 
+                            v-model="form.title" 
+                            placeholder="请输入文章标题" 
+                            class="w-full"
+                        />
+                    </el-form-item>
+
+                    <el-form-item 
+                        label="分类" 
+                        prop="categoryIds"
+                        :rules="[
+                            { type: 'array', required: true, message: '请至少选择一个分类', trigger: 'change' }
+                        ]"
+                    >
+                        <div class="space-y-4">
+                            <!-- 分类标签区域 -->
+                            <div class="flex flex-wrap gap-3">
+                                <template v-if="categoriesData.length">
+                                    <div v-for="category in categoriesData" 
+                                        :key="category.id"
+                                        class="group relative"
+                                    >
+                                        <div 
+                                            class="px-4 py-2 rounded-full cursor-pointer transition-colors duration-200"
+                                            :class="[
+                                                form.categoryIds.includes(category.id) 
+                                                    ? 'bg-blue-500 text-white' 
+                                                    : 'bg-gray-100 hover:bg-gray-200'
+                                            ]"
+                                            @click="handleSelectCategory(category)"
+                                        >
+                                            {{ category.name }}
+                                        </div>
+                                        <el-button
+                                            class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                            type="danger"
+                                            size="small"
+                                            circle
+                                            @click="handleDeleteCategory(category)"
+                                        >
+                                            <el-icon><Delete /></el-icon>
+                                        </el-button>
+                                    </div>
+                                </template>
+                                <el-empty v-else description="暂无分类" />
+                            </div>
+
+                            <!-- 分类操作按钮 -->
+                            <div class="flex items-center space-x-4">
+                                <el-button 
+                                    type="primary" 
+                                    @click="handleAddCategory"
+                                    class="flex items-center"
+                                >
+                                    <el-icon class="mr-1"><Plus /></el-icon>
+                                    添加分类
+                                </el-button>
+                                <el-button 
+                                    @click="getCategories"
+                                    class="flex items-center"
+                                >
+                                    <el-icon class="mr-1"><Refresh /></el-icon>
+                                    刷新列表
+                                </el-button>
                             </div>
                         </div>
-                        <div class="mt-2">
-                            <el-button type="primary" @click="handleAddCategory()">添加类型</el-button>
-                            <el-button type="primary" @click="getCategories()">刷新</el-button>
-                        </div>
-                        <div class="text-red-500 text-sm ">
-                            请选择文章类型, 先刷新文章类型列表
-                        </div>
-                    </div>
-                </el-form-item>
-                <el-form-item label="内容" prop="content">
+                    </el-form-item>
 
-                    <el-input v-model="form.content" :rows="35" type="textarea" placeholder="请输入" />
-                </el-form-item>
-                <div>
-                    <el-button type="primary" @click="submit">提交</el-button>
-                </div>
-            </el-form>
-        </div>
-
-        <el-dialog v-model="categoryDialogShow" title="添加文章类型">
-            <main>
-                <el-form ref="categoryFormRef" :model="categoryForm" label-width="auto">
-                    <el-form-item label="类型名字" prop="name" :rules="{
-                        required: true,
-                        message: '类型名字不能为空',
-                        trigger: 'blur'
-                    }">
-                        <el-input v-model="categoryForm.name" type="textarea"></el-input>
+                    <el-form-item 
+                        label="内容" 
+                        prop="content"
+                        :rules="[
+                            { required: true, message: '请输入文章内容', trigger: 'blur' }
+                        ]"
+                    >
+                        <MdEditor 
+                            v-model="form.content" 
+                            :editorConfig="editorConfig" 
+                            @onUploadImg="onUploadImg"
+                            class="w-full"
+                        />
                     </el-form-item>
                 </el-form>
-            </main>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="categoryDialogShow = false">取消</el-button>
-                    <el-button type="primary" @click="handleSubmitAddCategory()"> 确认 </el-button>
-                </span>
-            </template>
-        </el-dialog>
-    </div>
+            </div>
 
+            <!-- 添加分类对话框 -->
+            <el-dialog 
+                v-model="categoryDialogShow" 
+                title="添加文章分类"
+                width="500px"
+                destroy-on-close
+            >
+                <el-form 
+                    ref="categoryFormRef" 
+                    :model="categoryForm" 
+                    label-width="80px"
+                >
+                    <el-form-item 
+                        label="分类名称" 
+                        prop="name" 
+                        :rules="[
+                            { required: true, message: '请输入分类名称', trigger: 'blur' }
+                        ]"
+                    >
+                        <el-input v-model="categoryForm.name" placeholder="请输入分类名称" />
+                    </el-form-item>
+                </el-form>
+                <template #footer>
+                    <div class="flex justify-end space-x-4">
+                        <el-button @click="categoryDialogShow = false">取消</el-button>
+                        <el-button type="primary" @click="handleSubmitAddCategory">确认</el-button>
+                    </div>
+                </template>
+            </el-dialog>
+        </div>
+    </div>
 </template>
 
 <style scoped>
-#editor {
-    margin: auto;
-    width: 80%;
-    height: 580px;
+.el-form-item :deep(.el-form-item__label) {
+    font-weight: 500;
+}
+
+:deep(.md-editor) {
+    border: 1px solid var(--el-border-color);
+    border-radius: 4px;
+}
+
+:deep(.md-editor-dark) {
+    --md-bk-color: #1e1e1e;
+}
+
+/* 调整编辑器高度 */
+:deep(.md-editor-content) {
+    min-height: 500px;
+}
+
+/* 预览区域样式优化 */
+:deep(.md-editor-preview) {
+    padding: 16px 24px;
+}
+
+/* 工具栏样式优化 */
+:deep(.md-editor-toolbar) {
+    border-bottom: 1px solid var(--el-border-color);
+}
+
+/* 代码块样式优化 */
+:deep(.md-editor-preview pre) {
+    background: #f6f8fa;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+:deep(.el-textarea__inner) {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    line-height: 1.6;
 }
 </style>

@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .pagination-custom {
+    --el-pagination-bg-color: transparent;
+    --el-pagination-hover-color: var(--el-color-primary);
+    --el-pagination-button-bg-color: transparent;
+    @apply flex items-center gap-2;
+  }
+
+  .pagination-custom .el-pagination__total {
+    @apply text-gray-500 dark:text-gray-400 text-sm font-medium;
+  }
+
+  .pagination-custom .el-pagination__sizes {
+    @apply text-gray-500 dark:text-gray-400;
+  }
+
+  .pagination-custom .el-pager {
+    @apply flex items-center gap-1;
+  }
+
+  .pagination-custom .el-pager li {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700;
+    @apply text-gray-600 dark:text-gray-300 font-medium;
+    @apply rounded-md min-w-[32px] h-8 flex items-center justify-center;
+    @apply hover:border-blue-500 hover:text-blue-500 dark:hover:border-blue-400 dark:hover:text-blue-400;
+    @apply transition-all duration-200 ease-in-out;
+    margin: 0 2px;
+  }
+
+  .pagination-custom .el-pager li.is-active {
+    @apply bg-blue-500 dark:bg-blue-600 border-blue-500 dark:border-blue-600;
+    @apply text-white font-semibold shadow-sm;
+    @apply hover:bg-blue-600 dark:hover:bg-blue-700;
+    @apply hover:border-blue-600 dark:hover:border-blue-700;
+    @apply hover:text-white dark:hover:text-white;
+  }
+
+  .pagination-custom .btn-prev,
+  .pagination-custom .btn-next {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700;
+    @apply text-gray-600 dark:text-gray-300;
+    @apply rounded-md min-w-[32px] h-8 flex items-center justify-center;
+    @apply hover:border-blue-500 hover:text-blue-500 dark:hover:border-blue-400 dark:hover:text-blue-400;
+    @apply transition-all duration-200 ease-in-out;
+  }
+
+  .pagination-custom .el-pagination__sizes {
+    @apply ml-4;
+  }
+
+  .pagination-custom .el-select .el-input__wrapper {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700;
+    @apply rounded-md h-8 flex items-center;
+    @apply hover:border-blue-500 dark:hover:border-blue-400;
+    @apply transition-all duration-200 ease-in-out;
+    box-shadow: none !important;
+    padding: 0 8px;
+  }
+
+  .pagination-custom .el-select .el-input__inner {
+    @apply text-gray-600 dark:text-gray-300 text-sm font-medium;
+    @apply placeholder-gray-400 dark:placeholder-gray-500;
+  }
+
+  .pagination-custom .el-pagination__sizes .el-select:hover .el-input__wrapper {
+    @apply border-blue-500 dark:border-blue-400;
+  }
+
+  .pagination-custom .el-select-dropdown__item {
+    @apply text-gray-600 dark:text-gray-300 text-sm;
+  }
+
+  .pagination-custom .el-select-dropdown__item.selected {
+    @apply bg-blue-50 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400 font-medium;
+  }
+}
