@@ -8,12 +8,14 @@ const donate = () => {
 <template>
     <div class="bg-white dark:text-white py-4 dark:bg-slate-800 space-y-1">
         <div class="flex flex-row items-center justify-center  gap-3">
-            <a class="" href="https://github.com/unilei/aipan-netdisk-search">
+            <client-only>
+                <a class="" href="https://github.com/unilei/aipan-netdisk-search">
                 <img class="w-8 h-8" src="@/assets/skill-icons--github-dark.svg" alt="github">
             </a>
             <el-button link color="#ffffff" @click="donate()">
                 <img class="w-8 h-8" src="@/assets/donation/dashang.svg" alt="打赏">
             </el-button>
+            </client-only>
         </div>
         <p class="text-center text-sm">© 2024 AIPAN.ME 爱盼 - 资源随心，娱乐无限</p>
         <p class="text-center text-sm">

@@ -26,6 +26,8 @@
   - Node.js v20.18.0
   - PostgreSQL
   - Prisma ORM
+    - 连接池优化
+    - 共享客户端实例
   - JWT Authentication
 
 ## 在线演示

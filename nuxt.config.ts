@@ -83,6 +83,10 @@ export default defineNuxtConfig({
         '@nuxtjs/sitemap'
     ],
 
+    css: [
+        '~/assets/css/main.css'
+    ],
+
     colorMode: {
         preference: 'light',
         classSuffix: ''
@@ -147,6 +151,12 @@ export default defineNuxtConfig({
         adminPassword: process.env.ADMIN_PASSWORD,
         adminEmail: process.env.ADMIN_EMAIL,
         jwtSecret: process.env.JWT_SECRET,
+        public: {
+            GITHUB_OWNER: process.env.NUXT_PUBLIC_GITHUB_OWNER,
+            GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
+            GITHUB_TOKEN: process.env.NUXT_PUBLIC_GITHUB_TOKEN,
+            GITHUB_BRANCH: process.env.NUXT_PUBLIC_GITHUB_BRANCH,
+        }
     },
     sitemap: {
         sources: [

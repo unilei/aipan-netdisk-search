@@ -17,7 +17,8 @@ const colorMode = useColorMode()
                 </nuxt-link>
             </div>
             <div class="flex flex-row items-center gap-4">
-                <el-button v-if="colorMode.preference === 'dark'" link @click="colorMode.preference = 'light'">
+                <client-only>
+                    <el-button v-if="colorMode.preference === 'dark'" link @click="colorMode.preference = 'light'">
                     <img class="w-[20px] h-[20px]" src="@/assets/theme/entypo--light-up.svg" alt="">
                 </el-button>
                 <el-button v-if="colorMode.preference === 'light'" link @click="colorMode.preference = 'dark'">
@@ -30,6 +31,7 @@ const colorMode = useColorMode()
                     <img v-if="colorMode.preference === 'dark'" class="w-[20px] h-[20px]"
                         src="@/assets/theme/music-light.svg" alt="">
                 </nuxt-link>
+                </client-only>
             </div>
         </div>
     </div>
