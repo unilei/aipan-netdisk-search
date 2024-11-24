@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String?    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String     @default("user")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  favorites     Favorite[]
+  resources     Resource[]
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Resource {
+  id          String         @id @default(cuid())
+  title       String
+  description String
+  url         String        // 主链接
+  size        String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  creatorId   String
+  creator     User          @relation(fields: [creatorId], references: [id])
+  categories  Category[]    @relation("ResourceToCategory")
+  tags        Tag[]         @relation("ResourceToTag")
+  favorites   Favorite[]
+  links       ResourceLink[] // 额外的链接
+
+  @@index([createdAt(sort: Desc), title])
+  @@index([creatorId])
+  @@index([title, description]) // 优化全文搜索
+}
+
+model ResourceLink {
+  id         String   @id @default(cuid())
+  url        String
+  platform   String   // e.g., "quark", "aliyun", "xunlei"
+  resourceId String
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([resourceId, platform])
+  @@index([platform])
+  @@index([resourceId])
+}
+
+model Category {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  resources Resource[] @relation("ResourceToCategory")
+
+  @@index([name])
+}
+
+model Tag {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  resources Resource[] @relation("ResourceToTag")
+
+  @@index([name])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  resourceId String
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource   Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId])
+  @@index([userId])
+  @@index([resourceId])
+}
