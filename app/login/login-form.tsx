@@ -1,6 +1,5 @@
 'use client';
 
-import { Suspense } from 'react';
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -10,15 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 
-export default function LoginPage() {
-  return (
-    <Suspense>
-      <LoginForm />
-    </Suspense>
-  );
-}
-
-function LoginForm() {
+export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -107,14 +98,9 @@ function LoginForm() {
             {isLoading ? '登录中...' : '登录'}
           </Button>
         </form>
-
-        <div className="text-center text-sm">
-          还没有账号？{' '}
-          <Link
-            href="/register"
-            className="font-medium text-primary hover:underline"
-          >
-            立即注册
+        <div className="mt-4 text-center text-sm">
+          <Link href="/register" className="text-primary hover:underline">
+            还没有账号？点击注册
           </Link>
         </div>
       </Card>

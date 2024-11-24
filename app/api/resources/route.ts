@@ -1,31 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma, initializePrisma } from '@/lib/prisma-client';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { z } from 'zod';
-import { cache } from 'react';
 import { resourceCache } from '@/lib/cache';
-
-// 缓存分类和标签查询
-export const getCategories = cache(async () => {
-  await initializePrisma();
-  return prisma.category.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-});
-
-export const getTags = cache(async () => {
-  await initializePrisma();
-  return prisma.tag.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-  });
-});
+import { getCategories, getTags } from '@/lib/queries';
 
 // 资源验证模式
 const resourceSchema = z.object({

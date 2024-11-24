@@ -106,6 +106,73 @@ npx prisma db push
 npm run dev
 ```
 
+## 部署指南
+
+### 准备工作
+
+1. **数据库设置**
+   - 创建一个 PostgreSQL 数据库（推荐使用 [Neon](https://neon.tech)）
+   - 获取数据库连接字符串
+
+2. **环境变量**
+   确保设置以下环境变量：
+   ```bash
+   DATABASE_URL=your_database_url
+   NEXTAUTH_URL=your_app_url
+   ADMIN_EMAIL=your_admin_email
+   ADMIN_PASSWORD=your_admin_password
+   NEXTAUTH_SECRET=your_secret
+   TELEGRAM_BOT_TOKEN=your_bot_token
+   ```
+
+### 部署平台
+
+#### GitHub
+1. 创建新仓库
+2. 推送代码：
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git branch -M main
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+   git push -u origin main
+   ```
+
+#### Vercel 部署
+1. 登录 [Vercel](https://vercel.com)
+2. 点击 "New Project"
+3. 导入 GitHub 仓库
+4. 配置环境变量
+5. 点击 "Deploy"
+
+#### Cloudflare Pages 部署
+1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. 进入 Pages > Create a project
+3. 连接 GitHub 仓库
+4. 配置构建设置：
+   - Framework preset: Next.js
+   - Build command: npm run build
+   - Build output directory: .next
+5. 添加环境变量
+6. 点击 "Deploy"
+
+### 部署后配置
+
+1. 更新 NEXTAUTH_URL 为实际部署的域名
+2. 运行数据库迁移：
+   ```bash
+   npx prisma db push
+   ```
+3. 创建管理员账户：
+   ```bash
+   npm run create-admin
+   ```
+4. 导入初始数据（可选）：
+   ```bash
+   npm run seed
+   ```
+
 ## 贡献指南
 
 欢迎提交 Pull Request 和 Issue。在提交之前，请确保：

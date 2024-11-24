@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { prisma, initializePrisma } from '@/lib/prisma-client';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '../../auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
+import { prisma, initializePrisma } from '@/lib/prisma-client';
 
 interface Props {
   params: Promise<{

@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "regions": ["sin1"],
+  "env": {
+    "NEXTAUTH_URL": "https://${VERCEL_URL}",
+    "NEXTAUTH_SECRET": "${NEXTAUTH_SECRET}"
+  },
+  "build": {
+    "env": {
+      "PRISMA_GENERATE": "true"
+    }
+  }
+}
