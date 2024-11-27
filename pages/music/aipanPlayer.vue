@@ -285,55 +285,65 @@
             <p>{{ searchQuery ? "未找到匹配的歌曲" : "播放列表为空" }}</p>
           </div>
 
-          <div
-            v-for="(music, index) in filteredMusicList"
-            :key="music.path"
-            class="group px-4 py-3 flex items-center hover:bg-gray-800 cursor-pointer transition-all"
-            :class="{
-              'bg-gray-800 bg-opacity-50': currentPlaying?.path === music.path,
-            }"
-            @click="playMusic(music)"
+          <transition-group
+            v-else
+            name="list"
+            tag="div"
+            class="flex flex-col gap-3"
           >
-            <!-- Index/Playing Status -->
-            <div class="w-8 flex-shrink-0 flex items-center justify-center">
-              <template v-if="currentPlaying?.path === music.path">
-                <i
-                  class="fa-solid fa-volume-high text-blue-500"
-                  v-if="isPlaying"
-                ></i>
-                <i class="fa-solid fa-pause text-gray-400" v-else></i>
-              </template>
-              <span v-else class="text-gray-400">{{ index + 1 }}</span>
-            </div>
-
-            <!-- Song Info -->
-            <div class="flex-1 min-w-0 ml-3">
-              <div
-                class="font-medium truncate text-white"
-                :class="{
-                  'text-blue-500': currentPlaying?.path === music.path,
-                }"
-              >
-                {{ music.name }}
+            <div
+              v-for="(music, index) in filteredMusicList"
+              :key="music.path"
+              class="group px-4 py-3 flex items-center hover:bg-gray-800 cursor-pointer transition-all"
+              :class="{
+                'bg-gray-800 bg-opacity-50': currentPlaying?.path === music.path,
+              }"
+              @click="playMusic(music)"
+              @mouseover="handleItemHover(index)"
+              @mouseleave="handleItemLeave"
+              :style="getPlaylistItemStyle(index)"
+            >
+              <!-- Index/Playing Status -->
+              <div class="w-8 flex-shrink-0 flex items-center justify-center">
+                <template v-if="currentPlaying?.path === music.path">
+                  <i
+                    class="fa-solid fa-volume-high text-blue-500"
+                    v-if="isPlaying"
+                  ></i>
+                  <i class="fa-solid fa-pause text-gray-400" v-else></i>
+                </template>
+                <span v-else class="text-gray-400">{{ index + 1 }}</span>
               </div>
-              <div class="text-xs text-gray-400 mt-1">
-                <span class="mr-2">{{ formatTime(music.duration || 0) }}</span>
-                <span class="px-1.5 py-0.5 rounded bg-gray-700">{{
-                  music.format.toUpperCase()
-                }}</span>
+
+              <!-- Song Info -->
+              <div class="flex-1 min-w-0 ml-3">
+                <div
+                  class="font-medium truncate text-white"
+                  :class="{
+                    'text-blue-500': currentPlaying?.path === music.path,
+                  }"
+                >
+                  {{ music.name }}
+                </div>
+                <div class="text-xs text-gray-400 mt-1">
+                  <span class="mr-2">{{ formatTime(music.duration || 0) }}</span>
+                  <span class="px-1.5 py-0.5 rounded bg-gray-700">{{
+                    music.format.toUpperCase()
+                  }}</span>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-700 transition-all"
+                  @click.stop="removeFromPlaylist(index)"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
               </div>
             </div>
-
-            <!-- Actions -->
-            <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-700 transition-all"
-                @click.stop="removeFromPlaylist(index)"
-              >
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
-            </div>
-          </div>
+          </transition-group>
         </div>
       </div>
     </el-drawer>
@@ -363,7 +373,7 @@ import {
   drawMinimalTheme,
   drawCircularVisualizer,
 } from "~/utils/musicPlayer";
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { ElMessage } from "element-plus";
 definePageMeta({
   layout: "custom",
@@ -508,6 +518,7 @@ const drawWaveform = () => {
 
   animationFrameId = requestAnimationFrame(drawWaveform);
 };
+
 const selectFolder = () => {
   folderInput.value.click();
 };
@@ -682,7 +693,23 @@ const handleEnded = () => {
 
 const handleSeek = (value) => {
   if (audioPlayer.value) {
-    audioPlayer.value.currentTime = value;
+    const start = audioPlayer.value.currentTime;
+    const end = value;
+    const duration = 200; // 200ms transition
+    const startTime = performance.now();
+
+    function updateTime() {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      audioPlayer.value.currentTime = start + (end - start) * progress;
+      
+      if (progress < 1) {
+        requestAnimationFrame(updateTime);
+      }
+    }
+
+    requestAnimationFrame(updateTime);
   }
 };
 
@@ -967,9 +994,163 @@ onUnmounted(() => {
     }
   });
 });
+
+// Add transition group for list animations
+const listTransitionProps = {
+  name: 'list',
+  tag: 'div',
+  moveClass: 'transition-transform duration-300'
+};
+
+// Enhanced empty state animations
+const emptyStateClass = computed(() => ({
+  'animate-pulse': !musicList.value.length,
+  'animate-bounce': searchQuery.value && !filteredMusicList.value.length
+}));
+
+// Add smooth transitions for theme changes
+watch(currentTheme, (newTheme, oldTheme) => {
+  if (waveformCanvas.value) {
+    const canvas = waveformCanvas.value;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}, { flush: 'post' });
+
+// Add smooth volume transition
+watch(volume, (newVolume) => {
+  if (audioPlayer.value) {
+    const start = audioPlayer.value.volume;
+    const end = newVolume / 100;
+    const duration = 200; // 200ms transition
+    const startTime = performance.now();
+
+    function updateVolume() {
+      const elapsed = performance.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      audioPlayer.value.volume = start + (end - start) * progress;
+      
+      if (progress < 1) {
+        requestAnimationFrame(updateVolume);
+      }
+    }
+
+    requestAnimationFrame(updateVolume);
+  }
+});
+
+// Add playlist item hover effect
+const getPlaylistItemStyle = (index) => {
+  return {
+    transform: `translateX(${hoveredIndex.value === index ? '8px' : '0'})`,
+    transition: 'transform 0.3s ease'
+  };
+};
+
+const hoveredIndex = ref(null);
+
+const handleItemHover = (index) => {
+  hoveredIndex.value = index;
+};
+
+const handleItemLeave = () => {
+  hoveredIndex.value = null;
+};
 </script>
 
 <style lang="scss">
+// List transitions
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.3s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.list-leave-active {
+  position: absolute;
+}
+
+// Fade transitions
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+// Slide transitions
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(100%);
+}
+
+.slide-leave-to {
+  transform: translateX(-100%);
+}
+
+// Scale transitions
+.scale-enter-active,
+.scale-leave-active {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.scale-enter-from,
+.scale-leave-to {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+// Button press animation
+.btn-press {
+  transition: transform 0.1s ease;
+  
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// Hover lift effect
+.hover-lift {
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// Glow effect
+.glow {
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5));
+    filter: blur(15px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  &:hover::after {
+    opacity: 0.5;
+  }
+}
+
 .music-playlist {
   .el-drawer__body {
     padding: 0;
