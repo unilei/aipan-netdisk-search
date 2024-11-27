@@ -1,4 +1,5 @@
 <script setup>
+import placeHolderImage from "~/assets/placeholder.webp";
 defineProps({
   doubanData: {
     type: Array,
@@ -41,7 +42,7 @@ onUnmounted(() => {
 
 // 获取代理图片URL
 const getProxyImageUrl = (url) => {
-  if (!url) return "/placeholder.webp";
+  if (!url) return placeHolderImage;
   return `/api/image-proxy?url=${encodeURIComponent(url)}`;
 };
 
@@ -133,7 +134,7 @@ const goDouban = (movie) => {
           <!-- 图片 -->
           <img
             :ref="(el) => setImageRef(el, `${item.name}-${index}`, movie.cover)"
-            :src="'/placeholder.jpg'"
+            :src="placeHolderImage"
             class="w-full h-[180px] lg:h-[220px] xl:h-44 object-cover transition-all duration-300 group-hover:scale-105"
             :class="{
               'opacity-0': !imageLoadStatus[`${item.name}-${index}`],
