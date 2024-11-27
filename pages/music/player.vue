@@ -3,17 +3,21 @@
     class="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-purple-900/20 to-gray-900 text-white overflow-hidden"
   >
     <!-- Main Content -->
-    <div class="relative h-screen pb-24">
+    <div class="relative h-screen pb-24 md:pb-24">
       <!-- Header with premium glass effect -->
-      <div class="p-8 backdrop-blur-xl bg-black/20 border-b border-white/5">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-          <div class="flex items-center gap-6">
+      <div
+        class="p-4 md:p-8 backdrop-blur-xl bg-black/20 border-b border-white/5"
+      >
+        <div
+          class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center gap-4 md:gap-0 md:justify-between"
+        >
+          <div class="flex items-center gap-4">
             <el-button
               type="primary"
-              class="px-8 py-4 text-base rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 transform hover:scale-105"
+              class="px-4 md:px-8 py-3 md:py-4 text-sm md:text-base rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 md:gap-3 transform hover:scale-105"
               @click="selectFolder"
             >
-              <i class="fa-solid fa-folder-open text-lg"></i>
+              <i class="fa-solid fa-folder-open text-base md:text-lg"></i>
               选择音乐文件夹
             </el-button>
             <input
@@ -25,16 +29,19 @@
               @click="handleMouseMove"
               @change="handleFolderSelect"
             />
+            <nuxt-link to="/" class="text-sm"> 首页 </nuxt-link>
           </div>
 
           <!-- Theme Switcher -->
-          <div class="flex gap-3">
+          <div
+            class="flex gap-2 md:gap-3 overflow-x-auto pb-2 md:pb-0 hide-scrollbar"
+          >
             <button
               v-for="theme in themes"
               :key="theme.id"
               @click="switchTheme(theme.id)"
               :class="[
-                'px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300',
+                'px-4 md:px-6 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-medium whitespace-nowrap transition-all duration-300',
                 currentTheme === theme.id
                   ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white shadow-lg'
                   : 'bg-white/5 text-gray-300 hover:bg-white/10 backdrop-blur-lg',
@@ -46,22 +53,28 @@
         </div>
       </div>
 
-      <!-- Waveform Visualization with premium effect -->
+      <!-- Main Content Area -->
       <div
-        class="flex flex-col items-center justify-center p-12"
+        class="flex flex-col items-center justify-center p-4 md:p-12"
         v-if="musicList.length > 0"
       >
         <div class="relative w-full max-w-5xl">
           <!-- Album Art Placeholder -->
-          <div class="absolute -top-20 left-8 w-48 h-48 rounded-2xl overflow-hidden shadow-2xl z-10">
-            <div class="w-full h-full bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 backdrop-blur-xl flex items-center justify-center">
-              <i class="fa-solid fa-music text-4xl text-white/70"></i>
+          <div
+            class="absolute -top-12 md:-top-20 left-4 md:left-8 w-32 md:w-48 h-32 md:h-48 rounded-2xl overflow-hidden shadow-2xl z-10"
+          >
+            <div
+              class="w-full h-full bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 backdrop-blur-xl flex items-center justify-center"
+            >
+              <i
+                class="fa-solid fa-music text-2xl md:text-4xl text-white/70"
+              ></i>
             </div>
           </div>
-          
+
           <!-- Visualization Container -->
           <div
-            class="w-full aspect-[21/9] bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-3xl p-8 relative overflow-hidden shadow-2xl border border-white/5"
+            class="w-full aspect-[16/9] md:aspect-[21/9] bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-8 relative overflow-hidden shadow-2xl border border-white/5"
           >
             <canvas ref="waveformCanvas" class="w-full h-full"></canvas>
             <div
@@ -69,208 +82,359 @@
               v-if="!currentPlaying"
             >
               <div class="text-center">
-                <i class="fa-solid fa-headphones text-6xl text-white/30 mb-4"></i>
-                <p class="text-white/50 text-lg font-medium">准备播放您的音乐</p>
+                <i
+                  class="fa-solid fa-headphones text-4xl md:text-6xl text-white/30 mb-2 md:mb-4"
+                ></i>
+                <p class="text-white/50 text-base md:text-lg font-medium">
+                  准备播放您的音乐
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Empty State with premium animation -->
+      <!-- Empty State -->
       <div
         v-else
-        class="flex-1 flex flex-col items-center justify-center text-white/70"
+        class="flex-1 flex flex-col items-center justify-center p-4 md:p-8 text-white/70"
       >
         <div class="relative">
-          <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-3xl"></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-3xl"
+          ></div>
           <div class="relative text-center">
-            <i class="fa-solid fa-headphones text-8xl mb-8 animate-pulse"></i>
-            <p class="text-2xl font-medium mb-4">开始您的音乐之旅</p>
-            <p class="text-lg text-white/50">选择音乐文件夹以开始播放</p>
+            <i
+              class="fa-solid fa-headphones text-6xl md:text-8xl mb-6 md:mb-8 animate-pulse"
+            ></i>
+            <p class="text-xl md:text-2xl font-medium mb-3 md:mb-4">
+              开始您的音乐之旅
+            </p>
+            <p class="text-base md:text-lg text-white/50">
+              选择音乐文件夹以开始播放
+            </p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Player Bar with premium glass effect -->
+    <!-- Player Bar -->
     <div
-      class="fixed bottom-0 left-0 right-0 h-24 backdrop-blur-2xl bg-black/80 border-t border-white/5 px-8 flex items-center justify-between shadow-2xl"
+      class="fixed bottom-0 left-0 right-0 h-auto md:h-24 backdrop-blur-2xl bg-black/80 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between shadow-2xl"
     >
-      <!-- Currently Playing -->
-      <div class="flex items-center w-1/4">
-        <div
-          class="w-16 h-16 rounded-2xl overflow-hidden shadow-2xl mr-5"
-        >
-          <template v-if="currentPlaying">
-            <div
-              class="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center"
+      <!-- Mobile Layout -->
+      <div class="flex flex-col w-full md:hidden">
+        <!-- Progress Bar -->
+        <div class="px-4 pt-2">
+          <div class="flex items-center gap-2 text-xs text-white/50">
+            <span>{{ formatTime(currentTime) }}</span>
+            <div class="flex-1 px-2">
+              <el-slider
+                v-model="currentTime"
+                :max="duration"
+                @change="handleSeek"
+                class="premium-slider"
+              ></el-slider>
+            </div>
+            <span>{{ formatTime(duration) }}</span>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex items-center justify-between px-4 py-3">
+          <!-- Currently Playing -->
+          <div class="flex items-center flex-1 min-w-0">
+            <div class="w-12 h-12 rounded-xl overflow-hidden shadow-lg mr-3">
+              <template v-if="currentPlaying">
+                <div
+                  class="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-music text-lg text-white/90"></i>
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  class="w-full h-full bg-white/5 flex items-center justify-center"
+                >
+                  <i class="fa-solid fa-music text-lg text-white/30"></i>
+                </div>
+              </template>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="truncate text-sm font-medium">
+                {{ currentPlaying?.name || "未选择歌曲" }}
+              </div>
+              <div class="text-xs text-white/50 mt-0.5">本地音乐</div>
+            </div>
+          </div>
+
+          <!-- Playback Controls -->
+          <div class="flex items-center gap-4">
+            <button
+              class="text-white/70 hover:text-white transition-all duration-300"
+              @click="previousTrack"
+              :disabled="!hasPrevious"
+              :class="{ 'opacity-30': !hasPrevious }"
             >
-              <i class="fa-solid fa-music text-2xl text-white/90"></i>
-            </div>
-          </template>
-          <template v-else>
-            <div class="w-full h-full bg-white/5 flex items-center justify-center">
-              <i class="fa-solid fa-music text-2xl text-white/30"></i>
-            </div>
-          </template>
+              <i class="fa-solid fa-backward-step text-xl"></i>
+            </button>
+            <button
+              class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white flex items-center justify-center hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg"
+              @click="togglePlay"
+            >
+              <i
+                :class="[
+                  'fa-solid',
+                  isPlaying ? 'fa-pause' : 'fa-play',
+                  'text-xl',
+                  isPlaying ? '' : 'ml-0.5',
+                ]"
+              ></i>
+            </button>
+            <button
+              class="text-white/70 hover:text-white transition-all duration-300"
+              @click="nextTrack"
+              :disabled="!hasNext"
+              :class="{ 'opacity-30': !hasNext }"
+            >
+              <i class="fa-solid fa-forward-step text-xl"></i>
+            </button>
+          </div>
         </div>
-        <div class="flex flex-col">
-          <span class="text-base font-medium truncate">{{
-            currentPlaying?.name || "未选择歌曲"
-          }}</span>
-          <span class="text-sm text-white/50 mt-1 flex items-center">
-            <i class="fa-solid fa-music mr-2"></i>
-            本地音乐
-          </span>
+
+        <!-- Volume and Playlist -->
+        <div class="flex items-center justify-between px-4 pb-3">
+          <div class="flex items-center gap-3">
+            <button
+              class="text-white/70 hover:text-white transition-all duration-300 p-2"
+              @click="toggleMute"
+            >
+              <i
+                :class="[
+                  'fa-solid',
+                  volume === 0
+                    ? 'fa-volume-xmark'
+                    : volume < 30
+                    ? 'fa-volume-off'
+                    : volume < 70
+                    ? 'fa-volume-low'
+                    : 'fa-volume-high',
+                  'text-lg',
+                ]"
+              ></i>
+            </button>
+            <div class="w-24">
+              <el-slider
+                v-model="volume"
+                :max="100"
+                @change="handleVolumeChange"
+                class="premium-slider"
+              ></el-slider>
+            </div>
+          </div>
+          <button
+            class="text-white/70 hover:text-white transition-all duration-300 relative p-2"
+            @click="togglePlaylist"
+          >
+            <i class="fa-solid fa-list text-lg"></i>
+            <span
+              v-if="musicList.length > 0"
+              class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-xs flex items-center justify-center"
+            >
+              {{ musicList.length }}
+            </span>
+          </button>
         </div>
       </div>
 
-      <!-- Player Controls with premium design -->
-      <div class="flex flex-col items-center w-2/4">
-        <div class="flex items-center gap-10 mb-3">
-          <button
-            class="text-white/70 hover:text-white transition-all duration-300 transform hover:scale-110"
-            @click="previousTrack"
-            :disabled="!hasPrevious"
-            :class="{ 'opacity-30 cursor-not-allowed': !hasPrevious }"
-          >
-            <i class="fa-solid fa-backward-step text-2xl"></i>
-          </button>
-          <button
-            class="w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white flex items-center justify-center hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-            @click="togglePlay"
-          >
-            <i
-              :class="[
-                'fa-solid',
-                isPlaying ? 'fa-pause' : 'fa-play',
-                'text-2xl',
-                isPlaying ? '' : 'ml-1',
-              ]"
-            ></i>
-          </button>
-          <button
-            class="text-white/70 hover:text-white transition-all duration-300 transform hover:scale-110"
-            @click="nextTrack"
-            :disabled="!hasNext"
-            :class="{ 'opacity-30 cursor-not-allowed': !hasNext }"
-          >
-            <i class="fa-solid fa-forward-step text-2xl"></i>
-          </button>
-        </div>
-        <div class="w-full flex items-center gap-3 text-sm text-white/50">
-          <span class="w-12 text-right">{{ formatTime(currentTime) }}</span>
-          <div class="flex-1 px-4">
-            <el-slider
-              v-model="currentTime"
-              :max="duration"
-              @change="handleSeek"
-              class="premium-slider"
-            ></el-slider>
+      <!-- Desktop Layout -->
+      <div class="hidden md:flex w-full items-center px-8">
+        <!-- Currently Playing -->
+        <div class="flex items-center w-1/4">
+          <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-2xl mr-5">
+            <template v-if="currentPlaying">
+              <div
+                class="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center"
+              >
+                <i class="fa-solid fa-music text-2xl text-white/90"></i>
+              </div>
+            </template>
+            <template v-else>
+              <div
+                class="w-full h-full bg-white/5 flex items-center justify-center"
+              >
+                <i class="fa-solid fa-music text-2xl text-white/30"></i>
+              </div>
+            </template>
           </div>
-          <span class="w-12">{{ formatTime(duration) }}</span>
+          <div class="flex flex-col">
+            <span class="text-base font-medium truncate">{{
+              currentPlaying?.name || "未选择歌曲"
+            }}</span>
+            <span class="text-sm text-white/50 mt-1 flex items-center">
+              <i class="fa-solid fa-music mr-2"></i>
+              本地音乐
+            </span>
+          </div>
         </div>
-      </div>
 
-      <!-- Volume and Playlist with premium effects -->
-      <div class="flex items-center justify-end w-1/4 gap-6">
-        <div class="flex items-center gap-4 group relative">
-          <button class="text-white/70 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-white/5">
-            <i
-              :class="[
-                'fa-solid',
-                volume === 0
-                  ? 'fa-volume-xmark'
-                  : volume < 30
-                  ? 'fa-volume-off'
-                  : volume < 70
-                  ? 'fa-volume-low'
-                  : 'fa-volume-high',
-                'text-xl',
-              ]"
-            ></i>
-          </button>
-          <div class="w-24">
-            <el-slider
-              v-model="volume"
-              :max="100"
-              @change="handleVolumeChange"
-              class="premium-slider"
-            ></el-slider>
+        <!-- Player Controls -->
+        <div class="flex flex-col items-center w-2/4">
+          <div class="flex items-center gap-10 mb-3">
+            <button
+              class="text-white/70 hover:text-white transition-all duration-300 transform hover:scale-110"
+              @click="previousTrack"
+              :disabled="!hasPrevious"
+              :class="{ 'opacity-30 cursor-not-allowed': !hasPrevious }"
+            >
+              <i class="fa-solid fa-backward-step text-2xl"></i>
+            </button>
+            <button
+              class="w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white flex items-center justify-center hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              @click="togglePlay"
+            >
+              <i
+                :class="[
+                  'fa-solid',
+                  isPlaying ? 'fa-pause' : 'fa-play',
+                  'text-2xl',
+                  isPlaying ? '' : 'ml-1',
+                ]"
+              ></i>
+            </button>
+            <button
+              class="text-white/70 hover:text-white transition-all duration-300 transform hover:scale-110"
+              @click="nextTrack"
+              :disabled="!hasNext"
+              :class="{ 'opacity-30 cursor-not-allowed': !hasNext }"
+            >
+              <i class="fa-solid fa-forward-step text-2xl"></i>
+            </button>
+          </div>
+          <div class="w-full flex items-center gap-3 text-sm text-white/50">
+            <span class="w-12 text-right">{{ formatTime(currentTime) }}</span>
+            <div class="flex-1 px-4">
+              <el-slider
+                v-model="currentTime"
+                :max="duration"
+                @change="handleSeek"
+                class="premium-slider"
+              ></el-slider>
+            </div>
+            <span class="w-12">{{ formatTime(duration) }}</span>
           </div>
         </div>
-        <button
-          class="text-white/70 hover:text-white transition-all duration-300 relative p-2 rounded-lg hover:bg-white/5"
-          @click="togglePlaylist"
-        >
-          <i class="fa-solid fa-list text-xl"></i>
-          <span
-            v-if="musicList.length > 0"
-            class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-xs flex items-center justify-center shadow-lg"
+
+        <!-- Volume and Playlist -->
+        <div class="flex items-center justify-end w-1/4 gap-6">
+          <div class="flex items-center gap-4 group relative">
+            <button
+              class="text-white/70 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-white/5"
+            >
+              <i
+                :class="[
+                  'fa-solid',
+                  volume === 0
+                    ? 'fa-volume-xmark'
+                    : volume < 30
+                    ? 'fa-volume-off'
+                    : volume < 70
+                    ? 'fa-volume-low'
+                    : 'fa-volume-high',
+                  'text-xl',
+                ]"
+              ></i>
+            </button>
+            <div class="w-24">
+              <el-slider
+                v-model="volume"
+                :max="100"
+                @change="handleVolumeChange"
+                class="premium-slider"
+              ></el-slider>
+            </div>
+          </div>
+          <button
+            class="text-white/70 hover:text-white transition-all duration-300 relative p-2 rounded-lg hover:bg-white/5"
+            @click="togglePlaylist"
           >
-            {{ musicList.length }}
-          </span>
-        </button>
+            <i class="fa-solid fa-list text-xl"></i>
+            <span
+              v-if="musicList.length > 0"
+              class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-xs flex items-center justify-center shadow-lg"
+            >
+              {{ musicList.length }}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Playlist Drawer -->
     <el-drawer
       v-model="showPlaylist"
-      title="播放列表"
+      :size="isMobile ? '90%' : '460px'"
       direction="rtl"
-      size="400px"
       :with-header="false"
       class="music-playlist"
+      :modal-class="'!bg-black/30 backdrop-blur-sm'"
     >
-      <div class="h-full flex flex-col bg-gray-900">
+      <div
+        class="h-full flex flex-col bg-gradient-to-br from-gray-900 via-gray-900 to-black"
+      >
         <!-- Header -->
-        <div
-          class="p-4 border-b border-gray-700 flex items-center justify-between"
-        >
-          <div class="flex items-center">
-            <i class="fa-solid fa-list text-xl mr-2 text-blue-500"></i>
-            <span class="text-lg font-medium text-white">播放列表</span>
+        <div class="p-6 border-b border-white/5">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg"
+              >
+                <i class="fa-solid fa-music text-2xl text-white"></i>
+              </div>
+              <div>
+                <h2 class="text-xl font-semibold text-white">播放列表</h2>
+                <p class="text-sm text-white/50 mt-1">
+                  {{ musicList.length }} 首歌曲
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <button
+                class="w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/5 transition-all duration-300"
+                @click="toggleShuffle"
+                :class="{ 'text-blue-500': isShuffleMode }"
+              >
+                <i class="fa-solid fa-shuffle"></i>
+              </button>
+              <button
+                class="w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/5 transition-all duration-300"
+                @click="toggleRepeatMode"
+                :class="{ 'text-blue-500': repeatMode !== 'none' }"
+              >
+                <i
+                  class="fa-solid"
+                  :class="repeatMode === 'one' ? 'fa-repeat-1' : 'fa-repeat'"
+                ></i>
+              </button>
+              <button
+                class="w-10 h-10 rounded-full flex items-center justify-center text-white/70 hover:text-white hover:bg-white/5 transition-all duration-300"
+                @click="showPlaylist = false"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
           </div>
-          <div class="flex items-center space-x-2">
-            <button
-              class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-blue-500 hover:bg-gray-800 transition-all"
-              @click="toggleShuffle"
-              :class="{ 'text-blue-500': isShuffleMode }"
-            >
-              <i class="fa-solid fa-shuffle"></i>
-            </button>
-            <button
-              class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-blue-500 hover:bg-gray-800 transition-all"
-              @click="toggleRepeatMode"
-              :class="{ 'text-blue-500': repeatMode !== 'none' }"
-            >
-              <i
-                class="fa-solid"
-                :class="repeatMode === 'one' ? 'fa-repeat-1' : 'fa-repeat'"
-              ></i>
-            </button>
-            <button
-              class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-white hover:bg-gray-800 transition-all"
-              @click="showPlaylist = false"
-            >
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-        </div>
 
-        <!-- Search Bar -->
-        <div class="px-4 py-3">
+          <!-- Search Bar -->
           <div class="relative">
             <input
               v-model="searchQuery"
               type="text"
               placeholder="搜索歌曲..."
-              class="w-full bg-gray-800 text-white px-4 py-2 rounded-lg pl-10 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-700"
+              class="w-full bg-white/5 text-white px-5 py-3 rounded-xl pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500/50 border border-white/5 placeholder-white/30 transition-all duration-300"
             />
             <i
-              class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-white/30"
             ></i>
           </div>
         </div>
@@ -279,71 +443,93 @@
         <div class="flex-1 overflow-y-auto custom-scrollbar">
           <div
             v-if="filteredMusicList.length === 0"
-            class="flex flex-col items-center justify-center h-full text-gray-400"
+            class="flex flex-col items-center justify-center h-full text-white/50"
           >
-            <i class="fa-solid fa-music text-4xl mb-4"></i>
-            <p>{{ searchQuery ? "未找到匹配的歌曲" : "播放列表为空" }}</p>
-          </div>
-
-          <transition-group
-            v-else
-            name="list"
-            tag="div"
-            class="flex flex-col gap-3"
-          >
-            <div
-              v-for="(music, index) in filteredMusicList"
-              :key="music.path"
-              class="group px-4 py-3 flex items-center hover:bg-gray-800 cursor-pointer transition-all"
-              :class="{
-                'bg-gray-800 bg-opacity-50': currentPlaying?.path === music.path,
-              }"
-              @click="playMusic(music)"
-              @mouseover="handleItemHover(index)"
-              @mouseleave="handleItemLeave"
-              :style="getPlaylistItemStyle(index)"
-            >
-              <!-- Index/Playing Status -->
-              <div class="w-8 flex-shrink-0 flex items-center justify-center">
-                <template v-if="currentPlaying?.path === music.path">
-                  <i
-                    class="fa-solid fa-volume-high text-blue-500"
-                    v-if="isPlaying"
-                  ></i>
-                  <i class="fa-solid fa-pause text-gray-400" v-else></i>
-                </template>
-                <span v-else class="text-gray-400">{{ index + 1 }}</span>
-              </div>
-
-              <!-- Song Info -->
-              <div class="flex-1 min-w-0 ml-3">
-                <div
-                  class="font-medium truncate text-white"
-                  :class="{
-                    'text-blue-500': currentPlaying?.path === music.path,
-                  }"
-                >
-                  {{ music.name }}
-                </div>
-                <div class="text-xs text-gray-400 mt-1">
-                  <span class="mr-2">{{ formatTime(music.duration || 0) }}</span>
-                  <span class="px-1.5 py-0.5 rounded bg-gray-700">{{
-                    music.format.toUpperCase()
-                  }}</span>
-                </div>
-              </div>
-
-              <!-- Actions -->
-              <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  class="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-red-500 hover:bg-gray-700 transition-all"
-                  @click.stop="removeFromPlaylist(index)"
-                >
-                  <i class="fa-solid fa-trash-can"></i>
-                </button>
+            <div class="relative">
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-10 blur-3xl"
+              ></div>
+              <div class="relative text-center">
+                <i class="fa-solid fa-music text-6xl mb-4"></i>
+                <p class="text-lg">
+                  {{ searchQuery ? "未找到匹配的歌曲" : "播放列表为空" }}
+                </p>
               </div>
             </div>
-          </transition-group>
+          </div>
+
+          <div
+            v-for="(music, index) in filteredMusicList"
+            :key="music.path"
+            class="group px-6 py-4 flex items-center hover:bg-white/5 cursor-pointer transition-all relative"
+            :class="{
+              'bg-white/5': currentPlaying?.path === music.path,
+            }"
+            @click="playMusic(music)"
+          >
+            <!-- Playing Indicator -->
+            <div
+              class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 opacity-0 transition-opacity duration-300"
+              :class="{ 'opacity-100': currentPlaying?.path === music.path }"
+            ></div>
+
+            <!-- Index/Playing Status -->
+            <div class="w-12 flex-shrink-0 flex items-center justify-center">
+              <template v-if="currentPlaying?.path === music.path">
+                <div class="relative w-4 h-4" v-if="isPlaying">
+                  <div
+                    class="absolute inset-0 bg-blue-500 rounded-full animate-ping opacity-20"
+                  ></div>
+                  <div
+                    class="relative w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center"
+                  >
+                    <i
+                      class="fa-solid fa-play text-[8px] text-white ml-0.5"
+                    ></i>
+                  </div>
+                </div>
+                <i class="fa-solid fa-pause text-white/30" v-else></i>
+              </template>
+              <span
+                class="text-white/30 group-hover:text-white/50 transition-colors duration-300"
+                v-else
+                >{{ index + 1 }}</span
+              >
+            </div>
+
+            <!-- Song Info -->
+            <div class="flex-1 min-w-0 ml-4">
+              <div
+                class="font-medium truncate text-white/90 group-hover:text-white transition-colors duration-300"
+                :class="{
+                  'text-blue-400': currentPlaying?.path === music.path,
+                }"
+              >
+                {{ music.name }}
+              </div>
+              <div class="flex items-center gap-3 mt-1 text-sm">
+                <span class="text-white/40">{{
+                  formatTime(music.duration || 0)
+                }}</span>
+                <span
+                  class="px-2 py-0.5 rounded-full text-xs bg-white/5 text-white/40 uppercase tracking-wider"
+                  >{{ music.format.replace(".", "") }}</span
+                >
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div
+              class="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0"
+            >
+              <button
+                class="w-10 h-10 rounded-full flex items-center justify-center text-white/50 hover:text-red-500 hover:bg-white/5 transition-all duration-300"
+                @click.stop="removeFromPlaylist(index)"
+              >
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </el-drawer>
@@ -394,7 +580,7 @@ const mouseX = ref(50);
 const mouseY = ref(50);
 const backgroundColor = ref("rgba(17, 24, 39, 0.8)");
 const accentColor = ref("rgba(59, 130, 246, 0.2)");
-const currentTheme = ref("default");
+const currentTheme = ref("spectrum");
 const themes = [
   { id: "default", name: "默认主题" },
   { id: "spectrum", name: "频谱主题" },
@@ -701,9 +887,9 @@ const handleSeek = (value) => {
     function updateTime() {
       const elapsed = performance.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       audioPlayer.value.currentTime = start + (end - start) * progress;
-      
+
       if (progress < 1) {
         requestAnimationFrame(updateTime);
       }
@@ -997,25 +1183,29 @@ onUnmounted(() => {
 
 // Add transition group for list animations
 const listTransitionProps = {
-  name: 'list',
-  tag: 'div',
-  moveClass: 'transition-transform duration-300'
+  name: "list",
+  tag: "div",
+  moveClass: "transition-transform duration-300",
 };
 
 // Enhanced empty state animations
 const emptyStateClass = computed(() => ({
-  'animate-pulse': !musicList.value.length,
-  'animate-bounce': searchQuery.value && !filteredMusicList.value.length
+  "animate-pulse": !musicList.value.length,
+  "animate-bounce": searchQuery.value && !filteredMusicList.value.length,
 }));
 
 // Add smooth transitions for theme changes
-watch(currentTheme, (newTheme, oldTheme) => {
-  if (waveformCanvas.value) {
-    const canvas = waveformCanvas.value;
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-}, { flush: 'post' });
+watch(
+  currentTheme,
+  (newTheme, oldTheme) => {
+    if (waveformCanvas.value) {
+      const canvas = waveformCanvas.value;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  },
+  { flush: "post" }
+);
 
 // Add smooth volume transition
 watch(volume, (newVolume) => {
@@ -1028,9 +1218,9 @@ watch(volume, (newVolume) => {
     function updateVolume() {
       const elapsed = performance.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       audioPlayer.value.volume = start + (end - start) * progress;
-      
+
       if (progress < 1) {
         requestAnimationFrame(updateVolume);
       }
@@ -1043,8 +1233,8 @@ watch(volume, (newVolume) => {
 // Add playlist item hover effect
 const getPlaylistItemStyle = (index) => {
   return {
-    transform: `translateX(${hoveredIndex.value === index ? '8px' : '0'})`,
-    transition: 'transform 0.3s ease'
+    transform: `translateX(${hoveredIndex.value === index ? "8px" : "0"})`,
+    transition: "transform 0.3s ease",
   };
 };
 
@@ -1057,6 +1247,22 @@ const handleItemHover = (index) => {
 const handleItemLeave = () => {
   hoveredIndex.value = null;
 };
+
+// Add mobile detection
+const isMobile = ref(false);
+
+onMounted(() => {
+  const checkMobile = () => {
+    isMobile.value = window.innerWidth < 768;
+  };
+
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", checkMobile);
+});
 </script>
 
 <style lang="scss">
@@ -1117,7 +1323,7 @@ const handleItemLeave = () => {
 // Button press animation
 .btn-press {
   transition: transform 0.1s ease;
-  
+
   &:active {
     transform: scale(0.95);
   }
@@ -1126,7 +1332,7 @@ const handleItemLeave = () => {
 // Hover lift effect
 .hover-lift {
   transition: transform 0.2s ease;
-  
+
   &:hover {
     transform: translateY(-2px);
   }
@@ -1135,17 +1341,21 @@ const handleItemLeave = () => {
 // Glow effect
 .glow {
   position: relative;
-  
+
   &::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: -1px;
-    background: linear-gradient(45deg, rgba(59, 130, 246, 0.5), rgba(147, 51, 234, 0.5));
+    background: linear-gradient(
+      45deg,
+      rgba(59, 130, 246, 0.5),
+      rgba(147, 51, 234, 0.5)
+    );
     filter: blur(15px);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
-  
+
   &:hover::after {
     opacity: 0.5;
   }
@@ -1208,50 +1418,42 @@ const handleItemLeave = () => {
 
 // Premium slider styles
 .premium-slider {
-  .el-slider__runway {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    height: 4px !important;
-  }
+  @media (max-width: 767px) {
+    .el-slider__runway {
+      height: 3px !important;
+    }
 
-  .el-slider__bar {
-    background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899) !important;
-    height: 4px !important;
-  }
+    .el-slider__bar {
+      height: 3px !important;
+    }
 
-  .el-slider__button-wrapper {
-    top: -15px !important;
-  }
+    .el-slider__button {
+      width: 10px !important;
+      height: 10px !important;
+    }
 
-  .el-slider__button {
-    width: 12px !important;
-    height: 12px !important;
-    border: none !important;
-    background: white !important;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
-    transition: transform 0.2s ease !important;
-
-    &:hover {
-      transform: scale(1.2) !important;
+    .el-slider__button-wrapper {
+      top: -14px !important;
     }
   }
 }
 
-// Add animation keyframes
-@keyframes glow {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
+// Mobile drawer adjustments
+.music-playlist {
+  @media (max-width: 767px) {
+    .el-drawer {
+      border-radius: 20px 20px 0 0;
+    }
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
+// Hide scrollbar
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 </style>
