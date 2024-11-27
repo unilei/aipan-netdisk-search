@@ -1250,12 +1250,10 @@ const handleItemLeave = () => {
 
 // Add mobile detection
 const isMobile = ref(false);
-
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768;
+};
 onMounted(() => {
-  const checkMobile = () => {
-    isMobile.value = window.innerWidth < 768;
-  };
-
   checkMobile();
   window.addEventListener("resize", checkMobile);
 });
