@@ -1,118 +1,144 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white"
+    class="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-gray-900 via-purple-900/20 to-gray-900 text-white overflow-hidden"
   >
     <!-- Main Content -->
     <div class="relative h-screen pb-24">
-      <!-- 24 is the height of player bar -->
-      <!-- Header -->
-      <div class="p-8">
-        <el-button
-          type="primary"
-          class="px-6 py-3 text-base rounded-lg bg-blue-600 hover:bg-blue-700 flex items-center"
-          @click="selectFolder"
-        >
-          <i class="fa-solid fa-folder-open mr-2"></i>
-          选择音乐文件夹
-        </el-button>
-        <input
-          ref="folderInput"
-          type="file"
-          webkitdirectory
-          directory
-          class="hidden"
-          @click="handleMouseMove"
-          @change="handleFolderSelect"
-        />
-      </div>
-      <!-- 在适当的位置添加主题切换按钮组 -->
-      <div class="absolute top-4 right-4 flex gap-2">
-        <button
-          v-for="theme in themes"
-          :key="theme.id"
-          @click="switchTheme(theme.id)"
-          :class="[
-            'px-3 py-1 rounded text-sm transition-all',
-            currentTheme === theme.id
-              ? 'bg-blue-500 text-white'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600',
-          ]"
-        >
-          {{ theme.name }}
-        </button>
-      </div>
-      <!-- Waveform Visualization -->
-      <div
-        class="flex flex-col items-center justify-center p-8"
-        v-if="musicList.length > 0"
-      >
-        <div
-          class="w-full max-w-3xl aspect-video bg-gray-800 rounded-lg p-4 relative overflow-hidden"
-        >
-          <canvas ref="waveformCanvas" class="w-full h-full"></canvas>
-          <div
-            class="absolute inset-0 flex items-center justify-center"
-            v-if="!currentPlaying"
-          >
-            <i class="fa-solid fa-headphones text-4xl text-gray-400"></i>
+      <!-- Header with premium glass effect -->
+      <div class="p-8 backdrop-blur-xl bg-black/20 border-b border-white/5">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+          <div class="flex items-center gap-6">
+            <el-button
+              type="primary"
+              class="px-8 py-4 text-base rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-3 transform hover:scale-105"
+              @click="selectFolder"
+            >
+              <i class="fa-solid fa-folder-open text-lg"></i>
+              选择音乐文件夹
+            </el-button>
+            <input
+              ref="folderInput"
+              type="file"
+              webkitdirectory
+              directory
+              class="hidden"
+              @click="handleMouseMove"
+              @change="handleFolderSelect"
+            />
+          </div>
+
+          <!-- Theme Switcher -->
+          <div class="flex gap-3">
+            <button
+              v-for="theme in themes"
+              :key="theme.id"
+              @click="switchTheme(theme.id)"
+              :class="[
+                'px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300',
+                currentTheme === theme.id
+                  ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white shadow-lg'
+                  : 'bg-white/5 text-gray-300 hover:bg-white/10 backdrop-blur-lg',
+              ]"
+            >
+              {{ theme.name }}
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Empty State -->
+      <!-- Waveform Visualization with premium effect -->
+      <div
+        class="flex flex-col items-center justify-center p-12"
+        v-if="musicList.length > 0"
+      >
+        <div class="relative w-full max-w-5xl">
+          <!-- Album Art Placeholder -->
+          <div class="absolute -top-20 left-8 w-48 h-48 rounded-2xl overflow-hidden shadow-2xl z-10">
+            <div class="w-full h-full bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 backdrop-blur-xl flex items-center justify-center">
+              <i class="fa-solid fa-music text-4xl text-white/70"></i>
+            </div>
+          </div>
+          
+          <!-- Visualization Container -->
+          <div
+            class="w-full aspect-[21/9] bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-3xl p-8 relative overflow-hidden shadow-2xl border border-white/5"
+          >
+            <canvas ref="waveformCanvas" class="w-full h-full"></canvas>
+            <div
+              class="absolute inset-0 flex items-center justify-center"
+              v-if="!currentPlaying"
+            >
+              <div class="text-center">
+                <i class="fa-solid fa-headphones text-6xl text-white/30 mb-4"></i>
+                <p class="text-white/50 text-lg font-medium">准备播放您的音乐</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State with premium animation -->
       <div
         v-else
-        class="flex-1 flex flex-col items-center justify-center text-gray-400"
+        class="flex-1 flex flex-col items-center justify-center text-white/70"
       >
-        <i class="fa-solid fa-headphones text-7xl mb-5"></i>
-        <p class="text-lg">选择音乐文件夹开始播放</p>
+        <div class="relative">
+          <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-3xl"></div>
+          <div class="relative text-center">
+            <i class="fa-solid fa-headphones text-8xl mb-8 animate-pulse"></i>
+            <p class="text-2xl font-medium mb-4">开始您的音乐之旅</p>
+            <p class="text-lg text-white/50">选择音乐文件夹以开始播放</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Fixed Player Bar -->
+    <!-- Player Bar with premium glass effect -->
     <div
-      class="fixed bottom-0 left-0 right-0 h-24 bg-gray-900 border-t border-gray-800 px-4 flex items-center justify-between backdrop-blur-lg bg-opacity-90"
+      class="fixed bottom-0 left-0 right-0 h-24 backdrop-blur-2xl bg-black/80 border-t border-white/5 px-8 flex items-center justify-between shadow-2xl"
     >
       <!-- Currently Playing -->
       <div class="flex items-center w-1/4">
         <div
-          class="w-16 h-16 rounded-lg bg-gray-800 flex items-center justify-center mr-4 overflow-hidden"
+          class="w-16 h-16 rounded-2xl overflow-hidden shadow-2xl mr-5"
         >
           <template v-if="currentPlaying">
             <div
-              class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center"
+              class="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center"
             >
-              <i class="fa-solid fa-headphones text-2xl text-white"></i>
+              <i class="fa-solid fa-music text-2xl text-white/90"></i>
             </div>
           </template>
           <template v-else>
-            <i class="fa-solid fa-headphones text-2xl text-gray-600"></i>
+            <div class="w-full h-full bg-white/5 flex items-center justify-center">
+              <i class="fa-solid fa-music text-2xl text-white/30"></i>
+            </div>
           </template>
         </div>
         <div class="flex flex-col">
-          <span class="text-sm font-medium truncate">{{
+          <span class="text-base font-medium truncate">{{
             currentPlaying?.name || "未选择歌曲"
           }}</span>
-          <span class="text-xs text-gray-400 mt-1 flex items-center">
-            <i class="fa-solid fa-music mr-1"></i>
+          <span class="text-sm text-white/50 mt-1 flex items-center">
+            <i class="fa-solid fa-music mr-2"></i>
             本地音乐
           </span>
         </div>
       </div>
 
-      <!-- Player Controls -->
+      <!-- Player Controls with premium design -->
       <div class="flex flex-col items-center w-2/4">
-        <div class="flex items-center gap-6 mb-2">
+        <div class="flex items-center gap-10 mb-3">
           <button
-            class="text-gray-400 hover:text-white transition-colors"
+            class="text-white/70 hover:text-white transition-all duration-300 transform hover:scale-110"
             @click="previousTrack"
             :disabled="!hasPrevious"
-            :class="{ 'opacity-50 cursor-not-allowed': !hasPrevious }"
+            :class="{ 'opacity-30 cursor-not-allowed': !hasPrevious }"
           >
-            <i class="fa-solid fa-backward text-2xl"></i>
+            <i class="fa-solid fa-backward-step text-2xl"></i>
           </button>
           <button
-            class="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform"
+            class="w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white flex items-center justify-center hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             @click="togglePlay"
           >
             <i
@@ -125,30 +151,32 @@
             ></i>
           </button>
           <button
-            class="text-gray-400 hover:text-white transition-colors"
+            class="text-white/70 hover:text-white transition-all duration-300 transform hover:scale-110"
             @click="nextTrack"
             :disabled="!hasNext"
-            :class="{ 'opacity-50 cursor-not-allowed': !hasNext }"
+            :class="{ 'opacity-30 cursor-not-allowed': !hasNext }"
           >
-            <i class="fa-solid fa-forward text-2xl"></i>
+            <i class="fa-solid fa-forward-step text-2xl"></i>
           </button>
         </div>
-        <div class="w-full flex items-center gap-2 text-xs text-gray-400">
-          <span class="w-10 text-right">{{ formatTime(currentTime) }}</span>
-          <el-slider
-            v-model="currentTime"
-            :max="duration"
-            @change="handleSeek"
-            class="flex-1"
-          ></el-slider>
-          <span class="w-10">{{ formatTime(duration) }}</span>
+        <div class="w-full flex items-center gap-3 text-sm text-white/50">
+          <span class="w-12 text-right">{{ formatTime(currentTime) }}</span>
+          <div class="flex-1 px-4">
+            <el-slider
+              v-model="currentTime"
+              :max="duration"
+              @change="handleSeek"
+              class="premium-slider"
+            ></el-slider>
+          </div>
+          <span class="w-12">{{ formatTime(duration) }}</span>
         </div>
       </div>
 
-      <!-- Volume and Playlist -->
-      <div class="flex items-center justify-end w-1/4 gap-4">
-        <div class="flex items-center gap-2 group relative">
-          <button class="text-gray-400 hover:text-white transition-colors p-2">
+      <!-- Volume and Playlist with premium effects -->
+      <div class="flex items-center justify-end w-1/4 gap-6">
+        <div class="flex items-center gap-4 group relative">
+          <button class="text-white/70 hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-white/5">
             <i
               :class="[
                 'fa-solid',
@@ -168,17 +196,18 @@
               v-model="volume"
               :max="100"
               @change="handleVolumeChange"
+              class="premium-slider"
             ></el-slider>
           </div>
         </div>
         <button
-          class="text-gray-400 hover:text-white transition-colors relative p-2"
+          class="text-white/70 hover:text-white transition-all duration-300 relative p-2 rounded-lg hover:bg-white/5"
           @click="togglePlaylist"
         >
           <i class="fa-solid fa-list text-xl"></i>
           <span
             v-if="musicList.length > 0"
-            class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full text-xs flex items-center justify-center"
+            class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-xs flex items-center justify-center shadow-lg"
           >
             {{ musicList.length }}
           </span>
@@ -945,26 +974,37 @@ onUnmounted(() => {
   .el-drawer__body {
     padding: 0;
     overflow: hidden;
+    background: linear-gradient(to bottom right, #1a1f2c, #121620);
   }
 
   .el-input__wrapper {
-    background-color: #1f2937 !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
     box-shadow: none !important;
-    border: 1px solid #374151;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    transition: all 0.3s ease;
+
+    &:focus-within {
+      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+    }
   }
 
   .el-input__inner {
     color: white !important;
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.3) !important;
+    }
   }
 
   .el-input__prefix-icon {
-    color: #9ca3af !important;
+    color: rgba(255, 255, 255, 0.5) !important;
   }
 }
 
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #4b5563 transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -975,8 +1015,62 @@ onUnmounted(() => {
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: #4b5563;
+    background-color: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Premium slider styles
+.premium-slider {
+  .el-slider__runway {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    height: 4px !important;
+  }
+
+  .el-slider__bar {
+    background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899) !important;
+    height: 4px !important;
+  }
+
+  .el-slider__button-wrapper {
+    top: -15px !important;
+  }
+
+  .el-slider__button {
+    width: 12px !important;
+    height: 12px !important;
+    border: none !important;
+    background: white !important;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3) !important;
+    transition: transform 0.2s ease !important;
+
+    &:hover {
+      transform: scale(1.2) !important;
+    }
+  }
+}
+
+// Add animation keyframes
+@keyframes glow {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
   }
 }
 </style>
