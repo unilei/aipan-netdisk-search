@@ -336,7 +336,9 @@ import {
 } from "~/utils/musicPlayer";
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { ElMessage } from "element-plus";
-
+definePageMeta({
+  layout: "custom",
+});
 // 状态定义
 const folderInput = ref(null);
 const audioPlayer = ref(null);
@@ -711,7 +713,9 @@ const playMusic = async (music) => {
     try {
       await audioPlayer.value.play();
       isPlaying.value = true;
-
+      if (music.source === "alist") {
+        return;
+      }
       // 初始化音频可视化
       if (!analyser) {
         initAudioContext();
@@ -826,7 +830,71 @@ const removeFromPlaylist = (index) => {
 const searchQuery = ref("");
 const isShuffleMode = ref(false);
 const repeatMode = ref("none"); // 'none' | 'all' | 'one'
+// Alist音乐相关
+const isLoadingAlist = ref(false);
 
+// 获取Alist音乐列表
+const fetchAlistMusic = async () => {
+  isLoadingAlist.value = true;
+
+  try {
+    // 获取Alist源列表
+    const { data: alistData } = await $fetch(
+      "https://alist.aipan.me/api/fs/list",
+      {
+        query: {
+          page: 1,
+          per_page: 0,
+          path: "/tianyi/music/DJ（280 首无损）/无损音乐1",
+        },
+      }
+    );
+    console.log(alistData);
+    if (alistData?.content && alistData?.content?.length > 0) {
+      // 过滤出音乐文件
+      const musicFiles = alistData.content.filter(
+        (file) =>
+          file.is_dir === false && /\.(mp3|wav|ogg|m4a|flac)$/i.test(file.name)
+      );
+
+      // 转换为播放器可用的格式
+      const musicItems = musicFiles.map((file) => ({
+        name: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
+        path: file.name,
+        url: `https://alist.aipan.me/d/tianyi/music/DJ（280 首无损）/无损音乐1/${file.name}?sign=${file.sign}`,
+        format: file.name.substring(file.name.lastIndexOf(".")).toLowerCase(),
+        duration: 0, // We can't get duration without loading the file
+        source: "alist",
+      }));
+
+      // Add to playlist
+      musicList.value.push(...musicItems);
+
+      // Display format statistics
+      const formatCounts = musicItems.reduce((acc, music) => {
+        acc[music.format] = (acc[music.format] || 0) + 1;
+        return acc;
+      }, {});
+
+      const formatStats = Object.entries(formatCounts)
+        .map(([format, count]) => `${format.toUpperCase()}: ${count}`)
+        .join(", ");
+
+      ElMessage.success(
+        `已加载 ${musicItems.length} 个音频文件（${formatStats}）`
+      );
+    }
+  } catch (error) {
+    console.error("获取Alist列表失败:", error);
+    ElMessage.error("获取Alist音乐失败，请稍后重试");
+  } finally {
+    isLoadingAlist.value = false;
+  }
+};
+// 在组件挂载时获取Alist音乐
+onMounted(() => {
+  fetchAlistMusic();
+});
 onMounted(() => {
   if (waveformCanvas.value) {
     const canvas = waveformCanvas.value;
