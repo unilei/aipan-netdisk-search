@@ -17,10 +17,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Generate Prisma Client
         run: npx prisma generate
@@ -50,7 +49,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: ".output/*,prisma/*,package.json,package-lock.json"
+          source: ".output/*,prisma/*,package.json,package-lock.json,node_modules"
           target: "/www/wwwroot/aipan-netdisk"
           strip_components: 1
 
@@ -76,9 +75,6 @@ jobs:
             ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}"
             JWT_SECRET="${{ secrets.JWT_SECRET }}"
             EOL
-
-            echo "Installing production dependencies..."
-            npm ci --production
 
             echo "Installing Prisma..."
             npm install prisma
