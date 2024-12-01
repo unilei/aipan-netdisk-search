@@ -86,12 +86,12 @@ jobs:
 
             # Download from GitHub release using CDN
             echo "Downloading release..."
-            curl -L -o deploy.tar.gz https://github.com/${{ github.repository }}/releases/download/${RELEASE_NAME}/${RELEASE_NAME}.tar.gz
+            curl -L -o "${RELEASE_NAME}.tar.gz" https://github.com/${{ github.repository }}/releases/download/${RELEASE_NAME}/${RELEASE_NAME}.tar.gz
 
             # Extract files
             echo "Extracting files..."
-            tar xzf deploy.tar.gz
-            rm deploy.tar.gz
+            tar xzf "${RELEASE_NAME}.tar.gz"
+            rm "${RELEASE_NAME}.tar.gz"
 
             # Install dependencies
             echo "Installing dependencies..."
