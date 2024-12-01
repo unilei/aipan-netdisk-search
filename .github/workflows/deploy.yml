@@ -116,22 +116,19 @@ jobs:
               "version": "1.0.0",
               "private": true,
               "dependencies": {
-                "@prisma/client": "latest"
-              },
-              "scripts": {
-                "postinstall": "prisma generate"
-              },
-              "prisma": {
-                "schema": "./prisma/schema.prisma"
+                "@prisma/client": "6.0.0"
               }
             }' > package.json
 
-            # Copy prisma schema
+            # Copy prisma schema and install dependencies
             mkdir -p prisma
             cp ../../prisma/schema.prisma prisma/
-
-            # Install dependencies (this will trigger prisma generate)
-            npm install
+            
+            # Install dependencies
+            npm install --omit=dev
+            
+            # Generate Prisma Client
+            npx prisma generate
 
             cd ../..
 

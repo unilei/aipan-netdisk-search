@@ -8,7 +8,10 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
-  binaryTargets   = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl", "linux-musl-openssl-3.0.x"]
+  // native: 用于本地开发
+  // debian-openssl-1.1.x: 用于 GitHub Actions
+  // debian-openssl-3.0.x: 用于生产服务器
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x"]
 }
 
 datasource db {
