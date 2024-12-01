@@ -20,10 +20,10 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          
+
           # 添加服务器到已知主机
           echo "${{ secrets.SERVER_HOST }} $(ssh-keyscan -t rsa ${{ secrets.SERVER_HOST }} 2>/dev/null)" >> ~/.ssh/known_hosts
-          
+
           # 测试连接
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
 
@@ -57,16 +57,29 @@ jobs:
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      - name: Deploy to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: ".output/*,prisma/*,package.json,package-lock.json,node_modules"
-          target: "/www/wwwroot/aipan-netdisk"
-          strip_components: 1
-          debug: true
+      - name: Setup SSH and deploy
+        run: |
+          # Setup SSH key
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Create a temporary archive with only necessary files
+          echo "Creating deployment archive..."
+          tar czf deploy.tar.gz .output prisma package.json package-lock.json node_modules
+          
+          # Upload using rsync with optimized settings
+          echo "Uploading to server..."
+          rsync -az --compress-level=9 --progress \
+            --bwlimit=2000 \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            deploy.tar.gz \
+            ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:/www/wwwroot/aipan-netdisk/
+          
+          # Extract on server
+          echo "Extracting files on server..."
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} \
+            "cd /www/wwwroot/aipan-netdisk && tar xzf deploy.tar.gz && rm deploy.tar.gz"
 
       - name: Execute remote commands
         uses: appleboy/ssh-action@master
