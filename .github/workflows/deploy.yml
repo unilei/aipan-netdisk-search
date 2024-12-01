@@ -1,9 +1,12 @@
-name: Deploy to Production
+name: Deploy
 
 on:
   push:
     branches:
-      - feat-add-admin-panel # Changed from main to feat-add-admin-panel
+      - feat-add-admin-panel
+
+permissions:
+  contents: write
 
 jobs:
   deploy:
