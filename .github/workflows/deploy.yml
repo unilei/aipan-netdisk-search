@@ -108,20 +108,32 @@ jobs:
             rm -rf .output/server/node_modules/@prisma
             rm -rf .output/server/node_modules/.prisma
 
-            # Install and generate Prisma in root directory
-            echo "Installing Prisma..."
-            npm install @prisma/client
+            # Create a minimal package.json for Prisma
+            echo "Creating package.json for Prisma..."
+            cd .output/server
+            echo '{
+              "name": "aipan-netdisk-search-server",
+              "version": "1.0.0",
+              "private": true,
+              "dependencies": {
+                "@prisma/client": "latest"
+              },
+              "scripts": {
+                "postinstall": "prisma generate"
+              },
+              "prisma": {
+                "schema": "./prisma/schema.prisma"
+              }
+            }' > package.json
 
-            echo "Generating Prisma Client..."
-            npx prisma generate
+            # Copy prisma schema
+            mkdir -p prisma
+            cp ../../prisma/schema.prisma prisma/
 
-            # Move generated files to .output/server
-            echo "Moving Prisma files..."
-            mv node_modules/@prisma .output/server/node_modules/
-            mv node_modules/.prisma .output/server/node_modules/
+            # Install dependencies (this will trigger prisma generate)
+            npm install
 
-            # Cleanup
-            rm -rf node_modules
+            cd ../..
 
             # Create environment file
             echo "Creating .env file..."
