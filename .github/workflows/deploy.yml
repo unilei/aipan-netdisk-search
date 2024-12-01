@@ -16,20 +16,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Debug SSH Connection
-        run: |
-          echo "Testing SSH connection..."
-          # 创建 SSH 配置目录
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-
-          # 添加服务器到已知主机
-          echo "${{ secrets.SERVER_HOST }} $(ssh-keyscan -t rsa ${{ secrets.SERVER_HOST }} 2>/dev/null)" >> ~/.ssh/known_hosts
-
-          # 测试连接
-          ssh -i ~/.ssh/deploy_key -o BatchMode=yes -o StrictHostKeyChecking=no -p 22 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "echo 'SSH connection successful'"
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -44,17 +30,12 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          # Database configuration
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
           DATABASE_SCHEMA: ${{ secrets.DATABASE_SCHEMA }}
-
-          # GitHub configuration
           NUXT_PUBLIC_GITHUB_OWNER: ${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}
           NUXT_PUBLIC_GITHUB_ADMIN_TOKEN: ${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}
           NUXT_PUBLIC_GITHUB_REPO: ${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}
-
-          # Admin configuration
           ADMIN_USER: ${{ secrets.ADMIN_USER }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
@@ -92,19 +73,15 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Deploy to server
-        run: |
-          # Setup SSH key
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-
-          # Deploy using GitHub release
-          echo "Deploying to server..."
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} bash -s << EOL
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
             # Create directory if not exists
             echo "Creating directory..."
             mkdir -p /www/wwwroot/aipan-netdisk-search
-            
             cd /www/wwwroot/aipan-netdisk-search
             
             # Download from GitHub release using CDN
@@ -119,73 +96,11 @@ jobs:
             # Install dependencies
             echo "Installing dependencies..."
             npm install --production
+            
+            echo "Installing Prisma..."
+            npm install prisma
 
-            # Create .env file
-            cat > .env << EOL
-            DATABASE_URL="${{ secrets.DATABASE_URL }}"
-            SHADOW_DATABASE_URL="${{ secrets.SHADOW_DATABASE_URL }}"
-            DATABASE_SCHEMA="${{ secrets.DATABASE_SCHEMA }}"
-            NUXT_PUBLIC_GITHUB_OWNER="${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}"
-            NUXT_PUBLIC_GITHUB_ADMIN_TOKEN="${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}"
-            NUXT_PUBLIC_GITHUB_REPO="${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}"
-            ADMIN_USER="${{ secrets.ADMIN_USER }}"
-            ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}"
-            ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}"
-            JWT_SECRET="${{ secrets.JWT_SECRET }}"
-            EOL
-
-            echo "Creating ecosystem.config.cjs..."
-            cat > ecosystem.config.cjs << EOL
-            module.exports = {
-              apps: [
-                {
-                  name: "aipan-netdisk-search",
-                  port: "3000",
-                  exec_mode: "cluster",
-                  instances: "max",
-                  script: "./.output/server/index.mjs",
-                  watch: true,
-                  env: {
-                    NODE_ENV: "development",
-                  },
-                  env_production: {
-                    NODE_ENV: "production",
-                    ADMIN_USER: "${{ secrets.ADMIN_USER }}",
-                    ADMIN_PASSWORD: "${{ secrets.ADMIN_PASSWORD }}",
-                    ADMIN_EMAIL: "${{ secrets.ADMIN_EMAIL }}",
-                    JWT_SECRET: "${{ secrets.JWT_SECRET }}",
-                    DATABASE_SCHEMA: "${{ secrets.DATABASE_SCHEMA }}",
-                    DATABASE_URL: "${{ secrets.DATABASE_URL }}",
-                    SHADOW_DATABASE_URL: "${{ secrets.SHADOW_DATABASE_URL }}",
-                  },
-                },
-              ],
-            };
-            EOL
-
-            echo "Running database migrations..."
-            npx prisma migrate deploy
-
-            echo "Starting application with PM2..."
-            if pm2 list | grep -q "aipan-netdisk-search"; then
-              echo "Reloading existing PM2 process..."
-              pm2 reload ecosystem.config.cjs --env production
-            else
-              echo "Starting new PM2 process..."
-              pm2 start ecosystem.config.cjs --env production
-            fi
-          EOL
-
-      - name: Execute remote commands
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          debug: true
-          script: |
-            cd /www/wwwroot/aipan-netdisk-search
-
+            # Create environment file
             echo "Creating .env file..."
             cat > .env << EOL
             DATABASE_URL="${{ secrets.DATABASE_URL }}"
@@ -199,7 +114,15 @@ jobs:
             ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}"
             JWT_SECRET="${{ secrets.JWT_SECRET }}"
             EOL
+            
+            # Setup Prisma
+            echo "Generating Prisma Client..."
+            npx prisma generate
 
+            echo "Running database migrations..."
+            npx prisma migrate deploy
+
+            # Create PM2 configuration
             echo "Creating ecosystem.config.cjs..."
             cat > ecosystem.config.cjs << EOL
             module.exports = {
@@ -210,28 +133,16 @@ jobs:
                   exec_mode: "cluster",
                   instances: "max",
                   script: "./.output/server/index.mjs",
-                  watch: true,
-                  env: {
-                    NODE_ENV: "development",
-                  },
+                  watch: false,
                   env_production: {
-                    NODE_ENV: "production",
-                    ADMIN_USER: "${{ secrets.ADMIN_USER }}",
-                    ADMIN_PASSWORD: "${{ secrets.ADMIN_PASSWORD }}",
-                    ADMIN_EMAIL: "${{ secrets.ADMIN_EMAIL }}",
-                    JWT_SECRET: "${{ secrets.JWT_SECRET }}",
-                    DATABASE_SCHEMA: "${{ secrets.DATABASE_SCHEMA }}",
-                    DATABASE_URL: "${{ secrets.DATABASE_URL }}",
-                    SHADOW_DATABASE_URL: "${{ secrets.SHADOW_DATABASE_URL }}",
-                  },
-                },
-              ],
+                    NODE_ENV: "production"
+                  }
+                }
+              ]
             };
             EOL
 
-            echo "Running database migrations..."
-            npx prisma migrate deploy
-
+            # Start/Reload application
             echo "Starting application with PM2..."
             if pm2 list | grep -q "aipan-netdisk-search"; then
               echo "Reloading existing PM2 process..."
