@@ -49,7 +49,7 @@ jobs:
           RELEASE_NAME="release-$(date +%Y%m%d%H%M%S)"
           echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
           echo "Creating deployment archive..."
-          tar cf - .output prisma package.json package-lock.json | pigz -9 -p 4 > "${RELEASE_NAME}.tar.gz"
+          tar czf "${RELEASE_NAME}.tar.gz" .output prisma package.json package-lock.json
 
       - name: Create Release
         id: create_release
@@ -83,11 +83,11 @@ jobs:
             echo "Creating directory..."
             mkdir -p /www/wwwroot/aipan-netdisk-search
             cd /www/wwwroot/aipan-netdisk-search
-            
+
             # Download from GitHub release using CDN
             echo "Downloading release..."
             curl -L -o deploy.tar.gz https://github.com/${{ github.repository }}/releases/download/${RELEASE_NAME}/${RELEASE_NAME}.tar.gz
-            
+
             # Extract files
             echo "Extracting files..."
             tar xzf deploy.tar.gz
@@ -95,10 +95,12 @@ jobs:
 
             # Install dependencies
             echo "Installing dependencies..."
-            npm install --production
-            
-            echo "Installing Prisma..."
-            npm install prisma
+            npm install
+            npm install -g nuxt
+
+            # Run nuxt prepare
+            echo "Running nuxt prepare..."
+            npx nuxt prepare
 
             # Create environment file
             echo "Creating .env file..."
@@ -114,7 +116,7 @@ jobs:
             ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}"
             JWT_SECRET="${{ secrets.JWT_SECRET }}"
             EOL
-            
+
             # Setup Prisma
             echo "Generating Prisma Client..."
             npx prisma generate
@@ -135,7 +137,17 @@ jobs:
                   script: "./.output/server/index.mjs",
                   watch: false,
                   env_production: {
-                    NODE_ENV: "production"
+                    NODE_ENV: "production",
+                    DATABASE_URL: "${{ secrets.DATABASE_URL }}",
+                    SHADOW_DATABASE_URL: "${{ secrets.SHADOW_DATABASE_URL }}",
+                    DATABASE_SCHEMA: "${{ secrets.DATABASE_SCHEMA }}",
+                    NUXT_PUBLIC_GITHUB_OWNER: "${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}",
+                    NUXT_PUBLIC_GITHUB_ADMIN_TOKEN: "${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}",
+                    NUXT_PUBLIC_GITHUB_REPO: "${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}",
+                    ADMIN_USER: "${{ secrets.ADMIN_USER }}",
+                    ADMIN_PASSWORD: "${{ secrets.ADMIN_PASSWORD }}",
+                    ADMIN_EMAIL: "${{ secrets.ADMIN_EMAIL }}",
+                    JWT_SECRET: "${{ secrets.JWT_SECRET }}"
                   }
                 }
               ]
