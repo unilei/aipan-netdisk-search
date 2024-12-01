@@ -56,8 +56,7 @@ jobs:
           RELEASE_NAME="release-$(date +%Y%m%d%H%M%S)"
           echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
           echo "Creating deployment archive..."
-          cd .output
-          tar czf "../${RELEASE_NAME}.tar.gz" .
+          tar czf "${RELEASE_NAME}.tar.gz" .output prisma
 
       - name: Create Release
         id: create_release
@@ -103,6 +102,14 @@ jobs:
             echo "Extracting files..."
             tar xzf "${RELEASE_NAME}.tar.gz"
             rm "${RELEASE_NAME}.tar.gz"
+
+            # Install only Prisma
+            echo "Installing Prisma..."
+            npm install @prisma/client
+            
+            # Generate Prisma Client
+            echo "Generating Prisma Client..."
+            npx prisma generate
 
             # Create environment file
             echo "Creating .env file..."
