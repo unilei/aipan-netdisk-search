@@ -101,6 +101,10 @@ jobs:
           # Deploy using GitHub release
           echo "Deploying to server..."
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} bash -s << EOL
+            # Create directory if not exists
+            echo "Creating directory..."
+            mkdir -p /www/wwwroot/aipan-netdisk-search
+            
             cd /www/wwwroot/aipan-netdisk-search
             
             # Download from GitHub release using CDN
