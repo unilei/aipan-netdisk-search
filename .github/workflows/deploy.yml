@@ -68,7 +68,7 @@ jobs:
           RELEASE_NAME="release-$(date +%Y%m%d%H%M%S)"
           echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
           echo "Creating deployment archive..."
-          tar cf - .output prisma package.json package-lock.json | pigz -9 -p 4 > "${RELEASE_NAME}.tar.gz"
+          tar cf - .output prisma package.json package-lock.json node_modules | pigz -9 -p 4 > "${RELEASE_NAME}.tar.gz"
 
       - name: Create Release
         id: create_release
@@ -103,11 +103,6 @@ jobs:
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} bash -s << EOL
             cd /www/wwwroot/aipan-netdisk
             
-            # Backup current node_modules if exists
-            if [ -d "node_modules" ]; then
-              mv node_modules node_modules_backup
-            fi
-            
             # Download from GitHub release using CDN
             echo "Downloading release..."
             curl -L -o deploy.tar.gz https://github.com/${{ github.repository }}/releases/download/${RELEASE_NAME}/${RELEASE_NAME}.tar.gz
@@ -116,15 +111,6 @@ jobs:
             echo "Extracting files..."
             tar xzf deploy.tar.gz
             rm deploy.tar.gz
-            
-            # Install production dependencies
-            echo "Installing production dependencies..."
-            npm install --production --prefer-offline --no-audit
-            
-            # Cleanup
-            if [ -d "node_modules_backup" ]; then
-              rm -rf node_modules_backup
-            fi
           EOL
 
       - name: Execute remote commands
@@ -151,20 +137,43 @@ jobs:
             JWT_SECRET="${{ secrets.JWT_SECRET }}"
             EOL
 
-            echo "Installing Prisma..."
-            npm install prisma
-
-            echo "Generating Prisma Client..."
-            npx prisma generate
+            echo "Creating ecosystem.config.cjs..."
+            cat > ecosystem.config.cjs << EOL
+            module.exports = {
+              apps: [
+                {
+                  name: "aipan-netdisk-search",
+                  port: "3000",
+                  exec_mode: "cluster",
+                  instances: "max",
+                  script: "./.output/server/index.mjs",
+                  watch: true,
+                  env: {
+                    NODE_ENV: "development",
+                  },
+                  env_production: {
+                    NODE_ENV: "production",
+                    ADMIN_USER: "${{ secrets.ADMIN_USER }}",
+                    ADMIN_PASSWORD: "${{ secrets.ADMIN_PASSWORD }}",
+                    ADMIN_EMAIL: "${{ secrets.ADMIN_EMAIL }}",
+                    JWT_SECRET: "${{ secrets.JWT_SECRET }}",
+                    DATABASE_SCHEMA: "${{ secrets.DATABASE_SCHEMA }}",
+                    DATABASE_URL: "${{ secrets.DATABASE_URL }}",
+                    SHADOW_DATABASE_URL: "${{ secrets.SHADOW_DATABASE_URL }}",
+                  },
+                },
+              ],
+            };
+            EOL
 
             echo "Running database migrations..."
             npx prisma migrate deploy
 
-            echo "Starting application..."
-            if pm2 list | grep -q "aipan-netdisk"; then
+            echo "Starting application with PM2..."
+            if pm2 list | grep -q "aipan-netdisk-search"; then
               echo "Reloading existing PM2 process..."
-              pm2 reload aipan-netdisk
+              pm2 reload ecosystem.config.cjs --env production
             else
               echo "Starting new PM2 process..."
-              pm2 start server/index.mjs --name "aipan-netdisk" --env production
+              pm2 start ecosystem.config.cjs --env production
             fi
