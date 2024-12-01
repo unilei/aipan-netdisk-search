@@ -103,13 +103,25 @@ jobs:
             tar xzf "${RELEASE_NAME}.tar.gz"
             rm "${RELEASE_NAME}.tar.gz"
 
-            # Install only Prisma
+            # Remove existing node_modules to avoid conflicts
+            rm -rf node_modules
+            rm -rf .output/server/node_modules/@prisma
+            rm -rf .output/server/node_modules/.prisma
+
+            # Install and generate Prisma in root directory
             echo "Installing Prisma..."
             npm install @prisma/client
             
-            # Generate Prisma Client
             echo "Generating Prisma Client..."
             npx prisma generate
+
+            # Move generated files to .output/server
+            echo "Moving Prisma files..."
+            mv node_modules/@prisma .output/server/node_modules/
+            mv node_modules/.prisma .output/server/node_modules/
+            
+            # Cleanup
+            rm -rf node_modules
 
             # Create environment file
             echo "Creating .env file..."
