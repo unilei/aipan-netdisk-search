@@ -27,6 +27,13 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
+          DATABASE_SCHEMA: ${{ secrets.DATABASE_SCHEMA }}
+
       - name: Build application
         run: npm run build
         env:
@@ -49,7 +56,8 @@ jobs:
           RELEASE_NAME="release-$(date +%Y%m%d%H%M%S)"
           echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
           echo "Creating deployment archive..."
-          tar czf "${RELEASE_NAME}.tar.gz" .output prisma package.json package-lock.json
+          cd .output
+          tar czf "../${RELEASE_NAME}.tar.gz" .
 
       - name: Create Release
         id: create_release
@@ -93,15 +101,6 @@ jobs:
             tar xzf "${RELEASE_NAME}.tar.gz"
             rm "${RELEASE_NAME}.tar.gz"
 
-            # Install dependencies
-            echo "Installing dependencies..."
-            npm install
-            npm install -g nuxt
-
-            # Run nuxt prepare
-            echo "Running nuxt prepare..."
-            npx nuxt prepare
-
             # Create environment file
             echo "Creating .env file..."
             cat > .env << EOL
@@ -117,13 +116,6 @@ jobs:
             JWT_SECRET="${{ secrets.JWT_SECRET }}"
             EOL
 
-            # Setup Prisma
-            echo "Generating Prisma Client..."
-            npx prisma generate
-
-            echo "Running database migrations..."
-            npx prisma migrate deploy
-
             # Create PM2 configuration
             echo "Creating ecosystem.config.cjs..."
             cat > ecosystem.config.cjs << EOL
@@ -134,7 +126,7 @@ jobs:
                   port: "3000",
                   exec_mode: "cluster",
                   instances: "max",
-                  script: "./.output/server/index.mjs",
+                  script: "./server/index.mjs",
                   watch: false,
                   env_production: {
                     NODE_ENV: "production",
