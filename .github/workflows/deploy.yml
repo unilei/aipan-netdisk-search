@@ -1,9 +1,12 @@
-name: Deploy to Production
+name: Deploy
 
 on:
   push:
     branches:
-      - feat-add-admin-panel # Changed from main to feat-add-admin-panel
+      - feat-add-admin-panel
+
+permissions:
+  contents: write
 
 jobs:
   deploy:
@@ -17,52 +20,89 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20"
-          cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Generate Prisma Client
-        run: npx prisma generate
+        run: npm install
 
       - name: Build application
         run: npm run build
         env:
-          # Database configuration
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
           DATABASE_SCHEMA: ${{ secrets.DATABASE_SCHEMA }}
-
-          # GitHub configuration
           NUXT_PUBLIC_GITHUB_OWNER: ${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}
           NUXT_PUBLIC_GITHUB_ADMIN_TOKEN: ${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}
           NUXT_PUBLIC_GITHUB_REPO: ${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}
-
-          # Admin configuration
           ADMIN_USER: ${{ secrets.ADMIN_USER }}
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      - name: Deploy to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: ".output/*,prisma/*,package.json,package-lock.json"
-          target: "/www/wwwroot/aipan-netdisk"
-          strip_components: 1
+      - name: Install pigz
+        run: sudo apt-get update && sudo apt-get install -y pigz openssl
 
-      - name: Execute remote commands
+      - name: Create deployment package
+        run: |
+          RELEASE_NAME="release-$(date +%Y%m%d%H%M%S)"
+          echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
+          echo "Creating deployment archive..."
+          tar czf "${RELEASE_NAME}.tar.gz" .output prisma
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_NAME }}
+          release_name: Release ${{ env.RELEASE_NAME }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ env.RELEASE_NAME }}.tar.gz
+          asset_name: ${{ env.RELEASE_NAME }}.tar.gz
+          asset_content_type: application/gzip
+
+      - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /www/wwwroot/aipan-netdisk
+            # Create directory if not exists
+            echo "Creating directory..."
+            mkdir -p /www/wwwroot/aipan-netdisk-search
+            cd /www/wwwroot/aipan-netdisk-search
 
+            # Set release name
+            RELEASE_NAME="${{ env.RELEASE_NAME }}"
+
+            # Download from GitHub release using CDN
+            echo "Downloading release..."
+            curl -L -o "${RELEASE_NAME}.tar.gz" https://github.com/${{ github.repository }}/releases/download/${RELEASE_NAME}/${RELEASE_NAME}.tar.gz
+
+            # Extract files
+            echo "Extracting files..."
+            tar xzf "${RELEASE_NAME}.tar.gz"
+            rm "${RELEASE_NAME}.tar.gz"
+
+            # Remove existing node_modules to avoid conflicts
+            rm -rf node_modules
+            rm -rf .output/server/node_modules/@prisma
+            rm -rf .output/server/node_modules/.prisma
+
+            # Install and setup Prisma
+            echo "Installing and setting up Prisma..."
+            cd .output/server
+
+            # Create environment file
             echo "Creating .env file..."
             cat > .env << EOL
             DATABASE_URL="${{ secrets.DATABASE_URL }}"
@@ -77,23 +117,75 @@ jobs:
             JWT_SECRET="${{ secrets.JWT_SECRET }}"
             EOL
 
-            echo "Installing production dependencies..."
-            npm ci --production
+            # Install only Prisma client
+            npm install @prisma/client@6.0.0
 
-            echo "Installing Prisma..."
-            npm install prisma
+            # Copy prisma schema and run migrations
+            mkdir -p prisma
+            cp ../../prisma/schema.prisma prisma/
 
+            # Generate Prisma Client in the server environment
             echo "Generating Prisma Client..."
             npx prisma generate
 
+            # Run database migrations
             echo "Running database migrations..."
             npx prisma migrate deploy
+            rm -rf .env
+            rm -rf prisma
+            cd ../..
 
-            echo "Starting application..."
-            if pm2 list | grep -q "aipan-netdisk"; then
+            # Create environment file
+            echo "Creating .env file..."
+            cat > .env << EOL
+            DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            SHADOW_DATABASE_URL="${{ secrets.SHADOW_DATABASE_URL }}"
+            DATABASE_SCHEMA="${{ secrets.DATABASE_SCHEMA }}"
+            NUXT_PUBLIC_GITHUB_OWNER="${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}"
+            NUXT_PUBLIC_GITHUB_ADMIN_TOKEN="${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}"
+            NUXT_PUBLIC_GITHUB_REPO="${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}"
+            ADMIN_USER="${{ secrets.ADMIN_USER }}"
+            ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}"
+            ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}"
+            JWT_SECRET="${{ secrets.JWT_SECRET }}"
+            EOL
+
+            # Create PM2 configuration
+            echo "Creating ecosystem.config.cjs..."
+            cat > ecosystem.config.cjs << EOL
+            module.exports = {
+              apps: [
+                {
+                  name: "aipan-netdisk-search",
+                  port: "3000",
+                  exec_mode: "cluster",
+                  instances: "max",
+                  script: "./server/index.mjs",
+                  watch: false,
+                  env_production: {
+                    NODE_ENV: "production",
+                    DATABASE_URL: "${{ secrets.DATABASE_URL }}",
+                    SHADOW_DATABASE_URL: "${{ secrets.SHADOW_DATABASE_URL }}",
+                    DATABASE_SCHEMA: "${{ secrets.DATABASE_SCHEMA }}",
+                    NUXT_PUBLIC_GITHUB_OWNER: "${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}",
+                    NUXT_PUBLIC_GITHUB_ADMIN_TOKEN: "${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}",
+                    NUXT_PUBLIC_GITHUB_REPO: "${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}",
+                    ADMIN_USER: "${{ secrets.ADMIN_USER }}",
+                    ADMIN_PASSWORD: "${{ secrets.ADMIN_PASSWORD }}",
+                    ADMIN_EMAIL: "${{ secrets.ADMIN_EMAIL }}",
+                    JWT_SECRET: "${{ secrets.JWT_SECRET }}"
+                  }
+                }
+              ]
+            };
+            EOL
+
+            # Start/Reload application
+            echo "Starting application with PM2..."
+            if pm2 list | grep -q "aipan-netdisk-search"; then
               echo "Reloading existing PM2 process..."
-              pm2 reload aipan-netdisk
+              pm2 reload ecosystem.config.cjs --env production
             else
               echo "Starting new PM2 process..."
-              pm2 start server/index.mjs --name "aipan-netdisk" --env production
+              pm2 start ecosystem.config.cjs --env production
             fi
