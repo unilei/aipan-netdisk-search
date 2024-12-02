@@ -11,18 +11,21 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    container:
+      image: node:20-bullseye # 指定带有 OpenSSL 3.0.x 的镜像
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20"
-
       - name: Install dependencies
         run: npm install
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run migrations
+        run: npx prisma migrate deploy
 
       - name: Build application
         run: npm run build
@@ -38,36 +41,18 @@ jobs:
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
-      - name: Install pigz
-        run: sudo apt-get update && sudo apt-get install -y pigz openssl
-
       - name: Create deployment package
         run: |
-          RELEASE_NAME="release-$(date +%Y%m%d%H%M%S)"
-          echo "RELEASE_NAME=${RELEASE_NAME}" >> $GITHUB_ENV
-          echo "Creating deployment archive..."
-          tar czf "${RELEASE_NAME}.tar.gz" .output prisma
+          tar czf deploy.tar.gz .output
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy files to server
+        uses: appleboy/scp-action@master
         with:
-          tag_name: ${{ env.RELEASE_NAME }}
-          release_name: Release ${{ env.RELEASE_NAME }}
-          draft: false
-          prerelease: false
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ env.RELEASE_NAME }}.tar.gz
-          asset_name: ${{ env.RELEASE_NAME }}.tar.gz
-          asset_content_type: application/gzip
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "deploy.tar.gz"
+          target: "/www/wwwroot/aipan-netdisk-search"
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
@@ -76,79 +61,12 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # Create directory if not exists
-            echo "Creating directory..."
-            mkdir -p /www/wwwroot/aipan-netdisk-search
             cd /www/wwwroot/aipan-netdisk-search
-
-            # Set release name
-            RELEASE_NAME="${{ env.RELEASE_NAME }}"
-
-            # Download from GitHub release using CDN
-            echo "Downloading release..."
-            curl -L -o "${RELEASE_NAME}.tar.gz" https://github.com/${{ github.repository }}/releases/download/${RELEASE_NAME}/${RELEASE_NAME}.tar.gz
 
             # Extract files
             echo "Extracting files..."
-            tar xzf "${RELEASE_NAME}.tar.gz"
-            rm "${RELEASE_NAME}.tar.gz"
-
-            # Remove existing node_modules to avoid conflicts
-            rm -rf node_modules
-            rm -rf .output/server/node_modules/@prisma
-            rm -rf .output/server/node_modules/.prisma
-
-            # Install and setup Prisma
-            echo "Installing and setting up Prisma..."
-            cd .output/server
-
-            # Create environment file
-            echo "Creating .env file..."
-            cat > .env << EOL
-            DATABASE_URL="${{ secrets.DATABASE_URL }}"
-            SHADOW_DATABASE_URL="${{ secrets.SHADOW_DATABASE_URL }}"
-            DATABASE_SCHEMA="${{ secrets.DATABASE_SCHEMA }}"
-            NUXT_PUBLIC_GITHUB_OWNER="${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}"
-            NUXT_PUBLIC_GITHUB_ADMIN_TOKEN="${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}"
-            NUXT_PUBLIC_GITHUB_REPO="${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}"
-            ADMIN_USER="${{ secrets.ADMIN_USER }}"
-            ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}"
-            ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}"
-            JWT_SECRET="${{ secrets.JWT_SECRET }}"
-            EOL
-
-            # Install only Prisma client
-            npm install @prisma/client@6.0.0
-
-            # Copy prisma schema and run migrations
-            mkdir -p prisma
-            cp ../../prisma/schema.prisma prisma/
-
-            # Generate Prisma Client in the server environment
-            echo "Generating Prisma Client..."
-            npx prisma generate
-
-            # Run database migrations
-            echo "Running database migrations..."
-            npx prisma migrate deploy
-            rm -rf .env
-            rm -rf prisma
-            cd ../..
-
-            # Create environment file
-            echo "Creating .env file..."
-            cat > .env << EOL
-            DATABASE_URL="${{ secrets.DATABASE_URL }}"
-            SHADOW_DATABASE_URL="${{ secrets.SHADOW_DATABASE_URL }}"
-            DATABASE_SCHEMA="${{ secrets.DATABASE_SCHEMA }}"
-            NUXT_PUBLIC_GITHUB_OWNER="${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}"
-            NUXT_PUBLIC_GITHUB_ADMIN_TOKEN="${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}"
-            NUXT_PUBLIC_GITHUB_REPO="${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}"
-            ADMIN_USER="${{ secrets.ADMIN_USER }}"
-            ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}"
-            ADMIN_EMAIL="${{ secrets.ADMIN_EMAIL }}"
-            JWT_SECRET="${{ secrets.JWT_SECRET }}"
-            EOL
+            tar xzf deploy.tar.gz
+            rm deploy.tar.gz
 
             # Create PM2 configuration
             echo "Creating ecosystem.config.cjs..."
@@ -160,7 +78,7 @@ jobs:
                   port: "3000",
                   exec_mode: "cluster",
                   instances: "max",
-                  script: "./server/index.mjs",
+                  script: "./.output/server/index.mjs",
                   watch: false,
                   env_production: {
                     NODE_ENV: "production",
