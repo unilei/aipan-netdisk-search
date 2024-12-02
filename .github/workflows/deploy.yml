@@ -8,6 +8,18 @@ on:
 permissions:
   contents: write
 
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
+  DATABASE_SCHEMA: ${{ secrets.DATABASE_SCHEMA }}
+  NUXT_PUBLIC_GITHUB_OWNER: ${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}
+  NUXT_PUBLIC_GITHUB_ADMIN_TOKEN: ${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}
+  NUXT_PUBLIC_GITHUB_REPO: ${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}
+  ADMIN_USER: ${{ secrets.ADMIN_USER }}
+  ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+  ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -29,17 +41,6 @@ jobs:
 
       - name: Build application
         run: npm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
-          DATABASE_SCHEMA: ${{ secrets.DATABASE_SCHEMA }}
-          NUXT_PUBLIC_GITHUB_OWNER: ${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}
-          NUXT_PUBLIC_GITHUB_ADMIN_TOKEN: ${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}
-          NUXT_PUBLIC_GITHUB_REPO: ${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}
-          ADMIN_USER: ${{ secrets.ADMIN_USER }}
-          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
       - name: Create deployment package
         run: |
@@ -80,6 +81,7 @@ jobs:
                   instances: "max",
                   script: "./.output/server/index.mjs",
                   watch: false,
+                  max_memory_restart: "1G",
                   env_production: {
                     NODE_ENV: "production",
                     DATABASE_URL: "${{ secrets.DATABASE_URL }}",
@@ -98,7 +100,7 @@ jobs:
             };
             EOL
 
-            # Start/Reload application
+            # Start/Reload application with health check
             echo "Starting application with PM2..."
             if pm2 list | grep -q "aipan-netdisk-search"; then
               echo "Reloading existing PM2 process..."
@@ -106,4 +108,15 @@ jobs:
             else
               echo "Starting new PM2 process..."
               pm2 start ecosystem.config.cjs --env production
+            fi
+
+            # Wait for application to start and perform health check
+            echo "Performing health check..."
+            sleep 5
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Application started successfully!"
+            else
+              echo "Application failed to start. Checking logs..."
+              pm2 logs aipan-netdisk-search --lines 50
+              exit 1
             fi
