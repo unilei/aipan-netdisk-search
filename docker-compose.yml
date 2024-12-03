@@ -20,3 +20,35 @@ services:
       - "3000:3000" # 映射容器的 3000 端口到宿主机的 3000 端口
     env_file:
       - .env
+    depends_on:
+      - db
+      - prisma-migrate
+
+  db:
+    image: postgres:15-alpine
+    container_name: aipan-netdisk-search-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-netdisk}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  prisma-migrate:
+    image: node:20.18.0-alpine
+    container_name: aipan-netdisk-search-migrate
+    command: sh -c "npm install prisma --no-save && npx prisma migrate deploy"
+    working_dir: /app
+    volumes:
+      - ./prisma:/app/prisma
+      - ./.env:/app/.env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
