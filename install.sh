@@ -38,23 +38,43 @@ create_env_file() {
 
     # 数据库配置
     print_message "\nDatabase Configuration:" "${YELLOW}"
-    read -p "PostgreSQL User (default: postgres): " db_user
-    db_user=${db_user:-postgres}
-    read -p "PostgreSQL Password (default: postgres): " db_password
-    db_password=${db_password:-postgres}
-    read -p "Database Name (default: netdisk): " db_name
-    db_name=${db_name:-netdisk}
+    read -p "PostgreSQL User (default: aipan): " db_user
+    db_user=${db_user:-aipan}
+    read -p "PostgreSQL Password (default: aipan): " db_password
+    db_password=${db_password:-aipan}
+    read -p "Database Name (default: aipan): " db_name
+    db_name=${db_name:-aipan}
+    read -p "Database Schema (default: public): " db_schema
+    db_schema=${db_schema:-public}
+    read -p "Database Host (default: localhost): " db_host
+    db_host=${db_host:-localhost}
+    read -p "Database Port (default: 5432): " db_port
+    db_port=${db_port:-5432}
 
     # 管理员配置
     print_message "\nAdmin Configuration:" "${YELLOW}"
-    read -p "Admin User: " admin_user
-    read -p "Admin Password: " admin_password
-    read -p "Admin Email: " admin_email
+    read -p "Admin User (default: aipan): " admin_user
+    admin_user=${admin_user:-aipan}
+    read -p "Admin Password (default: aipan): " admin_password
+    admin_password=${admin_password:-aipan}
+    read -p "Admin Email (default: aipan@email.com): " admin_email
+    admin_email=${admin_email:-aipan@email.com}
+
+    # Github 配置
+    print_message "\nGitHub Configuration:" "${YELLOW}"
+    read -p "GitHub Owner (default: unilei-github): " github_owner
+    github_owner=${github_owner:-unilei-github}
+    read -p "GitHub Repo (default: aipan-images): " github_repo
+    github_repo=${github_repo:-aipan-images}
+    read -p "GitHub Branch (default: main): " github_branch
+    github_branch=${github_branch:-main}
+    read -p "GitHub Token (default: ghp_xxxxx): " github_token
+    github_token=${github_token:-ghp_xxxxx}
 
     # JWT配置
     print_message "\nSecurity Configuration:" "${YELLOW}"
-    read -p "JWT Secret (default: random string): " jwt_secret
-    jwt_secret=${jwt_secret:-$(openssl rand -hex 32)}
+    read -p "JWT Secret (default: aipan.me): " jwt_secret
+    jwt_secret=${jwt_secret:-aipan.me}
 
     # 创建 .env 文件
     cat > .env << EOL
@@ -62,7 +82,8 @@ create_env_file() {
 POSTGRES_USER=${db_user}
 POSTGRES_PASSWORD=${db_password}
 POSTGRES_DB=${db_name}
-DATABASE_URL=postgresql://${db_user}:${db_password}@db:5432/${db_name}
+DATABASE_SCHEMA=${db_schema}
+DATABASE_URL=postgresql://${db_user}:${db_password}@${db_host}:${db_port}/${db_name}?schema=${db_schema}
 
 # Admin Configuration
 ADMIN_USER=${admin_user}
@@ -71,6 +92,12 @@ ADMIN_EMAIL=${admin_email}
 
 # Security
 JWT_SECRET=${jwt_secret}
+
+# GitHub Configuration
+NUXT_PUBLIC_GITHUB_OWNER=${github_owner}
+NUXT_PUBLIC_GITHUB_REPO=${github_repo}
+NUXT_PUBLIC_GITHUB_TOKEN=${github_token}
+NUXT_PUBLIC_GITHUB_BRANCH=${github_branch}
 EOL
 
     print_message "\n.env file created successfully!" "${GREEN}"
@@ -93,7 +120,8 @@ start_services() {
     docker-compose down
 
     # 构建并启动服务
-    docker-compose up -d --build
+    # docker-compose up -d --build
+    docker-compose up -d
 
     # 检查服务状态
     print_message "\nChecking service status:" "${GREEN}"

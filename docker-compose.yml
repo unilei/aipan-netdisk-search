@@ -40,7 +40,16 @@ services:
   prisma-migrate:
     image: node:20.18.0-alpine
     container_name: aipan-netdisk-search-migrate
-    command: sh -c "npm install prisma --no-save && npx prisma migrate deploy"
+    command: >
+      sh -c '
+      npm install prisma --no-save &&
+      if ! npx prisma migrate status | grep -q "Database schema is up to date"; then
+        echo "Running database migrations..." &&
+        npx prisma migrate deploy
+      else
+        echo "Database schema is already up to date, skipping migrations."
+      fi
+      '
     working_dir: /app
     volumes:
       - ./prisma:/app/prisma
