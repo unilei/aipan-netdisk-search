@@ -38,12 +38,12 @@ create_env_file() {
 
     # 数据库配置
     print_message "\nDatabase Configuration:" "${YELLOW}"
-    read -p "PostgreSQL User (default: aipan): " db_user
-    db_user=${db_user:-aipan}
-    read -p "PostgreSQL Password (default: aipan): " db_password
-    db_password=${db_password:-aipan}
-    read -p "Database Name (default: aipan): " db_name
-    db_name=${db_name:-aipan}
+    read -p "PostgreSQL User (default: postgres): " db_user
+    db_user=${db_user:-postgres}
+    read -p "PostgreSQL Password: " db_password
+    db_password=${db_password:-postgres}
+    read -p "Database Name (default: netdisk): " db_name
+    db_name=${db_name:-netdisk}
     read -p "Database Schema (default: public): " db_schema
     db_schema=${db_schema:-public}
     read -p "Database Host (default: localhost): " db_host
@@ -79,11 +79,8 @@ create_env_file() {
     # 创建 .env 文件
     cat > .env << EOL
 # Database Configuration
-POSTGRES_USER=${db_user}
-POSTGRES_PASSWORD=${db_password}
-POSTGRES_DB=${db_name}
-DATABASE_SCHEMA=${db_schema}
 DATABASE_URL=postgresql://${db_user}:${db_password}@${db_host}:${db_port}/${db_name}?schema=${db_schema}
+DATABASE_SCHEMA=${db_schema}
 
 # Admin Configuration
 ADMIN_USER=${admin_user}
