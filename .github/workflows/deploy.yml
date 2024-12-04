@@ -1,34 +1,25 @@
-name: Deploy
+name: Build and Push Docker Image
 
 on:
   push:
     branches:
-      - main
-
-permissions:
-  contents: write
-
-env:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
-  SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
-  DATABASE_SCHEMA: ${{ secrets.DATABASE_SCHEMA }}
-  NUXT_PUBLIC_GITHUB_OWNER: ${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}
-  NUXT_PUBLIC_GITHUB_ADMIN_TOKEN: ${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}
-  NUXT_PUBLIC_GITHUB_REPO: ${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}
-  ADMIN_USER: ${{ secrets.ADMIN_USER }}
-  ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
-  ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
-  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      - feat-add-admin-panel
 
 jobs:
-  deploy:
+  docker:
     runs-on: ubuntu-latest
-    container:
-      image: node:20-bullseye # 指定带有 OpenSSL 3.0.x 的镜像
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      # 添加 Node.js 缓存
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
@@ -36,87 +27,50 @@ jobs:
       - name: Generate Prisma Client
         run: npx prisma generate
 
-      - name: Run migrations
-        run: npx prisma migrate deploy
-
       - name: Build application
         run: npm run build
 
-      - name: Create deployment package
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 添加 Docker 缓存
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push multi-platform image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: |
+            unilei/aipan-netdisk-search:latest
+            unilei/aipan-netdisk-search:${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+          build-args: |
+            NODE_OPTIONS=--max-old-space-size=8192
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
+
+      # 更新 Docker 缓存
+      - name: Move cache
         run: |
-          tar czf deploy.tar.gz .output
-
-      - name: Copy files to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "deploy.tar.gz"
-          target: "/www/wwwroot/aipan-netdisk-search"
-
-      - name: Deploy to server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd /www/wwwroot/aipan-netdisk-search
-
-            # Extract files
-            echo "Extracting files..."
-            tar xzf deploy.tar.gz
-            rm deploy.tar.gz
-
-            # Create PM2 configuration
-            echo "Creating ecosystem.config.cjs..."
-            cat > ecosystem.config.cjs << EOL
-            module.exports = {
-              apps: [
-                {
-                  name: "aipan-netdisk-search",
-                  port: "3000",
-                  exec_mode: "cluster",
-                  instances: "max",
-                  script: "./.output/server/index.mjs",
-                  watch: false,
-                  max_memory_restart: "1G",
-                  env_production: {
-                    NODE_ENV: "production",
-                    DATABASE_URL: "${{ secrets.DATABASE_URL }}",
-                    SHADOW_DATABASE_URL: "${{ secrets.SHADOW_DATABASE_URL }}",
-                    DATABASE_SCHEMA: "${{ secrets.DATABASE_SCHEMA }}",
-                    NUXT_PUBLIC_GITHUB_OWNER: "${{ secrets.NUXT_PUBLIC_GITHUB_OWNER }}",
-                    NUXT_PUBLIC_GITHUB_ADMIN_TOKEN: "${{ secrets.NUXT_PUBLIC_GITHUB_ADMIN_TOKEN }}",
-                    NUXT_PUBLIC_GITHUB_REPO: "${{ secrets.NUXT_PUBLIC_GITHUB_REPO }}",
-                    ADMIN_USER: "${{ secrets.ADMIN_USER }}",
-                    ADMIN_PASSWORD: "${{ secrets.ADMIN_PASSWORD }}",
-                    ADMIN_EMAIL: "${{ secrets.ADMIN_EMAIL }}",
-                    JWT_SECRET: "${{ secrets.JWT_SECRET }}"
-                  }
-                }
-              ]
-            };
-            EOL
-
-            # Start/Reload application with health check
-            echo "Starting application with PM2..."
-            if pm2 list | grep -q "aipan-netdisk-search"; then
-              echo "Reloading existing PM2 process..."
-              pm2 reload ecosystem.config.cjs --env production
-            else
-              echo "Starting new PM2 process..."
-              pm2 start ecosystem.config.cjs --env production
-            fi
-
-            # Wait for application to start and perform health check
-            echo "Performing health check..."
-            sleep 5
-            if curl -s http://localhost:3000 > /dev/null; then
-              echo "Application started successfully!"
-            else
-              echo "Application failed to start. Checking logs..."
-              pm2 logs aipan-netdisk-search --lines 50
-              exit 1
-            fi
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
