@@ -28,7 +28,7 @@ RUN rm -rf node_modules && \
     rm -rf dist && \
     rm -rf .git && \
     rm -rf .nuxt && \
-    find . -maxdepth 1 ! -name '.output' ! -name '.' -exec rm -rf {} +
+    find . -maxdepth 1 ! -name '.output' ! -name 'prisma' ! -name '.' -exec rm -rf {} +
 
 # 生产阶段
 FROM node:20.18.0-alpine
@@ -38,6 +38,7 @@ WORKDIR /app
 
 # 从构建阶段复制必要文件
 COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/prisma ./prisma 
 
 # 设置环境变量
 ENV NUXT_HOST=0.0.0.0

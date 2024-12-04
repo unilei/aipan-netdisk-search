@@ -1,5 +1,4 @@
-version: "3.8" # 或者使用你需要的版本
-
+ 
 services:
   aipan-netdisk-search:
     image: unilei/aipan-netdisk-search:latest # 如果你想从 Docker Hub 获取镜像，可以使用这一行

@@ -46,18 +46,11 @@
 ### 部署方式
 
 1. **Vercel 部署**（推荐）
-   - 查看 [Vercel 部署文档](/VERCEL.md)
+   - 查看 [Vercel 部署文档](/README_VERCEL.md)
    - 点击上方 "Deploy with Vercel" 按钮一键部署
 
 2. **Docker 部署**（推荐）
    - 查看 [Docker 部署文档](/DEPLOY.md#docker-部署推荐)
-   ```bash
-   # 1. 配置环境变量
-   cp .env.example .env
-   
-   # 2. 构建并运行
-   docker compose up -d
-   ```
 
 3. **传统部署**
    - 查看 [传统部署文档](/DEPLOY.md#传统部署)

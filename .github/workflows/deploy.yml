@@ -3,7 +3,7 @@ name: Deploy
 on:
   push:
     branches:
-      - feat-add-admin-panel
+      - main
 
 permissions:
   contents: write
