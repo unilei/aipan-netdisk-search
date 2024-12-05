@@ -19,14 +19,6 @@ services:
       - "3000:3000" # 映射容器的 3000 端口到宿主机的 3000 端口
     env_file:
       - .env
-    environment:
-      # 显式声明环境变量
-      ADMIN_USER: ${ADMIN_USER}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-      ADMIN_EMAIL: ${ADMIN_EMAIL}
-      JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: ${DATABASE_URL}
-      DATABASE_SCHEMA: ${DATABASE_SCHEMA}
     depends_on:
       - prisma-migrate
 
@@ -50,6 +42,3 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
     restart: "no"
-
-volumes:
-  postgres_data:

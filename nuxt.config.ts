@@ -1,3 +1,4 @@
+console.log(process.env)
 export default defineNuxtConfig({
   devtools: { enabled: false },
 
