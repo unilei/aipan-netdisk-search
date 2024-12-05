@@ -1,6 +1,6 @@
-# AiPan NetDisk Search 部署文档
+# 部署文档
 
-本文档详细说明了如何部署 AiPan NetDisk Search 项目。项目支持两种部署方式：Docker 部署和传统部署。
+本文档详细说明了如何通过Docker 部署和传统部署。
 
 ## 环境要求
 
@@ -14,69 +14,15 @@
 ### 1.1 准备工作
 
 1. 确保安装了 Docker 和 Docker Compose
-2. 复制环境变量文件：
+2. 执行install.sh脚本，输入你的环境变量
    ```bash
-   cp .env.example .env
+   sh install.sh
    ```
-3. 修改 `.env` 文件，配置必要的环境变量：
+3. 更新执行update.sh脚本
    ```bash
-   # 数据库配置（PostgreSQL）
-   DATABASE_URL="postgresql://username:password@host:5432/database_name"
-   DATABASE_SCHEMA="public"
-   SHADOW_DATABASE_URL="postgresql://username:password@host:5432/shadow_database_name"
-
-   # 管理员配置
-   ADMIN_USER="admin"
-   ADMIN_PASSWORD="your_password"
-   ADMIN_EMAIL="admin@example.com"
-
-   # JWT配置
-   JWT_SECRET="your_jwt_secret"
+   sh update.sh   
    ```
-
-### 1.2 使用 Docker Compose 部署
-
-1. 数据库迁移：
-   ```bash
-   # 生成 Prisma 客户端
-   npx prisma generate
    
-   # 执行数据库迁移
-   npx prisma migrate deploy
-   ```
-
-2. 构建并启动容器：
-   ```bash
-   docker-compose up -d
-   ```
-
-3. 查看容器运行状态：
-   ```bash
-   docker-compose ps
-   ```
-
-4. 查看应用日志：
-   ```bash
-   docker-compose logs -f aipan-netdisk-search
-   ```
-
-### 1.3 更新部署
-
-1. 拉取最新代码：
-   ```bash
-   git pull origin main
-   ```
-
-2. 执行数据库迁移（如果有新的迁移）：
-   ```bash
-   npx prisma migrate deploy
-   ```
-
-3. 重新构建并启动容器：
-   ```bash
-   docker-compose up -d --build
-   ```
-
 ## 2. 传统部署
 
 ### 2.1 环境准备
@@ -88,12 +34,7 @@
    nvm use 20.18.0
    ```
 
-2. 安装 pnpm：
-   ```bash
-   npm install -g pnpm
-   ```
-
-3. 安装并配置 PostgreSQL 数据库：
+2. 安装并配置 PostgreSQL 数据库：
    - 创建数据库和用户
    - 设置适当的访问权限
    - 确保数据库可以从应用服务器访问
@@ -108,7 +49,7 @@
 
 2. 安装依赖：
    ```bash
-   pnpm install
+   npm install
    ```
 
 3. 配置环境变量：
@@ -159,11 +100,6 @@ ADMIN_EMAIL="admin@example.com"
 
 # JWT配置
 JWT_SECRET="your_jwt_secret"
-
-# 应用配置
-NUXT_HOST="0.0.0.0"
-NUXT_PORT=3000
-```
 
 ## 4. 数据库管理
 

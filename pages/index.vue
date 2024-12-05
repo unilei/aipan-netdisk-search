@@ -46,7 +46,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="custom-bg min-h-screen py-[60px] transition-colors duration-300">
+  <div
+    class="custom-bg py-[60px] min-h-[calc(100vh-120px)] transition-colors duration-300"
+  >
     <div
       class="flex flex-col items-center justify-center gap-4 mt-[60px] animate-fadeIn"
     >

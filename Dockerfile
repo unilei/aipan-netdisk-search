@@ -1,53 +1,55 @@
-# 第一阶段：构建阶段
+# 构建阶段
 FROM node:20.18.0-alpine AS builder
 LABEL authors="Lei"
 
 # 设置工作目录
 WORKDIR /app
 
-# 安装 pnpm
-RUN npm install -g pnpm
+# 设置 Node.js 内存限制
+ENV NODE_OPTIONS="--max-old-space-size=8192"
 
-# 复制 package.json 和 pnpm-lock.yaml（或 package-lock.json，如果有）
+# 复制 package.json 和 lock 文件
 COPY package*.json ./
 
-# 安装构建依赖
-RUN pnpm install
+# 安装依赖
+RUN npm install
 
-# 复制所有项目文件
+# 复制源代码
 COPY . .
 
-# 生成 Prisma 客户端（不执行数据库迁移）
+# 生成 Prisma 客户端
 RUN npx prisma generate
 
-# 构建 Nuxt.js 项目
+# 构建项目
 RUN npm run build
 
-# 第二阶段：运行阶段
+# 清理不需要的文件和目录
+RUN rm -rf node_modules && \
+    rm -rf dist && \
+    rm -rf .git && \
+    rm -rf .nuxt && \
+    find . -maxdepth 1 ! -name '.output' ! -name 'prisma' ! -name 'ecosystem.config.js' ! -name '.' -exec rm -rf {} +
+
+# 生产阶段
 FROM node:20.18.0-alpine
 LABEL authors="Lei"
 
-# 设置工作目录
 WORKDIR /app
 
-# 复制构建后的项目文件
-COPY --from=builder /app/.output .output
-COPY --from=builder /app/node_modules node_modules
-COPY --from=builder /app/package.json package.json
+# 从构建阶段复制必要文件
+COPY --from=builder /app/.output ./.output
+COPY --from=builder /app/prisma ./prisma 
+COPY --from=builder /app/ecosystem.config.js ./ecosystem.config.js
 
-# 复制 prisma schema 文件
-COPY --from=builder /app/prisma /app/prisma
+# 安装 PM2
+RUN npm install pm2 -g
 
-# 复制启动脚本
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
-# 设置公共的环境变量
+# 设置环境变量
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 
 # 暴露端口
 EXPOSE 3000
 
-# 使用启动脚本作为启动命令
-CMD ["/app/start.sh"]
+# 使用 PM2 启动应用
+CMD ["pm2-runtime", "start", "ecosystem.config.js"]
