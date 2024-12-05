@@ -5,18 +5,11 @@ export default defineEventHandler(async (event) => {
 
     try {
         const { email, password } = await readBody(event);
-        console.log(email, password)
-        console.log(config.adminEmail, config.adminPassword)
+        
         if (email !== config.adminEmail || password !== config.adminPassword) {
             return {
                 code: 500,
-                msg: '邮箱或密码不正确',
-                data: {
-                    email: config.adminEmail,
-                    password: config.adminPassword,
-                    email2: email,
-                    password2: password
-                }
+                msg: '邮箱或密码不正确'
             }
         }
         try {

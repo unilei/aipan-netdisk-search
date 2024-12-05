@@ -1,5 +1,4 @@
-console.log(process.env)
-export default defineNuxtConfig({
+ export default defineNuxtConfig({
   devtools: { enabled: false },
 
   // 优化构建配置

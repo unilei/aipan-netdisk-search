@@ -1,5 +1,4 @@
- 
-services:
+ services:
   aipan-netdisk-search:
     image: unilei/aipan-netdisk-search:latest # 如果你想从 Docker Hub 获取镜像，可以使用这一行
     container_name: aipan-netdisk-search-app
@@ -14,11 +13,23 @@ services:
         JWT_SECRET: ${JWT_SECRET}
         DATABASE_URL: ${DATABASE_URL}
         DATABASE_SCHEMA: ${DATABASE_SCHEMA}
-        # SHADOW_DATABASE_URL: ${SHADOW_DATABASE_URL}
+        
     ports:
       - "3000:3000" # 映射容器的 3000 端口到宿主机的 3000 端口
     env_file:
       - .env
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - NUXT_ADMIN_USER=${ADMIN_USER}
+      - NUXT_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - NUXT_ADMIN_EMAIL=${ADMIN_EMAIL}
+      - NUXT_JWT_SECRET=${JWT_SECRET}
+      - NUXT_DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - NUXT_DATABASE_URL=${DATABASE_URL}
+      - NUXT_PUBLIC_GITHUB_OWNER=${NUXT_PUBLIC_GITHUB_OWNER}
+      - NUXT_PUBLIC_GITHUB_REPO=${NUXT_PUBLIC_GITHUB_REPO}
+      - NUXT_PUBLIC_GITHUB_TOKEN=${NUXT_PUBLIC_GITHUB_TOKEN}
+      - NUXT_PUBLIC_GITHUB_BRANCH=${NUXT_PUBLIC_GITHUB_BRANCH}
     depends_on:
       - prisma-migrate
 

@@ -18,7 +18,10 @@ module.exports = {
         JWT_SECRET: process.env.JWT_SECRET,
         DATABASE_SCHEMA: process.env.DATABASE_SCHEMA,
         DATABASE_URL: process.env.DATABASE_URL,
-        SHADOW_DATABASE_URL: process.env.SHADOW_DATABASE_URL,
+        NUXT_PUBLIC_GITHUB_OWNER: process.env.NUXT_PUBLIC_GITHUB_OWNER,
+        NUXT_PUBLIC_GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
+        NUXT_PUBLIC_GITHUB_TOKEN: process.env.NUXT_PUBLIC_GITHUB_TOKEN,
+        NUXT_PUBLIC_GITHUB_BRANCH: process.env.NUXT_PUBLIC_GITHUB_BRANCH
       },
     },
   ],
