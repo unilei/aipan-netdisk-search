@@ -28,3 +28,5 @@ package-lock.json
 
 #pm2
 ecosystem.config.cjs.me
+
+public/image-cache/*
