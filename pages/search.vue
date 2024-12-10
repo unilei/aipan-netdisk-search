@@ -739,18 +739,18 @@ const categories = [
     icon: "fas fa-cloud",
     description: "搜索各大网盘资源",
   },
-  {
-    value: "onlineVod",
-    label: "在线观影",
-    icon: "fas fa-film",
-    description: "搜索在线视频资源",
-  },
-  {
-    value: "soupian",
-    label: "搜片",
-    icon: "fas fa-video",
-    description: "专业影视搜索引擎",
-  },
+  // {
+  //   value: "onlineVod",
+  //   label: "在线观影",
+  //   icon: "fas fa-film",
+  //   description: "搜索在线视频资源",
+  // },
+  // {
+  //   value: "soupian",
+  //   label: "搜片",
+  //   icon: "fas fa-video",
+  //   description: "专业影视搜索引擎",
+  // },
 ];
 </script>
 
