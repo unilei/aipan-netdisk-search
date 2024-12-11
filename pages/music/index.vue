@@ -109,9 +109,16 @@ const handleCopySongUrl = async (song) => {
     copyTipsMsg("reset");
   }, 3000);
 };
+const isShow = ref(true);
+const handleShow = () => {
+  isShow.value = !isShow.value;
+};
 </script>
 <template>
   <div class="max-w-md min-h-screen mx-auto p-[20px]">
+    <div class="fixed top-0 left-0 w-full h-full bg-white" v-if="isShow">
+      <button @click="handleShow" class="text-white">显示/隐藏</button>
+    </div>
     <div class="flex flex-row items-center justify-center gap-3">
       <a href="/">
         <img
