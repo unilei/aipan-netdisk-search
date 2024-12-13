@@ -11,6 +11,9 @@
     {
     "api": "/api/sources/indexI"
   },
+   {
+    "api": "/api/sources/search-c"
+  },
   {
     "api": "/api/sources/xxx"
   },
