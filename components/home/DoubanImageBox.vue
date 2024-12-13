@@ -12,26 +12,53 @@ const emit = defineEmits(["goDouban"]);
 
 // 图片加载状态管理
 const imageLoadStatus = ref({});
+const loadedImages = ref(new Set());
+const imageCache = ref(new Map()); // 用于缓存已加载的图片URL
 
-// 获取代理图片URL
+// 获取代理图片URL并缓存
 const getProxyImageUrl = (url) => {
   if (!url) return placeHolderImage;
-  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+  const cacheKey = url;
+  if (imageCache.value.has(cacheKey)) {
+    return imageCache.value.get(cacheKey);
+  }
+  const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
+  imageCache.value.set(cacheKey, proxyUrl);
+  return proxyUrl;
+};
+
+// 预加载图片
+const preloadImage = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(url);
+    img.onerror = reject;
+    img.src = url;
+  });
 };
 
 // 处理图片加载完成
 const handleImageLoad = (movieId) => {
   imageLoadStatus.value[movieId] = "loaded";
+  loadedImages.value.add(movieId);
 };
 
 // 处理图片加载失败
 const handleImageError = (movieId, event) => {
   imageLoadStatus.value[movieId] = "error";
-  // 尝试重新加载一次
   if (!event.target.dataset.retried) {
     event.target.dataset.retried = "true";
-    setTimeout(() => {
-      event.target.src = getProxyImageUrl(event.target.dataset.originalSrc);
+    const originalSrc = event.target.dataset.originalSrc;
+    setTimeout(async () => {
+      try {
+        const proxyUrl = getProxyImageUrl(originalSrc);
+        await preloadImage(proxyUrl);
+        if (event.target) {
+          event.target.src = proxyUrl;
+        }
+      } catch (error) {
+        console.error("Image reload failed:", error);
+      }
     }, 1000);
   }
 };
@@ -44,16 +71,33 @@ const imageRefs = ref({});
 onMounted(() => {
   imageObserver.value = new IntersectionObserver(
     (entries) => {
-      entries.forEach((entry) => {
+      entries.forEach(async (entry) => {
         if (entry.isIntersecting) {
           const movieId = entry.target.dataset.movieId;
-          entry.target.src = getProxyImageUrl(entry.target.dataset.originalSrc);
+          const originalSrc = entry.target.dataset.originalSrc;
+
+          if (!loadedImages.value.has(movieId)) {
+            try {
+              const proxyUrl = getProxyImageUrl(originalSrc);
+              // 预加载图片
+              await preloadImage(proxyUrl);
+              if (entry.target) {
+                entry.target.src = proxyUrl;
+              }
+            } catch (error) {
+              console.error("Image load failed:", error);
+              handleImageError(movieId, { target: entry.target });
+            }
+          } else {
+            // 已加载过的图片直接从缓存中获取
+            entry.target.src = getProxyImageUrl(originalSrc);
+          }
           imageObserver.value.unobserve(entry.target);
         }
       });
     },
     {
-      rootMargin: "50px 0px",
+      rootMargin: "100px 0px", // 增加预加载距离
       threshold: 0.01,
     }
   );
@@ -63,6 +107,10 @@ onUnmounted(() => {
   if (imageObserver.value) {
     imageObserver.value.disconnect();
   }
+  // 清理缓存
+  imageCache.value.clear();
+  loadedImages.value.clear();
+  imageRefs.value = {};
 });
 
 // 设置图片引用并开始观察
@@ -71,7 +119,15 @@ const setImageRef = (el, movieId, originalSrc) => {
     imageRefs.value[movieId] = el;
     el.dataset.movieId = movieId;
     el.dataset.originalSrc = originalSrc;
-    imageObserver.value.observe(el);
+
+    if (loadedImages.value.has(movieId)) {
+      // 已加载的图片立即显示
+      el.src = getProxyImageUrl(originalSrc);
+    } else {
+      // 使用占位图并开始观察
+      el.src = placeHolderImage;
+      imageObserver.value.observe(el);
+    }
   }
 };
 
