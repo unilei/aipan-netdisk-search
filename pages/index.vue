@@ -2,6 +2,7 @@
 import { useDoubanStore } from "~/stores/douban";
 import { badWords } from "~/utils/sensitiveWords";
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
+import { useDebounceFn } from "@vueuse/core";
 
 definePageMeta({
   layout: "netdisk",
@@ -13,7 +14,7 @@ const doubanCache = useCookie("doubanCache", {
   maxAge: 60 * 60 * 24,
 });
 
-const search = (keyword) => {
+const debouncedSearch = useDebounceFn((keyword) => {
   if (!keyword) return;
   if (badWords.includes(keyword)) {
     return alert("请勿输入敏感词");
@@ -22,6 +23,10 @@ const search = (keyword) => {
     path: "/search",
     query: { keyword: encodeURIComponent(keyword) },
   });
+}, 300);
+
+const search = (keyword) => {
+  debouncedSearch(keyword);
 };
 
 const doubanData = ref([]);
