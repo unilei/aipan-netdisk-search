@@ -173,7 +173,7 @@ const goDouban = (movie) => {
       <div
         v-for="(movie, index) in item.data"
         :key="index"
-        class="group cursor-pointer bg-white dark:bg-gray-700 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+        class="group cursor-pointer bg-white dark:bg-gray-700 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
         @click="goDouban(movie)"
       >
         <div class="relative overflow-hidden bg-gray-100 dark:bg-gray-600">
@@ -193,7 +193,7 @@ const goDouban = (movie) => {
           <img
             :ref="(el) => setImageRef(el, `${item.name}-${index}`, movie.cover)"
             :src="placeHolderImage"
-            class="w-full h-[180px] lg:h-[220px] xl:h-44 object-cover transition-all duration-300 group-hover:scale-105"
+            class="w-full aspect-[270/405] object-cover transition-all duration-300 group-hover:scale-105"
             :class="{
               'opacity-0': !imageLoadStatus[`${item.name}-${index}`],
               'opacity-100 blur-0':
@@ -269,13 +269,12 @@ const goDouban = (movie) => {
               </div>
             </div>
           </div>
-
           <!-- 悬停遮罩 -->
         </div>
 
         <div class="p-2">
           <p
-            class="text-sm text-center truncate dark:text-gray-100 font-medium group-hover:text-blue-500 transition-colors duration-300"
+            class="text-sm text-center truncate dark:text-gray-100 group-hover:text-indigo-500 transition-colors duration-300"
           >
             {{ movie.title }}
           </p>
