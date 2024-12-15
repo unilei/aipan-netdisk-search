@@ -544,7 +544,9 @@ onMounted(() => {
 // 添加请求超时控制函数
 const fetchWithTimeout = async (url, options, timeout = 5000) => {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  const actualTimeout = url === "/api/sources/indexI" ? 15000 : timeout;
+  const timeoutId = setTimeout(() => controller.abort(), actualTimeout);
 
   try {
     const response = await $fetch(url, {
@@ -552,6 +554,11 @@ const fetchWithTimeout = async (url, options, timeout = 5000) => {
       signal: controller.signal,
     });
     return response;
+  } catch (error) {
+    if (error.name === "AbortError") {
+      console.warn(`Request to ${url} was aborted due to timeout`);
+    }
+    throw error;
   } finally {
     clearTimeout(timeoutId);
   }
