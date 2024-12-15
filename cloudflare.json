@@ -3,7 +3,7 @@
     "command": "npm run build",
     "output": ".next",
     "environment": {
-      "NODE_VERSION": "18"
+      "NODE_VERSION": "20"
     }
   },
   "routes": [
