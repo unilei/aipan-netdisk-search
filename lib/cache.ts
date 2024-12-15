@@ -102,8 +102,13 @@ export class QueryCache extends EventEmitter {
     );
 
     if (options.persistence) {
-      this.persistenceManager = new PersistenceManager(options.persistence);
-      this.initializePersistence();
+      try {
+        this.persistenceManager = new PersistenceManager(options.persistence);
+        this.initializePersistence();
+      } catch (error) {
+        console.error('Failed to initialize persistence:', error);
+        this.persistenceManager = undefined;
+      }
     }
 
     if (options.warmup) {
@@ -450,96 +455,21 @@ export class QueryCache extends EventEmitter {
 export const resourceCache = new QueryCache({ 
   max: 500,
   maxConcurrent: 5,
-  persistence: {
-    directory: '.cache/resources',
-    maxFileSize: 5 * 1024 * 1024, // 5MB
-    maxFiles: 1000
-  },
-  warmup: [
-    {
-      key: 'recent-resources',
-      fetcher: async () => {
-        const { prisma, initializePrisma } = await import('@/lib/prisma-client');
-        await initializePrisma();
-        return prisma.resource.findMany({
-          take: 10,
-          orderBy: { createdAt: 'desc' },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            url: true,
-            createdAt: true,
-          }
-        });
-      },
-      ttl: 1000 * 60 * 5, // 5 分钟
-      retryOptions: {
-        maxRetries: 3,
-        retryDelay: 1000
-      },
-      refreshInterval: 1000 * 60 * 5, // 5 分钟刷新一次
-      priority: 1
-    }
-  ]
+  ttl: 1000 * 60 * 30, // 30 分钟
+  persistence: process.env.NODE_ENV === 'development' ? {
+    directory: '.cache',
+    maxFileSize: 10 * 1024 * 1024, // 10MB
+    maxFiles: 100
+  } : undefined // 在生产环境中不使用持久化存储
 });
 
 export const metadataCache = new QueryCache({ 
   max: 100,
-  maxConcurrent: 3,
-  persistence: {
+  maxConcurrent: 2,
+  ttl: 1000 * 60 * 30, // 30 分钟
+  persistence: process.env.NODE_ENV === 'development' ? {
     directory: '.cache/metadata',
-    maxFileSize: 1 * 1024 * 1024, // 1MB
-    maxFiles: 100
-  },
-  warmup: [
-    {
-      key: 'categories',
-      fetcher: async () => {
-        const { prisma, initializePrisma } = await import('@/lib/prisma-client');
-        await initializePrisma();
-        return prisma.category.findMany({
-          select: {
-            id: true,
-            name: true,
-            _count: {
-              select: { resources: true }
-            }
-          },
-          orderBy: { name: 'asc' }
-        });
-      },
-      ttl: 1000 * 60 * 30, // 30 分钟
-      retryOptions: {
-        maxRetries: 3,
-        retryDelay: 1000
-      },
-      refreshInterval: 1000 * 60 * 15, // 15 分钟刷新一次
-      priority: 2
-    },
-    {
-      key: 'tags',
-      fetcher: async () => {
-        const { prisma, initializePrisma } = await import('@/lib/prisma-client');
-        await initializePrisma();
-        return prisma.tag.findMany({
-          select: {
-            id: true,
-            name: true,
-            _count: {
-              select: { resources: true }
-            }
-          },
-          orderBy: { name: 'asc' }
-        });
-      },
-      ttl: 1000 * 60 * 30, // 30 分钟
-      retryOptions: {
-        maxRetries: 3,
-        retryDelay: 1000
-      },
-      refreshInterval: 1000 * 60 * 15, // 15 分钟刷新一次
-      priority: 3
-    }
-  ]
+    maxFileSize: 1024 * 1024, // 1MB
+    maxFiles: 50
+  } : undefined // 在生产环境中不使用持久化存储
 });
