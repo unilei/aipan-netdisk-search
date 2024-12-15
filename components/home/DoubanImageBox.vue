@@ -24,19 +24,8 @@ const getProxyImageUrl = (url) => {
   }
   const proxyUrl = `//wsrv.nl/?url=${encodeURIComponent(url)}`;
   const fallbackUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
-
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => {
-      imageCache.value.set(cacheKey, proxyUrl);
-      resolve(proxyUrl);
-    };
-    img.onerror = () => {
-      imageCache.value.set(cacheKey, fallbackUrl);
-      resolve(fallbackUrl);
-    };
-    img.src = proxyUrl;
-  });
+  imageCache.value.set(cacheKey, proxyUrl);
+  return proxyUrl;
 };
 
 const preloadImage = (url) => {
