@@ -7,6 +7,7 @@ interface PoolOptions {
   idleTimeout?: number;
   acquireTimeout?: number;
   retryInterval?: number;
+  leakDetectionThreshold?: number;
 }
 
 interface PoolStats {
@@ -16,16 +17,24 @@ interface PoolStats {
   total: number;
   maxUsed: number;
   acquireTime: number;
+  leakedConnections: number;
+  lastLeakDetection: Date;
 }
 
 type QueueItem = {
   resolve: (client: PrismaClient) => void;
   reject: (error: Error) => void;
   timestamp: number;
+  stackTrace?: string;
 };
 
 export class PrismaPool extends EventEmitter {
-  private clients: PrismaClient[] = [];
+  private clients: Array<{
+    client: PrismaClient;
+    lastActive: number;
+    acquiredAt?: number;
+    stackTrace?: string;
+  }> = [];
   private activeClients = new Set<PrismaClient>();
   private idleClients = new Set<PrismaClient>();
   private waitingQueue: QueueItem[] = [];
@@ -37,7 +46,9 @@ export class PrismaPool extends EventEmitter {
     waiting: 0,
     total: 0,
     maxUsed: 0,
-    acquireTime: 0
+    acquireTime: 0,
+    leakedConnections: 0,
+    lastLeakDetection: new Date()
   };
   
   private acquireTimes: number[] = [];
@@ -51,7 +62,8 @@ export class PrismaPool extends EventEmitter {
       max: options.max ?? 10,
       idleTimeout: options.idleTimeout ?? 30000,
       acquireTimeout: options.acquireTimeout ?? 5000,
-      retryInterval: options.retryInterval ?? 1000
+      retryInterval: options.retryInterval ?? 1000,
+      leakDetectionThreshold: options.leakDetectionThreshold ?? 60000
     };
 
     void this.initializeMinConnections();
@@ -64,15 +76,17 @@ export class PrismaPool extends EventEmitter {
 
   private async initializeMinConnections(): Promise<void> {
     try {
-      const initPromises = Array(this.options.min).fill(0).map(async () => {
-        const client = await this.createClient();
+      const initPromises = Array.from({ length: this.options.min }, () => this.createClient());
+      const clients = await Promise.all(initPromises);
+      clients.forEach(client => {
         if (client) {
           this.idleClients.add(client);
-          this.clients.push(client);
+          this.clients.push({
+            client,
+            lastActive: Date.now()
+          });
         }
       });
-
-      await Promise.all(initPromises);
       this.updateStats();
     } catch (error) {
       this.emit('error', { error, operation: 'initialize' });
@@ -90,13 +104,8 @@ export class PrismaPool extends EventEmitter {
         ]
       });
 
-      client.$on('query', (e) => {
-        this.emit('query', { ...e, clientId: client });
-      });
-
-      client.$on('error', (e) => {
-        this.emit('error', { ...e, clientId: client });
-      });
+      client.$on('query', (e) => this.emit('query', { ...e, clientId: client }));
+      client.$on('error', (e) => this.emit('error', { ...e, clientId: client }));
 
       await client.$connect();
       return client;
@@ -108,35 +117,40 @@ export class PrismaPool extends EventEmitter {
 
   async acquire(): Promise<PrismaClient> {
     const startTime = Date.now();
+    const stackTrace = new Error().stack;
     
     try {
-      // 尝试获取空闲连接
       const idleClient = this.idleClients.values().next().value as PrismaClient | undefined;
       if (idleClient) {
+        const clientInfo = this.clients.find(c => c.client === idleClient);
+        if (clientInfo) {
+          clientInfo.acquiredAt = Date.now();
+          clientInfo.stackTrace = stackTrace;
+          clientInfo.lastActive = Date.now();
+        }
         this.idleClients.delete(idleClient);
         this.activeClients.add(idleClient);
         this.updateStats(startTime);
         return idleClient;
       }
 
-      // 如果可以创建新连接
       if (this.clients.length < this.options.max) {
         const client = await this.createClient();
-        if (!client) {
-          throw new Error('Failed to create new client');
-        }
-        this.clients.push(client);
+        if (!client) throw new Error('Failed to create new client');
+        this.clients.push({
+          client,
+          lastActive: Date.now(),
+          acquiredAt: Date.now(),
+          stackTrace
+        });
         this.activeClients.add(client);
         this.updateStats(startTime);
         return client;
       }
 
-      // 需要等待空闲连接
       return new Promise<PrismaClient>((resolve, reject) => {
         const timeout = setTimeout(() => {
-          const index = this.waitingQueue.findIndex(
-            w => w.resolve === resolve && w.reject === reject
-          );
+          const index = this.waitingQueue.findIndex(w => w.resolve === resolve && w.reject === reject);
           if (index !== -1) {
             this.waitingQueue.splice(index, 1);
             reject(new Error('Connection acquire timeout'));
@@ -146,6 +160,11 @@ export class PrismaPool extends EventEmitter {
         this.waitingQueue.push({
           resolve: (client: PrismaClient) => {
             clearTimeout(timeout);
+            const clientInfo = this.clients.find(c => c.client === client);
+            if (clientInfo) {
+              clientInfo.acquiredAt = Date.now();
+              clientInfo.stackTrace = stackTrace;
+            }
             this.updateStats(startTime);
             resolve(client);
           },
@@ -153,7 +172,8 @@ export class PrismaPool extends EventEmitter {
             clearTimeout(timeout);
             reject(error);
           },
-          timestamp: startTime
+          timestamp: startTime,
+          stackTrace
         });
         
         this.stats.waiting = this.waitingQueue.length;
@@ -169,7 +189,6 @@ export class PrismaPool extends EventEmitter {
       if (this.activeClients.has(client)) {
         this.activeClients.delete(client);
         
-        // 如果有等待的请求，直接分配给它
         const nextRequest = this.waitingQueue.shift();
         if (nextRequest) {
           this.activeClients.add(client);
@@ -178,7 +197,6 @@ export class PrismaPool extends EventEmitter {
           return;
         }
 
-        // 否则加入空闲池
         this.idleClients.add(client);
         this.updateStats();
       }
@@ -207,31 +225,48 @@ export class PrismaPool extends EventEmitter {
   private async maintenance(): Promise<void> {
     try {
       const now = Date.now();
-      const idleClientsArray = Array.from(this.idleClients);
       
-      // 清理超时的空闲连接
-      for (const client of idleClientsArray) {
-        if (this.clients.length > this.options.min) {
-          await client.$disconnect();
-          this.idleClients.delete(client);
-          const index = this.clients.indexOf(client);
-          if (index !== -1) {
-            this.clients.splice(index, 1);
-          }
+      // 检测连接泄漏
+      for (const clientInfo of this.clients) {
+        if (clientInfo.acquiredAt && 
+            (now - clientInfo.acquiredAt) > this.options.leakDetectionThreshold) {
+          this.emit('connection-leak', {
+            timeHeld: now - clientInfo.acquiredAt,
+            stackTrace: clientInfo.stackTrace,
+            lastActive: clientInfo.lastActive
+          });
+          this.stats.leakedConnections++;
         }
       }
 
-      // 检查等待队列中的超时请求
-      while (
-        this.waitingQueue.length > 0 &&
-        now - this.waitingQueue[0].timestamp > this.options.acquireTimeout
-      ) {
+      // 清理空闲连接
+      const idleClientsArray = Array.from(this.idleClients);
+      for (const client of idleClientsArray) {
+        const clientInfo = this.clients.find(c => c.client === client);
+        if (clientInfo && 
+            (now - clientInfo.lastActive) > this.options.idleTimeout && 
+            this.clients.length > this.options.min) {
+          await client.$disconnect();
+          this.idleClients.delete(client);
+          this.clients = this.clients.filter(c => c.client !== client);
+          this.emit('connection-closed', { reason: 'idle' });
+        }
+      }
+
+      // 处理超时的等待请求
+      while (this.waitingQueue.length > 0 && 
+             now - this.waitingQueue[0].timestamp > this.options.acquireTimeout) {
         const request = this.waitingQueue.shift();
         if (request) {
           request.reject(new Error('Connection acquire timeout'));
+          this.emit('acquire-timeout', {
+            waitTime: now - request.timestamp,
+            stackTrace: request.stackTrace
+          });
         }
       }
 
+      this.stats.lastLeakDetection = new Date();
       this.updateStats();
     } catch (error) {
       this.emit('error', { error, operation: 'maintenance' });
@@ -245,10 +280,7 @@ export class PrismaPool extends EventEmitter {
   async close(): Promise<void> {
     clearInterval(this.maintenanceInterval);
     
-    // 断开所有连接
-    await Promise.all(
-      this.clients.map(client => client.$disconnect())
-    );
+    await Promise.all(this.clients.map(client => client.client.$disconnect()));
     
     this.clients = [];
     this.activeClients.clear();

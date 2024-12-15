@@ -52,6 +52,10 @@ export default function FavoritesPage() {
   useEffect(() => {
     if (session) {
       fetchFavorites();
+    } else {
+      setResources([]);
+      setFilteredResources([]);
+      setIsInitialLoading(false);
     }
   }, [fetchFavorites, session]);
 

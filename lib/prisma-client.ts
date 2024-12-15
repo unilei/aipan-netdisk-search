@@ -6,6 +6,9 @@ import { EventEmitter } from 'events';
 const SLOW_QUERY_THRESHOLD = 100;
 const VERY_SLOW_QUERY_THRESHOLD = 1000;
 
+// 定义查询超时时间（毫秒）
+const QUERY_TIMEOUT = 30000;
+
 // 连接池配置
 const POOL_CONFIG = {
   min: 2,
@@ -22,6 +25,51 @@ interface QueryStats {
   errors: number;
   averageQueryTime: number;
   queryTimes: number[];
+}
+
+// 参数验证接口
+interface QueryValidation {
+  maxLimit?: number;
+  requiredFields?: string[];
+  maxDepth?: number;
+}
+
+// 验证查询参数
+function validateQueryParams(args: Record<string, any> | undefined, validation: QueryValidation = {}): void {
+  if (!args) return;
+
+  // 验证分页限制
+  if (validation.maxLimit && args.take && args.take > validation.maxLimit) {
+    throw new Error(`Pagination limit exceeds maximum allowed value of ${validation.maxLimit}`);
+  }
+
+  // 验证必填字段
+  if (validation.requiredFields) {
+    for (const field of validation.requiredFields) {
+      if (!(field in args)) {
+        throw new Error(`Missing required field: ${field}`);
+      }
+    }
+  }
+
+  // 验证查询深度
+  if (validation.maxDepth) {
+    const depth = calculateQueryDepth(args);
+    if (depth > validation.maxDepth) {
+      throw new Error(`Query depth ${depth} exceeds maximum allowed depth of ${validation.maxDepth}`);
+    }
+  }
+}
+
+// 计算查询深度
+function calculateQueryDepth(obj: any, depth = 0): number {
+  if (!obj || typeof obj !== 'object') return depth;
+  
+  const nestedDepth = Object.values(obj)
+    .map(value => calculateQueryDepth(value, depth + 1))
+    .reduce((max, current) => Math.max(max, current), depth);
+    
+  return nestedDepth;
 }
 
 class PrismaManager extends EventEmitter {
@@ -89,9 +137,21 @@ class PrismaManager extends EventEmitter {
           const startTime = performance.now();
           
           try {
-            const result = await query(args);
-            const duration = performance.now() - startTime;
+            // 验证查询参数
+            validateQueryParams(args, {
+              maxLimit: 100,
+              maxDepth: 5
+            });
+
+            // 添加查询超时
+            const timeoutPromise = new Promise((_, reject) => {
+              setTimeout(() => reject(new Error(`Query timeout after ${QUERY_TIMEOUT}ms`)), QUERY_TIMEOUT);
+            });
+
+            const queryPromise = query(args);
+            const result = await Promise.race([queryPromise, timeoutPromise]);
             
+            const duration = performance.now() - startTime;
             manager.updateQueryStats(duration);
             
             if (duration > VERY_SLOW_QUERY_THRESHOLD) {
@@ -121,9 +181,10 @@ class PrismaManager extends EventEmitter {
               ` QUERY ERROR:\n` +
               `Model: ${model}\n` +
               `Operation: ${operation}\n` +
-              `Error: ${error instanceof Error ? error.message : 'Unknown error'}`
+              `Error: ${error instanceof Error ? error.message : 'Unknown error'}\n` +
+              `Stack: ${error instanceof Error ? error.stack : 'No stack trace'}`
             );
-            manager.emit('query-error', { model, operation, error });
+            manager.emit('query-error', { model, operation, error, timestamp: new Date() });
             throw error;
           }
         },
