@@ -32,7 +32,6 @@ const search = (keyword) => {
 const doubanData = ref([]);
 
 const goDouban = (movie) => {
-  // window.open(movie.url, '_blank')
   router.push({
     path: "/search",
     query: { keyword: encodeURIComponent(movie.title) },
@@ -47,7 +46,19 @@ onMounted(async () => {
     doubanData.value = doubanStore.doubanData;
     doubanCache.value = "aipan.me";
   }
+
+  // 在页面加载完成后，将滚动位置重置到顶部
+  window.scrollTo(0, 0);
 });
+
+// 监听路由变化
+watch(
+  () => router.currentRoute.value,
+  () => {
+    // 当路由发生变化时，将滚动位置重置到顶部
+    window.scrollTo(0, 0);
+  }
+);
 </script>
 
 <template>
@@ -113,6 +124,14 @@ onMounted(async () => {
       :doubanData="doubanData"
       @goDouban="goDouban"
     ></DoubanImageBox>
+    <!-- Enhanced Backtop -->
+    <el-backtop
+      :right="24"
+      :bottom="24"
+      class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center"
+    >
+      <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
+    </el-backtop>
   </div>
 </template>
 

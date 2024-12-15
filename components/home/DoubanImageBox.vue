@@ -1,4 +1,6 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from "vue";
+import { useColorMode } from "@vueuse/core";
 import placeHolderImage from "~/assets/placeholder.webp";
 
 defineProps({
@@ -10,24 +12,33 @@ defineProps({
 
 const emit = defineEmits(["goDouban"]);
 
-// 图片加载状态管理
 const imageLoadStatus = ref({});
 const loadedImages = ref(new Set());
-const imageCache = ref(new Map()); // 用于缓存已加载的图片URL
+const imageCache = ref(new Map());
 
-// 获取代理图片URL并缓存
 const getProxyImageUrl = (url) => {
   if (!url) return placeHolderImage;
   const cacheKey = url;
   if (imageCache.value.has(cacheKey)) {
     return imageCache.value.get(cacheKey);
   }
-  const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
-  imageCache.value.set(cacheKey, proxyUrl);
-  return proxyUrl;
+  const proxyUrl = `//wsrv.nl/?url=${encodeURIComponent(url)}`;
+  const fallbackUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
+
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      imageCache.value.set(cacheKey, proxyUrl);
+      resolve(proxyUrl);
+    };
+    img.onerror = () => {
+      imageCache.value.set(cacheKey, fallbackUrl);
+      resolve(fallbackUrl);
+    };
+    img.src = proxyUrl;
+  });
 };
 
-// 预加载图片
 const preloadImage = (url) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -37,13 +48,11 @@ const preloadImage = (url) => {
   });
 };
 
-// 处理图片加载完成
 const handleImageLoad = (movieId) => {
   imageLoadStatus.value[movieId] = "loaded";
   loadedImages.value.add(movieId);
 };
 
-// 处理图片加载失败
 const handleImageError = (movieId, event) => {
   imageLoadStatus.value[movieId] = "error";
   if (!event.target.dataset.retried) {
@@ -63,11 +72,9 @@ const handleImageError = (movieId, event) => {
   }
 };
 
-// 图片观察器
 const imageObserver = ref(null);
 const imageRefs = ref({});
 
-// 初始化Intersection Observer
 onMounted(() => {
   imageObserver.value = new IntersectionObserver(
     (entries) => {
@@ -79,7 +86,6 @@ onMounted(() => {
           if (!loadedImages.value.has(movieId)) {
             try {
               const proxyUrl = getProxyImageUrl(originalSrc);
-              // 预加载图片
               await preloadImage(proxyUrl);
               if (entry.target) {
                 entry.target.src = proxyUrl;
@@ -89,7 +95,6 @@ onMounted(() => {
               handleImageError(movieId, { target: entry.target });
             }
           } else {
-            // 已加载过的图片直接从缓存中获取
             entry.target.src = getProxyImageUrl(originalSrc);
           }
           imageObserver.value.unobserve(entry.target);
@@ -97,7 +102,7 @@ onMounted(() => {
       });
     },
     {
-      rootMargin: "100px 0px", // 增加预加载距离
+      rootMargin: "200px 0px",
       threshold: 0.01,
     }
   );
@@ -107,13 +112,11 @@ onUnmounted(() => {
   if (imageObserver.value) {
     imageObserver.value.disconnect();
   }
-  // 清理缓存
   imageCache.value.clear();
   loadedImages.value.clear();
   imageRefs.value = {};
 });
 
-// 设置图片引用并开始观察
 const setImageRef = (el, movieId, originalSrc) => {
   if (el && imageObserver.value) {
     imageRefs.value[movieId] = el;
@@ -121,10 +124,8 @@ const setImageRef = (el, movieId, originalSrc) => {
     el.dataset.originalSrc = originalSrc;
 
     if (loadedImages.value.has(movieId)) {
-      // 已加载的图片立即显示
       el.src = getProxyImageUrl(originalSrc);
     } else {
-      // 使用占位图并开始观察
       el.src = placeHolderImage;
       imageObserver.value.observe(el);
     }
@@ -177,7 +178,6 @@ const goDouban = (movie) => {
         @click="goDouban(movie)"
       >
         <div class="relative overflow-hidden bg-gray-100 dark:bg-gray-600">
-          <!-- 加载占位 -->
           <div
             v-if="!imageLoadStatus[`${item.name}-${index}`]"
             class="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-600"
@@ -189,7 +189,6 @@ const goDouban = (movie) => {
             </div>
           </div>
 
-          <!-- 图片 -->
           <img
             :ref="(el) => setImageRef(el, `${item.name}-${index}`, movie.cover)"
             :src="placeHolderImage"
@@ -207,7 +206,6 @@ const goDouban = (movie) => {
             :alt="movie.title"
             referrerpolicy="no-referrer"
           />
-          <!-- 评分标签 -->
           <div
             v-if="
               movie.rate &&
@@ -227,7 +225,6 @@ const goDouban = (movie) => {
             </svg>
             <span class="text-white text-xs font-medium">{{ movie.rate }}</span>
           </div>
-          <!-- 加载失败显示 -->
           <div
             v-if="imageLoadStatus[`${item.name}-${index}`] === 'error'"
             class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700"
@@ -240,7 +237,6 @@ const goDouban = (movie) => {
             </div>
           </div>
 
-          <!-- 悬停遮罩 -->
           <div
             class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300"
           >
@@ -269,7 +265,6 @@ const goDouban = (movie) => {
               </div>
             </div>
           </div>
-          <!-- 悬停遮罩 -->
         </div>
 
         <div class="p-2">
@@ -299,7 +294,6 @@ const goDouban = (movie) => {
     opacity: 0;
     transform: translateY(-20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -310,11 +304,9 @@ const goDouban = (movie) => {
   0% {
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
   }
-
   70% {
     box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
   }
-
   100% {
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
   }
