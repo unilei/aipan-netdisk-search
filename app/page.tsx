@@ -146,7 +146,7 @@ function HomeContent() {
       setTotalResources(data.total);
     } catch (error) {
       console.error('Error fetching resources:', error);
-      toast.error(isAppend ? '加载更多资源失败' : '加载资源失败');
+      // toast.error(isAppend ? '加载更多资源失败' : '加载资源失败');
       if (isAppend) {
         // 如果是加载更多失败，重置加载状态，允许重试
         setHasMore(true);
