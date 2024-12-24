@@ -141,7 +141,7 @@ const goDouban = (movie) => {
       <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ item.data.length }} 部</span>
     </h1>
 
-    <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8 gap-4 mt-[10px]">
+    <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-6 gap-4 mt-[10px]">
       <div v-for="(movie, index) in item.data" :key="index"
         class="group cursor-pointer bg-white dark:bg-gray-700 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
         @click="goDouban(movie)">
