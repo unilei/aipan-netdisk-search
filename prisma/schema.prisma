@@ -12,9 +12,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // shadowDatabaseUrl = env("SHADOW_DATABASE_URL") // 添加这一行
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL") // 添加这一行
 }
 
 model User {
@@ -65,6 +65,7 @@ model Post {
   creatorId Int
 
   categories PostToCategory[]
+  comments   Comment[]
 
   creator User @relation(fields: [creatorId], references: [id])
 }
@@ -96,4 +97,24 @@ model Alist {
   creatorId Int
 
   creator User @relation(fields: [creatorId], references: [id])
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  content   String    @db.Text
+  author    String?
+  email     String?
+  website   String?
+  avatar    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  postId    Int
+  parentId  Int? // 用于回复功能
+  post      Post      @relation(fields: [postId], references: [id])
+  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentToComment")
+  likes     Int       @default(0)
+
+  @@index([postId])
+  @@index([parentId])
 }

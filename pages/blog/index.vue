@@ -2,6 +2,65 @@
 import moment from 'moment';
 import { useUnsplash } from '~/composables/useUnsplash';
 
+// SEO配置
+useHead({
+    title: 'AIPAN.ME 博客 - 分享技术、生活和见解',
+    meta: [
+        {
+            name: 'description',
+            content: '爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。'
+        },
+        {
+            name: 'keywords',
+            content: '博客,AIPAN.ME,技术博客,编程,生活感悟'
+        },
+        // Open Graph / Facebook
+        { property: 'og:type', content: 'website' },
+        { property: 'og:title', content: 'AIPAN.ME 博客 - 分享技术、生活和见解' },
+        {
+            property: 'og:description',
+            content: '爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。'
+        },
+        { property: 'og:image', content: '/blog-default-og.jpg' },
+        { property: 'og:url', content: 'https://aipan.me/blog' },
+        // Twitter
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:title', content: 'AIPAN.ME 博客 - 分享技术、生活和见解' },
+        {
+            name: 'twitter:description',
+            content: '爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。'
+        },
+        { name: 'twitter:image', content: '/blog-default-og.jpg' },
+        // 其他重要的meta标签
+        { name: 'robots', content: 'index,follow' },
+        { name: 'author', content: 'AIPAN.ME' }
+    ],
+    link: [
+        { rel: 'canonical', href: 'https://aipan.me/blog' }
+    ],
+    // 添加结构化数据
+    script: [
+        {
+            type: 'application/ld+json',
+            children: JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Blog',
+                name: 'AIPAN.ME 博客',
+                description: '爱盼博客是一个分享技术、生活和见解的平台。',
+                url: 'https://aipan.me/blog',
+                publisher: {
+                    '@type': 'Organization',
+                    name: 'AIPAN.ME',
+                    logo: {
+                        '@type': 'ImageObject',
+                        url: 'https://aipan.me/logo.png'
+                    }
+                }
+            })
+        }
+    ]
+})
+
 const formatDate = (date) => {
     return moment(date).format('YYYY-MM-DD')
 }
