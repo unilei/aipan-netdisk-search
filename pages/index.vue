@@ -10,6 +10,33 @@ definePageMeta({
 const doubanStore = useDoubanStore();
 const searchKeyword = ref("");
 const router = useRouter();
+
+// SEO配置
+useHead({
+  title: 'AIPAN.ME - 网盘资源搜索引擎',
+  meta: [
+    { name: 'description', content: '爱盼网盘搜索是一个强大的网盘资源搜索引擎，提供海量影视、音乐、电子书等资源的搜索服务。快速、精准、便捷地找到您需要的资源。' },
+    { name: 'keywords', content: '网盘搜索,资源搜索,影视资源,音乐资源,电子书,在线搜索' },
+    // Open Graph / Facebook
+    { property: 'og:type', content: 'website' },
+    { property: 'og:title', content: 'AIPAN.ME - 网盘资源搜索引擎' },
+    { property: 'og:description', content: '爱盼网盘搜索是一个强大的网盘资源搜索引擎，提供海量影视、音乐、电子书等资源的搜索服务。' },
+    { property: 'og:image', content: '/og-image.jpg' },
+    // Twitter
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: 'AIPAN.ME - 网盘资源搜索引擎' },
+    { name: 'twitter:description', content: '爱盼网盘搜索是一个强大的网盘资源搜索引擎，提供海量影视、音乐、电子书等资源的搜索服务。' },
+    { name: 'twitter:image', content: '/og-image.jpg' },
+    // 其他重要的meta标签
+    { name: 'robots', content: 'index,follow' },
+    { name: 'author', content: 'AIPAN.ME' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+  ],
+  link: [
+    { rel: 'canonical', href: 'https://aipan.me' }
+  ]
+})
+
 const doubanCache = useCookie("doubanCache", {
   maxAge: 60 * 60 * 24,
 });
@@ -65,13 +92,13 @@ watch(
   <div class="custom-bg py-[60px] min-h-[calc(100vh-70px)] transition-colors duration-300">
     <div class="flex flex-col items-center justify-center gap-4 mt-[60px] animate-fadeIn">
       <div class="flex items-center justify-center gap-4 hover:scale-105 transition-transform duration-300">
-        <img class="w-24 h-24" src="@/assets/my-logo.png" alt="logo" />
+        <img class="w-24 h-24 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
         <div class="text-center">
           <h1
-            class="text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            class="text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
             AIPAN.ME
           </h1>
-          <p class="text-gray-600 text-sm dark:text-gray-300 mt-2">
+          <p class="text-gray-600 text-sm dark:text-gray-400 mt-2">
             爱盼 - 资源随心，娱乐无限
           </p>
         </div>
@@ -81,10 +108,10 @@ watch(
       <div class="w-[85%] md:w-[700px] mx-auto">
         <div class="relative group">
           <input
-            class="w-full pl-6 pr-[70px] py-4 rounded-full text-sm bg-white dark:bg-gray-700 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:text-white placeholder-gray-400 dark:placeholder-gray-300"
+            class="w-full pl-6 pr-[70px] py-4 rounded-full text-sm bg-white dark:bg-gray-800/80 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:shadow-gray-900/30 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             v-model="searchKeyword" placeholder="请输入关键词搜索" @keydown.enter="search(searchKeyword)" />
           <button type="button"
-            class="search-btn absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-blue-600/30"
+            class="search-btn absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-blue-400/30"
             @click="search(searchKeyword)">
             <el-icon :size="22" class="transition-transform duration-300 group-hover:rotate-12">
               <Search></Search>
@@ -94,15 +121,22 @@ watch(
       </div>
     </div>
     <div class="flex items-center justify-center gap-4 pt-8">
+      <nuxt-link to="/spring-festival"
+        class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
+        <i class="fa-solid fa-calendar-days text-xs"></i>
+        <span class="text-xs">新年倒计时</span>
+        <i
+          class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
+      </nuxt-link>
       <nuxt-link to="/movie/daily"
-        class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium shadow-lg hover:shadow-blue-500/30 transform hover:scale-105 transition-all duration-300">
+        class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
         <i class="fa-solid fa-film text-xs"></i>
         <span class="text-xs">每日电影推荐</span>
         <i
           class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
       </nuxt-link>
       <nuxt-link to="/music/player"
-        class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium shadow-lg hover:shadow-blue-500/30 transform hover:scale-105 transition-all duration-300">
+        class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
         <i class="fa-solid fa-music text-xs"></i>
         <span class="text-xs">本地音乐播放器</span>
         <i
@@ -112,7 +146,7 @@ watch(
     <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
     <!-- Enhanced Backtop -->
     <el-backtop :right="24" :bottom="24"
-      class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center">
+      class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl dark:!shadow-gray-900/30 backdrop-blur-sm flex items-center justify-center">
       <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
     </el-backtop>
   </div>
@@ -162,13 +196,13 @@ watch(
 }
 
 :root.dark .custom-bg {
-  background-color: rgba(31, 41, 55, 0.97);
+  background-color: rgba(17, 24, 39, 0.95);
 }
 
 :root.dark .custom-bg::before {
   background: linear-gradient(180deg,
-      rgba(31, 41, 55, 0) 0%,
-      rgba(31, 41, 55, 0.98) 100%);
+      rgba(17, 24, 39, 0) 0%,
+      rgba(17, 24, 39, 0.98) 100%);
 }
 
 .search-btn {
@@ -186,6 +220,24 @@ watch(
 
   100% {
     box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+:root.dark .search-btn {
+  animation: darkPulse 2s infinite;
+}
+
+@keyframes darkPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(96, 165, 250, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0);
   }
 }
 

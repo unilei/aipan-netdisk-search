@@ -1,11 +1,13 @@
 <script setup>
+import springFestivalDarkSvg from '~/assets/theme/spring-festival-dark.svg'
+import springFestivalLightSvg from '~/assets/theme/spring-festival-light.svg'
 const colorMode = useColorMode()
-
 </script>
 <template>
-    <div class="backdrop-blur dark:bg-gray-800 py-4 fixed top-0 left-0 w-full z-50">
+    <div class="backdrop-blur   py-4 fixed top-0 left-0 w-full z-50">
         <div class="max-w-[1240px] mx-auto flex flex-row items-center justify-between px-[20px]">
             <div class="flex flex-row items-center gap-4">
+
                 <nuxt-link to="/blog" class="text-sm text-slate-600 dark:text-white">
                     📚 我的博客
                 </nuxt-link>
@@ -36,4 +38,8 @@ const colorMode = useColorMode()
         </div>
     </div>
 </template>
-<style scoped></style>
+<style scoped>
+.router-link-active {
+    @apply text-red-600 dark:text-red-400;
+}
+</style>
