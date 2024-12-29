@@ -63,7 +63,7 @@ const uploadSingleFile = async (file: File, config: GithubConfig): Promise<Uploa
     try {
         const fileName = generateUniqueFileName(file)
         const base64 = await fileToBase64(file)
-        
+
         await $fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/images/${fileName}`, {
             method: 'PUT',
             headers: {
@@ -82,8 +82,8 @@ const uploadSingleFile = async (file: File, config: GithubConfig): Promise<Uploa
         return { url: cdnUrl }
     } catch (error) {
         console.error('Single file upload failed:', error)
-        return { 
-            url: null, 
+        return {
+            url: null,
             error: `图片 ${file.name} 上传失败: ${error instanceof Error ? error.message : '未知错误'}`
         }
     }
@@ -91,7 +91,7 @@ const uploadSingleFile = async (file: File, config: GithubConfig): Promise<Uploa
 
 // 批量上传图片
 export const uploadImages = async (
-    files: File[], 
+    files: File[],
     config: {
         owner: string;
         repo: string;
