@@ -157,7 +157,7 @@ class SensitiveWordFilter {
       const char = word.charAt(i);
       const wordMap = currentMap.get(char);
 
-      if (!wordMap) return; // 词不存在，直接���回
+      if (!wordMap) return; // 词不存在，直接返回
 
       if (i < word.length - 1) {
         currentMap = wordMap;

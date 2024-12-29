@@ -1,12 +1,13 @@
 <script setup>
-import { 
-    House, 
-    Folder, 
-    Document, 
-    Monitor, 
-    ArrowRight, 
-    TrendCharts, 
-    CircleCheck 
+import {
+    House,
+    Folder,
+    Document,
+    Monitor,
+    ArrowRight,
+    TrendCharts,
+    CircleCheck,
+    ChatLineRound
 } from '@element-plus/icons-vue'
 
 definePageMeta({
@@ -35,6 +36,13 @@ const menuCards = [
         icon: Monitor,
         link: '/admin/alist',
         color: 'bg-purple-500'
+    },
+    {
+        title: '评论管理',
+        description: '管理博客评论和回复',
+        icon: ChatLineRound,
+        link: '/admin/comments',
+        color: 'bg-orange-500'
     }
 ]
 
@@ -49,6 +57,10 @@ const stats = reactive({
         loading: true
     },
     alistSources: {
+        count: 0,
+        loading: true
+    },
+    comments: {
         count: 0,
         loading: true
     }
@@ -105,11 +117,29 @@ const getAlistSourcesCount = async () => {
     }
 }
 
+// 获取评论数量
+const getCommentsCount = async () => {
+    try {
+        const res = await $fetch('/api/blog/comments?page=1&pageSize=1', {
+            method: 'GET',
+            headers: {
+                "authorization": "Bearer " + useCookie('token').value
+            }
+        })
+        stats.comments.count = res.data.total
+    } catch (error) {
+        console.error('Failed to fetch comments count:', error)
+    } finally {
+        stats.comments.loading = false
+    }
+}
+
 // 页面加载时获取统计数据
 onMounted(() => {
     getCloudFilesCount()
     getBlogPostsCount()
     getAlistSourcesCount()
+    getCommentsCount()
 })
 </script>
 
@@ -124,7 +154,9 @@ onMounted(() => {
                         <p class="text-gray-500 mt-1">欢迎使用管理系统，请选择要进行的操作</p>
                     </div>
                     <el-button type="primary" @click="() => navigateTo('/')" class="flex items-center">
-                        <el-icon class="mr-1"><House /></el-icon>
+                        <el-icon class="mr-1">
+                            <House />
+                        </el-icon>
                         返回首页
                     </el-button>
                 </div>
@@ -132,20 +164,14 @@ onMounted(() => {
 
             <!-- 功能卡片区域 -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <NuxtLink 
-                    v-for="card in menuCards" 
-                    :key="card.title"
-                    :to="card.link"
-                    class="block"
-                >
-                    <div 
-                        class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group"
-                    >
+                <NuxtLink v-for="card in menuCards" :key="card.title" :to="card.link" class="block">
+                    <div
+                        class="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 group">
                         <div class="flex items-start space-x-4">
-                            <div 
-                                :class="[card.color, 'p-3 rounded-lg text-white']"
-                            >
-                                <el-icon :size="24"><component :is="card.icon" /></el-icon>
+                            <div :class="[card.color, 'p-3 rounded-lg text-white']">
+                                <el-icon :size="24">
+                                    <component :is="card.icon" />
+                                </el-icon>
                             </div>
                             <div class="flex-1">
                                 <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary">
@@ -156,7 +182,9 @@ onMounted(() => {
                                 </p>
                             </div>
                             <div class="text-gray-400 group-hover:text-primary">
-                                <el-icon :size="20"><ArrowRight /></el-icon>
+                                <el-icon :size="20">
+                                    <ArrowRight />
+                                </el-icon>
                             </div>
                         </div>
                     </div>
@@ -164,10 +192,12 @@ onMounted(() => {
             </div>
 
             <!-- 统计信息区域 -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                     <div class="flex items-center space-x-2">
-                        <el-icon :size="20" class="text-blue-500"><Folder /></el-icon>
+                        <el-icon :size="20" class="text-blue-500">
+                            <Folder />
+                        </el-icon>
                         <h3 class="text-gray-500 text-sm font-medium">云盘文件数</h3>
                     </div>
                     <div class="mt-2 flex items-baseline">
@@ -178,10 +208,12 @@ onMounted(() => {
                         </template>
                     </div>
                 </div>
-                
+
                 <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                     <div class="flex items-center space-x-2">
-                        <el-icon :size="20" class="text-green-500"><Document /></el-icon>
+                        <el-icon :size="20" class="text-green-500">
+                            <Document />
+                        </el-icon>
                         <h3 class="text-gray-500 text-sm font-medium">博客文章数</h3>
                     </div>
                     <div class="mt-2 flex items-baseline">
@@ -192,10 +224,12 @@ onMounted(() => {
                         </template>
                     </div>
                 </div>
-                
+
                 <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                     <div class="flex items-center space-x-2">
-                        <el-icon :size="20" class="text-purple-500"><Monitor /></el-icon>
+                        <el-icon :size="20" class="text-purple-500">
+                            <Monitor />
+                        </el-icon>
                         <h3 class="text-gray-500 text-sm font-medium">存储源数量</h3>
                     </div>
                     <div class="mt-2 flex items-baseline">
@@ -203,9 +237,27 @@ onMounted(() => {
                         <template v-else>
                             <span class="text-2xl font-semibold text-gray-900">{{ stats.alistSources.count }}</span>
                             <span class="ml-2 text-sm text-blue-600 flex items-center">
-                                <el-icon :size="16" class="mr-0.5"><CircleCheck /></el-icon>
+                                <el-icon :size="16" class="mr-0.5">
+                                    <CircleCheck />
+                                </el-icon>
                                 活跃
                             </span>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-center space-x-2">
+                        <el-icon :size="20" class="text-orange-500">
+                            <ChatLineRound />
+                        </el-icon>
+                        <h3 class="text-gray-500 text-sm font-medium">评论数量</h3>
+                    </div>
+                    <div class="mt-2 flex items-baseline">
+                        <el-skeleton-item v-if="stats.comments.loading" variant="text" class="w-16 h-8" />
+                        <template v-else>
+                            <span class="text-2xl font-semibold text-gray-900">{{ stats.comments.count }}</span>
+                            <span class="ml-2 text-sm text-gray-500">条评论</span>
                         </template>
                     </div>
                 </div>

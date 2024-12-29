@@ -100,20 +100,21 @@ model Alist {
 }
 
 model Comment {
-  id        Int       @id @default(autoincrement())
-  content   String    @db.Text
-  author    String?
-  email     String?
-  website   String?
-  avatar    String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  postId    Int
-  parentId  Int? // 用于回复功能
-  post      Post      @relation(fields: [postId], references: [id])
-  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
-  replies   Comment[] @relation("CommentToComment")
-  likes     Int       @default(0)
+  id          Int       @id @default(autoincrement())
+  content     String    @db.Text
+  author      String?
+  email       String?
+  website     String?
+  avatar      String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  postId      Int
+  parentId    Int? // 用于回复功能
+  post        Post      @relation(fields: [postId], references: [id])
+  parent      Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+  replies     Comment[] @relation("CommentToComment")
+  likes       Int       @default(0)
+  deleteToken String    @unique // 用于评论删除验证
 
   @@index([postId])
   @@index([parentId])

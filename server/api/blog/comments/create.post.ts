@@ -1,12 +1,12 @@
-import { PrismaClient } from '@prisma/client'
+import { v4 as uuidv4 } from 'uuid'
+import prisma from '~/server/utils/prisma'
 import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
-
-const prisma = new PrismaClient()
 
 export default defineEventHandler(async (event) => {
     try {
         const body = await readBody(event)
-        const { postId, content, author, email, website, parentId } = body
+        const { postId, content, email, website, parentId } = body
+        const author = body.author?.trim() || '匿名用户'
 
         // 基本验证
         if (!postId || !content) {
@@ -33,11 +33,12 @@ export default defineEventHandler(async (event) => {
             data: {
                 postId: parseInt(postId),
                 content,
-                author: author || 'Anonymous',
+                author,
                 email,
                 website,
+                avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${author}`,
                 parentId: parentId ? parseInt(parentId) : null,
-                avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email || Math.random()}` // 使用 DiceBear 生成头像
+                deleteToken: uuidv4()
             }
         })
 
