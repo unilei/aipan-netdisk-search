@@ -68,6 +68,42 @@ const handleReply = (comment) => {
     }
 }
 
+// 检查是否可以删除评论
+const canDelete = (commentId) => {
+    if (typeof window !== 'undefined') {
+        return !!window.localStorage.getItem(`comment_delete_token_${commentId}`)
+    }
+    return false
+}
+
+// 处理删除评论
+const handleDelete = async (comment) => {
+    try {
+        // 从 localStorage 获取删除 token
+        const deleteToken = window.localStorage.getItem(`comment_delete_token_${comment.id}`)
+
+        const response = await $fetch(`/api/blog/comments/${comment.id}`, {
+            method: 'DELETE',
+            body: { deleteToken }
+        })
+
+        if (response.code === 200) {
+            // 如果是回复评论
+            if (comment.parentId) {
+                const parentComment = comments.value.find(c => c.id === comment.parentId)
+                if (parentComment && parentComment.replies) {
+                    parentComment.replies = parentComment.replies.filter(r => r.id !== comment.id)
+                }
+            } else {
+                // 如果是主评论
+                comments.value = comments.value.filter(c => c.id !== comment.id)
+            }
+        }
+    } catch (error) {
+        console.error('Error deleting comment:', error)
+    }
+}
+
 onMounted(() => {
     fetchComments()
 })
@@ -122,6 +158,10 @@ onMounted(() => {
                                     class="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
                                     <i class="fas fa-reply mr-1"></i> 回复
                                 </button>
+                                <button v-if="canDelete(comment.id)" @click="handleDelete(comment)"
+                                    class="text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200">
+                                    <i class="fas fa-trash-alt mr-1"></i> 删除
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -152,7 +192,7 @@ onMounted(() => {
                                     </div>
                                     <time class="text-sm text-gray-500 dark:text-gray-400">{{
                                         formatDate(reply.createdAt)
-                                    }}</time>
+                                        }}</time>
                                 </div>
 
                                 <!-- 回复内容 -->
@@ -164,6 +204,10 @@ onMounted(() => {
                                     <button @click="handleReply(reply)"
                                         class="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
                                         <i class="fas fa-reply mr-1"></i> 回复
+                                    </button>
+                                    <button v-if="canDelete(reply.id)" @click="handleDelete(reply)"
+                                        class="text-xs text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200">
+                                        <i class="fas fa-trash-alt mr-1"></i> 删除
                                     </button>
                                 </div>
                             </div>

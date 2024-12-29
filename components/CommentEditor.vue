@@ -66,6 +66,11 @@ const submitComment = async () => {
         })
 
         if (response.code === 200) {
+            // 保存删除 token 到 localStorage
+            if (response.data.deleteToken) {
+                window.localStorage.setItem(`comment_delete_token_${response.data.id}`, response.data.deleteToken)
+            }
+
             // 清空表单
             content.value = ''
             if (!props.parentId) {

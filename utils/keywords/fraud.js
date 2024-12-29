@@ -382,7 +382,7 @@ export const fraudWords = [
   "zil诈骗",
   "vet诈骗",
   "icx诈骗",
-  "btm诈���",
+  "btm诈骗",
   "ae诈骗",
   "nas诈骗",
   "ela诈骗",
