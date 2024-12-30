@@ -90,22 +90,22 @@ watch(
 
 <template>
   <div class="custom-bg py-[60px] min-h-[calc(100vh-70px)] transition-colors duration-300">
-    <div class="flex flex-col items-center justify-center gap-4 mt-[60px] animate-fadeIn">
-      <div class="flex items-center justify-center gap-4 hover:scale-105 transition-transform duration-300">
-        <img class="w-24 h-24 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
+    <div class="flex flex-col items-center justify-center gap-4 mt-[60px] md:mt-[60px] mt-[30px] animate-fadeIn">
+      <div class="flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform duration-300">
+        <img class="w-16 h-16 md:w-24 md:h-24 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
         <div class="text-center">
           <h1
-            class="text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+            class="text-3xl md:text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
             AIPAN.ME
           </h1>
-          <p class="text-gray-600 text-sm dark:text-gray-400 mt-2">
+          <p class="text-gray-600 text-xs md:text-sm dark:text-gray-400 mt-1 md:mt-2">
             爱盼 - 资源随心，娱乐无限
           </p>
         </div>
       </div>
     </div>
-    <div class="max-w-[1240px] mx-auto mt-[30px]">
-      <div class="w-[85%] md:w-[700px] mx-auto">
+    <div class="max-w-[1240px] mx-auto mt-[20px] md:mt-[30px] px-4 md:px-0">
+      <div class="w-full md:w-[700px] mx-auto">
         <div class="relative group">
           <input
             class="w-full pl-6 pr-[70px] py-4 rounded-full text-sm bg-white dark:bg-gray-800/80 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:shadow-gray-900/30 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
@@ -120,27 +120,27 @@ watch(
         </div>
       </div>
     </div>
-    <div class="flex items-center justify-center gap-4 pt-8">
+    <div class="flex flex-wrap items-center justify-center gap-2 md:gap-4 pt-4 md:pt-8 px-4">
       <nuxt-link to="/spring-festival"
-        class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
-        <i class="fa-solid fa-calendar-days text-xs"></i>
-        <span class="text-xs">新年倒计时</span>
+        class="group flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
+        <i class="fa-solid fa-calendar-days text-[10px] md:text-xs"></i>
+        <span class="text-[10px] md:text-xs whitespace-nowrap">新年倒计时</span>
         <i
-          class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
+          class="fa-solid fa-chevron-right text-[10px] md:text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
       </nuxt-link>
       <nuxt-link to="/movie/daily"
-        class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
-        <i class="fa-solid fa-film text-xs"></i>
-        <span class="text-xs">每日电影推荐</span>
+        class="group flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
+        <i class="fa-solid fa-film text-[10px] md:text-xs"></i>
+        <span class="text-[10px] md:text-xs whitespace-nowrap">每日电影推荐</span>
         <i
-          class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
+          class="fa-solid fa-chevron-right text-[10px] md:text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
       </nuxt-link>
       <nuxt-link to="/music/player"
-        class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
-        <i class="fa-solid fa-music text-xs"></i>
-        <span class="text-xs">本地音乐播放器</span>
+        class="group flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
+        <i class="fa-solid fa-music text-[10px] md:text-xs"></i>
+        <span class="text-[10px] md:text-xs whitespace-nowrap">本地音乐播放器</span>
         <i
-          class="fa-solid fa-chevron-right text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
+          class="fa-solid fa-chevron-right text-[10px] md:text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
       </nuxt-link>
     </div>
     <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
