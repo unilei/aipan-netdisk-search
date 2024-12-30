@@ -2,7 +2,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         let query = await getQuery(event)
-        let res: any = await $fetch('https://kwapi.aipan.me/search_music', {
+        let res: any = await $fetch('https://kwapi.aipan.me/api/music/search/music', {
             method: 'GET',
             query: query
         })

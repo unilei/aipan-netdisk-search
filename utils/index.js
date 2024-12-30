@@ -22,3 +22,23 @@ export const parseM3U = (m3u) => {
 
   return result;
 };
+
+// Simple browser-compatible encoding/decoding
+const SALT = "aipan_music_2024";
+
+export function simpleEncode(text) {
+  const combined = text + SALT;
+  return btoa(encodeURIComponent(combined));
+}
+
+export const simpleDecode = (encoded) => {
+  try {
+    const decoded = decodeURIComponent(atob(encoded));
+    if (decoded.endsWith(SALT)) {
+      return decoded.slice(0, -SALT.length);
+    }
+    return null;
+  } catch (err) {
+    return null;
+  }
+};
