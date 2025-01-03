@@ -1,66 +1,87 @@
 <template>
-  <div class="min-h-[calc(100vh-60px)] bg-gray-50 dark:bg-gray-900 p-6">
-    <div class="max-w-[1000px] mx-auto space-y-6">
+  <div class="min-h-[calc(100vh-60px)] bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-[1240px] mx-auto p-6">
       <!-- 头部区域 -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-              <nuxt-link to="/user/dashboard" class="hover:text-primary flex items-center">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
+        <div class="relative h-24 bg-gradient-to-r from-blue-500 to-purple-500">
+          <div class="absolute bottom-0 left-0 right-0 px-6 py-4 bg-white/10 backdrop-blur-sm">
+            <div class="flex items-center space-x-2 text-sm text-white">
+              <nuxt-link to="/user/dashboard" class="hover:text-white/80 flex items-center transition-colors duration-200">
                 <el-icon class="mr-1">
                   <House />
                 </el-icon>
                 用户中心
               </nuxt-link>
               <span>/</span>
-              <span class="text-gray-900 dark:text-gray-200">我的资源</span>
+              <span>我的资源</span>
             </div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-200">我的资源</h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-1">管理您投稿的资源</p>
           </div>
-          <el-button @click="() => navigateTo('/user/dashboard')" class="flex items-center">
-            <el-icon class="mr-1">
-              <ArrowLeft />
-            </el-icon>
-            返回用户中心
-          </el-button>
+        </div>
+        <div class="p-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-2">我的资源</h1>
+              <p class="text-gray-500 dark:text-gray-400">管理您投稿的资源</p>
+            </div>
+            <el-button @click="() => navigateTo('/user/dashboard')" class="flex items-center">
+              <el-icon class="mr-1">
+                <ArrowLeft />
+              </el-icon>
+              返回用户中心
+            </el-button>
+          </div>
         </div>
       </div>
 
       <!-- 操作按钮区域 -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-        <div class="flex items-center space-x-4">
-          <el-button type="primary" @click="handleAddClouddrive()" class="flex items-center">
-            <el-icon class="mr-1">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">投稿资源</h2>
+            <el-icon class="text-2xl text-blue-500">
               <Plus />
             </el-icon>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">添加新的资源</p>
+          <el-button type="primary" @click="handleAddClouddrive()" class="w-full">
             投稿资源
           </el-button>
-          <el-button type="success" @click="handleMultiUpload()" class="flex items-center">
-            <el-icon class="mr-1">
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">批量投稿</h2>
+            <el-icon class="text-2xl text-green-500">
               <Upload />
             </el-icon>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">批量上传资源</p>
+          <el-button type="success" @click="handleMultiUpload()" class="w-full">
             批量投稿
           </el-button>
-          <el-button type="danger" @click="handleMultiDelete()" :disabled="!multipleSelection.length"
-            class="flex items-center">
-            <el-icon class="mr-1">
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">批量删除</h2>
+            <el-icon class="text-2xl text-red-500">
               <Delete />
             </el-icon>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">批量删除资源</p>
+          <el-button type="danger" @click="handleMultiDelete()" :disabled="!multipleSelection.length" class="w-full">
             批量删除 <span v-if="multipleSelection.length" class="ml-1">({{ multipleSelection.length }})</span>
           </el-button>
         </div>
       </div>
 
       <!-- 表格区域 -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
         <client-only>
           <el-table ref="multipleTableRef" :data="resourcesData" @selection-change="handleSelectionChange"
-            style="width: 100%" :border="true" class="mt-4" :selectable="selectable">
+            style="width: 100%" :border="true" class="custom-table" :selectable="selectable">
             <el-table-column type="selection" width="55" />
             <el-table-column prop="name" label="资源名称" min-width="200">
               <template #default="{ row }">
-                <div class="flex items-center">
+                <div class="flex items-center group">
                   <el-icon class="mr-2 text-blue-500">
                     <Document />
                   </el-icon>
@@ -96,7 +117,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <div class="mt-6 flex items-center justify-center">
+          <div class="p-6 flex items-center justify-center">
             <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
               :page-sizes="pagination.pageSizes" background layout="total, sizes, prev, pager, next, jumper"
               :total="pagination.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
@@ -106,11 +127,11 @@
     </div>
 
     <!-- 添加/编辑资源对话框 -->
-    <el-dialog v-model="dialogs.resource" :title="form.id ? '编辑资源' : '投稿资源'" width="700px">
-      <el-form ref="formRef" :model="form" label-width="100px" :rules="rules">
+    <el-dialog v-model="dialogs.resource" :title="form.id ? '编辑资源' : '投稿资源'" width="700px" class="resource-dialog">
+      <el-form ref="formRef" :model="form" label-width="100px" :rules="rules" class="space-y-6">
         <!-- 资源名称 -->
         <el-form-item label="资源名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入资源名称">
+          <el-input v-model="form.name" placeholder="请输入资源名称" class="hover:shadow-sm transition-shadow duration-200">
             <template #prefix>
               <el-icon><Document /></el-icon>
             </template>
@@ -122,26 +143,26 @@
           <div class="space-y-4">
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               <div v-for="resourceType in resourceTypes" :key="resourceType.id"
-                class="relative group cursor-pointer"
+                class="relative group cursor-pointer transform hover:scale-105 transition-all duration-200"
                 @click="handleSelectResourceType(resourceType)">
-                <div class="px-4 py-3 rounded-lg border transition-all duration-200"
+                <div class="px-4 py-3 rounded-lg border shadow-sm hover:shadow-md transition-all duration-200"
                   :class="[
                     form.typeId === resourceType.id
-                      ? 'bg-primary-50 border-primary text-primary'
+                      ? 'bg-primary-50 border-primary text-primary shadow-primary/20'
                       : 'border-gray-200 hover:border-primary hover:text-primary'
                   ]">
                   <div class="text-center">{{ resourceType.name }}</div>
                 </div>
               </div>
             </div>
-            <div class="flex items-center space-x-3">
-              <el-button type="primary" @click="handleAddResourceType()" class="flex items-center">
+            <div class="flex items-center gap-3">
+              <el-button type="primary" @click="handleAddResourceType()" class="flex items-center hover:scale-105 transition-transform duration-200">
                 <el-icon class="mr-1">
                   <Plus />
                 </el-icon>
                 添加类型
               </el-button>
-              <el-button @click="handleRefreshResourceTypes" class="flex items-center"
+              <el-button @click="handleRefreshResourceTypes" class="flex items-center hover:scale-105 transition-transform duration-200"
                 :loading="pageState.loadingResourceTypes">
                 <el-icon class="mr-1">
                   <Refresh />
@@ -163,13 +184,14 @@
           :prop="'links.' + index + '.value'"
           :rules="{ required: true, message: '链接不能为空', trigger: 'blur' }"
         >
-          <div class="flex items-start space-x-2">
+          <div class="flex items-start gap-2">
             <div class="flex-grow space-y-2">
               <el-input 
                 v-model="link.value" 
                 type="textarea"
                 :rows="2"
                 placeholder="请输入资源链接（支持网盘链接）"
+                class="hover:shadow-sm transition-shadow duration-200"
               >
                 <template #prefix>
                   <el-icon><Link /></el-icon>
@@ -178,6 +200,7 @@
               <el-input 
                 v-model="link.password" 
                 placeholder="提取密码（如果有）"
+                class="hover:shadow-sm transition-shadow duration-200"
               >
                 <template #prefix>
                   <el-icon><Lock /></el-icon>
@@ -189,6 +212,7 @@
               :icon="Delete"
               @click.prevent="removeLink(index)"
               v-if="form.links.length > 1"
+              class="hover:scale-105 transition-transform duration-200"
             ></el-button>
           </div>
         </el-form-item>
@@ -197,7 +221,7 @@
           <el-button 
             type="primary" 
             @click="addLink"
-            class="flex items-center"
+            class="flex items-center hover:scale-105 transition-transform duration-200"
             :disabled="form.links.length >= 5"
           >
             <el-icon class="mr-1"><Plus /></el-icon>
@@ -215,13 +239,15 @@
             placeholder="请详细描述资源的内容、用途等信息"
             :maxlength="2000"
             show-word-limit
+            class="hover:shadow-sm transition-shadow duration-200"
           />
         </el-form-item>
       </el-form>
       <template #footer>
-        <div class="flex justify-end space-x-3">
-          <el-button @click="dialogs.resource = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmitAddClouddrive" :loading="pageState.submitting">
+        <div class="flex justify-end gap-3">
+          <el-button @click="dialogs.resource = false" class="hover:scale-105 transition-transform duration-200">取消</el-button>
+          <el-button type="primary" @click="handleSubmitAddClouddrive" :loading="pageState.submitting"
+            class="hover:scale-105 transition-transform duration-200">
             {{ form.id ? '保存修改' : '提交资源' }}
           </el-button>
         </div>
@@ -229,50 +255,51 @@
     </el-dialog>
 
     <!-- 添加资源类型对话框 -->
-    <el-dialog v-model="dialogs.type" title="添加资源类型" width="500px">
-      <el-form ref="typeFormRef" :model="typeForm" label-width="100px">
+    <el-dialog v-model="dialogs.type" title="添加资源类型" width="500px" class="type-dialog">
+      <el-form ref="typeFormRef" :model="typeForm" label-width="100px" class="space-y-6">
         <el-form-item label="类型名称" prop="name" :rules="{
           required: true,
           message: '类型名称不能为空',
           trigger: 'blur'
         }">
-          <el-input v-model="typeForm.name" placeholder="请输入类型名称"></el-input>
+          <el-input v-model="typeForm.name" placeholder="请输入类型名称" class="hover:shadow-sm transition-shadow duration-200"></el-input>
         </el-form-item>
         <el-form-item label="类型描述" prop="description">
-          <el-input v-model="typeForm.description" type="textarea" :rows="3" placeholder="请输入类型描述（选填）"></el-input>
+          <el-input v-model="typeForm.description" type="textarea" :rows="3" placeholder="请输入类型描述（选填）"
+            class="hover:shadow-sm transition-shadow duration-200"></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
-        <div class="flex justify-end space-x-3">
-          <el-button @click="dialogs.type = false">取消</el-button>
+        <div class="flex justify-end gap-3">
+          <el-button @click="dialogs.type = false" class="hover:scale-105 transition-transform duration-200">取消</el-button>
           <el-button type="primary" @click="handleSubmitAddResourceType"
-            :loading="pageState.addingResourceType">确认</el-button>
+            :loading="pageState.addingResourceType" class="hover:scale-105 transition-transform duration-200">确认</el-button>
         </div>
       </template>
     </el-dialog>
 
     <!-- 批量上传对话框 -->
-    <el-dialog v-model="dialogs.multiUpload" title="批量投稿" width="600px">
+    <el-dialog v-model="dialogs.multiUpload" title="批量投稿" width="600px" class="upload-dialog">
       <div class="space-y-6">
-        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
+        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
           <h3 class="font-medium text-gray-900 dark:text-gray-200 mb-4">支持的文件格式</h3>
-          <div class="space-y-2">
-            <div class="flex items-center space-x-3">
-              <el-tag size="small">CSV</el-tag>
-              <el-tag size="small" type="success">XLSX</el-tag>
-              <el-tag size="small" type="warning">XLS</el-tag>
+          <div class="space-y-3">
+            <div class="flex items-center gap-3">
+              <el-tag size="small" class="hover:scale-105 transition-transform duration-200">CSV</el-tag>
+              <el-tag size="small" type="success" class="hover:scale-105 transition-transform duration-200">XLSX</el-tag>
+              <el-tag size="small" type="warning" class="hover:scale-105 transition-transform duration-200">XLS</el-tag>
             </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">
+            <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
               文件需包含以下字段：name（资源名称）、category（资源类型）、link（资源链接）、password（可选，提取密码）、description（可选，资源描述）
             </p>
           </div>
         </div>
         
-        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6">
-          <input class="w-full" accept=".csv,.xlsx,.xls" type="file" @change="handleFileUpload">
+        <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 hover:border-primary transition-colors duration-200">
+          <input class="w-full cursor-pointer" accept=".csv,.xlsx,.xls" type="file" @change="handleFileUpload">
         </div>
 
-        <div v-if="multiProgress > 0" class="space-y-2">
+        <div v-if="multiProgress > 0" class="space-y-3">
           <div class="flex items-center justify-between text-sm">
             <span class="text-gray-500 dark:text-gray-400">上传进度</span>
             <span class="font-medium text-gray-900 dark:text-gray-200">{{ multiProgress }}%</span>
@@ -281,10 +308,10 @@
         </div>
       </div>
       <template #footer>
-        <div class="flex justify-end space-x-3">
-          <el-button @click="dialogs.multiUpload = false">取消</el-button>
+        <div class="flex justify-end gap-3">
+          <el-button @click="dialogs.multiUpload = false" class="hover:scale-105 transition-transform duration-200">取消</el-button>
           <el-button type="primary" @click="handleSubmitMultiUpload"
-            :loading="pageState.multiUploading">开始上传</el-button>
+            :loading="pageState.multiUploading" class="hover:scale-105 transition-transform duration-200">开始上传</el-button>
         </div>
       </template>
     </el-dialog>
@@ -948,6 +975,39 @@ onMounted(() => {
   font-family: var(--el-font-family);
 }
 
+:deep(.el-dialog) {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+:deep(.el-dialog__header) {
+  margin-right: 0;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
+
+:deep(.el-dialog__body) {
+  padding: 1.5rem;
+}
+
+:deep(.el-dialog__footer) {
+  padding: 1.5rem;
+  border-top: 1px solid var(--el-border-color-lighter);
+}
+
+:deep(.el-button) {
+  border-radius: 0.375rem;
+}
+
+:deep(.el-input__wrapper),
+:deep(.el-textarea__wrapper) {
+  border-radius: 0.375rem;
+}
+
+:deep(.el-tag) {
+  border-radius: 0.375rem;
+}
+
 .text-primary {
   color: var(--el-color-primary);
 }
@@ -958,5 +1018,37 @@ onMounted(() => {
 
 .border-primary {
   border-color: var(--el-color-primary);
+}
+
+:deep(.custom-table) {
+  --el-table-border-color: var(--el-border-color-lighter);
+  --el-table-border: 1px solid var(--el-table-border-color);
+  --el-table-text-color: var(--el-text-color-regular);
+  --el-table-header-text-color: var(--el-text-color-secondary);
+  --el-table-header-bg-color: var(--el-fill-color-light);
+  --el-table-row-hover-bg-color: var(--el-fill-color);
+  border-radius: 0;
+}
+
+:deep(.custom-table th.el-table__cell) {
+  background-color: var(--el-table-header-bg-color);
+  color: var(--el-table-header-text-color);
+  font-weight: 600;
+  border-bottom: 1px solid var(--el-table-border-color);
+}
+
+:deep(.custom-table .el-table__row) {
+  transition: background-color 0.3s ease;
+}
+
+:deep(.custom-table .el-table__row:hover) {
+  background-color: var(--el-table-row-hover-bg-color);
+}
+
+@media (max-width: 640px) {
+  :deep(.el-dialog) {
+    width: 90% !important;
+    margin: 0 auto;
+  }
 }
 </style>
