@@ -8,9 +8,7 @@
             <div class="w-24 h-24 rounded-full bg-white dark:bg-gray-700 p-1">
               <img
                 :src="user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.username || 'default')}`"
-                alt="avatar"
-                class="w-full h-full rounded-full object-cover"
-              />
+                alt="avatar" class="w-full h-full rounded-full object-cover" />
             </div>
           </div>
         </div>
@@ -26,7 +24,9 @@
             </div>
             <div class="flex items-center space-x-3">
               <el-button type="primary" @click="() => navigateTo('/user/profile')" class="flex items-center">
-                <el-icon class="mr-1"><UserFilled /></el-icon>
+                <el-icon class="mr-1">
+                  <UserFilled />
+                </el-icon>
                 编辑资料
               </el-button>
               <el-button type="danger" @click="handleLogout" plain>
@@ -45,7 +45,9 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">资源总数</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.resourceCount || 0 }}</p>
             </div>
-            <el-icon class="text-3xl text-blue-500"><Files /></el-icon>
+            <el-icon class="text-3xl text-blue-500">
+              <Files />
+            </el-icon>
           </div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
@@ -54,7 +56,9 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">文章总数</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.postCount || 0 }}</p>
             </div>
-            <el-icon class="text-3xl text-green-500"><Document /></el-icon>
+            <el-icon class="text-3xl text-green-500">
+              <Document />
+            </el-icon>
           </div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
@@ -63,7 +67,9 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">获赞总数</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.likeCount || 0 }}</p>
             </div>
-            <el-icon class="text-3xl text-red-500"><Star /></el-icon>
+            <el-icon class="text-3xl text-red-500">
+              <Star />
+            </el-icon>
           </div>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
@@ -72,7 +78,9 @@
               <p class="text-sm text-gray-500 dark:text-gray-400">下载总数</p>
               <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.downloadCount || 0 }}</p>
             </div>
-            <el-icon class="text-3xl text-purple-500"><Download /></el-icon>
+            <el-icon class="text-3xl text-purple-500">
+              <Download />
+            </el-icon>
           </div>
         </div>
       </div>
@@ -81,32 +89,26 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">上传资源</h2>
-            <el-icon class="text-2xl text-blue-500"><Upload /></el-icon>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">我的资源</h2>
+            <el-icon class="text-2xl text-blue-500">
+              <Upload />
+            </el-icon>
           </div>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">分享你的优质资源</p>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">查看你的资源</p>
           <el-button type="primary" @click="() => navigateTo('/user/resources/new')" class="w-full">
-            立即上传
+            管理您投稿的资源
           </el-button>
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">发布文章</h2>
-            <el-icon class="text-2xl text-green-500"><Edit /></el-icon>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">我的文章</h2>
+            <el-icon class="text-2xl text-green-500">
+              <Edit />
+            </el-icon>
           </div>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">分享你的知识和经验</p>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">查看你的文章</p>
           <el-button type="success" @click="() => navigateTo('/user/posts/new')" class="w-full">
-            开始写作
-          </el-button>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">内容管理</h2>
-            <el-icon class="text-2xl text-purple-500"><Management /></el-icon>
-          </div>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">管理你的所有内容</p>
-          <el-button type="info" @click="() => navigateTo('/user/contributions')" class="w-full">
-            查看管理
+            管理您投稿的文章
           </el-button>
         </div>
       </div>
@@ -115,8 +117,8 @@
       <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
         <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200 mb-4">最近活动</h2>
         <div v-if="activities?.length" class="space-y-4">
-          <div v-for="activity in activities" :key="activity.id" 
-               class="flex items-center p-4 border border-gray-100 dark:border-gray-700 rounded-lg">
+          <div v-for="activity in activities" :key="activity.id"
+            class="flex items-center p-4 border border-gray-100 dark:border-gray-700 rounded-lg">
             <el-icon class="text-2xl mr-4" :class="getActivityIconClass(activity.type)">
               <component :is="getActivityIcon(activity.type)" />
             </el-icon>
