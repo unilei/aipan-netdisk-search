@@ -39,11 +39,15 @@ model ResourceType {
   id          Int     @id @default(autoincrement())
   name        String  @unique
   description String?
+  isUserType  Boolean @default(false)
+  isEnabled   Boolean @default(true)
 
   resources     Resource[] // 一个资源类型可以对应多个资源
   creatorId     Int
   creator       User           @relation(fields: [creatorId], references: [id])
   userResources UserResource[] // 一个资源类型可以对应多个用户资源
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Resource {

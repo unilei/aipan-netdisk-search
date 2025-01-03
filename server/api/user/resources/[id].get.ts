@@ -1,27 +1,13 @@
 import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
+    const { id } = getRouterParams(event)
+    const userId = event.context.user.userId
+
     try {
-        const user = event.context.user;
-        if (!user) {
-            throw createError({
-                statusCode: 401,
-                message: "请先登录"
-            });
-        }
-
-        const id = event.context.params?.id;
-        if (!id) {
-            throw createError({
-                statusCode: 400,
-                message: "资源ID不能为空"
-            });
-        }
-
-        const resource = await prisma.userResource.findFirst({
+        const resource = await prisma.userResource.findUnique({
             where: {
-                id,
-                creatorId: user.userId
+                id: Number(id)
             },
             include: {
                 type: true,
@@ -33,25 +19,33 @@ export default defineEventHandler(async (event) => {
                     }
                 }
             }
-        });
+        })
 
         if (!resource) {
             throw createError({
                 statusCode: 404,
-                message: "资源不存在"
-            });
+                message: '资源不存在'
+            })
+        }
+
+        // 检查资源是否属于当前用户
+        if (resource.creatorId !== userId) {
+            throw createError({
+                statusCode: 403,
+                message: '无权访问此资源'
+            })
         }
 
         return {
             code: 200,
-            msg: "获取成功",
+            msg: 'success',
             data: resource
-        };
+        }
     } catch (error: any) {
-        console.error('获取资源详情失败:', error);
+        console.error('获取资源详情失败:', error)
         throw createError({
             statusCode: error.statusCode || 500,
-            message: error.message || "服务器错误"
-        });
+            message: error.message || '获取资源详情失败'
+        })
     }
-}); 
+})

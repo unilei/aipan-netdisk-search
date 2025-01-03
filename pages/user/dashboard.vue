@@ -1,69 +1,133 @@
 <template>
   <div class="min-h-[calc(100vh-60px)] bg-gray-50 dark:bg-gray-900">
-    <div class="max-w-[1240px] mx-auto p-6 space-y-6">
-      <!-- 头部区域 -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-        <div class="flex items-center justify-between">
-          <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-200">用户中心</h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-1">欢迎回来，{{ user?.username }}</p>
+    <div class="max-w-[1240px] mx-auto p-6">
+      <!-- 用户信息卡片 -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
+        <div class="relative h-32 bg-gradient-to-r from-blue-500 to-purple-500">
+          <div class="absolute -bottom-12 left-6">
+            <div class="w-24 h-24 rounded-full bg-white dark:bg-gray-700 p-1">
+              <img
+                :src="user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.username || 'default')}`"
+                alt="avatar"
+                class="w-full h-full rounded-full object-cover"
+              />
+            </div>
           </div>
-          <div class="flex items-center space-x-4">
-            <el-button type="primary" @click="() => navigateTo('/')" class="flex items-center">
-              <el-icon class="mr-1">
-                <House />
-              </el-icon>
-              返回首页
-            </el-button>
-            <button @click="handleLogout" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">
-              登出
-            </button>
+        </div>
+        <div class="pt-14 px-6 pb-6">
+          <div class="flex justify-between items-start">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-200">
+                {{ user?.username }}
+              </h1>
+              <p class="text-gray-500 dark:text-gray-400 mt-1">
+                {{ user?.email }}
+              </p>
+            </div>
+            <div class="flex items-center space-x-3">
+              <el-button type="primary" @click="() => navigateTo('/user/profile')" class="flex items-center">
+                <el-icon class="mr-1"><UserFilled /></el-icon>
+                编辑资料
+              </el-button>
+              <el-button type="danger" @click="handleLogout" plain>
+                登出
+              </el-button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 功能卡片区域 -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- 博客投稿 -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-          <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">博客投稿</h2>
-            <el-icon class="text-2xl text-blue-500">
-              <Document />
-            </el-icon>
+      <!-- 数据统计 -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">资源总数</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.resourceCount || 0 }}</p>
+            </div>
+            <el-icon class="text-3xl text-blue-500"><Files /></el-icon>
           </div>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">分享你的想法和经验</p>
-          <el-button type="primary" @click="() => navigateTo('/user/posts/new')" class="w-full">
-            写文章
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">文章总数</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.postCount || 0 }}</p>
+            </div>
+            <el-icon class="text-3xl text-green-500"><Document /></el-icon>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">获赞总数</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.likeCount || 0 }}</p>
+            </div>
+            <el-icon class="text-3xl text-red-500"><Star /></el-icon>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">下载总数</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.downloadCount || 0 }}</p>
+            </div>
+            <el-icon class="text-3xl text-purple-500"><Download /></el-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快捷操作 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">上传资源</h2>
+            <el-icon class="text-2xl text-blue-500"><Upload /></el-icon>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">分享你的优质资源</p>
+          <el-button type="primary" @click="() => navigateTo('/user/resources/new')" class="w-full">
+            立即上传
           </el-button>
         </div>
-
-        <!-- 资源投稿 -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">资源投稿</h2>
-            <el-icon class="text-2xl text-green-500">
-              <Edit />
-            </el-icon>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">发布文章</h2>
+            <el-icon class="text-2xl text-green-500"><Edit /></el-icon>
           </div>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">分享你的资源</p>
-          <el-button type="success" @click="() => navigateTo('/user/resources/new')" class="w-full">
-            上传资源
+          <p class="text-gray-500 dark:text-gray-400 mb-4">分享你的知识和经验</p>
+          <el-button type="success" @click="() => navigateTo('/user/posts/new')" class="w-full">
+            开始写作
           </el-button>
         </div>
-
-        <!-- 我的投稿 -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">我的投稿</h2>
-            <el-icon class="text-2xl text-purple-500">
-              <Document />
-            </el-icon>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">内容管理</h2>
+            <el-icon class="text-2xl text-purple-500"><Management /></el-icon>
           </div>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">管理你的投稿内容</p>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">管理你的所有内容</p>
           <el-button type="info" @click="() => navigateTo('/user/contributions')" class="w-full">
-            查看投稿
+            查看管理
           </el-button>
+        </div>
+      </div>
+
+      <!-- 最近活动 -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200 mb-4">最近活动</h2>
+        <div v-if="activities?.length" class="space-y-4">
+          <div v-for="activity in activities" :key="activity.id" 
+               class="flex items-center p-4 border border-gray-100 dark:border-gray-700 rounded-lg">
+            <el-icon class="text-2xl mr-4" :class="getActivityIconClass(activity.type)">
+              <component :is="getActivityIcon(activity.type)" />
+            </el-icon>
+            <div>
+              <p class="text-gray-900 dark:text-gray-200">{{ activity.content }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(activity.createdAt) }}</p>
+            </div>
+          </div>
+        </div>
+        <div v-else class="text-center text-gray-500 dark:text-gray-400 py-4">
+          暂无活动记录
         </div>
       </div>
     </div>
@@ -71,15 +135,28 @@
 </template>
 
 <script setup>
-import { House, Document, Edit } from '@element-plus/icons-vue'
-const { logout } = useAuth();
+import { ref, onMounted } from 'vue'
+import { 
+  UserFilled, 
+  Files, 
+  Document, 
+  Star, 
+  Download, 
+  Upload, 
+  Edit, 
+  Management 
+} from '@element-plus/icons-vue'
+ 
 
+const { logout } = useAuth()
 definePageMeta({
   middleware: ['auth']
 })
 
-const token = useCookie('token');
-const user = ref(null);
+const token = useCookie('token')
+const user = ref(null)
+const stats = ref(null)
+const activities = ref([])
 
 // 获取用户信息
 const fetchUserInfo = async () => {
@@ -88,20 +165,76 @@ const fetchUserInfo = async () => {
       headers: {
         'Authorization': `Bearer ${token.value}`
       }
-    });
+    })
     if (res.code === 200) {
-      user.value = res.data;
+      user.value = res.data
     }
   } catch (error) {
-    console.error('获取用户信息失败:', error);
+    console.error('获取用户信息失败:', error)
   }
-};
+}
 
-onMounted(() => {
-  fetchUserInfo();
-});
+// 获取统计数据
+const fetchStats = async () => {
+  try {
+    const res = await $fetch('/api/user/stats', {
+      headers: {
+        'Authorization': `Bearer ${token.value}`
+      }
+    })
+    if (res.code === 200) {
+      stats.value = res.data
+    }
+  } catch (error) {
+    console.error('获取统计数据失败:', error)
+  }
+}
+
+// 获取最近活动
+const fetchActivities = async () => {
+  try {
+    const res = await $fetch('/api/user/activities', {
+      headers: {
+        'Authorization': `Bearer ${token.value}`
+      }
+    })
+    if (res.code === 200) {
+      activities.value = res.data
+    }
+  } catch (error) {
+    console.error('获取活动数据失败:', error)
+  }
+}
+
+// 获取活动图标
+const getActivityIcon = (type) => {
+  const iconMap = {
+    'resource': Files,
+    'post': Document,
+    'like': Star,
+    'download': Download
+  }
+  return iconMap[type] || Document
+}
+
+// 获取活动图标样式
+const getActivityIconClass = (type) => {
+  const classMap = {
+    'resource': 'text-blue-500',
+    'post': 'text-green-500',
+    'like': 'text-red-500',
+    'download': 'text-purple-500'
+  }
+  return classMap[type] || 'text-gray-500'
+}
 
 const handleLogout = () => {
-  logout();
-};
+  logout()
+}
+
+onMounted(() => {
+  fetchUserInfo()
+  fetchStats()
+  fetchActivities()
+})
 </script>

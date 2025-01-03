@@ -1,68 +1,66 @@
 import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
+    // 确保用户已登录
+    if (!event.context.user?.userId) {
+        throw createError({
+            statusCode: 401,
+            message: '请先登录'
+        })
+    }
+
+    const userId = event.context.user.userId;
+    const query = getQuery(event)
+    const page = Number(query.page) || 1
+    const pageSize = Number(query.pageSize) || 10
+    
     try {
-        const user = event.context.user;
-        if (!user) {
-            throw createError({
-                statusCode: 401,
-                message: "请先登录"
-            });
-        }
-
-        // 获取查询参数
-        const query = getQuery(event);
-        const page = Number(query.page) || 1;
-        const pageSize = Number(query.pageSize) || 10;
-        const status = query.status as string || undefined;
-
-        // 构建查询条件
-        const where = {
-            creatorId: user.userId,
-            ...(status && { status })
-        };
-
-        // 获取总数
-        const total = await prisma.userResource.count({ where });
-
-        // 获取分页数据
-        const resources = await prisma.userResource.findMany({
-            where,
-            include: {
-                type: true,
-                creator: {
-                    select: {
-                        id: true,
-                        username: true,
-                        email: true
+        const [resources, total] = await Promise.all([
+            prisma.userResource.findMany({
+                where: {
+                    creatorId: userId
+                },
+                include: {
+                    type: true,
+                    creator: {
+                        select: {
+                            id: true,
+                            username: true,
+                            email: true
+                        }
                     }
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                skip: (page - 1) * pageSize,
+                take: pageSize
+            }),
+            prisma.userResource.count({
+                where: {
+                    creatorId: userId
                 }
-            },
-            skip: (page - 1) * pageSize,
-            take: pageSize,
-            orderBy: {
-                createdAt: 'desc'
-            }
-        });
+            })
+        ])
 
         return {
             code: 200,
-            msg: "获取成功",
+            msg: 'success',
             data: {
-                list: resources,
+                resources,
                 pagination: {
+                    total,
                     page,
                     pageSize,
-                    total,
                     totalPages: Math.ceil(total / pageSize)
                 }
             }
-        };
-    } catch (error: any) {
-        console.error('获取用户资源列表失败:', error);
+        }
+    } catch (error) {
+        console.error('获取资源列表失败:', error)
         throw createError({
-            statusCode: error.statusCode || 500,
-            message: error.message || "服务器错误"
-        });
+            statusCode: 500,
+            message: '获取资源列表失败'
+        })
     }
-}); 
+}) 
