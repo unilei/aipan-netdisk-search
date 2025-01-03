@@ -136,10 +136,9 @@ watch(activeCategory, (newValue) => {
     </div>
     <div class="max-w-[1240px] mx-auto mt-8 px-4">
       <!-- 导航分类标签 -->
-      <div class="flex items-center justify-center gap-4 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+      <div class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
         <button v-for="category in categories" :key="category.id"
-          class="px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition-all duration-300 whitespace-nowrap"
-          :class="[
+          class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 whitespace-nowrap" :class="[
             activeCategory === category.id
               ? 'bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 text-white shadow-md'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
@@ -149,21 +148,20 @@ watch(activeCategory, (newValue) => {
       </div>
 
       <!-- 导航网格 -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+      <div class="flex items-center justify-center flex-wrap gap-2">
         <template v-for="category in categories" :key="category.id">
           <template v-if="activeCategory === category.id">
             <nuxt-link v-for="item in category.items" :key="item.path" :to="item.path"
-              class="group flex items-center gap-2 md:gap-3 p-2.5 md:p-3 rounded-xl bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10">
+              class="group  flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10">
               <div
-                class="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 flex items-center justify-center shadow-lg">
-                <i :class="['fa-solid', item.icon, 'text-white text-sm md:text-base']"></i>
+                class="w-7 h-7 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 flex items-center justify-center shadow-lg">
+                <i :class="['fa-solid', item.icon, 'text-white text-xs']"></i>
               </div>
               <div class="flex-1 min-w-0">
                 <h3
-                  class="text-gray-800 dark:text-gray-200 text-xs md:text-sm font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                  class="text-gray-800 dark:text-gray-200 text-xs font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                   {{ item.title }}</h3>
-                <p class="text-gray-500 dark:text-gray-400 text-[10px] md:text-xs truncate mt-0.5">{{ item.description
-                  }}</p>
+                <!-- <p class="text-gray-500 dark:text-gray-400 text-[10px] truncate">{{ item.description }}</p> -->
               </div>
             </nuxt-link>
           </template>
