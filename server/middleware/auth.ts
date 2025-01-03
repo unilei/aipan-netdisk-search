@@ -9,6 +9,7 @@ export default defineEventHandler(async (event: H3Event) => {
         // 检查是否是需要认证的API
         const needsAuth = (
             isAdminRoute ||
+            event.node.req.url?.startsWith("/api/user/resources") ||
             (event.node.req.url?.startsWith("/api/user/protected") ?? false)
         );
 

@@ -1,59 +1,53 @@
 import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
+    const { id } = getRouterParams(event)
+    const userId = event.context.user.userId
+    const { name, type, links, description } = await readBody(event)
+
     try {
-        const user = event.context.user;
-        if (!user) {
-            throw createError({
-                statusCode: 401,
-                message: "请先登录"
-            });
-        }
-
-        const id = event.context.params?.id;
-        if (!id) {
-            throw createError({
-                statusCode: 400,
-                message: "资源ID不能为空"
-            });
-        }
-
-        // 验证资源是否存在且属于当前用户
-        const existingResource = await prisma.userResource.findFirst({
+        const resource = await prisma.userResource.findUnique({
             where: {
-                id,
-                creatorId: user.userId
+                id: Number(id)
             }
-        });
+        })
 
-        if (!existingResource) {
+        if (!resource) {
             throw createError({
                 statusCode: 404,
-                message: "资源不存在或无权限修改"
-            });
+                message: '资源不存在'
+            })
         }
 
-        const body = await readBody(event);
-        const { name, links, description } = body;
+        // 检查资源是否属于当前用户
+        if (resource.creatorId !== userId) {
+            throw createError({
+                statusCode: 403,
+                message: '无权修改此资源'
+            })
+        }
 
-        // 验证必填字段
-        if (!name?.trim() || !links || !description?.trim()) {
+        // 如果资源已经审核通过或被拒绝，不允许修改
+        if (resource.status !== 'pending') {
             throw createError({
                 statusCode: 400,
-                message: "请填写完整的资源信息"
-            });
+                message: '只能修改待审核的资源'
+            })
         }
 
-        // 更新资源
         const updatedResource = await prisma.userResource.update({
-            where: { id },
+            where: {
+                id: Number(id)
+            },
             data: {
                 name,
+                typeId: parseInt(type),
                 links,
                 description,
-                status: 'pending' // 更新后重新进入待审核状态
+                status: 'pending' // 修改后重置为待审核状态
             },
             include: {
+                type: true,
                 creator: {
                     select: {
                         id: true,
@@ -62,18 +56,18 @@ export default defineEventHandler(async (event) => {
                     }
                 }
             }
-        });
+        })
 
         return {
             code: 200,
-            msg: "更新成功，等待审核",
+            msg: '更新成功，等待重新审核',
             data: updatedResource
-        };
+        }
     } catch (error: any) {
-        console.error('更新资源失败:', error);
+        console.error('更新资源失败:', error)
         throw createError({
             statusCode: error.statusCode || 500,
-            message: error.message || "服务器错误"
-        });
+            message: error.message || '更新资源失败'
+        })
     }
-}); 
+})
