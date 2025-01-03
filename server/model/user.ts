@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import prisma from "~/lib/prisma";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
+import type { JwtPayload } from "jsonwebtoken";
 
 const config = useRuntimeConfig();
 const JWT_SECRET = config.jwtSecret; // 从环境变量中读取 JWT 密钥
@@ -10,19 +11,21 @@ export const registerUser = async () => {
   const email = config.adminEmail;
   const password = config.adminPassword;
 
-  const hashedPassword = await bcrypt.hash(password, 12); // 增加 bcrypt 的哈希迭代次数
+  const hashedPassword = await bcrypt.hash(password, 12);
   const user = await prisma.user.create({
     data: {
       username,
       email,
       password: hashedPassword,
+      role: 'admin',
     },
   });
 
-  const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
   return { user, token };
 };
-export const loginUser = async (email, password) => {
+
+export const loginUser = async (email: string, password: string) => {
   const user = await prisma.user.findUnique({
     where: {
       email,
@@ -35,10 +38,11 @@ export const loginUser = async (email, password) => {
   if (!isMatch) {
     return null;
   }
-  const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
   return { user, token };
 };
-export const findUserByEmail = async (email) => {
+
+export const findUserByEmail = async (email: string) => {
   const user = await prisma.user.findUnique({
     where: {
       email,
@@ -46,9 +50,10 @@ export const findUserByEmail = async (email) => {
   });
   return user;
 };
-export const verifyToken = (token) => {
+
+export const verifyToken = (token: string) => {
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
     return decoded;
   } catch (err) {
     return null;
