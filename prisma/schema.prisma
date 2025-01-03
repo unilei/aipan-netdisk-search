@@ -22,14 +22,17 @@ model User {
   username   String   @unique
   email      String   @unique
   password   String
+  role       String   @default("user") // Possible values: "admin", "user"
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   isVerified Boolean  @default(false)
 
   resources     Resource[] // 一个用户可以有多个资源
   resourceTypes ResourceType[] // 一个用户可以创建多种资源类型
-  Post          Post[]
-  Alist         Alist[]
+  posts         Post[] // 用户的博客文章
+  alist         Alist[]
+  blogPosts     BlogPost[] // 用户的博客文章
+  userResources UserResource[] // 用户的资源投稿
 }
 
 model ResourceType {
@@ -37,9 +40,10 @@ model ResourceType {
   name        String  @unique
   description String?
 
-  resources Resource[] // 一个资源类型可以对应多个资源
-  creatorId Int
-  creator   User       @relation(fields: [creatorId], references: [id])
+  resources     Resource[] // 一个资源类型可以对应多个资源
+  creatorId     Int
+  creator       User           @relation(fields: [creatorId], references: [id])
+  userResources UserResource[] // 一个资源类型可以对应多个用户资源
 }
 
 model Resource {
@@ -118,4 +122,36 @@ model Comment {
 
   @@index([postId])
   @@index([parentId])
+}
+
+// 新增的博客文章模型
+model BlogPost {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String   @db.Text
+  category  String
+  tags      String[]
+  status    String   @default("pending") // pending, published, rejected
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 新增的用户资源模型
+model UserResource {
+  id          Int      @id @default(autoincrement())
+  name        String
+  links       String // 资源链接
+  typeId      Int
+  description String   @db.Text
+  status      String   @default("pending") // pending, published, rejected
+  size        Int? // 文件大小（字节）
+  format      String? // 文件格式
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  creatorId   Int
+
+  creator User         @relation(fields: [creatorId], references: [id])
+  type    ResourceType @relation(fields: [typeId], references: [id])
 }
