@@ -3,6 +3,7 @@ import { useDoubanStore } from "~/stores/douban";
 import { badWords } from "~/utils/sensitiveWords";
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
 import { useDebounceFn } from "@vueuse/core";
+import navigationConfig from "@/assets/navigation/config.json";
 
 definePageMeta({
   layout: "netdisk",
@@ -21,12 +22,12 @@ useHead({
     { property: 'og:type', content: 'website' },
     { property: 'og:title', content: 'AIPAN.ME - 网盘资源搜索引擎' },
     { property: 'og:description', content: '爱盼网盘搜索是一个强大的网盘资源搜索引擎，提供海量影视、音乐、电子书等资源的搜索服务。' },
-    { property: 'og:image', content: '/og-image.jpg' },
+    { property: 'og:image', content: `/api/og-image?t=${Date.now()}` },
     // Twitter
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: 'AIPAN.ME - 网盘资源搜索引擎' },
     { name: 'twitter:description', content: '爱盼网盘搜索是一个强大的网盘资源搜索引擎，提供海量影视、音乐、电子书等资源的搜索服务。' },
-    { name: 'twitter:image', content: '/og-image.jpg' },
+    { name: 'twitter:image', content: `/api/og-image?t=${Date.now()}` },
     // 其他重要的meta标签
     { name: 'robots', content: 'index,follow' },
     { name: 'author', content: 'AIPAN.ME' },
@@ -39,6 +40,11 @@ useHead({
 
 const doubanCache = useCookie("doubanCache", {
   maxAge: 60 * 60 * 24,
+});
+
+// 添加分类选择的cookie持久化
+const activeCategoryCookie = useCookie("activeCategory", {
+  maxAge: 60 * 60 * 24 * 7, // 保存7天
 });
 
 const debouncedSearch = useDebounceFn((keyword) => {
@@ -86,11 +92,19 @@ watch(
     window.scrollTo(0, 0);
   }
 );
+
+const activeCategory = ref(activeCategoryCookie.value || navigationConfig.categories[0].id);
+const categories = navigationConfig.categories;
+
+// 监听activeCategory变化，保存到cookie
+watch(activeCategory, (newValue) => {
+  activeCategoryCookie.value = newValue;
+});
 </script>
 
 <template>
   <div class="custom-bg py-[60px] min-h-[calc(100vh-70px)] transition-colors duration-300">
-    <div class="flex flex-col items-center justify-center gap-4 mt-[60px] md:mt-[60px] mt-[30px] animate-fadeIn">
+    <div class="flex flex-col items-center justify-center gap-4  md:mt-[60px] mt-[30px] animate-fadeIn">
       <div class="flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform duration-300">
         <img class="w-16 h-16 md:w-24 md:h-24 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
         <div class="text-center">
@@ -120,28 +134,41 @@ watch(
         </div>
       </div>
     </div>
-    <div class="flex flex-wrap items-center justify-center gap-2 md:gap-4 pt-4 md:pt-8 px-4">
-      <nuxt-link to="/spring-festival"
-        class="group flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
-        <i class="fa-solid fa-calendar-days text-[10px] md:text-xs"></i>
-        <span class="text-[10px] md:text-xs whitespace-nowrap">新年倒计时</span>
-        <i
-          class="fa-solid fa-chevron-right text-[10px] md:text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
-      </nuxt-link>
-      <nuxt-link to="/movie/daily"
-        class="group flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
-        <i class="fa-solid fa-film text-[10px] md:text-xs"></i>
-        <span class="text-[10px] md:text-xs whitespace-nowrap">每日电影推荐</span>
-        <i
-          class="fa-solid fa-chevron-right text-[10px] md:text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
-      </nuxt-link>
-      <nuxt-link to="/music/player"
-        class="group flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 dark:from-blue-400 dark:to-purple-400 dark:hover:from-blue-500 dark:hover:to-purple-500 text-white font-medium shadow-lg hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20 transform hover:scale-105 transition-all duration-300">
-        <i class="fa-solid fa-music text-[10px] md:text-xs"></i>
-        <span class="text-[10px] md:text-xs whitespace-nowrap">本地音乐播放器</span>
-        <i
-          class="fa-solid fa-chevron-right text-[10px] md:text-xs opacity-70 group-hover:translate-x-1 transition-transform duration-300"></i>
-      </nuxt-link>
+    <div class="max-w-[1240px] mx-auto mt-8 px-4">
+      <!-- 导航分类标签 -->
+      <div class="flex items-center justify-center gap-4 mb-6 overflow-x-auto pb-2 scrollbar-hide">
+        <button v-for="category in categories" :key="category.id"
+          class="px-4 py-1.5 rounded-full text-xs md:text-sm font-medium transition-all duration-300 whitespace-nowrap"
+          :class="[
+            activeCategory === category.id
+              ? 'bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 text-white shadow-md'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+          ]" @click="activeCategory = category.id">
+          {{ category.name }}
+        </button>
+      </div>
+
+      <!-- 导航网格 -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+        <template v-for="category in categories" :key="category.id">
+          <template v-if="activeCategory === category.id">
+            <nuxt-link v-for="item in category.items" :key="item.path" :to="item.path"
+              class="group flex items-center gap-2 md:gap-3 p-2.5 md:p-3 rounded-xl bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10">
+              <div
+                class="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 flex items-center justify-center shadow-lg">
+                <i :class="['fa-solid', item.icon, 'text-white text-sm md:text-base']"></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3
+                  class="text-gray-800 dark:text-gray-200 text-xs md:text-sm font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                  {{ item.title }}</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-[10px] md:text-xs truncate mt-0.5">{{ item.description
+                  }}</p>
+              </div>
+            </nuxt-link>
+          </template>
+        </template>
+      </div>
     </div>
     <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
     <!-- Enhanced Backtop -->

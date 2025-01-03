@@ -1,0 +1,34 @@
+{
+    "standard": {
+        "bitrate": 128,
+        "br": "128kmp3",
+        "format": "mp3",
+        "size": "3.62Mb",
+        "name": "标准音质",
+        "desc": "MP3 128kbps"
+    },
+    "exhigh": {
+        "bitrate": 320,
+        "br": "320kmp3",
+        "format": "mp3",
+        "size": "9.05Mb",
+        "name": "高品质",
+        "desc": "MP3 320kbps"
+    },
+    "lossless": {
+        "bitrate": 2000,
+        "br": "2000kflac",
+        "format": "flac",
+        "size": "24.97Mb",
+        "name": "无损音质",
+        "desc": "FLAC 2000kbps"
+    },
+    "hires": {
+        "bitrate": 4000,
+        "br": "4000kflac",
+        "format": "flac",
+        "size": "49.94Mb",
+        "name": "Hi-Res",
+        "desc": "FLAC 4000kbps"
+    }
+} 

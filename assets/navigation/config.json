@@ -1,0 +1,191 @@
+{
+  "categories": [
+    {
+      "id": "common",
+      "name": "常用",
+      "items": [
+         {
+          "title": "网盘资源搜索引擎",
+          "description": "快速搜索网盘资源",
+          "icon": "fa-search",
+          "path": "/search?keyword="
+        },
+        {
+          "title": "每日电影推荐",
+          "description": "发现精彩好片",
+          "icon": "fa-film",
+          "path": "/movie/daily"
+        },
+        {
+          "title": "本地音乐播放器",
+          "description": "享受本地音乐",
+          "icon": "fa-music",
+          "path": "/music/player"
+        },
+         {
+          "title": "新年倒计时",
+          "description": "倒计时迎接新的一年",
+          "icon": "fa-calendar-days",
+          "path": "/spring-festival"
+        }
+      ]
+    },
+    {
+      "id": "movie",
+      "name": "影视",
+      "items": [
+        {
+          "title": "每日电影推荐",
+          "description": "发现精彩好片",
+          "icon": "fa-film",
+          "path": "/movie/daily"
+        },
+        {
+          "title": "爱奇艺",
+          "description": "爱奇艺视频平台",
+          "icon": "fa-play",
+          "path": "https://www.iqiyi.com"
+        },
+        {
+          "title": "腾讯视频",
+          "description": "腾讯视频平台",
+          "icon": "fa-tv",
+          "path": "https://v.qq.com"
+        },
+        {
+          "title": "优酷视频",
+          "description": "优酷视频平台",
+          "icon": "fa-video",
+          "path": "https://www.youku.com"
+        },
+        {
+          "title": "芒果TV",
+          "description": "芒果TV视频平台",
+          "icon": "fa-display",
+          "path": "https://www.mgtv.com"
+        },
+        {
+          "title": "哔哩哔哩",
+          "description": "B站视频平台",
+          "icon": "fa-circle-play",
+          "path": "https://www.bilibili.com"
+        }  
+      ]
+    },
+    {
+      "id": "music",
+      "name": "音乐",
+      "items": [
+        {
+          "title": "本地音乐播放器",
+          "description": "享受本地音乐",
+          "icon": "fa-music",
+          "path": "/music/player"
+        },
+        {
+          "title": "网易云音乐",
+          "description": "在线音乐平台",
+          "icon": "fa-music",
+          "path": "https://music.163.com"
+        },
+        {
+          "title": "QQ音乐",
+          "description": "在线音乐平台",
+          "icon": "fa-headphones",
+          "path": "https://y.qq.com"
+        },
+        {
+          "title": "酷狗音乐",
+          "description": "在线音乐平台",
+          "icon": "fa-compact-disc",
+          "path": "https://www.kugou.com"
+        },
+        {
+          "title": "咪咕音乐",
+          "description": "在线音乐平台",
+          "icon": "fa-music",
+          "path": "https://music.migu.cn"
+        }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "AI工具",
+      "items": [
+        {
+          "title": "ChatGPT",
+          "description": "OpenAI对话模型",
+          "icon": "fa-robot",
+          "path": "https://chat.openai.com"
+        },
+        {
+          "title": "通义千问",
+          "description": "阿里AI助手",
+          "icon": "fa-comment-dots",
+          "path": "https://tongyi.aliyun.com"
+        },
+        {
+          "title": "豆包",
+          "description": "字节AI助手",
+          "icon": "fa-message",
+          "path": "https://www.doubao.com"
+        },
+        {
+          "title": "Kimi",
+          "description": "Moonshot AI助手",
+          "icon": "fa-robot",
+          "path": "https://kimi.moonshot.cn"
+        },
+        {
+          "title": "文心一言",
+          "description": "百度AI助手",
+          "icon": "fa-comment",
+          "path": "https://yiyan.baidu.com"
+        },
+        {
+          "title": "讯飞星火",
+          "description": "科大讯飞AI助手",
+          "icon": "fa-fire",
+          "path": "https://xinghuo.xfyun.cn"
+        },
+        {
+          "title": "Midjourney",
+          "description": "AI图像生成",
+          "icon": "fa-image",
+          "path": "https://www.midjourney.com"
+        },
+        {
+          "title": "Stable Diffusion",
+          "description": "开源AI绘画",
+          "icon": "fa-paintbrush",
+          "path": "https://stability.ai"
+        },
+        {
+          "title": "智谱清言",
+          "description": "智谱AI助手",
+          "icon": "fa-message-dots",
+          "path": "https://chatglm.cn"
+        },
+        {
+          "title": "Claude",
+          "description": "Anthropic AI助手",
+          "icon": "fa-message",
+          "path": "https://claude.ai"
+        },
+        {
+          "title": "Gemini",
+          "description": "Google AI助手",
+          "icon": "fa-circle-nodes",
+          "path": "https://gemini.google.com"
+        },
+        {
+          "title": "Copilot",
+          "description": "GitHub AI编程助手",
+          "icon": "fa-code",
+          "path": "https://github.com/features/copilot"
+        }
+      ]
+    }
+
+  ]
+} 

@@ -638,7 +638,7 @@ const search = (e) => {
 const colorMode = useColorMode();
 const category = ref("clouddrive");
 
-import vodApiEndpoints from "~/assets/vod/list";
+// import vodApiEndpoints from "~/assets/vod/list";
 
 const vodData = ref([]);
 const vodSources = ref([]);
