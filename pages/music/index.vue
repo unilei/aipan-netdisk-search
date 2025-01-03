@@ -9,24 +9,6 @@ const quality = ref("lossless");
 const kwData = ref([]);
 const isInitialLoad = ref(true);
 
-const qualityOptions = {
-  standard: {
-    name: "标准音质",
-    desc: "MP3 128kbps"
-  },
-  exhigh: {
-    name: "高品质",
-    desc: "MP3 320kbps"
-  },
-  lossless: {
-    name: "无损音质",
-    desc: "FLAC 2000kbps"
-  },
-  hires: {
-    name: "Hi-Res",
-    desc: "FLAC 4000kbps"
-  }
-};
 
 // Add transition classes
 const searchInputClass = computed(() => {
@@ -91,7 +73,9 @@ const handleDownload = async (song) => {
 const downloadVisible = ref(false);
 const currentDownloadSong = ref({});
 const handleDownloadVisible = (song) => {
-  currentDownloadSong.value = song;
+  currentDownloadSong.value = {
+    ...song
+  };
   downloadVisible.value = !downloadVisible.value;
 };
 
@@ -306,13 +290,14 @@ const isDownloading = ref(false);
           <div class="space-y-3">
             <h3 class="text-sm font-bold dark:text-white">选择音质</h3>
             <div class="grid grid-cols-2 gap-3">
-              <button v-for="(opt, key) in qualityOptions" :key="key"
+              <button v-for="(opt, key) in currentDownloadSong?.quality" :key="key"
                 class="p-3 rounded-lg border transition-all duration-200 text-left" :class="quality === key
                   ? 'border-gray-900 bg-gray-900 text-white dark:bg-gray-700'
                   : 'border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500'"
                 @click="quality = key">
-                <span class="block font-medium">{{ opt.name }}</span>
-                <span class="text-xs opacity-80">{{ opt.desc }}</span>
+                <span class="block font-medium">{{ key === 'lossless' ? '无损音质' : key === 'exhigh' ? '高品质' : key ===
+                  'standard' ? '标准音质' : 'Hi-Res' }}</span>
+                <span class="text-xs opacity-80">{{ opt.size }}</span>
               </button>
             </div>
           </div>
