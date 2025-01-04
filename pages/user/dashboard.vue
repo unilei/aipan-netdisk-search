@@ -7,7 +7,7 @@
           <div class="absolute -bottom-12 left-6">
             <div class="w-24 h-24 rounded-full bg-white dark:bg-gray-700 p-1">
               <img
-                :src="user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user?.username || 'default')}`"
+                :src="user?.avatar || `https://api.dicebear.com/7.x/${user?.avatarStyle}/svg?seed=${encodeURIComponent(user?.username || 'default')}`"
                 alt="avatar" class="w-full h-full rounded-full object-cover" />
             </div>
           </div>
