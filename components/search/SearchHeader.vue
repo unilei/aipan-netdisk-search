@@ -30,20 +30,24 @@ console.log(colorMode.preference);
         class="max-w-[1240px] mx-auto h-16 flex flex-row items-center gap-3 md:gap-8 relative"
       >
         <div
-          class="flex flex-row items-center gap-2 hover:opacity-80 transition-opacity"
+          class="flex cursor-pointer items-center justify-center gap-2 md:gap-2 hover:scale-105 transition-transform duration-300"
+          @click="goHome()"
         >
           <img
-            class="w-[32px] h-[32px] md:w-[42px] md:h-[42px] cursor-pointer transform hover:rotate-12 transition-transform duration-300"
+            class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90"
             src="@/assets/my-logo.png"
             alt="logo"
-            @click="goHome()"
           />
-          <h1
-            class="hidden md:block text-base font-bold cursor-pointer text-gray-700 dark:text-white hover:text-primary transition-colors"
-            @click="goHome()"
-          >
-            爱盼-网盘资源搜索
-          </h1>
+          <div class="text-left">
+            <h1
+              class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
+            >
+              AIPAN.ME
+            </h1>
+            <p class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400">
+              爱盼 - 资源随心，娱乐无限
+            </p>
+          </div>
         </div>
         <div class="w-[240px] md:w-[420px]">
           <client-only>
