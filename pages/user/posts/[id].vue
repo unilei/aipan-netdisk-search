@@ -207,33 +207,33 @@ onMounted(async () => {
 })
 </script>
 <template>
-    <div class="min-h-[calc(100vh-60px)] bg-gray-50 p-6">
-        <div class="max-w-[1240px] mx-auto space-y-6">
+    <div class="min-h-[calc(100vh-60px)] bg-gray-50/50 p-4 md:p-6">
+        <div class="max-w-[1240px] mx-auto space-y-4 md:space-y-6">
             <!-- 头部区域 -->
-            <div class="bg-white rounded-lg p-6 shadow-sm">
-                <div class="flex items-center justify-between">
+            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                            <nuxt-link to="/user/dashboard" class="hover:text-primary flex items-center">
+                            <nuxt-link to="/user/dashboard" class="hover:text-primary transition-colors flex items-center">
                                 <el-icon class="mr-1"><House /></el-icon>
-                                后台管理面板
+                                用户中心
                             </nuxt-link>
                             <span>/</span>
-                            <nuxt-link to="/user/posts/list" class="hover:text-primary flex items-center">
-                                博客管理
+                            <nuxt-link to="/user/posts/list" class="hover:text-primary transition-colors flex items-center">
+                                我的博客
                             </nuxt-link>
                             <span>/</span>
                             <span class="text-gray-900">{{ isEdit ? '编辑文章' : '新建文章' }}</span>
                         </div>
-                        <h1 class="text-2xl font-bold text-gray-900">{{ isEdit ? '编辑文章' : '新建文章' }}</h1>
-                        <p class="text-gray-500 mt-1">{{ isEdit ? '修改现有文章内容' : '创建一篇新的博客文章' }}</p>
+                        <h1 class="text-xl md:text-2xl font-bold text-gray-900">{{ isEdit ? '编辑文章' : '新建文章' }}</h1>
+                        <p class="text-gray-500 mt-1 text-sm">{{ isEdit ? '修改现有文章内容' : '创建一篇新的博客文章' }}</p>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <el-button @click="() => router.push('/user/posts/list')" class="flex items-center">
+                    <div class="flex items-center space-x-3">
+                        <el-button @click="() => router.push('/user/posts/list')" class="!flex items-center">
                             <el-icon class="mr-1"><ArrowLeft /></el-icon>
                             返回列表
                         </el-button>
-                        <el-button type="primary" @click="submit" class="flex items-center">
+                        <el-button type="primary" @click="submit" class="!flex items-center">
                             <el-icon class="mr-1"><Document /></el-icon>
                             保存文章
                         </el-button>
@@ -242,7 +242,7 @@ onMounted(async () => {
             </div>
 
             <!-- 表单区域 -->
-            <div class="bg-white rounded-lg p-6 shadow-sm">
+            <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
                 <el-form ref="formRef" :model="form" label-width="80px" class="space-y-6">
                     <el-form-item 
                         label="标题" 
@@ -254,7 +254,7 @@ onMounted(async () => {
                         <el-input 
                             v-model="form.title" 
                             placeholder="请输入文章标题" 
-                            class="w-full"
+                            class="w-full !rounded-lg"
                         />
                     </el-form-item>
 
@@ -274,18 +274,18 @@ onMounted(async () => {
                                         class="group relative"
                                     >
                                         <div 
-                                            class="px-4 py-2 rounded-full cursor-pointer transition-colors duration-200"
+                                            class="px-4 py-2 rounded-full cursor-pointer transition-all duration-200"
                                             :class="[
                                                 form.categoryIds.includes(category.id) 
-                                                    ? 'bg-blue-500 text-white' 
-                                                    : 'bg-gray-100 hover:bg-gray-200'
+                                                    ? 'bg-primary text-white shadow-sm' 
+                                                    : 'bg-gray-50 hover:bg-gray-100'
                                             ]"
                                             @click="handleSelectCategory(category)"
                                         >
                                             {{ category.name }}
                                         </div>
                                         <el-button
-                                            class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                                            class="!absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                                             type="danger"
                                             size="small"
                                             circle
@@ -299,18 +299,18 @@ onMounted(async () => {
                             </div>
 
                             <!-- 分类操作按钮 -->
-                            <div class="flex items-center space-x-4">
+                            <div class="flex items-center space-x-3">
                                 <el-button 
                                     type="primary" 
                                     @click="handleAddCategory"
-                                    class="flex items-center"
+                                    class="!flex items-center"
                                 >
                                     <el-icon class="mr-1"><Plus /></el-icon>
                                     添加分类
                                 </el-button>
                                 <el-button 
                                     @click="getCategories"
-                                    class="flex items-center"
+                                    class="!flex items-center"
                                 >
                                     <el-icon class="mr-1"><Refresh /></el-icon>
                                     刷新列表
@@ -326,13 +326,14 @@ onMounted(async () => {
                             { type: 'array', required: true, message: '请至少添加一个标签', trigger: 'change' }
                         ]"
                     >
-                        <div class="flex flex-wrap gap-2 border rounded-md p-2">
+                        <div class="flex flex-wrap gap-2 border rounded-lg p-3 bg-gray-50/50">
                             <el-tag
                                 v-for="tag in form.tags"
                                 :key="tag"
                                 closable
                                 :disable-transitions="false"
                                 @close="handleTagClose(tag)"
+                                class="!rounded-full"
                             >
                                 {{ tag }}
                             </el-tag>
@@ -345,7 +346,7 @@ onMounted(async () => {
                                 @keyup.enter="handleTagInputConfirm"
                                 @blur="handleTagInputConfirm"
                             />
-                            <el-button v-else size="small" @click="showTagInput">
+                            <el-button v-else size="small" @click="showTagInput" class="!rounded-full">
                                 + 新标签
                             </el-button>
                         </div>
@@ -374,6 +375,7 @@ onMounted(async () => {
                 title="添加文章分类"
                 width="500px"
                 destroy-on-close
+                class="rounded-xl"
             >
                 <el-form 
                     ref="categoryFormRef" 
@@ -387,11 +389,11 @@ onMounted(async () => {
                             { required: true, message: '请输入分类名称', trigger: 'blur' }
                         ]"
                     >
-                        <el-input v-model="categoryForm.name" placeholder="请输入分类名称" />
+                        <el-input v-model="categoryForm.name" placeholder="请输入分类名称" class="!rounded-lg" />
                     </el-form-item>
                 </el-form>
                 <template #footer>
-                    <div class="flex justify-end space-x-4">
+                    <div class="flex justify-end space-x-3">
                         <el-button @click="categoryDialogShow = false">取消</el-button>
                         <el-button type="primary" @click="handleSubmitAddCategory">确认</el-button>
                     </div>
@@ -408,7 +410,8 @@ onMounted(async () => {
 
 :deep(.md-editor) {
     border: 1px solid var(--el-border-color);
-    border-radius: 4px;
+    border-radius: 0.75rem;
+    overflow: hidden;
 }
 
 :deep(.md-editor-dark) {
@@ -428,17 +431,33 @@ onMounted(async () => {
 /* 工具栏样式优化 */
 :deep(.md-editor-toolbar) {
     border-bottom: 1px solid var(--el-border-color);
+    background-color: rgb(249 250 251);
 }
 
 /* 代码块样式优化 */
 :deep(.md-editor-preview pre) {
     background: #f6f8fa;
-    border-radius: 6px;
+    border-radius: 0.75rem;
     padding: 16px;
 }
 
 :deep(.el-textarea__inner) {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
     line-height: 1.6;
+}
+
+/* 按钮样式优化 */
+:deep(.el-button) {
+    border-radius: 0.5rem;
+}
+
+/* 输入框样式优化 */
+:deep(.el-input__wrapper) {
+    border-radius: 0.5rem;
+}
+
+/* 对话框样式优化 */
+:deep(.el-dialog) {
+    border-radius: 0.75rem;
 }
 </style>
