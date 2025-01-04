@@ -172,6 +172,20 @@ const menuCards = [
         icon: ChatLineRound,
         link: '/admin/comments',
         color: 'bg-orange-500'
+    },
+    {
+        title: '用户资源管理',
+        description: '管理用户上传的资源内容',
+        icon: 'FolderOpened',
+        link: '/admin/user-resources',
+        color: 'bg-indigo-500'
+    },
+    {
+        title: '用户文章管理',
+        description: '管理用户投稿的文章内容',
+        icon: 'Reading',
+        link: '/admin/user-posts',
+        color: 'bg-pink-500'
     }
 ]
 
