@@ -157,7 +157,6 @@
         <ul class="mt-4 text-sm space-y-2 text-center">
           <li>• 检查输入是否正确</li>
           <li>• 尝试使用不同的关键词</li>
-          <li>• 切换其他分类查找</li>
         </ul>
       </div>
 

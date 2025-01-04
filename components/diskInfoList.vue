@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   sources: {
@@ -12,6 +13,8 @@ const props = defineProps({
     default: false
   }
 })
+
+const router = useRouter();
 
 // 网盘图标映射
 const diskIcons = {
@@ -49,6 +52,17 @@ const copyPwd = async (pwd) => {
     })
   }
 }
+
+// 处理链接点击
+const handleLinkClick = (e, link) => {
+  e.preventDefault();
+  router.push({
+    path: '/redirect',
+    query: {
+      url: link.link
+    }
+  });
+};
 </script>
 
 <template>
@@ -79,12 +93,12 @@ const copyPwd = async (pwd) => {
         <!-- 网盘链接 -->
         <div class="flex flex-wrap gap-2">
           <div v-for="(link, index) in item.links" :key="index">
-            <nuxt-link :to="link.link" 
-                      target="_blank"
-                      class="inline-flex items-center px-3 py-2 rounded-lg
-                             bg-gray-100 dark:bg-gray-700/50 
-                             hover:bg-gray-200 dark:hover:bg-gray-600
-                             transition-colors duration-200">
+            <a href="#" 
+               class="inline-flex items-center px-3 py-2 rounded-lg
+                      bg-gray-100 dark:bg-gray-700/50 
+                      hover:bg-gray-200 dark:hover:bg-gray-600
+                      transition-colors duration-200"
+               @click="(e) => handleLinkClick(e, link)">
               <!-- 网盘图标 -->
               <img :src="getDiskIcon(link.service)"
                    :alt="link.service"
@@ -97,11 +111,11 @@ const copyPwd = async (pwd) => {
                            bg-blue-100 dark:bg-blue-900/30 
                            text-blue-600 dark:text-blue-300
                            cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/30"
-                    @click.prevent="copyPwd(link.pwd)"
+                    @click.stop="copyPwd(link.pwd)"
                     :title="'点击复制提取码：' + link.pwd">
                 {{ link.pwd }}
               </span>
-            </nuxt-link>
+            </a>
           </div>
         </div>
       </div>
