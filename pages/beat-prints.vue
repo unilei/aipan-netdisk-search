@@ -3,7 +3,7 @@
     <div class="max-w-5xl mx-auto px-4 py-12 sm:py-20">
       <!-- Header Section -->
       <div class="text-center mb-12">
-        <h1 class="text-2xl sm:text-3xl font-medium text-gray-800 mb-3">将你喜爱的音乐转化为精美的视觉艺术</h1>
+        <h1 class="text-2xl sm:text-2xl font-medium text-gray-800 mb-3">将你喜爱的音乐转化为精美的视觉艺术</h1>
       </div>
 
       <!-- Search Bar -->
