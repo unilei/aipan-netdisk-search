@@ -95,7 +95,7 @@
             </el-icon>
           </div>
           <p class="text-gray-500 dark:text-gray-400 mb-4">查看你的资源</p>
-          <el-button type="primary" @click="() => navigateTo('/user/resources/new')" class="w-full">
+          <el-button type="primary" @click="() => navigateTo('/user/resources/list')" class="w-full">
             管理您投稿的资源
           </el-button>
         </div>
@@ -107,7 +107,7 @@
             </el-icon>
           </div>
           <p class="text-gray-500 dark:text-gray-400 mb-4">查看你的文章</p>
-          <el-button type="success" @click="() => navigateTo('/user/posts/new')" class="w-full">
+          <el-button type="success" @click="() => navigateTo('/user/posts/list')" class="w-full">
             管理您投稿的文章
           </el-button>
         </div>

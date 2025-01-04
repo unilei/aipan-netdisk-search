@@ -10,6 +10,8 @@ export default defineEventHandler(async (event: H3Event) => {
         const needsAuth = (
             isAdminRoute ||
             event.node.req.url?.startsWith("/api/user/resources") ||
+            event.node.req.url?.startsWith("/api/user/blog/category") ||
+            event.node.req.url?.startsWith("/api/user/blog/posts") ||
             (event.node.req.url?.startsWith("/api/user/protected") ?? false)
         );
 
