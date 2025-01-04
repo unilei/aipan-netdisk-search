@@ -23,6 +23,7 @@ model User {
   email      String   @unique
   password   String
   role       String   @default("user") // Possible values: "admin", "user"
+  avatarStyle String  @default("avataaars") // 头像风格
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   isVerified Boolean  @default(false)
