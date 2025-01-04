@@ -10,12 +10,6 @@
           "icon": "fa-music",
           "path": "/beat-prints"
         },
-         {
-          "title": "网盘资源搜索引擎",
-          "description": "快速搜索网盘资源",
-          "icon": "fa-search",
-          "path": "/search?keyword="
-        },
         {
           "title": "每日电影推荐",
           "description": "发现精彩好片",
