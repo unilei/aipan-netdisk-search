@@ -3,7 +3,7 @@ import prisma from "~/lib/prisma";
 export default defineEventHandler(async (event) => {
     const { id } = getRouterParams(event)
     const userId = event.context.user.userId
-    const { name, type, links, description } = await readBody(event)
+    const { name, typeId, links, description } = await readBody(event)
 
     try {
         const resource = await prisma.userResource.findUnique({
@@ -41,7 +41,11 @@ export default defineEventHandler(async (event) => {
             },
             data: {
                 name,
-                typeId: parseInt(type),
+                type: {
+                    connect: {
+                        id: Number(typeId)
+                    }
+                },
                 links,
                 description,
                 status: 'pending' // 修改后重置为待审核状态
