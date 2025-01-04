@@ -38,7 +38,7 @@
       </div>
 
       <!-- 数据统计 -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
@@ -58,28 +58,6 @@
             </div>
             <el-icon class="text-3xl text-green-500">
               <Document />
-            </el-icon>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-500 dark:text-gray-400">获赞总数</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.likeCount || 0 }}</p>
-            </div>
-            <el-icon class="text-3xl text-red-500">
-              <Star />
-            </el-icon>
-          </div>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-500 dark:text-gray-400">下载总数</p>
-              <p class="text-2xl font-bold text-gray-900 dark:text-gray-200 mt-1">{{ stats?.downloadCount || 0 }}</p>
-            </div>
-            <el-icon class="text-3xl text-purple-500">
-              <Download />
             </el-icon>
           </div>
         </div>
@@ -124,7 +102,7 @@
             </el-icon>
             <div>
               <p class="text-gray-900 dark:text-gray-200">{{ activity.content }}</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(activity.createdAt) }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ new Date(activity.createdAt).toLocaleString() }}</p>
             </div>
           </div>
         </div>

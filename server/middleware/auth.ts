@@ -12,6 +12,8 @@ export default defineEventHandler(async (event: H3Event) => {
             event.node.req.url?.startsWith("/api/user/resources") ||
             event.node.req.url?.startsWith("/api/user/blog/category") ||
             event.node.req.url?.startsWith("/api/user/blog/posts") ||
+            event.node.req.url?.startsWith("/api/user/activities") ||
+            event.node.req.url?.startsWith("/api/user/stats") ||
             (event.node.req.url?.startsWith("/api/user/protected") ?? false)
         );
 
