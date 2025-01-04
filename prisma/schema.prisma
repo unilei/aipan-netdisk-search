@@ -128,18 +128,39 @@ model Comment {
   @@index([parentId])
 }
 
-// 新增的博客文章模型
+// 博客分类模型
+model BlogCategory {
+  id   Int    @id @default(autoincrement())
+  name String @unique @db.VarChar(255)
+
+  posts BlogPostToCategory[] // 使用中间表实现多对多关系
+}
+
+// 博客文章和分类的多对多关系中间表
+model BlogPostToCategory {
+  postId     Int
+  categoryId Int
+
+  post     BlogPost     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category BlogCategory @relation(fields: [categoryId], references: [id])
+
+  @@id([postId, categoryId]) // 组合主键，确保唯一性
+}
+
+// 博客文章模型
 model BlogPost {
   id        Int      @id @default(autoincrement())
   title     String
+  slug      String   @unique
   content   String   @db.Text
-  category  String
   tags      String[]
   status    String   @default("pending") // pending, published, rejected
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  categories BlogPostToCategory[] // 使用中间表实现多对多关系
 }
 
 // 新增的用户资源模型
