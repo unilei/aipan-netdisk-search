@@ -71,6 +71,11 @@ const goDouban = (movie) => {
   });
 };
 
+// 添加侵权投诉跳转函数
+const goCopyright = () => {
+  router.push('/copyright');
+};
+
 onMounted(async () => {
   if (doubanCache.value === "aipan.me") {
     doubanData.value = doubanStore.doubanData;
@@ -154,8 +159,8 @@ watch(activeCategory, (newValue) => {
             <nuxt-link v-for="item in category.items" :key="item.path" :to="item.path"
               class="group  flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10">
               <div
-                class="w-7 h-7 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 flex items-center justify-center shadow-lg">
-                <i :class="['fa-solid', item.icon, 'text-white text-xs']"></i>
+                class="flex items-center justify-center shadow-lg">
+                <i :class="['fa-solid', item.icon, 'dark:text-white text-xs']"></i>
               </div>
               <div class="flex-1 min-w-0">
                 <h3
@@ -168,6 +173,7 @@ watch(activeCategory, (newValue) => {
         </template>
       </div>
     </div>
+     
     <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
     <!-- Enhanced Backtop -->
     <el-backtop :right="24" :bottom="24"

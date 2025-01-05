@@ -27,9 +27,10 @@ console.log(colorMode.preference);
       class="bg-white dark:bg-gray-800 shadow-md px-3 md:px-[20px] transition-colors duration-300"
     >
       <div
-        class="max-w-[1240px] mx-auto h-16 flex flex-row items-center gap-3 md:gap-8 relative"
+        class="max-w-[1240px] mx-auto h-16 flex flex-row items-center justify-between gap-3 md:gap-8 relative"
       >
-        <div
+        <div class="flex flex-row items-center gap-3 md:gap-8">
+          <div
           class="flex cursor-pointer items-center justify-center gap-2 md:gap-2 hover:scale-105 transition-transform duration-300"
           @click="goHome()"
         >
@@ -38,7 +39,7 @@ console.log(colorMode.preference);
             src="@/assets/my-logo.png"
             alt="logo"
           />
-          <div class="text-left">
+          <div class="text-left hidden md:block">
             <h1
               class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
             >
@@ -63,34 +64,26 @@ console.log(colorMode.preference);
             </el-input>
           </client-only>
         </div>
+        </div>
 
-        <div
-          class="absolute right-[10px] md:right-[20px] flex items-center gap-2"
+        <div>
+          <!-- 主题切换按钮 -->
+        <button
+          class="p-2 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
+          @click="
+            colorMode.preference =
+              colorMode.preference === 'dark' ? 'light' : 'dark'
+          "
         >
-          <client-only>
-            <el-button
-              v-if="colorMode.preference === 'dark'"
-              class="theme-btn !h-9 !w-9 rounded-full flex items-center justify-center hover:bg-gray-700 transition-colors"
-              @click="colorMode.preference = 'light'"
-            >
-              <img
-                class="w-[22px] h-[22px]"
-                src="@/assets/theme/entypo--light-up.svg"
-                alt=""
-              />
-            </el-button>
-            <el-button
-              v-if="colorMode.preference === 'light'"
-              class="theme-btn !h-9 !w-9 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-              @click="colorMode.preference = 'dark'"
-            >
-              <img
-                class="w-[22px] h-[22px]"
-                src="@/assets/theme/icon-park-solid--dark-mode.svg"
-                alt=""
-              />
-            </el-button>
-          </client-only>
+          <i
+            v-if="colorMode.preference === 'dark'"
+            class="fa-solid fa-sun transition-transform duration-300 hover:rotate-90"
+          ></i>
+          <i
+            v-else
+            class="fa-solid fa-moon transition-transform duration-300 hover:rotate-90"
+          ></i>
+        </button>
         </div>
       </div>
     </div>
