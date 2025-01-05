@@ -1,14 +1,6 @@
-import { t2s } from 'chinese-s2t'
-
 class NetEaseService {
   constructor() {
-    this.BASE_URL = 'https://netease-cloud-music-api-psi-silk.vercel.app'
-  }
-
-  // 繁体转简体函数
-  toSimplified(text) {
-    if (!text) return text
-    return t2s(text)
+    this.BASE_URL = 'https://netease.aipan.me'
   }
 
   // 获取歌词
@@ -46,7 +38,7 @@ class NetEaseService {
         .filter(line => line && !line.match(/^\s*$/)) // 移除空行和纯空格行
         .join('\n')
 
-      return this.toSimplified(lyrics)
+      return lyrics
     } catch (error) {
       console.error('Error fetching lyrics:', error)
       return ''
@@ -56,7 +48,7 @@ class NetEaseService {
   async searchTracks(query) {
     try {
       const response = await fetch(
-        `${this.BASE_URL}/search?keywords=${encodeURIComponent(this.toSimplified(query))}&limit=20&type=1`
+        `${this.BASE_URL}/search?keywords=${encodeURIComponent(query)}&limit=20&type=1`
       )
       const data = await response.json()
       
