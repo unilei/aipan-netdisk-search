@@ -1,8 +1,4 @@
 <script setup>
-import musicDarkSvg from "~/assets/theme/music-dark.svg";
-import musicLightSvg from "~/assets/theme/music-light.svg";
-import blogDarkSvg from "~/assets/icons/blog-dark.svg";
-import blogLightSvg from "~/assets/icons/blog-light.svg";
 const colorMode = useColorMode();
 const router = useRouter();
 
@@ -16,16 +12,16 @@ const navItems = [
     name: "音乐",
     path: "/music",
     icon: {
-      light: musicDarkSvg,
-      dark: musicLightSvg,
+      light: "fa-solid fa-music",
+      dark: "fa-solid fa-music",
     },
   },
   {
     name: "博客",
     path: "/blog",
     icon: {
-      light: blogLightSvg,
-      dark: blogDarkSvg,
+      light: "fa-solid fa-blog",
+      dark: "fa-solid fa-blog",
     },
   },
 ];
@@ -73,15 +69,10 @@ const navItems = [
                   :to="item.path"
                   class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
                 >
-                  <img
-                    :src="
-                      colorMode.preference === 'light'
-                        ? item.icon.light
-                        : item.icon.dark
-                    "
-                    class="w-5 h-5 mr-2 transition-opacity duration-200 dark:opacity-90"
-                    :alt="item.name"
-                  />
+                  <i
+                    :class="colorMode.preference === 'light' ? item.icon.light : item.icon.dark"
+                    class="mr-2 transition-opacity duration-200 dark:opacity-90"
+                  ></i>
                   {{ item.name }}
                 </nuxt-link>
               </nav>
@@ -94,18 +85,14 @@ const navItems = [
                     colorMode.preference === 'dark' ? 'light' : 'dark'
                 "
               >
-                <img
+                <i
                   v-if="colorMode.preference === 'dark'"
-                  class="w-5 h-5 transition-transform duration-300 hover:rotate-90"
-                  src="@/assets/theme/entypo--light-up.svg"
-                  alt="切换亮色模式"
-                />
-                <img
+                  class="fa-solid fa-sun   transition-transform duration-300 hover:rotate-90"
+                ></i>
+                <i
                   v-else
-                  class="w-5 h-5 transition-transform duration-300 hover:rotate-90"
-                  src="@/assets/theme/icon-park-solid--dark-mode.svg"
-                  alt="切换暗色模式"
-                />
+                  class="fa-solid fa-moon  transition-transform duration-300 hover:rotate-90"
+                ></i>
               </button>
             </div>
           </client-only>

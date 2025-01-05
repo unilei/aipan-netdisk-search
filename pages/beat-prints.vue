@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-[calc(100vh-140px)] bg-[#fafafa]">
+  <div class="min-h-[calc(100vh-194px)] bg-[#fafafa]">
     <div class="max-w-[1240px] mx-auto px-4 py-12 sm:py-20">
       <!-- Header Section -->
       <div class="text-center mb-12">
