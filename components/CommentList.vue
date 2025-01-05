@@ -110,7 +110,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="space-y-8">
+    <div class="space-y-6">
         <!-- 评论编辑器 -->
         <CommentEditor :post-id="postId" :parent-id="replyTo?.id" :reply-to="replyTo?.author"
             @comment-added="handleCommentAdded" />
@@ -120,7 +120,7 @@ onMounted(() => {
             <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
         </div>
 
-        <div v-else-if="comments.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
+        <div v-else-if="comments.length === 0" class="text-center text-xs py-8 text-gray-500 dark:text-gray-400">
             暂无评论，来说两句吧~
         </div>
 
@@ -138,28 +138,28 @@ onMounted(() => {
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-2">
-                                    <span class="font-medium text-gray-900 dark:text-white">{{ comment.author }}</span>
+                                    <span class="font-medium text-gray-900 text-xs dark:text-white">{{ comment.author }}</span>
                                     <a v-if="comment.website" :href="comment.website" target="_blank"
                                         class="text-blue-500 hover:text-blue-600">
                                         <i class="fas fa-link text-xs"></i>
                                     </a>
                                 </div>
-                                <time class="text-sm text-gray-500 dark:text-gray-400">{{ formatDate(comment.createdAt)
+                                <time class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(comment.createdAt)
                                     }}</time>
                             </div>
 
                             <!-- 评论内容 -->
-                            <div class="mt-2 prose dark:prose-invert max-w-none text-sm"
+                            <div class="mt-2 dark:prose-invert max-w-none text-xs"
                                 v-html="parseContent(comment.content)"></div>
 
                             <!-- 操作按钮 -->
                             <div class="mt-4 flex items-center space-x-4">
                                 <button @click="handleReply(comment)"
-                                    class="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
+                                    class="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200">
                                     <i class="fas fa-reply mr-1"></i> 回复
                                 </button>
                                 <button v-if="canDelete(comment.id)" @click="handleDelete(comment)"
-                                    class="text-sm text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200">
+                                    class="text-xs text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200">
                                     <i class="fas fa-trash-alt mr-1"></i> 删除
                                 </button>
                             </div>
@@ -180,23 +180,23 @@ onMounted(() => {
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-2">
-                                        <span class="font-medium text-gray-900 dark:text-white">{{ reply.author
+                                        <span class="font-medium text-xs text-gray-900 dark:text-white">{{ reply.author
                                             }}</span>
-                                        <span class="text-gray-500 dark:text-gray-400 text-sm">回复</span>
-                                        <span class="font-medium text-gray-900 dark:text-white">@{{ comment.author
+                                        <span class="text-gray-500  dark:text-gray-400 text-xs">回复</span>
+                                        <span class="font-medium text-xs text-gray-900 dark:text-white">@{{ comment.author
                                             }}</span>
                                         <a v-if="reply.website" :href="reply.website" target="_blank"
                                             class="text-blue-500 hover:text-blue-600">
                                             <i class="fas fa-link text-xs"></i>
                                         </a>
                                     </div>
-                                    <time class="text-sm text-gray-500 dark:text-gray-400">{{
+                                    <time class="text-xs text-gray-500 dark:text-gray-400">{{
                                         formatDate(reply.createdAt)
                                         }}</time>
                                 </div>
 
                                 <!-- 回复内容 -->
-                                <div class="mt-2 prose dark:prose-invert max-w-none text-sm"
+                                <div class="mt-2 prose dark:prose-invert max-w-none text-xs"
                                     v-html="parseContent(reply.content)"></div>
 
                                 <!-- 回复按钮 -->
@@ -226,10 +226,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.prose {
-    font-size: 0.875rem;
-}
-
+ 
 /* 自定义滚动条 */
 ::-webkit-scrollbar {
     width: 8px;
