@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen bg-[#fafafa]">
-    <div class="max-w-5xl mx-auto px-4 py-12 sm:py-20">
+  <div class="min-h-[calc(100vh-140px)] bg-[#fafafa]">
+    <div class="max-w-[1240px] mx-auto px-4 py-12 sm:py-20">
       <!-- Header Section -->
       <div class="text-center mb-12">
         <h1 class="text-2xl sm:text-2xl font-medium text-gray-800 mb-3">将你喜爱的音乐转化为精美的视觉艺术</h1>
@@ -14,7 +14,7 @@
             type="text" 
             placeholder="搜索歌曲或艺术家..."
             @keyup.enter="searchTracks"
-            class="w-full pl-12 pr-4 py-3 rounded-full bg-white border border-gray-200
+            class="w-full pl-12 pr-4 py-3 text-sm rounded-full bg-white border border-gray-200
                    text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400
                    transition-colors duration-300"
             :disabled="isLoading"
@@ -26,7 +26,7 @@
         </div>
         
         <!-- Error Message -->
-        <p v-if="error" class="mt-4 text-red-500 text-center text-sm">
+        <p v-if="error" class="mt-4 text-red-500 text-center text-xs">
           {{ error }}
         </p>
       </div>
@@ -45,7 +45,7 @@
         </p>
         
         <!-- Results Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-5 gap-6">
           <div v-for="track in tracks" :key="track.id" 
                class="group bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-gray-200 
                       transition-all duration-300">
@@ -74,7 +74,7 @@
 
         <!-- No Results State -->
         <div v-if="!isLoading && tracks.length === 0" class="text-center py-20">
-          <span class="i-carbon-music-add text-5xl text-gray-300 mb-4 block"></span>
+          <span class="i-carbon-music-add text-4xl text-gray-300 mb-4 block"></span>
           <p class="text-gray-400">开始搜索你喜爱的音乐</p>
         </div>
       </div>

@@ -103,12 +103,12 @@ const submitComment = async () => {
         <!-- 编辑器工具栏 -->
         <div class="flex items-center space-x-4 mb-4">
             <button @click="isPreview = !isPreview"
-                class="px-3 py-1 text-sm rounded-full transition-colors duration-200"
+                class="px-3 py-1 text-xs rounded-full transition-colors duration-200"
                 :class="isPreview ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'">
                 {{ isPreview ? '编辑' : '预览' }}
             </button>
             <a href="https://www.markdownguide.org/basic-syntax/" target="_blank"
-                class="text-sm text-blue-500 hover:text-blue-600 dark:hover:text-blue-400">
+                class="text-xs text-blue-500 hover:text-blue-600 dark:hover:text-blue-400">
                 Markdown 语法
             </a>
         </div>
@@ -116,12 +116,12 @@ const submitComment = async () => {
         <!-- 编辑区域 -->
         <div v-show="!isPreview" class="space-y-4">
             <textarea v-model="content" rows="6"
-                class="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                class="w-full px-4 py-3 text-xs rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 :placeholder="replyTo ? `回复 ${replyTo}...` : '写下你的评论...'"
                 @keydown.tab.prevent="content += '    '"></textarea>
 
             <!-- 评论者信息 -->
-            <div v-if="!parentId" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div v-if="!parentId" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                 <input v-model="author" type="text"
                     class="px-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="昵称（选填）">
@@ -145,7 +145,7 @@ const submitComment = async () => {
         <!-- 提交按钮 -->
         <div class="mt-4 flex justify-end">
             <button @click="submitComment" :disabled="isSubmitting"
-                class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                class="px-6 py-2 bg-blue-500 text-white text-xs rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
                 {{ isSubmitting ? '发布中...' : '发布评论' }}
             </button>
         </div>
@@ -154,7 +154,7 @@ const submitComment = async () => {
 
 <style scoped>
 .prose {
-    font-size: 0.875rem;
+    font-size: 12px;
 }
 
 /* 自定义滚动条 */

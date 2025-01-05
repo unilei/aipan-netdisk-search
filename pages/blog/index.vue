@@ -184,11 +184,11 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="min-h-[calc(100vh-140px)] bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <!-- 顶部横幅 -->
-        <div class="relative h-[300px] overflow-hidden">
+        <div class="relative h-[120px] overflow-hidden">
             <!-- 背景图 -->
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-purple-700">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500">
                 <div class="absolute inset-0 bg-black/20"></div>
                 <!-- 装饰图形 -->
                 <div class="absolute inset-0 opacity-10">
@@ -199,18 +199,18 @@ onMounted(async () => {
             </div>
             <!-- 内容 -->
             <div class="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-center items-center text-white">
-                <h1 class="text-4xl md:text-5xl font-bold mb-4">博客天地</h1>
-                <p class="text-lg md:text-xl opacity-90 text-center max-w-2xl">
+                <h1 class="text-4xl md:text-2xl font-bold mb-4">博客天地</h1>
+                <p class="text-xs sm:text-sm opacity-90 text-center max-w-2xl">
                     分享技术见解，记录生活点滴
                 </p>
             </div>
         </div>
 
         <!-- 主要内容区 -->
-        <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="max-w-[1240px] mx-auto px-4 py-12">
             <!-- 分类导航 -->
             <div class="mb-8 flex items-center justify-center flex-wrap gap-3">
-                <button class="px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300" :class="[
+                <button class="px-6 py-2 rounded-full text-xs font-medium transition-all duration-300" :class="[
                     categoryId === undefined
                         ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20'
                         : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white hover:shadow-md hover:shadow-blue-500/20'
@@ -218,7 +218,7 @@ onMounted(async () => {
                     全部文章
                 </button>
                 <button v-for="category in categoriesData" :key="category.id"
-                    class="px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300" :class="[
+                    class="px-6 py-2 rounded-full text-xs font-medium transition-all duration-300" :class="[
                         categoryId === category.id
                             ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20'
                             : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white hover:shadow-md hover:shadow-blue-500/20'
@@ -228,12 +228,12 @@ onMounted(async () => {
             </div>
 
             <!-- 文章列表 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <!-- 骨架屏 -->
                 <template v-if="loading">
                     <div v-for="i in 6" :key="i"
                         class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden animate-pulse">
-                        <div class="h-48 bg-gray-200 dark:bg-gray-700"></div>
+                        <div class="h-32 bg-gray-200 dark:bg-gray-700"></div>
                         <div class="p-6">
                             <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
                             <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
@@ -246,7 +246,7 @@ onMounted(async () => {
                     <nuxt-link v-for="(item, index) in postsData" :key="index" :to="'/blog/' + item.slug"
                         class="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
                         <!-- 文章封面图 -->
-                        <div class="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                        <div class="relative h-32 overflow-hidden bg-gray-100 dark:bg-gray-700">
                             <img :src="item.cover"
                                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                 :alt="item.title" loading="lazy" @error="handleImageError(item)" />
@@ -272,10 +272,10 @@ onMounted(async () => {
                                 </span>
                             </div>
                             <h2
-                                class="text-lg font-bold text-gray-800 dark:text-white group-hover:text-blue-500 transition-colors duration-300 line-clamp-2 mb-2">
+                                class="text-xs sm:text-sm font-bold text-gray-800 dark:text-white group-hover:text-blue-500 transition-colors duration-300 line-clamp-2 mb-2">
                                 {{ item.title }}
                             </h2>
-                            <time class="text-sm text-gray-500 dark:text-gray-400">
+                            <time class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                 {{ formatDate(item.createdAt) }}
                             </time>
                         </div>

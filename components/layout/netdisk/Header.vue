@@ -7,7 +7,6 @@ const colorMode = useColorMode()
     <div class="backdrop-blur   py-4 fixed top-0 left-0 w-full z-50">
         <div class="max-w-[1240px] mx-auto flex flex-row items-center justify-between px-[20px]">
             <div class="flex flex-row items-center gap-4">
-
                 <nuxt-link to="/blog" class="text-sm text-slate-600 dark:text-white">
                     📚 我的博客
                 </nuxt-link>
