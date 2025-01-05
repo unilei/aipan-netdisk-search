@@ -108,7 +108,7 @@ watch(activeCategory, (newValue) => {
 </script>
 
 <template>
-  <div class="custom-bg py-[60px] min-h-[calc(100vh-70px)] transition-colors duration-300">
+  <div class="custom-bg py-[60px] min-h-[calc(100vh-130px)] transition-colors duration-300">
     <div class="flex flex-col items-center justify-center gap-4  md:mt-[60px] mt-[30px] animate-fadeIn">
       <div class="flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform duration-300">
         <img class="w-16 h-16 md:w-24 md:h-24 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />

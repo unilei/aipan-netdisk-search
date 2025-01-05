@@ -12,12 +12,11 @@ const isInitialLoad = ref(true);
 
 // Add transition classes
 const searchInputClass = computed(() => {
-  return `w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all duration-200 dark:bg-gray-800 dark:text-white dark:border-gray-700 ${searchLoading.value ? 'opacity-50' : ''
-    }`;
+  return `w-full border border-gray-300 px-4 py-3 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-transparent outline-none transition-all duration-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:focus:ring-gray-400 dark:focus:border-gray-500 ${searchLoading.value ? 'opacity-50' : ''}`;
 });
 
 const searchButtonClass = computed(() => {
-  return `bg-gray-900 text-white p-3 rounded-lg hover:bg-gray-800 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-700 dark:hover:bg-gray-600`;
+  return `bg-gray-900 text-white p-3 rounded-lg hover:bg-gray-800 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed dark:bg-gray-600 dark:hover:bg-gray-500`;
 });
 
 const kwSearch = async () => {
@@ -184,7 +183,8 @@ const isDownloading = ref(false);
 
 </script>
 <template>
-  <div class="max-w-2xl min-h-screen mx-auto p-[20px]">
+  <div class="bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-2xl min-h-screen mx-auto p-[20px] ">
     <!-- Header -->
     <div class="flex flex-row items-center justify-center gap-3 mb-8">
       <a href="/" class="transition-transform duration-200 hover:scale-110">
@@ -223,16 +223,16 @@ const isDownloading = ref(false);
 
     <!-- Results Section -->
     <div class="space-y-2" v-if="kwData && kwData.length > 0">
-      <div class="flex flex-row gap-2 items-center justify-between p-2 border-b border-gray-300">
+      <div class="flex flex-row gap-2 items-center justify-between p-2 border-b border-gray-300 dark:border-gray-700">
         <h2 class="text-xl font-bold dark:text-white">搜索结果</h2>
         <div class="space-x-2">
           <button
-            class="text-gray-900 text-sm hover:text-gray-600 transition-colors duration-200 disabled:opacity-50 dark:text-white"
+            class="text-gray-900 text-sm hover:text-gray-600 transition-colors duration-200 disabled:opacity-50 dark:text-gray-200 dark:hover:text-gray-400 dark:disabled:text-gray-600"
             @click="handlePrevPage()" :disabled="page === 1">
             上一页
           </button>
           <span class="text-sm text-gray-600 dark:text-gray-400">第 {{ page }} 页</span>
-          <button class="text-gray-900 text-sm hover:text-gray-600 transition-colors duration-200 dark:text-white"
+          <button class="text-gray-900 text-sm hover:text-gray-600 transition-colors duration-200 dark:text-gray-200 dark:hover:text-gray-400"
             @click="handleNextPage()">
             下一页
           </button>
@@ -240,7 +240,7 @@ const isDownloading = ref(false);
       </div>
 
       <div v-if="searchLoading" class="flex items-center justify-center p-8">
-        <div class="text-purple-500 flex items-center gap-2">
+        <div class="text-purple-500 dark:text-purple-400 flex items-center gap-2">
           <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
             <path class="opacity-75" fill="currentColor"
@@ -253,7 +253,7 @@ const isDownloading = ref(false);
 
       <ul class="space-y-2" v-else>
         <li v-for="(item, index) in kwData" :key="index"
-          class="flex flex-row justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 dark:bg-gray-800 dark:hover:bg-gray-700">
+          class="flex flex-row justify-between items-center p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 dark:bg-gray-800/50 dark:hover:bg-gray-700/50 dark:border dark:border-gray-700">
           <div class="flex-1 min-w-0">
             <p class="text-md font-bold truncate dark:text-white" v-html="item.name"></p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -261,7 +261,7 @@ const isDownloading = ref(false);
             </p>
           </div>
           <button
-            class="ml-4 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 text-sm dark:bg-gray-700 dark:hover:bg-gray-600"
+            class="ml-4 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 text-sm dark:bg-gray-600 dark:hover:bg-gray-500"
             @click="handleDownloadVisible(item)">
             下载
           </button>
@@ -269,16 +269,16 @@ const isDownloading = ref(false);
       </ul>
     </div>
 
-    <p class="mt-4 text-xs text-red-500 text-center">
+    <p class="mt-4 text-xs text-red-500 dark:text-red-400 text-center">
       仅供个人学习使用，禁止商业用途，否则后果自负
     </p>
 
     <!-- Download Modal -->
     <Transition name="modal">
       <div v-if="downloadVisible"
-        class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
+        class="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
         @click="downloadVisible = false">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full space-y-4 relative" @click.stop>
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl max-w-md w-full space-y-4 relative dark:border dark:border-gray-700" @click.stop>
           <button
             class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             @click="downloadVisible = false">
@@ -292,8 +292,8 @@ const isDownloading = ref(false);
             <div class="grid grid-cols-2 gap-3">
               <button v-for="(opt, key) in currentDownloadSong?.quality" :key="key"
                 class="p-3 rounded-lg border transition-all duration-200 text-left" :class="quality === key
-                  ? 'border-gray-900 bg-gray-900 text-white dark:bg-gray-700'
-                  : 'border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:hover:border-gray-500'"
+                  ? 'border-gray-900 bg-gray-900 text-white dark:border-gray-500 dark:bg-gray-600'
+                  : 'border-gray-200 hover:border-gray-400 dark:border-gray-700 dark:text-gray-200 dark:hover:border-gray-500'"
                 @click="quality = key">
                 <span class="block font-medium">{{ key === 'lossless' ? '无损音质' : key === 'exhigh' ? '高品质' : key ===
                   'standard' ? '标准音质' : 'Hi-Res' }}</span>
@@ -304,12 +304,12 @@ const isDownloading = ref(false);
 
           <div class="flex flex-wrap gap-2">
             <button
-              class="flex-1 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 text-sm dark:bg-gray-700 dark:hover:bg-gray-600"
+              class="flex-1 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 text-sm dark:bg-gray-600 dark:hover:bg-gray-500"
               @click="handleCopySongName(currentDownloadSong)">
               复制歌曲名字
             </button>
             <button
-              class="flex-1 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 text-sm dark:bg-gray-700 dark:hover:bg-gray-600"
+              class="flex-1 bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all duration-200 text-sm dark:bg-gray-600 dark:hover:bg-gray-500"
               :disabled="isDownloading" @click="handleCopySongUrl(currentDownloadSong)">
               <span v-if="!isDownloading">下载歌曲</span>
               <span v-else>下载中 {{ Math.round(downloadProgress) }}%</span>
@@ -338,6 +338,7 @@ const isDownloading = ref(false);
         </div>
       </div>
     </Transition>
+  </div>
   </div>
 </template>
 

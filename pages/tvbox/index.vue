@@ -69,12 +69,12 @@ const copy = async (text) => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+    <div class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- 头部区域 -->
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 mb-2">TVbox系列数据源接口地址</h1>
-                <p class="text-sm text-gray-500">更新时间: {{ currentDate }}</p>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">TVbox系列数据源接口地址</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">更新时间: {{ currentDate }}</p>
             </div>
 
             <!-- 搜索和分类过滤区域 -->
@@ -84,7 +84,7 @@ const copy = async (text) => {
                         <input type="text" 
                                v-model="searchQuery"
                                placeholder="搜索数据源..." 
-                               class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         >
                         <span class="absolute right-3 top-2.5 text-gray-400">
                             <i class="fas fa-search"></i>
@@ -99,8 +99,8 @@ const copy = async (text) => {
                             :class="[
                                 'px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200',
                                 activeCategory === category 
-                                    ? 'bg-blue-500 text-white' 
-                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    ? 'bg-blue-500 text-white dark:bg-blue-600' 
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600'
                             ]"
                     >
                         {{ category }}
@@ -111,23 +111,23 @@ const copy = async (text) => {
             <!-- 数据源列表 -->
             <div v-if="tvbox.length === 0" class="text-center py-12">
                 <div class="animate-pulse">
-                    <p class="text-gray-500">正在加载数据源...</p>
+                    <p class="text-gray-500 dark:text-gray-400">正在加载数据源...</p>
                 </div>
             </div>
             
             <div v-else-if="filteredTvbox.length === 0" class="text-center py-12">
-                <p class="text-gray-500">未找到匹配的数据源</p>
+                <p class="text-gray-500 dark:text-gray-400">未找到匹配的数据源</p>
             </div>
 
             <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 <div v-for="(item, index) in filteredTvbox" 
                      :key="index"
-                     class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
+                     class="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
                 >
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900">{{ item.name }}</h3>
-                            <span class="px-3 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded-full">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ item.name }}</h3>
+                            <span class="px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900 rounded-full">
                                 {{ item.category || '未分类' }}
                             </span>
                         </div>
@@ -136,10 +136,10 @@ const copy = async (text) => {
                             <input type="text" 
                                    :value="item.link" 
                                    readonly
-                                   class="flex-1 px-3 py-2 text-sm bg-gray-50 rounded border border-gray-200 focus:outline-none"
+                                   class="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 rounded border border-gray-200 dark:border-gray-600 dark:text-gray-200 focus:outline-none"
                             >
                             <button @click="copy(item.link)"
-                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800"
                             >
                                 复制
                             </button>
