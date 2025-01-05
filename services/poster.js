@@ -1,6 +1,5 @@
 import lyricsService from './lyrics'
-import { s2t, t2s } from 'chinese-s2t'
-
+ 
 class PosterService {
   constructor() {
     this.templates = [
@@ -27,12 +26,6 @@ class PosterService {
     ]
   }
 
-  // 繁体转简体函数
-  toSimplified(text) {
-    if (!text) return text
-    return t2s(text)
-  }
-
   async loadImage(url) {
     return new Promise((resolve, reject) => {
       const img = new Image()
@@ -54,8 +47,8 @@ class PosterService {
     const backgroundLyrics = lyricsService.getRandomLyricsSnippet(lyrics, 8, options.fullLyrics)
 
     // 转换歌曲名为简体
-    track.name = this.toSimplified(track.name)
-    track.artist = this.toSimplified(track.artist)
+    track.name = track.name;
+    track.artist = track.artist;
 
     // 设置青花瓷风格背景
     const gradient = ctx.createLinearGradient(0, 0, width, height)

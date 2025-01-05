@@ -1,14 +1,6 @@
-import { t2s } from 'chinese-s2t'
-
 class LyricsService {
   constructor() {
-    this.BASE_URL = 'https://netease-cloud-music-api-psi-silk.vercel.app'
-  }
-
-  // 繁体转简体函数
-  toSimplified(text) {
-    if (!text) return text
-    return t2s(text)
+    this.BASE_URL = 'https://netease.aipan.me'
   }
 
   async getLyrics(track) {
@@ -31,44 +23,44 @@ class LyricsService {
     if (!lyrics) return ''
     
     // 清理歌词文本并转换为简体
-    return this.toSimplified(
-      lyrics
-        .split('\n')
-        .map(line => {
-          let content = line.trim()
-          
-          // 移除括号内的翻译歌词
-          content = content.replace(/\(.*?\)/g, '')
-          content = content.replace(/（.*?）/g, '')
-          
-          // 移除方括号内的翻译歌词
-          content = content.replace(/\[.*?\]/g, '')
-          content = content.replace(/【.*?】/g, '')
-          
-          return content.trim()
-        })
-        .filter(line => {
-          // 移除空行和纯空格行
-          if (!line || line.match(/^\s*$/)) return false
-          
-          // 移除作词、作曲等信息行
-          if (line.match(/^作词|^作曲|^编曲|^制作|^作品|^歌词|^歌手|^演唱|^编辑|^制作|^录音|^混音|^录制|^发行|^出品|^监制|^策划|^统筹|^企划|^发行|^出版|^版权|^词曲/)) {
-            return false
-          }
-          
-          return true
-        })
-        .join('\n')
-    )
+    return lyrics
+      .split("\n")
+      .map((line) => {
+        let content = line.trim();
+
+        // 移除括号内的翻译歌词
+        content = content.replace(/\(.*?\)/g, "");
+        content = content.replace(/（.*?）/g, "");
+
+        // 移除方括号内的翻译歌词
+        content = content.replace(/\[.*?\]/g, "");
+        content = content.replace(/【.*?】/g, "");
+
+        return content.trim();
+      })
+      .filter((line) => {
+        // 移除空行和纯空格行
+        if (!line || line.match(/^\s*$/)) return false;
+
+        // 移除作词、作曲等信息行
+        if (
+          line.match(
+            /^作词|^作曲|^编曲|^制作|^作品|^歌词|^歌手|^演唱|^编辑|^制作|^录音|^混音|^录制|^发行|^出品|^监制|^策划|^统筹|^企划|^发行|^出版|^版权|^词曲/
+          )
+        ) {
+          return false;
+        }
+
+        return true;
+      })
+      .join("\n");
   }
 
   getPreviewLyrics(lyrics, maxLength = 150, fullMode = false) {
     if (!lyrics) return ''
     
     // 获取歌词的所有行，并确保每行都是简体
-    const lines = this.toSimplified(lyrics)
-      .split('\n')
-      .filter(line => line.trim())
+    const lines = lyrics.split("\n").filter((line) => line.trim());
     
     // 如果是完整模式，返回所有歌词
     if (fullMode) {
@@ -105,9 +97,7 @@ class LyricsService {
     if (!lyrics) return ''
     
     // 获取歌词的所有行，并确保每行都是简体
-    const lines = this.toSimplified(lyrics)
-      .split('\n')
-      .filter(line => line.trim())
+    const lines = lyrics.split("\n").filter((line) => line.trim());
     
     // 如果是完整模式，返回所有歌词
     if (fullMode) {

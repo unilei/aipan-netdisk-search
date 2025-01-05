@@ -1,6 +1,6 @@
 <script setup>
 import Header from "~/components/layout/netdisk/Header.vue";
-import Footer from "~/components/layout/netdisk/Footer.vue";
+import Footer from "~/components/layout/Footer.vue";
 </script>
 <template>
     <div>
