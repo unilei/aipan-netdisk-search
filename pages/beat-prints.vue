@@ -1,9 +1,9 @@
 <template>
-  <div class="min-h-[calc(100vh-194px)] bg-[#fafafa]">
+  <div class="min-h-[calc(100vh-194px)] bg-[#fafafa] dark:bg-gray-900">
     <div class="max-w-[1240px] mx-auto px-4 py-12 sm:py-20">
       <!-- Header Section -->
       <div class="text-center mb-12">
-        <h1 class="text-2xl sm:text-2xl font-medium text-gray-800 mb-3">将你喜爱的音乐转化为精美的视觉艺术</h1>
+        <h1 class="text-2xl sm:text-2xl font-medium text-gray-800 dark:text-gray-100 mb-3">将你喜爱的音乐转化为精美的视觉艺术</h1>
       </div>
 
       <!-- Search Bar -->
@@ -14,14 +14,14 @@
             type="text" 
             placeholder="搜索歌曲或艺术家..."
             @keyup.enter="searchTracks"
-            class="w-full pl-12 pr-4 py-3 text-sm rounded-full bg-white border border-gray-200
-                   text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-400
+            class="w-full pl-12 pr-4 py-3 text-sm rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700
+                   text-gray-800 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-gray-400 dark:focus:border-gray-600
                    transition-colors duration-300"
             :disabled="isLoading"
           />
           <span class="absolute left-4 top-1/2 -translate-y-1/2">
-            <span v-if="!isLoading" class="i-carbon-search text-lg text-gray-400" />
-            <span v-else class="i-carbon-circle-dash animate-spin text-lg text-gray-400" />
+            <span v-if="!isLoading" class="i-carbon-search text-lg text-gray-400 dark:text-gray-500" />
+            <span v-else class="i-carbon-circle-dash animate-spin text-lg text-gray-400 dark:text-gray-500" />
           </span>
         </div>
         
@@ -33,21 +33,21 @@
 
       <!-- Loading State -->
       <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
-        <span class="i-carbon-circle-dash animate-spin text-4xl text-gray-400 mb-4" />
-        <p class="text-gray-500">正在搜索音乐...</p>
+        <span class="i-carbon-circle-dash animate-spin text-4xl text-gray-400 dark:text-gray-500 mb-4" />
+        <p class="text-gray-500 dark:text-gray-400">正在搜索音乐...</p>
       </div>
 
       <!-- Results Section -->
       <div v-else>
         <!-- Results Count -->
-        <p v-if="tracks.length" class="text-gray-500 mb-6 text-sm">
+        <p v-if="tracks.length" class="text-gray-500 dark:text-gray-400 mb-6 text-sm">
           找到 {{ tracks.length }} 首歌曲
         </p>
         
         <!-- Results Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-5 gap-6">
           <div v-for="track in tracks" :key="track.id" 
-               class="group bg-white rounded-lg border border-gray-100 overflow-hidden hover:border-gray-200 
+               class="group bg-white dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700 overflow-hidden hover:border-gray-200 dark:hover:border-gray-600 
                       transition-all duration-300">
             <div class="p-4">
               <div class="relative mb-3">
@@ -57,16 +57,16 @@
                             transition-opacity duration-300 rounded-lg flex items-center justify-center">
                   <button 
                     @click="generatePoster(track)" 
-                    class="px-4 py-2 bg-white text-gray-900 rounded-full text-sm
-                           hover:bg-gray-50 transition-colors duration-300"
+                    class="px-4 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-full text-sm
+                           hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300"
                   >
                     生成海报
                   </button>
                 </div>
               </div>
               <div>
-                <h3 class="font-medium text-gray-800 mb-1 truncate">{{ track.name }}</h3>
-                <p class="text-gray-500 text-sm truncate">{{ track.artist }}</p>
+                <h3 class="font-medium text-gray-800 dark:text-gray-100 mb-1 truncate">{{ track.name }}</h3>
+                <p class="text-gray-500 dark:text-gray-400 text-sm truncate">{{ track.artist }}</p>
               </div>
             </div>
           </div>
@@ -74,8 +74,8 @@
 
         <!-- No Results State -->
         <div v-if="!isLoading && tracks.length === 0" class="text-center py-20">
-          <span class="i-carbon-music-add text-4xl text-gray-300 mb-4 block"></span>
-          <p class="text-gray-400">开始搜索你喜爱的音乐</p>
+          <span class="i-carbon-music-add text-4xl text-gray-300 dark:text-gray-600 mb-4 block"></span>
+          <p class="text-gray-400 dark:text-gray-500">开始搜索你喜爱的音乐</p>
         </div>
       </div>
 
@@ -83,13 +83,13 @@
       <div v-if="showModal" 
            class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
            @click="showModal = false">
-        <div class="bg-white rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto" @click.stop>
+        <div class="bg-white dark:bg-gray-800 rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto" @click.stop>
           <!-- Modal Header -->
-          <div class="sticky top-0 bg-white px-6 py-4 border-b flex justify-between items-center">
-            <h2 class="text-lg font-medium text-gray-800">创建你的海报</h2>
+          <div class="sticky top-0 bg-white dark:bg-gray-800 px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+            <h2 class="text-lg font-medium text-gray-800 dark:text-gray-100">创建你的海报</h2>
             <button @click="showModal = false" 
-                    class="p-1 hover:bg-gray-100 rounded-full transition-colors">
-              <span class="i-carbon-close text-xl text-gray-500" />
+                    class="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors">
+              <span class="i-carbon-close text-xl text-gray-500 dark:text-gray-400" />
             </button>
           </div>
 
@@ -98,7 +98,7 @@
             <div class="mb-6 space-y-4">
               <!-- Template Selection -->
               <div>
-                <label class="block text-sm text-gray-700 mb-2">选择样式</label>
+                <label class="block text-sm text-gray-700 dark:text-gray-300 mb-2">选择样式</label>
                 <div class="flex gap-3 flex-wrap">
                   <button
                     v-for="template in templates"
@@ -107,8 +107,8 @@
                     :class="[
                       'px-4 py-2 rounded-full text-sm transition-colors duration-300',
                       selectedTemplate === template.id
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     ]"
                     :disabled="isGenerating"
                   >
@@ -119,15 +119,15 @@
 
               <!-- Lyrics Mode Toggle -->
               <div class="flex items-center justify-between">
-                <label class="block text-sm text-gray-700">歌词显示</label>
+                <label class="block text-sm text-gray-700 dark:text-gray-300">歌词显示</label>
                 <div class="flex gap-3">
                   <button
                     @click="fullLyrics = false"
                     :class="[
                       'px-4 py-2 rounded-full text-sm transition-colors duration-300',
                       !fullLyrics
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     ]"
                     :disabled="isGenerating"
                   >
@@ -138,8 +138,8 @@
                     :class="[
                       'px-4 py-2 rounded-full text-sm transition-colors duration-300',
                       fullLyrics
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                     ]"
                     :disabled="isGenerating"
                   >
@@ -151,10 +151,10 @@
 
             <!-- Generated Poster -->
             <div class="flex gap-6 w-full">
-              <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-center">
+              <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 flex items-center justify-center">
                 <div v-if="isGenerating" class="py-8 text-center">
-                  <span class="i-carbon-circle-dash animate-spin text-3xl mb-3 block text-gray-400" />
-                  <p class="text-gray-500">正在创建你的艺术作品...</p>
+                  <span class="i-carbon-circle-dash animate-spin text-3xl mb-3 block text-gray-400 dark:text-gray-500" />
+                  <p class="text-gray-500 dark:text-gray-400">正在创建你的艺术作品...</p>
                 </div>
                 <img 
                   v-else-if="generatedPosterUrl" 
@@ -165,10 +165,10 @@
               </div>
 
               <!-- Full Lyrics Posters -->
-              <div v-if="fullLyrics" class="bg-gray-50 rounded-lg p-4 flex flex-row gap-4">
+              <div v-if="fullLyrics" class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 flex flex-row gap-4">
                 <div v-if="isGenerating" class="py-8 text-center">
-                  <span class="i-carbon-circle-dash animate-spin text-3xl mb-3 block text-gray-400" />
-                  <p class="text-gray-500">正在创建你的艺术作品...</p>
+                  <span class="i-carbon-circle-dash animate-spin text-3xl mb-3 block text-gray-400 dark:text-gray-500" />
+                  <p class="text-gray-500 dark:text-gray-400">正在创建你的艺术作品...</p>
                 </div>
                 <template v-else>
                   <div v-for="(posterUrl, index) in fullLyricsPosterUrls" :key="index" 
@@ -181,8 +181,8 @@
                     <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         @click="downloadFullLyricsPoster(index)"
-                        class="px-4 py-2 bg-gray-900 text-white rounded-full text-sm
-                               hover:bg-gray-800 transition-colors duration-300
+                        class="px-4 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full text-sm
+                               hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors duration-300
                                flex items-center gap-2"
                       >
                         <span class="i-carbon-download text-lg" />
@@ -199,8 +199,8 @@
               <button 
                 v-if="fullLyrics && fullLyricsPosterUrls.length > 0"
                 @click="downloadAllLyricPosters" 
-                class="px-6 py-2 bg-gray-100 text-gray-800 rounded-full text-sm
-                       hover:bg-gray-200 transition-colors duration-300
+                class="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-sm
+                       hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300
                        disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 :disabled="isGenerating"
               >
@@ -209,8 +209,8 @@
               </button>
               <button 
                 @click="downloadPoster" 
-                class="px-6 py-2 bg-gray-900 text-white rounded-full text-sm
-                       hover:bg-gray-800 transition-colors duration-300
+                class="px-6 py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-full text-sm
+                       hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors duration-300
                        disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 :disabled="isGenerating || !generatedPosterUrl"
               >
