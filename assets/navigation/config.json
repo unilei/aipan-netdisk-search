@@ -4,7 +4,12 @@
       "id": "common",
       "name": "常用",
       "items": [
-        
+         {
+          "title": "FM电台",
+          "description": "FM电台",
+          "icon": "fa-headphones",
+          "path": "/fm"
+        },
          {
           "title": "音乐海报生成",
           "description": "将你喜爱的音乐转化为精美的视觉艺术",
