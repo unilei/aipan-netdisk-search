@@ -5,6 +5,12 @@
       "name": "常用",
       "items": [
          {
+          "title": "AI网盘搜索",
+          "description": "AI网盘搜索（Beta）",
+          "icon": "fa-paintbrush",
+          "path": "/ai-search"
+        },
+         {
           "title": "FM电台",
           "description": "FM电台",
           "icon": "fa-headphones",
@@ -33,7 +39,7 @@
           "description": "倒计时迎接新的一年",
           "icon": "fa-calendar-days",
           "path": "/spring-festival"
-        }
+        } 
       ]
     },
     {
@@ -118,6 +124,12 @@
       "id": "tools",
       "name": "AI工具",
       "items": [
+         {
+          "title": "DeepSeek",
+          "description": "中国领先的AI",
+          "icon": "fa-robot",
+          "path": "https://chat.deepseek.com"
+        },
         {
           "title": "ChatGPT",
           "description": "OpenAI对话模型",

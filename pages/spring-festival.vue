@@ -5,7 +5,7 @@
             class="bg-gradient-to-r from-red-500 to-red-600 dark:from-red-700 dark:to-red-800 py-16 relative overflow-hidden">
             <div class="container mx-auto text-center relative z-10">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">
-                    🐍 2025蛇年新春特别页面 🧧
+                    🐎 2026马年新春特别页面 🧧
                 </h1>
                 <p class="text-xl text-white/90">祝您新年快乐，万事如意！</p>
             </div>
@@ -16,7 +16,7 @@
             <div class="container mx-auto px-4">
                 <div class="max-w-3xl mx-auto text-center">
                     <h2 class="text-2xl font-bold mb-6 text-red-600 dark:text-red-400">
-                        距离蛇年春节还有
+                        距离马年春节还有
                     </h2>
                     <div class="grid grid-cols-4 gap-4">
                         <div class="bg-red-50 dark:bg-gray-700 p-4 rounded-lg">
@@ -95,7 +95,7 @@
         <section class="py-12 bg-red-50 dark:bg-gray-900">
             <div class="container mx-auto px-4">
                 <h2 class="text-2xl font-bold mb-8 text-center text-red-600 dark:text-red-400">
-                    蛇年运势预测
+                    马年运势预测
                 </h2>
                 <div class="max-w-2xl mx-auto">
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-lg border border-red-100 dark:border-red-900">
@@ -117,7 +117,7 @@
                         <div v-if="fortune" class="mt-6 p-4 bg-red-50 dark:bg-gray-700/50 rounded-lg">
                             <div class="flex items-center mb-4">
                                 <span class="text-3xl mr-4">{{ getZodiacEmoji }}</span>
-                                <h3 class="text-xl font-medium text-red-600 dark:text-red-400">{{ getZodiacLabel }}的蛇年运势
+                                <h3 class="text-xl font-medium text-red-600 dark:text-red-400">{{ getZodiacLabel }}的马年运势
                                 </h3>
                             </div>
                             <p class="text-gray-700 dark:text-gray-300">{{ fortune }}</p>
@@ -167,19 +167,19 @@ const fortune = ref('')
 
 // SEO配置
 useHead({
-    title: '2025蛇年新春特别页面 - AIPAN.ME',
+    title: '2026马年新春特别页面 - AIPAN.ME',
     meta: [
-        { name: 'description', content: '2025蛇年新春特别页面，提供新年祝福生成器、生肖运势查询、新年倒计时等功能。在这里感受浓浓的新年氛围，传递新春祝福。' },
-        { name: 'keywords', content: '蛇年,新年祝福,春节倒计时,生肖运势,新春祝福,2025春节' },
+        { name: 'description', content: '2026马年新春特别页面，提供新年祝福生成器、生肖运势查询、新年倒计时等功能。在这里感受浓浓的新年氛围，传递新春祝福。' },
+        { name: 'keywords', content: '马年,新年祝福,春节倒计时,生肖运势,新春祝福,2026春节' },
         // Open Graph / Facebook
         { property: 'og:type', content: 'website' },
-        { property: 'og:title', content: '2025蛇年新春特别页面 - AIPAN.ME' },
-        { property: 'og:description', content: '2025蛇年新春特别页面，提供新年祝福生成器、生肖运势查询、新年倒计时等功能。' },
+        { property: 'og:title', content: '2026马年新春特别页面 - AIPAN.ME' },
+        { property: 'og:description', content: '2026马年新春特别页面，提供新年祝福生成器、生肖运势查询、新年倒计时等功能。' },
         { property: 'og:image', content: '/spring-festival-og.jpg' },
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: '2025蛇年新春特别页面 - AIPAN.ME' },
-        { name: 'twitter:description', content: '2025蛇年新春特别页面，提供新年祝福生成器、生肖运势查询、新年倒计时等功能。' },
+        { name: 'twitter:title', content: '2026马年新春特别页面 - AIPAN.ME' },
+        { name: 'twitter:description', content: '2026马年新春特别页面，提供新年祝福生成器、生肖运势查询、新年倒计时等功能。' },
         { name: 'twitter:image', content: '/spring-festival-og.jpg' },
         // 其他重要的meta标签
         { name: 'robots', content: 'index,follow' },
@@ -197,8 +197,8 @@ const minutes = ref(0)
 const seconds = ref(0)
 
 
-// 2025年春节时间：2025年1月29日
-const springFestivalDate = new Date('2025-01-29T00:00:00+08:00')
+// 2026年春节时间：2026年2月17日
+const springFestivalDate = new Date('2026-02-17T00:00:00+08:00')
 
 // 更新倒计时
 const updateCountdown = () => {
@@ -243,7 +243,7 @@ const zodiacList = [
 // 运势数据
 const fortunes = {
     rat: {
-        text: '与蛇相冲，需要谨慎行事，但贵人运旺盛。建议多结交新朋友，可能带来意想不到的机遇。',
+        text: '与马相冲，需要谨慎行事，但贵人运旺盛。建议多结交新朋友，可能带来意想不到的机遇。',
         wealth: 3,
         career: 4,
         health: 3
@@ -267,22 +267,22 @@ const fortunes = {
         health: 5
     },
     dragon: {
-        text: '与蛇相合，诸事顺遂，好运连连。创业者会遇到好机会，适大展拳脚。',
+        text: '与马相合，诸事顺遂，好运连连。创业者会遇到好机会，适大展拳脚。',
         wealth: 5,
         career: 5,
         health: 4
     },
     snake: {
-        text: '本命年运势��稳，事业有新突破。注意调节作息，保持健康。',
+        text: '运势平稳，事业有新突破。注意调节作息，保持健康。',
         wealth: 4,
         career: 5,
         health: 3
     },
     horse: {
-        text: '事业运佳，小心健康。工作上会有重大突破，但要注意身体，适当放松。',
-        wealth: 4,
+        text: '本命年运势旺盛，事业有重大突破。注意平衡工作与休息，保持健康。',
+        wealth: 5,
         career: 5,
-        health: 3
+        health: 4
     },
     goat: {
         text: '财运不错，感情稳定。理财投资会有不错收益，感情生活温馨甜蜜。',
@@ -388,23 +388,23 @@ const themeOptions = [
 const wishesTemplate = {
     health: [
         '祝您新年健康如意，活力永驻！',
-        '愿您蛇年像条蛇一样灵活，身体倍儿棒！',
+        '愿您马年像骏马一样健壮，身体倍儿棒！',
         '祝您新年营养均衡，身体倍棒，连医生都记不住您长啥样！',
-        '愿您蛇年精力满满，运动健身，肌肉发达到连蛇都羡慕！',
-        '祝您蛇年免疫力比长城还强大，病毒见了都绕道走！'
+        '愿您马年精力充沛，运动健身，体魄强健如骏马！',
+        '祝您马年免疫力比长城还强大，病毒见了都绕道走！'
     ],
     travel: [
-        '祝您蛇年旅行顺利，一路平安！',
+        '祝您马年旅行顺利，一路平安！',
         '愿您新年周游世界，收获满满！',
-        '祝您蛇年旅途精彩，平安喜！',
-        '愿您蛇年走遍天下，足迹比蛇走过的路还多！',
-        '祝您新年出门旅游，玩得比蛇还溜！'
+        '祝您马年旅途精彩，平安喜乐！',
+        '愿您马年走遍天下，足迹比千里马还广！',
+        '祝您新年出门旅游，玩得比骏马奔腾还痛快！'
     ],
     family: [
         '祝您新年家庭美满，和乐融融！',
-        '愿您蛇年全家谐得像蛇一样团团转，开心得像过年天天串门！',
-        '祝您新年家里温暖得像蛇窝，和睦得连邻居都羡慕！',
-        '愿您蛇年家庭欢乐得像过年，天天都是团圆饭！',
+        '愿您马年全家和睦得像骏马奔腾，开心得像过年天天串门！',
+        '祝您新年家里温暖得像马厩，和睦得连邻居都羡慕！',
+        '愿您马年家庭欢乐得像过年，天天都是团圆饭！',
         '祝您新年家里笑声不断，快乐得连门口的对联都笑歪了！'
     ]
 }

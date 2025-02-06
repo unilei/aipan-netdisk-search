@@ -1,5 +1,4 @@
 <script setup>
-import { ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 
@@ -11,6 +10,10 @@ const props = defineProps({
   skeletonLoading: {
     type: Boolean,
     default: false
+  },
+  redirectStatus: {
+    type: Boolean,
+    default: true
   }
 })
 
@@ -56,12 +59,17 @@ const copyPwd = async (pwd) => {
 // 处理链接点击
 const handleLinkClick = (e, link) => {
   e.preventDefault();
-  router.push({
-    path: '/redirect',
-    query: {
-      url: link.link
-    }
-  });
+  if (props.redirectStatus) {
+    router.push({
+      path: '/redirect',
+      query: {
+        url: link.link
+      }
+    });
+  } else {
+    window.open(link.link, '_blank');
+  }
+
 };
 </script>
 
@@ -69,8 +77,7 @@ const handleLinkClick = (e, link) => {
   <div class="space-y-3">
     <!-- 骨架屏 -->
     <div v-if="skeletonLoading" class="space-y-3">
-      <div v-for="i in 3" :key="i" 
-           class="bg-white/60 dark:bg-gray-600/60 shadow p-4 rounded-lg animate-pulse">
+      <div v-for="i in 3" :key="i" class="bg-white/60 dark:bg-gray-600/60 shadow p-4 rounded-lg animate-pulse">
         <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
         <div class="mt-3 flex gap-2">
           <div class="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -80,39 +87,31 @@ const handleLinkClick = (e, link) => {
     </div>
 
     <!-- 资源列表 -->
-    <div v-else v-for="(item, i) in sources.flat(Infinity)" :key="i"
-         class="bg-white/60 dark:bg-gray-600/60 shadow p-4 rounded-lg
+    <div v-else v-for="(item, i) in sources.flat(Infinity)" :key="i" class="bg-white/60 dark:bg-gray-600/60 shadow p-4 rounded-lg
                 hover:bg-white dark:hover:bg-gray-700 hover:shadow-lg 
                 transition-all duration-300">
       <div class="flex flex-col sm:flex-row sm:items-center gap-3">
         <!-- 资源名称 -->
         <div class="flex-1 min-w-0">
-          <p class="text-sm text-gray-700 dark:text-gray-100 break-all" v-html="item.name"></p>
+          <p class="text-xs sm:text-sm text-gray-700 dark:text-gray-100 break-all" v-html="item.name"></p>
         </div>
-        
+
         <!-- 网盘链接 -->
         <div class="flex flex-wrap gap-2">
           <div v-for="(link, index) in item.links" :key="index">
-            <a href="#" 
-               class="inline-flex items-center px-3 py-2 rounded-lg
+            <a href="#" class="inline-flex items-center px-3 py-2 rounded-lg
                       bg-gray-100 dark:bg-gray-700/50 
                       hover:bg-gray-200 dark:hover:bg-gray-600
-                      transition-colors duration-200"
-               @click="(e) => handleLinkClick(e, link)">
+                      transition-colors duration-200" @click="(e) => handleLinkClick(e, link)">
               <!-- 网盘图标 -->
-              <img :src="getDiskIcon(link.service)"
-                   :alt="link.service"
-                   class="w-5 h-5"
-                   @error="handleImageError">
-              
+              <img :src="getDiskIcon(link.service)" :alt="link.service" class="w-5 h-5" @error="handleImageError">
+
               <!-- 提取码 -->
-              <span v-if="link.pwd" 
-                    class="ml-2 px-2 py-0.5 text-xs rounded-full
+              <span v-if="link.pwd" class="ml-2 px-2 py-0.5 text-xs rounded-full
                            bg-blue-100 dark:bg-blue-900/30 
                            text-blue-600 dark:text-blue-300
-                           cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/30"
-                    @click.stop="copyPwd(link.pwd)"
-                    :title="'点击复制提取码：' + link.pwd">
+                           cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/30" @click.stop="copyPwd(link.pwd)"
+                :title="'点击复制提取码：' + link.pwd">
                 {{ link.pwd }}
               </span>
             </a>
@@ -151,6 +150,7 @@ em {
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
