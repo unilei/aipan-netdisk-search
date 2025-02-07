@@ -90,51 +90,6 @@ const goCopyright = () => {
   router.push("/copyright");
 };
 
-// 添加弹窗控制
-const aiSearchNotificationShown = useCookie("aiSearchNotificationShown", {
-  maxAge: 60 * 60 * 24 * 7, // 7天内不再显示
-});
-
-// 显示AI搜索提示
-const showAiSearchNotification = () => {
-  if (!aiSearchNotificationShown.value) {
-    ElNotification({
-      title: "🎉 全新AI搜索体验",
-      message: h("div", { class: "flex flex-col gap-2" }, [
-        h("span", "我们推出了全新的AI搜索功能，让搜索更智能！"),
-        h("div", { class: "flex items-center gap-2 mt-1" }, [
-          h(
-            "button",
-            {
-              class:
-                "px-3 py-1 text-xs text-white rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105",
-              onClick: () => {
-                router.push("/ai-search");
-                aiSearchNotificationShown.value = "shown";
-              },
-            },
-            "立即体验"
-          ),
-          h(
-            "button",
-            {
-              class:
-                "px-3 py-1 text-xs text-gray-500 hover:text-gray-700 transition-colors duration-300",
-              onClick: () => {
-                aiSearchNotificationShown.value = "shown";
-              },
-            },
-            "暂不需要"
-          ),
-        ]),
-      ]),
-      position: "bottom-right",
-      duration: 8000,
-      customClass: "ai-search-notification",
-    });
-  }
-};
- 
 onMounted(async () => {
   if (doubanCache.value === "aipan.me") {
     doubanData.value = doubanStore.doubanData;
@@ -146,11 +101,6 @@ onMounted(async () => {
 
   // 在页面加载完成后，将滚动位置重置到顶部
   window.scrollTo(0, 0);
-
-  // 显示AI搜索提示
-  setTimeout(() => {
-    showAiSearchNotification();
-  }, 2000); // 延迟2秒显示
 });
 
 // 监听路由变化
@@ -397,22 +347,5 @@ watch(activeCategory, (newValue) => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-/* AI搜索提示样式 */
-:deep(.ai-search-notification) {
-  @apply bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700;
-}
-
-:deep(.ai-search-notification .el-notification__title) {
-  @apply text-gray-900 dark:text-gray-100 font-medium;
-}
-
-:deep(.ai-search-notification .el-notification__content) {
-  @apply text-gray-600 dark:text-gray-300;
-}
-
-:deep(.el-notification__closeBtn) {
-  @apply text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300;
 }
 </style>
