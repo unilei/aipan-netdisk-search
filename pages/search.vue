@@ -537,8 +537,12 @@ const handleSingleSearch = async (item) => {
       });
 
       if (res.list && res.list.length) {
-        smartCache.set(cacheKey, res.list);
-        sources.value.push(...res.list);
+        // 如果是 aipan-search 的结果，插入到数组开头
+        if (item.api === '/api/sources/aipan-search') {
+          sources.value.unshift(...res.list);
+        } else {
+          sources.value.push(...res.list);
+        }
       }
     } catch (err) {
       console.error(`Error fetching from ${item.api}:`, err);
@@ -566,7 +570,16 @@ const handleSearch = async () => {
     isLoading: true,
   };
 
-  sourcesApiEndpoints.forEach((item) => {
+  // 先处理 aipan-search
+  const aipanEndpoint = sourcesApiEndpoints.find(item => item.api === '/api/sources/aipan-search');
+  const otherEndpoints = sourcesApiEndpoints.filter(item => item.api !== '/api/sources/aipan-search');
+
+  if (aipanEndpoint) {
+    await handleSingleSearch(aipanEndpoint);
+  }
+
+  // 然后处理其他接口
+  otherEndpoints.forEach((item) => {
     handleSingleSearch(item);
   });
 };
