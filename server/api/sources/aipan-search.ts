@@ -22,11 +22,19 @@ export default defineEventHandler(async (event) => {
 
     try {
         const nameFilter = body.name ? String(body.name).trim() : undefined;
-        console.log(nameFilter)
+
+        if (!nameFilter) {
+            return {
+                list: [],
+                code: 200
+            };
+        }
+
         const res: Item[] = await prisma.resource.findMany({
             where: {
                 name: {
                     contains: nameFilter,
+                    mode: 'insensitive',
                 },
             },
             include: {
@@ -40,54 +48,40 @@ export default defineEventHandler(async (event) => {
             orderBy: {
                 createdAt: 'desc',
             },
+            take: 100,
         });
 
-        let result = res.map((item) => {
-
-            const links = JSON.parse(item.links)
-            let linksArr = []
-
-            linksArr = links.map((link: any) => {
-                let service = '';
-                if (link.value) {
-                    if (link.value.includes('pan.baidu.com')) {
-                        service = 'BAIDU';
-                    } else if (link.value.includes('pan.xunlei.com')) {
-                        service = 'XUNLEI';
-                    } else if (link.value.includes('pan.quark.cn')) {
-                        service = 'QUARK';
-                    } else if (link.value.includes('www.aliyundrive.com')) {
-                        service = 'ALIYUN'
-                    } else {
-                        service = 'OTHER';
+        const result = res.map((item) => {
+            try {
+                const links = JSON.parse(item.links);
+                const linksArr = links.map((link: any) => {
+                    let service = 'OTHER';
+                    if (link.value) {
+                        if (link.value.includes('pan.baidu.com')) service = 'BAIDU';
+                        else if (link.value.includes('pan.xunlei.com')) service = 'XUNLEI';
+                        else if (link.value.includes('pan.quark.cn')) service = 'QUARK';
+                        else if (link.value.includes('www.aliyundrive.com')) service = 'ALIYUN';
                     }
-                }
-
-                return {
-                    pwd: "",
-                    link: link.value,
-                    service
-                };
-            })
-
-            return {
-                name: item.name,
-                links: linksArr
+                    return { pwd: "", link: link.value, service };
+                });
+                return { name: item.name, links: linksArr };
+            } catch (e) {
+                console.error('Error parsing links for item:', item.name, e);
+                return { name: item.name, links: [] };
             }
-
-        })
-
+        });
 
         return {
-            list: result
-        }
-
+            list: result,
+            code: 200
+        };
 
     } catch (e) {
-        console.log(e);
+        console.error('Search error:', e);
         return {
             code: 500,
             msg: 'An error occurred while searching for resources',
+            list: []
         };
     }
 });
