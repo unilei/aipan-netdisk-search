@@ -1,4 +1,4 @@
- export default defineNuxtConfig({
+export default defineNuxtConfig({
   devtools: { enabled: false },
 
   // 优化构建配置
@@ -26,7 +26,6 @@
       },
     },
   },
-
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
@@ -185,6 +184,9 @@
     experimental: {
       wasm: true,
     },
+    fetch: {
+      timeout: 30000,  // 设置全局超时时间
+    },
   },
   runtimeConfig: {
     adminUser: process.env.ADMIN_USER,
@@ -196,6 +198,7 @@
       GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
       GITHUB_TOKEN: process.env.NUXT_PUBLIC_GITHUB_TOKEN,
       GITHUB_BRANCH: process.env.NUXT_PUBLIC_GITHUB_BRANCH,
+      QUARK_COOKIE: process.env.NUXT_PUBLIC_QUARK_COOKIE
     },
   },
   sitemap: {

@@ -1,4 +1,9 @@
 <script setup>
+import { onMounted } from 'vue';
+
+const token = useCookie('token');
+const router = useRouter();
+
 const form = reactive({
   email: "",
   password: "",
@@ -26,10 +31,6 @@ const formRules = computed(() => ({
     ]
   } : {})
 }));
-
-const token = useCookie("token", {
-  maxAge: 60 * 60 * 24,
-});
 
 const btnLoading = ref(false);
 
@@ -101,6 +102,30 @@ const handleKeyPress = (e) => {
     handleSubmit();
   }
 };
+
+// 添加登录状态检查
+onMounted(async () => {
+  if (token.value) {
+    try {
+      // 验证当前用户信息
+      const userInfo = await $fetch('/api/user/info', {
+        headers: {
+          Authorization: `Bearer ${token.value}`
+        }
+      });
+
+      if (userInfo.code === 200) {
+        // 根据用户角色跳转
+        const redirectPath = userInfo.data.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
+        router.push(redirectPath);
+      }
+    } catch (error) {
+      console.error('Error checking user status:', error);
+      // 如果验证失败，清除 token
+      token.value = null;
+    }
+  }
+});
 </script>
 
 <template>

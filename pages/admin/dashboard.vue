@@ -186,6 +186,13 @@ const menuCards = [
         icon: 'Reading',
         link: '/admin/user-posts',
         color: 'bg-pink-500'
+    },
+    {
+        title: '系统配置',
+        description: '管理系统配置信息',
+        icon: 'Setting',
+        link: '/admin/settings',
+        color: 'bg-teal-500'
     }
 ]
 
