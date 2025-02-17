@@ -182,13 +182,17 @@ model UserResource {
   type    ResourceType @relation(fields: [typeId], references: [id])
 }
 
-// 添加 SystemSettings 模型
+// 修改 SystemSettings 模型
 model SystemSettings {
-  id        Int      @id @default(autoincrement())
-  key       String   @unique
-  value     String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  value       String   @db.Text
+  description String?  @db.Text // 添加配置描述字段
+  group       String? // 添加配置分组字段，如 'quark', 'system' 等
+  isEnabled   Boolean  @default(true) // 添加启用状态字段
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
+  @@index([group]) // 添加分组索引以提高查询性能
   @@map("system_settings")
 }

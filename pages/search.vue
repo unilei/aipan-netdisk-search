@@ -532,49 +532,54 @@ const runQueue = async () => {
   }
 };
 
-// 配置缓存相关常量
-const CACHE_KEY = 'quark_config_cache';
-const CACHE_EXPIRE_TIME = 30 * 60 * 1000; // 30分钟过期
+// 修改缓存相关常量
+const CACHE_CONFIG = {
+  key: 'quark_config_cache',
+  expireTime: 10 * 60 * 1000, // 10分钟
+  version: '1.0' // 用于缓存版本控制
+};
 
-// 添加配置状态
+// 修改配置状态
 const quarkConfig = ref({
   apiUrl: 'http://127.0.0.1:5000/api/quark/sharepage/save',
   quarkCookie: '',
   typeId: null,
-  userId: null
+  userId: null,
+  enabled: false  // 添加启用状态
 });
 
-// 从缓存加载配置
-const loadConfigFromCache = () => {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (cached) {
-      const { data, timestamp } = JSON.parse(cached);
-      // 检查缓存是否过期
-      if (Date.now() - timestamp < CACHE_EXPIRE_TIME) {
-        quarkConfig.value = data;
-        return true;
-      } else {
-        localStorage.removeItem(CACHE_KEY); // 清除过期缓存
-      }
-    }
-  } catch (error) {
-    console.error('Error loading config from cache:', error);
-  }
-  return false;
-};
-
-// 保存配置到缓存
+// 优化缓存保存函数
 const saveConfigToCache = (config) => {
   try {
     const cacheData = {
       data: config,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      version: CACHE_CONFIG.version
     };
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    localStorage.setItem(CACHE_CONFIG.key, JSON.stringify(cacheData));
   } catch (error) {
     console.error('Error saving config to cache:', error);
   }
+};
+
+// 优化缓存加载函数
+const loadConfigFromCache = () => {
+  try {
+    const cached = localStorage.getItem(CACHE_CONFIG.key);
+    if (cached) {
+      const { data, timestamp, version } = JSON.parse(cached);
+      // 检查缓存版本和过期时间
+      if (version === CACHE_CONFIG.version && Date.now() - timestamp < CACHE_CONFIG.expireTime) {
+        quarkConfig.value = data;
+        return true;
+      }
+      localStorage.removeItem(CACHE_CONFIG.key);
+    }
+  } catch (error) {
+    console.error('Error loading config from cache:', error);
+    localStorage.removeItem(CACHE_CONFIG.key);
+  }
+  return false;
 };
 
 // 修改获取配置的函数
@@ -591,7 +596,8 @@ const getQuarkConfig = async () => {
         apiUrl: res.data.apiUrl || quarkConfig.value.apiUrl,
         quarkCookie: res.data.quarkCookie,
         typeId: res.data.typeId,
-        userId: res.data.userId
+        userId: res.data.userId,
+        enabled: res.data.enabled
       };
       quarkConfig.value = config;
       // 保存到缓存
@@ -604,10 +610,10 @@ const getQuarkConfig = async () => {
 
 // 添加清除缓存的函数（可在配置失效时调用）
 const clearConfigCache = () => {
-  localStorage.removeItem(CACHE_KEY);
+  localStorage.removeItem(CACHE_CONFIG.key);
 };
 
-// 队列状态管理
+// 优化队列状态管理
 const queueState = reactive({
   successCount: 0,
   isProcessing: false,
@@ -615,8 +621,28 @@ const queueState = reactive({
   processedTasks: 0,
   tasks: [],
   errorCount: 0,
-  lastError: null
+  lastError: null,
+  isPaused: false // 添加暂停功能
 });
+
+// 添加队列控制函数
+const queueControls = {
+  pause() {
+    queueState.isPaused = true;
+  },
+  resume() {
+    queueState.isPaused = false;
+    processQueue();
+  },
+  clear() {
+    queueState.tasks = [];
+    queueState.isProcessing = false;
+    queueState.successCount = 0;
+    queueState.processedTasks = 0;
+    queueState.errorCount = 0;
+    queueState.lastError = null;
+  }
+};
 
 // 添加随机延时函数
 const randomDelay = (min, max) => {
@@ -624,9 +650,10 @@ const randomDelay = (min, max) => {
   return new Promise(resolve => setTimeout(resolve, delay));
 };
 
-// 队列处理函数
+// 优化队列处理函数
 const processQueue = async () => {
-  if (queueState.isProcessing || queueState.tasks.length === 0 || queueState.successCount >= 5) {
+  if (queueState.isProcessing || queueState.tasks.length === 0 ||
+    queueState.successCount >= 5 || queueState.isPaused) {
     return;
   }
 
@@ -634,7 +661,6 @@ const processQueue = async () => {
 
   try {
     const task = queueState.tasks[0];
-    // 随机延时2-5秒
     await randomDelay(2000, 5000);
 
     const success = await saveToQuarkAsync(task.link, task.name);
@@ -642,7 +668,6 @@ const processQueue = async () => {
       queueState.successCount++;
     } else {
       queueState.errorCount++;
-      queueState.lastError = `转存失败: ${task.name}`;
     }
 
     queueState.tasks.shift();
@@ -654,23 +679,22 @@ const processQueue = async () => {
     queueState.lastError = error.message;
   } finally {
     queueState.isProcessing = false;
-    // 如果还有任务且未达到5个成功，继续处理
-    if (queueState.tasks.length > 0 && queueState.successCount < 5) {
+    if (queueState.tasks.length > 0 && queueState.successCount < 5 && !queueState.isPaused) {
       processQueue();
     }
   }
 };
 
-// 修改 saveToQuarkAsync 函数，返回是否成功
+// 修改 saveToQuarkAsync 函数
 const saveToQuarkAsync = async (link, name) => {
-  if (queueState.successCount >= 5) {
-    queueState.tasks = [];
+  // 如果功能未启用，直接返回
+  if (!quarkConfig.value.enabled) {
     return false;
   }
 
   try {
     if (!quarkConfig.value.quarkCookie || !quarkConfig.value.typeId || !quarkConfig.value.userId) {
-      throw new Error('Quark configuration is incomplete');
+      throw new Error('夸克网盘配置不完整，请检查配置');
     }
 
     const saveRes = await $fetch(quarkConfig.value.apiUrl, {
@@ -685,10 +709,10 @@ const saveToQuarkAsync = async (link, name) => {
       }
     });
 
-    // 如果请求返回未授权或配置错误，清除缓存并重新获取配置
     if (saveRes.code === 401 || saveRes.code === 403) {
       clearConfigCache();
       await getQuarkConfig();
+      showError('认证失败，请重新配置夸克网盘');
       return false;
     }
 
@@ -703,14 +727,18 @@ const saveToQuarkAsync = async (link, name) => {
           userId: quarkConfig.value.userId
         }
       });
+      showSuccess(`${name} 转存成功`);
       return true;
     }
+    showError(`${name} 转存失败`);
     return false;
   } catch (err) {
     console.error('Error saving quark file:', err);
-    // 如果是认证相关错误，清除缓存
     if (err.status === 401 || err.status === 403) {
       clearConfigCache();
+      showError('认证失败，请重新配置夸克网盘');
+    } else {
+      showError(err.message || `${name} 转存失败`);
     }
     return false;
   }
@@ -777,7 +805,8 @@ const handleSingleSearch = async (item) => {
           if (res.list.length === 0) {
             window._needProcessQuarkLinks = true;
           }
-        } else if (window._needProcessQuarkLinks) {
+        } else if (window._needProcessQuarkLinks && quarkConfig.value.enabled) {  // 检查是否启用
+          // 先显示搜索结果
           sources.value.push(...res.list);
 
           // 重置队列状态
