@@ -13,27 +13,60 @@
 
             <!-- 配置表单 -->
             <div class="bg-white rounded-lg p-6 shadow-sm">
-                <h2 class="text-lg font-semibold mb-4">夸克网盘配置</h2>
-                <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-lg font-semibold">夸克网盘配置</h2>
+                        <el-tag v-if="form.enabled" type="success" size="small">已启用</el-tag>
+                        <el-tag v-else type="info" size="small">已禁用</el-tag>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <el-switch v-model="form.enabled" active-text="启用转存" inactive-text="关闭转存" class="ml-2"
+                            @change="handleEnabledChange" />
+                    </div>
+                </div>
+
+                <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" :disabled="!form.enabled">
                     <el-form-item label="API URL" prop="apiUrl">
-                        <el-input v-model="form.apiUrl" placeholder="请输入 API URL" />
+                        <el-input v-model="form.apiUrl" placeholder="请输入 API URL" :disabled="!form.enabled">
+                            <template #append>
+                                <el-button @click="resetApiUrl">
+                                    重置
+                                </el-button>
+                            </template>
+                        </el-input>
+                        <div class="mt-1 text-xs text-gray-500">
+                            默认值：http://127.0.0.1:5000/api/quark/sharepage/save
+                        </div>
                     </el-form-item>
 
                     <el-form-item label="Quark Cookie" prop="quarkCookie">
-                        <el-input v-model="form.quarkCookie" type="textarea" :rows="3" placeholder="请输入夸克网盘 Cookie" />
+                        <el-input v-model="form.quarkCookie" type="textarea" :rows="3" placeholder="请输入夸克网盘 Cookie"
+                            :disabled="!form.enabled" />
+                        <div class="mt-1 text-xs text-gray-500">
+                            请从夸克网盘页面获取 Cookie，确保包含必要的认证信息
+                        </div>
                     </el-form-item>
 
                     <el-form-item label="资源类型" prop="typeId">
-                        <el-select v-model="form.typeId" placeholder="请选择资源类型" class="w-full">
+                        <el-select v-model="form.typeId" placeholder="请选择资源类型" class="w-full" :disabled="!form.enabled">
                             <el-option v-for="type in resourceTypes" :key="type.id" :label="type.name"
                                 :value="type.id" />
                         </el-select>
+                        <div class="mt-1 text-xs text-gray-500">
+                            选择转存资源的默认分类
+                        </div>
                     </el-form-item>
 
                     <el-form-item>
-                        <el-button type="primary" @click="handleSubmit" :loading="loading">
-                            保存配置
-                        </el-button>
+                        <div class="flex items-center gap-4">
+                            <el-button type="primary" @click="handleSubmit" :loading="loading"
+                                :disabled="!form.enabled">
+                                保存配置
+                            </el-button>
+                            <el-button @click="resetForm" :disabled="!form.enabled">
+                                重置表单
+                            </el-button>
+                        </div>
                     </el-form-item>
                 </el-form>
             </div>
@@ -50,10 +83,13 @@ const formRef = ref(null);
 const loading = ref(false);
 const resourceTypes = ref([]);
 
+const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
+
 const form = reactive({
     apiUrl: '',
     quarkCookie: '',
-    typeId: ''
+    typeId: '',
+    enabled: false
 });
 
 const rules = {
@@ -67,6 +103,46 @@ const rules = {
     typeId: [
         { required: true, message: '请选择资源类型', trigger: 'change' }
     ]
+};
+
+// 处理启用状态变化
+const handleEnabledChange = (value) => {
+    if (!value) {
+        ElMessageBox.confirm(
+            '关闭转存功能将停止所有自动转存操作，是否继续？',
+            '警告',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }
+        ).then(() => {
+            handleSubmit();
+        }).catch(() => {
+            form.enabled = true;
+        });
+    }
+};
+
+// 重置 API URL
+const resetApiUrl = () => {
+    form.apiUrl = DEFAULT_API_URL;
+};
+
+// 重置表单
+const resetForm = () => {
+    ElMessageBox.confirm(
+        '确定要重置所有配置吗？',
+        '提示',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }
+    ).then(() => {
+        formRef.value?.resetFields();
+        form.apiUrl = DEFAULT_API_URL;
+    });
 };
 
 // 获取资源类型列表
@@ -95,9 +171,10 @@ const getConfig = async () => {
             }
         });
         if (res.code === 200) {
-            form.apiUrl = res.data.apiUrl || 'http://127.0.0.1:5000/api/quark/sharepage/save';
+            form.apiUrl = res.data.apiUrl || DEFAULT_API_URL;
             form.quarkCookie = res.data.quarkCookie;
             form.typeId = res.data.typeId;
+            form.enabled = res.data.enabled;
         }
     } catch (error) {
         console.error('获取配置失败:', error);
@@ -110,8 +187,11 @@ const handleSubmit = async () => {
     if (!formRef.value) return;
 
     try {
-        const valid = await formRef.value.validate();
-        if (!valid) return;
+        // 如果是禁用状态，跳过表单验证
+        if (form.enabled) {
+            const valid = await formRef.value.validate();
+            if (!valid) return;
+        }
 
         loading.value = true;
 
@@ -132,7 +212,8 @@ const handleSubmit = async () => {
                 apiUrl: form.apiUrl,
                 quarkCookie: form.quarkCookie,
                 typeId: form.typeId,
-                userId: userInfo.data.id  // 使用当前用户ID
+                userId: userInfo.data.id,
+                enabled: form.enabled
             },
             headers: {
                 Authorization: `Bearer ${useCookie('token').value}`
@@ -157,3 +238,19 @@ onMounted(() => {
     getConfig();
 });
 </script>
+
+<style scoped>
+.el-form :deep(.el-form-item__label) {
+    font-weight: 500;
+}
+
+.el-input :deep(.el-input__wrapper),
+.el-select :deep(.el-input__wrapper) {
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.el-input :deep(.el-input__wrapper.is-focus),
+.el-select :deep(.el-input__wrapper.is-focus) {
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+</style>

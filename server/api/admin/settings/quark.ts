@@ -14,7 +14,8 @@ export default defineEventHandler(async (event) => {
         try {
             const settings = await prisma.systemSettings.findFirst({
                 where: {
-                    key: 'quark_config'
+                    key: 'quark_config',
+                    group: 'quark'
                 }
             });
 
@@ -23,7 +24,9 @@ export default defineEventHandler(async (event) => {
                 data: settings ? JSON.parse(settings.value) : {
                     quarkCookie: '',
                     userId: '',
-                    typeId: ''
+                    typeId: '',
+                    enabled: false,
+                    apiUrl: 'http://127.0.0.1:5000/api/quark/sharepage/save'
                 }
             };
         } catch (error) {
@@ -44,11 +47,15 @@ export default defineEventHandler(async (event) => {
                     key: 'quark_config'
                 },
                 update: {
-                    value: JSON.stringify(body)
+                    value: JSON.stringify(body),
+                    group: 'quark',
+                    description: '夸克网盘转存配置'
                 },
                 create: {
                     key: 'quark_config',
-                    value: JSON.stringify(body)
+                    value: JSON.stringify(body),
+                    group: 'quark',
+                    description: '夸克网盘转存配置'
                 }
             });
 
