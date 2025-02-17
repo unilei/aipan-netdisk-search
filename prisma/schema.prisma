@@ -18,15 +18,15 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  username   String   @unique
-  email      String   @unique
-  password   String
-  role       String   @default("user") // Possible values: "admin", "user"
-  avatarStyle String  @default("avataaars") // 头像风格
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isVerified Boolean  @default(false)
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  email       String   @unique
+  password    String
+  role        String   @default("user") // Possible values: "admin", "user"
+  avatarStyle String   @default("avataaars") // 头像风格
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isVerified  Boolean  @default(false)
 
   resources     Resource[] // 一个用户可以有多个资源
   resourceTypes ResourceType[] // 一个用户可以创建多种资源类型
@@ -180,4 +180,15 @@ model UserResource {
 
   creator User         @relation(fields: [creatorId], references: [id])
   type    ResourceType @relation(fields: [typeId], references: [id])
+}
+
+// 添加 SystemSettings 模型
+model SystemSettings {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
 }

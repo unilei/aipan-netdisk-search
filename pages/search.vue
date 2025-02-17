@@ -191,6 +191,9 @@ const loadingProgress = ref({
 });
 const loadingStatus = ref(new Map());
 
+// 在 setup 中获取运行时配置
+const config = useRuntimeConfig();
+
 // 智能缓存类
 class SmartCache {
   constructor(maxSize = 100, storageKey = "smart_cache_data") {
@@ -463,22 +466,31 @@ onMounted(() => {
   }
 });
 
-// 添加请求超时控制函数
-const fetchWithTimeout = async (url, options, timeout = 5000) => {
-  const controller = new AbortController();
+// 添加并发控制变量
+const maxConcurrent = 3;
+const queue = [];
+let running = 0;
 
-  const actualTimeout = url === "/api/sources/indexI" ? 15000 : timeout;
-  const timeoutId = setTimeout(() => controller.abort(), actualTimeout);
+// 增加超时时间，添加更多错误处理
+const fetchWithTimeout = async (url, options, timeout = 30000) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
     const response = await $fetch(url, {
       ...options,
       signal: controller.signal,
+      retry: 3,
+      retryDelay: 1000,
+      onRequestError: ({ error }) => {
+        console.error('Request error:', error);
+      },
     });
     return response;
   } catch (error) {
-    if (error.name === "AbortError") {
-      console.warn(`Request to ${url} was aborted due to timeout`);
+    if (error.name === 'AbortError') {
+      console.error('Request timeout:', url);
+      throw new Error(`Request timeout for ${url}`);
     }
     throw error;
   } finally {
@@ -486,82 +498,229 @@ const fetchWithTimeout = async (url, options, timeout = 5000) => {
   }
 };
 
-// 添加并发控制
-const concurrentLimit = 3;
-const queue = [];
-let running = 0;
+// 优化重试逻辑
+const fetchWithRetry = async (url, options, maxRetries = 3) => {
+  let lastError;
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fetchWithTimeout(url, options);
+    } catch (error) {
+      console.error(`Attempt ${i + 1} failed:`, error);
+      lastError = error;
+      if (i < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
+      }
+    }
+  }
+  throw lastError;
+};
 
+// 修改队列处理逻辑
 const runQueue = async () => {
-  if (queue.length === 0 || running >= concurrentLimit) return;
+  if (running >= maxConcurrent || queue.length === 0) return;
 
   running++;
   const task = queue.shift();
+
   try {
     await task();
+  } catch (error) {
+    console.error('Task error:', error);
   } finally {
     running--;
     runQueue();
   }
 };
 
-// 优化重试机制
-const fetchWithRetry = async (url, options, retries = 1) => {
-  for (let i = 0; i < retries + 1; i++) {
-    try {
-      return await fetchWithTimeout(url, options);
-    } catch (error) {
-      if (i === retries) throw error;
-      await new Promise((resolve) => setTimeout(resolve, 500));
+// 配置缓存相关常量
+const CACHE_KEY = 'quark_config_cache';
+const CACHE_EXPIRE_TIME = 30 * 60 * 1000; // 30分钟过期
+
+// 添加配置状态
+const quarkConfig = ref({
+  apiUrl: 'http://127.0.0.1:5000/api/quark/sharepage/save',
+  quarkCookie: '',
+  typeId: null,
+  userId: null
+});
+
+// 从缓存加载配置
+const loadConfigFromCache = () => {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { data, timestamp } = JSON.parse(cached);
+      // 检查缓存是否过期
+      if (Date.now() - timestamp < CACHE_EXPIRE_TIME) {
+        quarkConfig.value = data;
+        return true;
+      } else {
+        localStorage.removeItem(CACHE_KEY); // 清除过期缓存
+      }
+    }
+  } catch (error) {
+    console.error('Error loading config from cache:', error);
+  }
+  return false;
+};
+
+// 保存配置到缓存
+const saveConfigToCache = (config) => {
+  try {
+    const cacheData = {
+      data: config,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+  } catch (error) {
+    console.error('Error saving config to cache:', error);
+  }
+};
+
+// 修改获取配置的函数
+const getQuarkConfig = async () => {
+  // 先尝试从缓存加载
+  if (loadConfigFromCache()) {
+    return;
+  }
+
+  try {
+    const res = await $fetch('/api/quark/setting');
+    if (res.code === 200 && res.data) {
+      const config = {
+        apiUrl: res.data.apiUrl || quarkConfig.value.apiUrl,
+        quarkCookie: res.data.quarkCookie,
+        typeId: res.data.typeId,
+        userId: res.data.userId
+      };
+      quarkConfig.value = config;
+      // 保存到缓存
+      saveConfigToCache(config);
+    }
+  } catch (error) {
+    console.error('Failed to get quark config:', error);
+  }
+};
+
+// 添加清除缓存的函数（可在配置失效时调用）
+const clearConfigCache = () => {
+  localStorage.removeItem(CACHE_KEY);
+};
+
+// 队列状态管理
+const queueState = reactive({
+  successCount: 0,
+  isProcessing: false,
+  totalTasks: 0,
+  processedTasks: 0,
+  tasks: [],
+  errorCount: 0,
+  lastError: null
+});
+
+// 添加随机延时函数
+const randomDelay = (min, max) => {
+  const delay = Math.floor(Math.random() * (max - min + 1) + min);
+  return new Promise(resolve => setTimeout(resolve, delay));
+};
+
+// 队列处理函数
+const processQueue = async () => {
+  if (queueState.isProcessing || queueState.tasks.length === 0 || queueState.successCount >= 5) {
+    return;
+  }
+
+  queueState.isProcessing = true;
+
+  try {
+    const task = queueState.tasks[0];
+    // 随机延时2-5秒
+    await randomDelay(2000, 5000);
+
+    const success = await saveToQuarkAsync(task.link, task.name);
+    if (success) {
+      queueState.successCount++;
+    } else {
+      queueState.errorCount++;
+      queueState.lastError = `转存失败: ${task.name}`;
+    }
+
+    queueState.tasks.shift();
+    queueState.processedTasks++;
+
+  } catch (error) {
+    console.error('Error processing queue:', error);
+    queueState.errorCount++;
+    queueState.lastError = error.message;
+  } finally {
+    queueState.isProcessing = false;
+    // 如果还有任务且未达到5个成功，继续处理
+    if (queueState.tasks.length > 0 && queueState.successCount < 5) {
+      processQueue();
     }
   }
 };
 
-// 处理单个API的搜索
-const handleSingleSearch = async (item) => {
-  const cacheKey = `${item.api}-${keyword.value}`;
+// 修改 saveToQuarkAsync 函数，返回是否成功
+const saveToQuarkAsync = async (link, name) => {
+  if (queueState.successCount >= 5) {
+    queueState.tasks = [];
+    return false;
+  }
 
-  const task = async () => {
-    try {
-      const cachedData = smartCache.get(cacheKey);
-      if (cachedData) {
-        sources.value.push(...cachedData);
-        loadingProgress.value.completed++;
-        return;
-      }
-
-      const res = await fetchWithRetry(item.api, {
-        method: "POST",
-        body: {
-          name: keyword.value,
-        },
-      });
-
-      if (res.list && res.list.length) {
-        // 如果是 aipan-search 的结果，插入到数组开头
-        if (item.api === '/api/sources/aipan-search') {
-          sources.value.unshift(...res.list);
-        } else {
-          sources.value.push(...res.list);
-        }
-      }
-    } catch (err) {
-      console.error(`Error fetching from ${item.api}:`, err);
-    } finally {
-      loadingProgress.value.completed++;
-      if (loadingProgress.value.completed >= loadingProgress.value.total) {
-        loadingProgress.value.isLoading = false;
-      }
+  try {
+    if (!quarkConfig.value.quarkCookie || !quarkConfig.value.typeId || !quarkConfig.value.userId) {
+      throw new Error('Quark configuration is incomplete');
     }
-  };
 
-  queue.push(task);
-  runQueue();
+    const saveRes = await $fetch(quarkConfig.value.apiUrl, {
+      method: 'POST',
+      body: {
+        shareurl: link,
+        savepath: `/yingshifenxiang/${name}`
+      },
+      headers: {
+        'Cookiequark': quarkConfig.value.quarkCookie,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // 如果请求返回未授权或配置错误，清除缓存并重新获取配置
+    if (saveRes.code === 401 || saveRes.code === 403) {
+      clearConfigCache();
+      await getQuarkConfig();
+      return false;
+    }
+
+    let shareInfo = saveRes.data.share_info;
+    if (shareInfo) {
+      await $fetch('/api/quark/post', {
+        method: 'POST',
+        body: {
+          name,
+          links: JSON.stringify([{ key: Date.now(), value: shareInfo.share_url }]),
+          typeId: quarkConfig.value.typeId,
+          userId: quarkConfig.value.userId
+        }
+      });
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.error('Error saving quark file:', err);
+    // 如果是认证相关错误，清除缓存
+    if (err.status === 401 || err.status === 403) {
+      clearConfigCache();
+    }
+    return false;
+  }
 };
 
 const handleSearch = async () => {
   sources.value = [];
   queue.length = 0;
   running = 0;
+  window._needProcessQuarkLinks = false;  // 重置标志
 
   // 重置加载进度
   loadingProgress.value = {
@@ -582,6 +741,93 @@ const handleSearch = async () => {
   otherEndpoints.forEach((item) => {
     handleSingleSearch(item);
   });
+};
+
+const handleSingleSearch = async (item) => {
+  const cacheKey = `${item.api}-${keyword.value}`;
+
+  const task = async () => {
+    try {
+      const cachedData = smartCache.get(cacheKey);
+      if (cachedData) {
+        if (item.api === '/api/sources/aipan-search') {
+          sources.value.unshift(...cachedData);
+          if (cachedData.length === 0) {
+            window._needProcessQuarkLinks = true;
+          }
+        } else {
+          sources.value.push(...cachedData);
+        }
+        loadingProgress.value.completed++;
+        return;
+      }
+
+      const res = await fetchWithRetry(item.api, {
+        method: "POST",
+        body: {
+          name: keyword.value,
+        },
+      });
+
+      if (res.list && Array.isArray(res.list)) {
+        smartCache.set(cacheKey, res.list);
+
+        if (item.api === '/api/sources/aipan-search') {
+          sources.value.unshift(...res.list);
+          if (res.list.length === 0) {
+            window._needProcessQuarkLinks = true;
+          }
+        } else if (window._needProcessQuarkLinks) {
+          sources.value.push(...res.list);
+
+          // 重置队列状态
+          Object.assign(queueState, {
+            successCount: 0,
+            isProcessing: false,
+            totalTasks: 0,
+            processedTasks: 0,
+            tasks: [],
+            errorCount: 0,
+            lastError: null
+          });
+
+          // 获取所有夸克链接并添加到队列
+          const quarkLinks = res.list.filter(result =>
+            result.links.some(link => link.service === 'QUARK')
+          );
+
+          // 将所有任务添加到队列
+          quarkLinks.forEach(result => {
+            const links = result.links.filter(link => link.service === 'QUARK');
+            links.forEach(link => {
+              queueState.tasks.push({
+                link: link.link,
+                name: result.name
+              });
+            });
+          });
+
+          queueState.totalTasks = queueState.tasks.length;
+
+          // 开始处理队列
+          processQueue();
+        } else {
+          sources.value.push(...res.list);
+        }
+      }
+    } catch (err) {
+      console.error(`Error fetching from ${item.api}:`, err);
+    } finally {
+      loadingProgress.value.completed++;
+      if (loadingProgress.value.completed >= loadingProgress.value.total) {
+        loadingProgress.value.isLoading = false;
+        delete window._needProcessQuarkLinks;
+      }
+    }
+  };
+
+  queue.push(task);
+  runQueue();
 };
 
 // VOD搜索的单个处理函数
@@ -700,13 +946,8 @@ const switchCategory = (e) => {
   }
 };
 
-onMounted(() => {
-  // 从localStorage加载VOD源
-  const savedSources = localStorage.getItem('vod_sources');
-  if (savedSources) {
-    vodSources.value = JSON.parse(savedSources);
-  }
-
+onMounted(async () => {
+  await getQuarkConfig();
   if (keyword.value) {
     handleSearch();
   }
