@@ -193,6 +193,13 @@ const menuCards = [
         icon: 'Setting',
         link: '/admin/settings',
         color: 'bg-teal-500'
+    },
+    {
+        title: '搜索统计',
+        description: '查看搜索记录和热门关键词',
+        icon: 'Search',
+        link: '/admin/search-stats',
+        color: 'bg-cyan-500'
     }
 ]
 

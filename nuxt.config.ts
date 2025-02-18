@@ -173,7 +173,6 @@ export default defineNuxtConfig({
     ],
   },
   plugins: [],
-
   nitro: {
     devProxy: {
       '/aipanme': {
@@ -183,9 +182,6 @@ export default defineNuxtConfig({
     },
     experimental: {
       wasm: true,
-    },
-    fetch: {
-      timeout: 30000,  // 设置全局超时时间
     },
   },
   runtimeConfig: {

@@ -196,3 +196,16 @@ model SystemSettings {
   @@index([group]) // 添加分组索引以提高查询性能
   @@map("system_settings")
 }
+
+// 搜索记录模型
+model SearchRecord {
+  id           Int      @id @default(autoincrement())
+  keyword      String   @unique // 添加唯一索引
+  count        Int      @default(1)
+  lastSearchAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([count])
+  @@map("search_records")
+}
