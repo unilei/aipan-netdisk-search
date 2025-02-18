@@ -743,6 +743,7 @@ const saveToQuarkAsync = async (link, name) => {
     return false;
   }
 };
+
 // 记录搜索关键词
 const recordSearch = async (keyword) => {
   try {
@@ -757,6 +758,7 @@ const recordSearch = async (keyword) => {
   }
 };
 
+// 在搜索函数中调用
 const handleSearch = async () => {
   if (!keyword.value) return;
 
