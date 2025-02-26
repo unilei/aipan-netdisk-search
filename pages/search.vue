@@ -1,50 +1,79 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-    <search-header :keyword="keyword" @search="search" class="mb-2"></search-header>
+    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300"
+  >
+    <search-header
+      :keyword="keyword"
+      @search="search"
+      class="mb-2"
+    ></search-header>
 
     <!-- Category Tabs -->
     <div
-      class="w-full backdrop-blur-md bg-white/40 dark:bg-gray-800/40 sticky top-0 z-10 shadow-sm transition-all duration-300">
+      class="w-full backdrop-blur-md bg-white/40 dark:bg-gray-800/40 sticky top-0 z-10 shadow-sm transition-all duration-300"
+    >
       <div class="max-w-[1240px] mx-auto px-4 py-4">
         <div class="flex flex-col sm:flex-row gap-4">
           <!-- Category Selection -->
           <div class="flex gap-3 transition-all duration-300">
-            <el-button v-for="(item, index) in categories" :key="index" :class="[
-              'relative transition-all duration-300 rounded-lg transform group',
-              category === item.value
-                ? 'shadow-lg !text-white scale-105'
-                : 'hover:scale-105 hover:bg-white/50 dark:hover:bg-gray-600/50',
-              category === item.value
-                ? '!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
-                : '',
-            ]" :title="item.description" type="primary" :plain="category !== item.value"
-              @click="switchCategory(item.value)">
+            <el-button
+              v-for="(item, index) in categories"
+              :key="index"
+              :class="[
+                'relative transition-all duration-300 rounded-lg transform group',
+                category === item.value
+                  ? 'shadow-lg !text-white scale-105'
+                  : 'hover:scale-105 hover:bg-white/50 dark:hover:bg-gray-600/50',
+                category === item.value
+                  ? '!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
+                  : '',
+              ]"
+              :title="item.description"
+              type="primary"
+              :plain="category !== item.value"
+              @click="switchCategory(item.value)"
+            >
               <i :class="item.icon" class="mr-2"></i>
               {{ item.label }}
-              <span v-if="category === item.value" class="absolute -top-1 -right-1 flex">
-                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-purple-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+              <span
+                v-if="category === item.value"
+                class="absolute -top-1 -right-1 flex"
+              >
+                <span
+                  class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-purple-400 opacity-75"
+                ></span>
+                <span
+                  class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"
+                ></span>
               </span>
             </el-button>
             <vod-settings @update:sources="updateVodSources" />
           </div>
 
           <!-- Stats Display with Enhanced Visual -->
-          <div v-if="category === 'clouddrive' && loadingProgress.isLoading"
-            class="flex-1 flex items-center gap-4 bg-white/50 dark:bg-gray-700/50 rounded-lg p-3 transition-all duration-300 backdrop-blur-sm">
+          <div
+            v-if="category === 'clouddrive' && loadingProgress.isLoading"
+            class="flex-1 flex items-center gap-4 bg-white/50 dark:bg-gray-700/50 rounded-lg p-3 transition-all duration-300 backdrop-blur-sm"
+          >
             <div class="flex-1 relative">
-              <el-progress :percentage="Math.round(
-                (loadingProgress.completed / loadingProgress.total) * 100
-              )
-                " :stroke-width="4" :show-text="false" class="flex-1">
+              <el-progress
+                :percentage="
+                  Math.round(
+                    (loadingProgress.completed / loadingProgress.total) * 100
+                  )
+                "
+                :stroke-width="4"
+                :show-text="false"
+                class="flex-1"
+              >
               </el-progress>
               <div
-                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer">
-              </div>
+                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"
+              ></div>
             </div>
             <span
-              class="text-sm text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap flex items-center gap-2">
+              class="text-sm text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap flex items-center gap-2"
+            >
               <i class="fas fa-spinner fa-spin"></i>
               搜索中... {{ loadingProgress.completed }}/{{
                 loadingProgress.total
@@ -62,7 +91,10 @@
         <transition name="fade" mode="out-in">
           <div class="p-4" v-if="category === 'clouddrive'">
             <div class="transition-all duration-300 space-y-2">
-              <disk-info-list :sources="sources" :skeleton-loading="skeletonLoading">
+              <disk-info-list
+                :sources="sources"
+                :skeleton-loading="skeletonLoading"
+              >
               </disk-info-list>
             </div>
           </div>
@@ -73,39 +105,64 @@
           <div v-if="category === 'onlineVod'" class="p-2">
             <div class="space-y-4">
               <!-- Loading Skeletons -->
-              <template v-if="
-                vodData.length === 0 &&
-                Array.from(loadingStatus.values()).some((status) => status)
-              ">
+              <template
+                v-if="
+                  vodData.length === 0 &&
+                  Array.from(loadingStatus.values()).some((status) => status)
+                "
+              >
                 <!-- Header Skeleton -->
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4 px-2 animate-pulse">
-                  <div class="h-6 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg w-48"></div>
-                  <div class="h-8 bg-red-100/50 dark:bg-red-900/30 rounded-full w-64"></div>
+                <div
+                  class="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4 px-2 animate-pulse"
+                >
+                  <div
+                    class="h-6 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg w-48"
+                  ></div>
+                  <div
+                    class="h-8 bg-red-100/50 dark:bg-red-900/30 rounded-full w-64"
+                  ></div>
                 </div>
 
                 <!-- Video Player Skeleton -->
-                <div class="relative rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-sm">
-                  <div class="aspect-video w-full bg-gray-200/50 dark:bg-gray-700/50 animate-pulse">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                      <i class="fas fa-film text-4xl text-gray-400 dark:text-gray-600"></i>
+                <div
+                  class="relative rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-sm"
+                >
+                  <div
+                    class="aspect-video w-full bg-gray-200/50 dark:bg-gray-700/50 animate-pulse"
+                  >
+                    <div
+                      class="absolute inset-0 flex items-center justify-center"
+                    >
+                      <i
+                        class="fas fa-film text-4xl text-gray-400 dark:text-gray-600"
+                      ></i>
                     </div>
                   </div>
                 </div>
 
                 <!-- Episodes List Skeleton -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 p-2">
-                  <div v-for="i in 12" :key="i"
-                    class="h-10 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg animate-pulse"></div>
+                <div
+                  class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 p-2"
+                >
+                  <div
+                    v-for="i in 12"
+                    :key="i"
+                    class="h-10 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg animate-pulse"
+                  ></div>
                 </div>
               </template>
 
               <!-- VOD List -->
               <template v-else>
-                <vod-list :vod-data="vodData" class="transition-opacity duration-300" :class="{
-                  'opacity-0': Array.from(loadingStatus.values()).some(
-                    (status) => status
-                  ),
-                }"></vod-list>
+                <vod-list
+                  :vod-data="vodData"
+                  class="transition-opacity duration-300"
+                  :class="{
+                    'opacity-0': Array.from(loadingStatus.values()).some(
+                      (status) => status
+                    ),
+                  }"
+                ></vod-list>
               </template>
             </div>
           </div>
@@ -115,23 +172,35 @@
         <transition name="fade" mode="out-in">
           <div v-if="category === 'soupian'" class="h-full w-full py-4">
             <div
-              class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg shadow-sm hover:shadow-lg hover:bg-white/70 dark:hover:bg-gray-800/70 p-5 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300">
+              class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg shadow-sm hover:shadow-lg hover:bg-white/70 dark:hover:bg-gray-800/70 p-5 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300"
+            >
               <div class="relative w-full h-[calc(100vh-240px)]">
-                <div v-if="!iframeLoaded"
-                  class="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-gray-800/90 rounded-lg backdrop-blur-sm">
+                <div
+                  v-if="!iframeLoaded"
+                  class="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-gray-800/90 rounded-lg backdrop-blur-sm"
+                >
                   <div class="flex flex-col items-center gap-3">
                     <div class="relative w-12 h-12">
-                      <div class="absolute inset-0 border-4 border-purple-500/30 rounded-full"></div>
                       <div
-                        class="absolute inset-0 border-4 border-purple-500 border-t-transparent rounded-full animate-spin">
-                      </div>
+                        class="absolute inset-0 border-4 border-purple-500/30 rounded-full"
+                      ></div>
+                      <div
+                        class="absolute inset-0 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"
+                      ></div>
                     </div>
-                    <span class="text-sm text-purple-600 dark:text-purple-400 font-medium">加载中...</span>
+                    <span
+                      class="text-sm text-purple-600 dark:text-purple-400 font-medium"
+                      >加载中...</span
+                    >
                   </div>
                 </div>
-                <iframe id="soupian" :src="'https://soupian.pro/frame?movie=' + keyword"
+                <iframe
+                  id="soupian"
+                  :src="'https://soupian.pro/frame?movie=' + keyword"
                   class="w-full h-full rounded-lg border-0 bg-white/90 dark:bg-gray-900/90 transition-colors duration-300"
-                  loading="lazy" @load="iframeLoaded = true"></iframe>
+                  loading="lazy"
+                  @load="iframeLoaded = true"
+                ></iframe>
               </div>
             </div>
           </div>
@@ -139,18 +208,25 @@
       </div>
 
       <!-- Empty State with Enhanced Visual -->
-      <div v-if="
-        !skeletonLoading &&
-        !Array.from(loadingStatus.values()).some((status) => status) &&
-        ((category === 'clouddrive' && sources.length === 0) ||
-          (category === 'onlineVod' && vodData.length === 0))
-      " class="flex flex-col items-center justify-center py-16 text-gray-500 dark:text-gray-400">
+      <div
+        v-if="
+          !skeletonLoading &&
+          !Array.from(loadingStatus.values()).some((status) => status) &&
+          ((category === 'clouddrive' && sources.length === 0) ||
+            (category === 'onlineVod' && vodData.length === 0))
+        "
+        class="flex flex-col items-center justify-center py-16 text-gray-500 dark:text-gray-400"
+      >
         <div
-          class="p-8 rounded-full bg-gradient-to-br from-purple-100/50 to-blue-100/50 dark:from-purple-900/20 dark:to-blue-900/20 mb-6 shadow-lg backdrop-blur-sm group hover:scale-105 transition-all duration-300">
+          class="p-8 rounded-full bg-gradient-to-br from-purple-100/50 to-blue-100/50 dark:from-purple-900/20 dark:to-blue-900/20 mb-6 shadow-lg backdrop-blur-sm group hover:scale-105 transition-all duration-300"
+        >
           <i
-            class="fas fa-search text-5xl text-purple-500/70 dark:text-purple-400/70 group-hover:rotate-12 transition-transform duration-300"></i>
+            class="fas fa-search text-5xl text-purple-500/70 dark:text-purple-400/70 group-hover:rotate-12 transition-transform duration-300"
+          ></i>
         </div>
-        <h3 class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+        <h3
+          class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"
+        >
           未找到相关结果
         </h3>
         <p class="text-sm mt-3 opacity-75">试试以下建议：</p>
@@ -161,8 +237,11 @@
       </div>
 
       <!-- Enhanced Backtop -->
-      <el-backtop :right="24" :bottom="24"
-        class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center">
+      <el-backtop
+        :right="24"
+        :bottom="24"
+        class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center"
+      >
         <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
       </el-backtop>
     </div>
@@ -483,13 +562,13 @@ const fetchWithTimeout = async (url, options, timeout = 30000) => {
       retry: 3,
       retryDelay: 1000,
       onRequestError: ({ error }) => {
-        console.error('Request error:', error);
+        console.error("Request error:", error);
       },
     });
     return response;
   } catch (error) {
-    if (error.name === 'AbortError') {
-      console.error('Request timeout:', url);
+    if (error.name === "AbortError") {
+      console.error("Request timeout:", url);
       throw new Error(`Request timeout for ${url}`);
     }
     throw error;
@@ -508,7 +587,7 @@ const fetchWithRetry = async (url, options, maxRetries = 3) => {
       console.error(`Attempt ${i + 1} failed:`, error);
       lastError = error;
       if (i < maxRetries - 1) {
-        await new Promise(resolve => setTimeout(resolve, 2000 * (i + 1)));
+        await new Promise((resolve) => setTimeout(resolve, 2000 * (i + 1)));
       }
     }
   }
@@ -525,7 +604,7 @@ const runQueue = async () => {
   try {
     await task();
   } catch (error) {
-    console.error('Task error:', error);
+    console.error("Task error:", error);
   } finally {
     running--;
     runQueue();
@@ -534,18 +613,18 @@ const runQueue = async () => {
 
 // 修改缓存相关常量
 const CACHE_CONFIG = {
-  key: 'quark_config_cache',
+  key: "quark_config_cache",
   expireTime: 10 * 60 * 1000, // 10分钟
-  version: '1.0' // 用于缓存版本控制
+  version: "1.0", // 用于缓存版本控制
 };
 
 // 修改配置状态
 const quarkConfig = ref({
-  apiUrl: 'http://127.0.0.1:5000/api/quark/sharepage/save',
-  quarkCookie: '',
+  apiUrl: "http://127.0.0.1:5000/api/quark/sharepage/save",
+  quarkCookie: "",
   typeId: null,
   userId: null,
-  enabled: false  // 添加启用状态
+  enabled: false, // 添加启用状态
 });
 
 // 优化缓存保存函数
@@ -554,11 +633,11 @@ const saveConfigToCache = (config) => {
     const cacheData = {
       data: config,
       timestamp: Date.now(),
-      version: CACHE_CONFIG.version
+      version: CACHE_CONFIG.version,
     };
     localStorage.setItem(CACHE_CONFIG.key, JSON.stringify(cacheData));
   } catch (error) {
-    console.error('Error saving config to cache:', error);
+    console.error("Error saving config to cache:", error);
   }
 };
 
@@ -569,14 +648,17 @@ const loadConfigFromCache = () => {
     if (cached) {
       const { data, timestamp, version } = JSON.parse(cached);
       // 检查缓存版本和过期时间
-      if (version === CACHE_CONFIG.version && Date.now() - timestamp < CACHE_CONFIG.expireTime) {
+      if (
+        version === CACHE_CONFIG.version &&
+        Date.now() - timestamp < CACHE_CONFIG.expireTime
+      ) {
         quarkConfig.value = data;
         return true;
       }
       localStorage.removeItem(CACHE_CONFIG.key);
     }
   } catch (error) {
-    console.error('Error loading config from cache:', error);
+    console.error("Error loading config from cache:", error);
     localStorage.removeItem(CACHE_CONFIG.key);
   }
   return false;
@@ -590,21 +672,21 @@ const getQuarkConfig = async () => {
   }
 
   try {
-    const res = await $fetch('/api/quark/setting');
+    const res = await $fetch("/api/quark/setting");
     if (res.code === 200 && res.data) {
       const config = {
         apiUrl: res.data.apiUrl || quarkConfig.value.apiUrl,
         quarkCookie: res.data.quarkCookie,
         typeId: res.data.typeId,
         userId: res.data.userId,
-        enabled: res.data.enabled
+        enabled: res.data.enabled,
       };
       quarkConfig.value = config;
       // 保存到缓存
       saveConfigToCache(config);
     }
   } catch (error) {
-    console.error('Failed to get quark config:', error);
+    console.error("Failed to get quark config:", error);
   }
 };
 
@@ -622,7 +704,7 @@ const queueState = reactive({
   tasks: [],
   errorCount: 0,
   lastError: null,
-  isPaused: false // 添加暂停功能
+  isPaused: false, // 添加暂停功能
 });
 
 // 添加队列控制函数
@@ -641,19 +723,23 @@ const queueControls = {
     queueState.processedTasks = 0;
     queueState.errorCount = 0;
     queueState.lastError = null;
-  }
+  },
 };
 
 // 添加随机延时函数
 const randomDelay = (min, max) => {
   const delay = Math.floor(Math.random() * (max - min + 1) + min);
-  return new Promise(resolve => setTimeout(resolve, delay));
+  return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
 // 优化队列处理函数
 const processQueue = async () => {
-  if (queueState.isProcessing || queueState.tasks.length === 0 ||
-    queueState.successCount >= 5 || queueState.isPaused) {
+  if (
+    queueState.isProcessing ||
+    queueState.tasks.length === 0 ||
+    queueState.successCount >= 5 ||
+    queueState.isPaused
+  ) {
     return;
   }
 
@@ -672,14 +758,17 @@ const processQueue = async () => {
 
     queueState.tasks.shift();
     queueState.processedTasks++;
-
   } catch (error) {
-    console.error('Error processing queue:', error);
+    console.error("Error processing queue:", error);
     queueState.errorCount++;
     queueState.lastError = error.message;
   } finally {
     queueState.isProcessing = false;
-    if (queueState.tasks.length > 0 && queueState.successCount < 5 && !queueState.isPaused) {
+    if (
+      queueState.tasks.length > 0 &&
+      queueState.successCount < 5 &&
+      !queueState.isPaused
+    ) {
       processQueue();
     }
   }
@@ -693,39 +782,45 @@ const saveToQuarkAsync = async (link, name) => {
   }
 
   try {
-    if (!quarkConfig.value.quarkCookie || !quarkConfig.value.typeId || !quarkConfig.value.userId) {
-      throw new Error('夸克网盘配置不完整，请检查配置');
+    if (
+      !quarkConfig.value.quarkCookie ||
+      !quarkConfig.value.typeId ||
+      !quarkConfig.value.userId
+    ) {
+      throw new Error("夸克网盘配置不完整，请检查配置");
     }
 
     const saveRes = await $fetch(quarkConfig.value.apiUrl, {
-      method: 'POST',
+      method: "POST",
       body: {
         shareurl: link,
-        savepath: `/yingshifenxiang/${name}`
+        savepath: `/yingshifenxiang/${name}`,
       },
       headers: {
-        'Cookiequark': quarkConfig.value.quarkCookie,
-        'Content-Type': 'application/json'
-      }
+        Cookiequark: quarkConfig.value.quarkCookie,
+        "Content-Type": "application/json",
+      },
     });
 
     if (saveRes.code === 401 || saveRes.code === 403) {
       clearConfigCache();
       await getQuarkConfig();
-      showError('认证失败，请重新配置夸克网盘');
+      showError("认证失败，请重新配置夸克网盘");
       return false;
     }
 
     let shareInfo = saveRes.data.share_info;
     if (shareInfo) {
-      await $fetch('/api/quark/post', {
-        method: 'POST',
+      await $fetch("/api/quark/post", {
+        method: "POST",
         body: {
           name,
-          links: JSON.stringify([{ key: Date.now(), value: shareInfo.share_url }]),
+          links: JSON.stringify([
+            { key: Date.now(), value: shareInfo.share_url },
+          ]),
           typeId: quarkConfig.value.typeId,
-          userId: quarkConfig.value.userId
-        }
+          userId: quarkConfig.value.userId,
+        },
       });
       showSuccess(`${name} 转存成功`);
       return true;
@@ -733,10 +828,10 @@ const saveToQuarkAsync = async (link, name) => {
     showError(`${name} 转存失败`);
     return false;
   } catch (err) {
-    console.error('Error saving quark file:', err);
+    console.error("Error saving quark file:", err);
     if (err.status === 401 || err.status === 403) {
       clearConfigCache();
-      showError('认证失败，请重新配置夸克网盘');
+      showError("认证失败，请重新配置夸克网盘");
     } else {
       showError(err.message || `${name} 转存失败`);
     }
@@ -746,14 +841,14 @@ const saveToQuarkAsync = async (link, name) => {
 // 记录搜索关键词
 const recordSearch = async (keyword) => {
   try {
-    await $fetch('/api/search/record', {
-      method: 'POST',
+    await $fetch("/api/search/record", {
+      method: "POST",
       body: {
-        keyword
-      }
+        keyword,
+      },
     });
   } catch (error) {
-    console.error('记录搜索失败:', error);
+    console.error("记录搜索失败:", error);
   }
 };
 
@@ -766,7 +861,7 @@ const handleSearch = async () => {
   sources.value = [];
   queue.length = 0;
   running = 0;
-  window._needProcessQuarkLinks = false;  // 重置标志
+  window._needProcessQuarkLinks = false; // 重置标志
 
   // 重置加载进度
   loadingProgress.value = {
@@ -776,8 +871,12 @@ const handleSearch = async () => {
   };
 
   // 先处理 aipan-search
-  const aipanEndpoint = sourcesApiEndpoints.find(item => item.api === '/api/sources/aipan-search');
-  const otherEndpoints = sourcesApiEndpoints.filter(item => item.api !== '/api/sources/aipan-search');
+  const aipanEndpoint = sourcesApiEndpoints.find(
+    (item) => item.api === "/api/sources/aipan-search"
+  );
+  const otherEndpoints = sourcesApiEndpoints.filter(
+    (item) => item.api !== "/api/sources/aipan-search"
+  );
 
   if (aipanEndpoint) {
     await handleSingleSearch(aipanEndpoint);
@@ -796,7 +895,7 @@ const handleSingleSearch = async (item) => {
     try {
       const cachedData = smartCache.get(cacheKey);
       if (cachedData) {
-        if (item.api === '/api/sources/aipan-search') {
+        if (item.api === "/api/sources/aipan-search") {
           sources.value.unshift(...cachedData);
           if (cachedData.length === 0) {
             window._needProcessQuarkLinks = true;
@@ -818,12 +917,13 @@ const handleSingleSearch = async (item) => {
       if (res.list && Array.isArray(res.list)) {
         smartCache.set(cacheKey, res.list);
 
-        if (item.api === '/api/sources/aipan-search') {
+        if (item.api === "/api/sources/aipan-search") {
           sources.value.unshift(...res.list);
           if (res.list.length === 0) {
             window._needProcessQuarkLinks = true;
           }
-        } else if (window._needProcessQuarkLinks && quarkConfig.value.enabled) {  // 检查是否启用
+        } else if (window._needProcessQuarkLinks && quarkConfig.value.enabled) {
+          // 检查是否启用
           // 先显示搜索结果
           sources.value.push(...res.list);
 
@@ -835,21 +935,23 @@ const handleSingleSearch = async (item) => {
             processedTasks: 0,
             tasks: [],
             errorCount: 0,
-            lastError: null
+            lastError: null,
           });
 
           // 获取所有夸克链接并添加到队列
-          const quarkLinks = res.list.filter(result =>
-            result.links.some(link => link.service === 'QUARK')
+          const quarkLinks = res.list.filter((result) =>
+            result.links.some((link) => link.service === "QUARK")
           );
 
           // 将所有任务添加到队列
-          quarkLinks.forEach(result => {
-            const links = result.links.filter(link => link.service === 'QUARK');
-            links.forEach(link => {
+          quarkLinks.forEach((result) => {
+            const links = result.links.filter(
+              (link) => link.service === "QUARK"
+            );
+            links.forEach((link) => {
               queueState.tasks.push({
                 link: link.link,
-                name: result.name
+                name: result.name,
               });
             });
           });
@@ -902,7 +1004,10 @@ const handleSingleVodSearch = async (vodApi) => {
 
     if (res.code !== 500 && res.list && res.list.length) {
       const processedData = res.list.map((item) =>
-        Object.assign({ playUrl: vodApi.playUrl, sourceName: vodApi.name }, item)
+        Object.assign(
+          { playUrl: vodApi.playUrl, sourceName: vodApi.name },
+          item
+        )
       );
       smartCache.set(cacheKey, processedData);
       vodData.value = [...vodData.value, ...processedData];
@@ -963,13 +1068,13 @@ const categories = computed(() => [
   },
   ...(hasVodSources.value
     ? [
-      {
-        value: "onlineVod",
-        label: "在线观影",
-        icon: "fas fa-film",
-        description: "搜索在线视频资源",
-      },
-    ]
+        {
+          value: "onlineVod",
+          label: "在线观影",
+          icon: "fas fa-film",
+          description: "搜索在线视频资源",
+        },
+      ]
     : []),
   // {
   //   value: "soupian",
@@ -1051,8 +1156,7 @@ onMounted(async () => {
 /* Enhanced transitions */
 .fade-enter-active,
 .fade-leave-active {
-  transition:
-    opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -1092,7 +1196,6 @@ onMounted(async () => {
 
 /* Pulse animation with smoother transition */
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;
