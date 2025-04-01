@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
                         <!-- 未登录状态显示登录按钮 -->
                         <nuxt-link v-if="!userStore.loggedIn" to="/login" class="flex items-center">
                             <button
-                                class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-sm py-1.5 px-4 rounded-full transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
+                                class="text-gray-600 hover:from-blue-600 hover:to-purple-600  text-sm py-1.5 px-4 rounded-full transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
                                 <i class="fa-solid fa-user text-xs"></i>
                                 <span>登录</span>
                             </button>
@@ -141,7 +141,6 @@ onBeforeUnmount(() => {
                                     class="w-8 h-8 rounded-full overflow-hidden border-2 border-transparent group-hover:border-blue-400 transition-all">
                                     <img :src="userStore.userAvatar" class="w-full h-full object-cover" alt="用户头像">
                                 </div>
-
                                 <i
                                     class="fa-solid fa-chevron-down ml-1 text-xs text-slate-600 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"></i>
                             </div>
