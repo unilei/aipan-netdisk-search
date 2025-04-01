@@ -125,42 +125,46 @@ onBeforeUnmount(() => {
                     <!-- 登录按钮 / 用户菜单 -->
                     <div class="relative" ref="userMenuRef">
                         <!-- 未登录状态显示登录按钮 -->
-                        <nuxt-link v-if="!userStore.loggedIn" to="/login"
-                            class="text-sm text-slate-600 font-bold dark:text-white flex items-center">
-                            <el-button type="primary" size="small" class="flex items-center">
-                                <i class="fa-solid fa-user mr-1"></i> 登录
-                            </el-button>
+                        <nuxt-link v-if="!userStore.loggedIn" to="/login" class="flex items-center">
+                            <button
+                                class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-sm py-1.5 px-4 rounded-full transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
+                                <i class="fa-solid fa-user text-xs"></i>
+                                <span>登录</span>
+                            </button>
                         </nuxt-link>
 
                         <!-- 已登录状态显示用户头像和下拉菜单 -->
                         <div v-else class="flex items-center">
-                            <div class="cursor-pointer flex items-center"
+                            <div class="cursor-pointer flex items-center group"
                                 @click.stop="dropdownVisible = !dropdownVisible">
-                                <img :src="userStore.userAvatar" class="w-8 h-8 rounded-full" alt="用户头像">
-                                <span class="ml-2 hidden sm:inline text-sm text-slate-600 dark:text-white">{{
-                                    userStore.user?.username }}</span>
-                                <i class="fa-solid fa-chevron-down ml-1 text-xs text-slate-600 dark:text-white"></i>
+                                <div
+                                    class="w-8 h-8 rounded-full overflow-hidden border-2 border-transparent group-hover:border-blue-400 transition-all">
+                                    <img :src="userStore.userAvatar" class="w-full h-full object-cover" alt="用户头像">
+                                </div>
+
+                                <i
+                                    class="fa-solid fa-chevron-down ml-1 text-xs text-slate-600 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"></i>
                             </div>
 
                             <!-- 下拉菜单 -->
                             <div v-show="dropdownVisible"
-                                class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                                class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50 border border-gray-100 dark:border-gray-700 overflow-hidden">
                                 <nuxt-link v-if="userStore.isAdmin" to="/admin/dashboard"
-                                    class="block px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                     @click="dropdownVisible = false">
-                                    <i class="fa-solid fa-gauge-high mr-2"></i> 管理后台
+                                    <i class="fa-solid fa-gauge-high mr-2 text-blue-500"></i> 管理后台
                                 </nuxt-link>
                                 <nuxt-link to="/user/dashboard"
-                                    class="block px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                     @click="dropdownVisible = false">
-                                    <i class="fa-solid fa-user mr-2"></i> 个人中心
+                                    <i class="fa-solid fa-user mr-2 text-green-500"></i> 个人中心
                                 </nuxt-link>
                                 <nuxt-link to="/user/profile"
-                                    class="block px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                     @click="dropdownVisible = false">
-                                    <i class="fa-solid fa-gear mr-2"></i> 账号设置
+                                    <i class="fa-solid fa-gear mr-2 text-purple-500"></i> 账号设置
                                 </nuxt-link>
-                                <div class="block px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                <div class="flex items-center px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                     @click="handleLogout">
                                     <i class="fa-solid fa-right-from-bracket mr-2"></i> 退出登录
                                 </div>

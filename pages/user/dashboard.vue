@@ -21,15 +21,17 @@
               </p>
             </div>
             <div class="flex items-center space-x-3">
-              <el-button type="primary" @click="() => navigateTo('/user/profile')" class="flex items-center">
-                <el-icon class="mr-1">
-                  <UserFilled />
-                </el-icon>
-                编辑资料
-              </el-button>
-              <el-button type="danger" @click="handleLogout" plain>
-                登出
-              </el-button>
+              <button @click="() => navigateTo('/user/profile')"
+                class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-sm py-2 px-4 rounded-lg transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
+                <i class="fa-solid fa-user-pen"></i>
+                <span>编辑资料</span>
+              </button>
+
+              <button @click="handleLogout"
+                class="border border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 text-sm py-2 px-4 rounded-lg transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>退出登录</span>
+              </button>
             </div>
           </div>
         </div>
