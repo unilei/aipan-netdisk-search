@@ -34,6 +34,7 @@ model User {
   alist         Alist[]
   blogPosts     BlogPost[] // 用户的博客文章
   userResources UserResource[] // 用户的资源投稿
+  vodConfigs    UserVodConfig[]
 }
 
 model ResourceType {
@@ -208,4 +209,18 @@ model SearchRecord {
 
   @@index([count])
   @@map("search_records")
+}
+
+// UserVodConfig模型 - 用户VOD配置
+model UserVodConfig {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  config    Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 用户关联
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
