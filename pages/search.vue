@@ -27,7 +27,37 @@
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
               </span>
             </el-button>
-            <vod-settings @update:sources="updateVodSources" />
+            <!-- VOD登录提示 -->
+            <el-popover v-if="!userStore.loggedIn" placement="bottom" :width="320" trigger="hover"
+              popper-class="backdrop-blur-md bg-white/90 dark:bg-gray-800/90">
+              <template #reference>
+                <el-button class="flex items-center gap-1">
+                  <i class="fas fa-info-circle text-blue-500"></i>
+                  <span>提示</span>
+                </el-button>
+              </template>
+              <div class="p-2">
+                <div class="flex items-start gap-3">
+                  <div class="text-blue-500 mt-1">
+                    <i class="fas fa-info-circle text-xl"></i>
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-gray-100 mb-2">登录以保存VOD配置</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      登录后可以将您的视频源配置保存到云端，在任何设备上使用相同的视频源。
+                    </p>
+                    <div class="flex gap-2">
+                      <el-button type="primary" @click="navigateTo('/login')" size="small">
+                        <i class="fas fa-sign-in-alt mr-1"></i> 登录
+                      </el-button>
+                      <el-button @click="navigateTo('/user/vod-settings')" size="small">
+                        <i class="fas fa-cog mr-1"></i> 管理配置
+                      </el-button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </el-popover>
           </div>
 
           <!-- Stats Display with Enhanced Visual -->
@@ -239,12 +269,16 @@ import DiskInfoList from "~/components/diskInfoList.vue";
 import VodSettings from "~/components/search/VodSettings.vue";
 import sourcesApiEndpoints from "~/assets/vod/clouddrive.json";
 import { badWords } from "~/utils/sensitiveWords";
+import { useUserStore } from "~/stores/user";
+import { useVodSources } from "~/composables/useVodSources";
 
 definePageMeta({
   layout: "custom",
 });
 
 const route = useRoute();
+const userStore = useUserStore();
+const { sources: vodConfigSources, loadSources } = useVodSources();
 const keyword = ref(decodeURIComponent(route.query.keyword));
 const sources = ref([]);
 const skeletonLoading = ref(false);
@@ -525,9 +559,24 @@ class SmartCache {
 const smartCache = new SmartCache(100, "aipan_search_cache");
 
 // 在组件挂载后初始化缓存系统
-onMounted(() => {
+onMounted(async () => {
+  // 初始化缓存系统
   if (process.client) {
     smartCache.init();
+  }
+
+  // 加载夸克配置
+  await getQuarkConfig();
+
+  // 加载用户的VOD配置
+  await loadSources();
+
+  // 执行搜索
+  if (keyword.value) {
+    handleSearch();
+  } else {
+    // If no keyword, we haven't searched yet
+    searchPerformed.value = false;
   }
 });
 
@@ -994,18 +1043,18 @@ const searchByVod = async () => {
   searchPerformed.value = true;
 
   vodData.value = [];
-  vodSources.value.forEach((vodApi) => {
+  vodConfigSources.value.forEach((vodApi) => {
     loadingStatus.value.set(vodApi.api, false);
   });
 
-  vodSources.value.forEach((vodApi) => {
+  vodConfigSources.value.forEach((vodApi) => {
     handleSingleVodSearch(vodApi);
   });
 };
 
 // 更新VOD源
 const updateVodSources = (sources) => {
-  vodSources.value = sources;
+  vodConfigSources.value = sources;
 };
 
 const search = (e) => {
@@ -1024,11 +1073,10 @@ const category = ref("clouddrive");
 // import vodApiEndpoints from "~/assets/vod/list";
 
 const vodData = ref([]);
-const vodSources = ref([]);
 
 // 检查是否有可用的VOD源
 const hasVodSources = computed(() => {
-  return vodSources.value && vodSources.value.length > 0;
+  return vodConfigSources.value && vodConfigSources.value.length > 0;
 });
 
 // 更新分类选项
@@ -1070,16 +1118,6 @@ const switchCategory = (e) => {
     searchByVod();
   }
 };
-
-onMounted(async () => {
-  await getQuarkConfig();
-  if (keyword.value) {
-    handleSearch();
-  } else {
-    // If no keyword, we haven't searched yet
-    searchPerformed.value = false;
-  }
-});
 </script>
 
 <style scoped>
