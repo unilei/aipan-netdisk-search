@@ -2,7 +2,7 @@
 import { onMounted } from 'vue';
 import { useUserStore } from '~/stores/user';
 
-const token = useCookie('token');
+const colorMode = useColorMode();
 const router = useRouter();
 const userStore = useUserStore();
 
@@ -13,8 +13,8 @@ const form = reactive({
 });
 
 const formMode = ref('login');
-
 const formRef = ref();
+const btnLoading = ref(false);
 
 // 动态表单验证规则
 const formRules = computed(() => ({
@@ -33,8 +33,6 @@ const formRules = computed(() => ({
     ]
   } : {})
 }));
-
-const btnLoading = ref(false);
 
 // 重置表单
 const resetForm = () => {
@@ -118,87 +116,131 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="py-52 flex items-center justify-center bg-gray-50 px-4">
-    <div class="w-[420px] bg-white p-6 rounded-lg shadow-lg">
-      <!-- Logo或标题区域 -->
-      <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">{{ formMode === 'login' ? '登录' : '注册' }}</h1>
-        <p class="text-sm text-gray-600 mt-1">
-          {{ formMode === 'login' ? '欢迎回来，请登录您的账号' : '欢迎加入，请填写注册信息' }}
-        </p>
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4 py-12">
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      <div class="relative h-32 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+        <div class="absolute inset-0 bg-black opacity-20"></div>
+        <h1 class="text-3xl font-bold text-white z-10">{{ formMode === 'login' ? '欢迎回来' : '创建账号' }}</h1>
       </div>
 
-      <!-- 表单 -->
-      <el-form ref="formRef" :model="form" :rules="formRules" label-position="top" class="space-y-4"
-        @keypress="handleKeyPress">
-        <template v-if="formMode === 'register'">
-          <el-form-item label="用户名" prop="username" class="custom-form-item">
-            <el-input v-model="form.username" placeholder="请输入用户名" prefix-icon="el-icon-user"
-              class="custom-input"></el-input>
+      <div class="p-8">
+        <p class="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
+          {{ formMode === 'login' ? '登录您的账号以访问全部功能' : '注册新账号加入我们的社区' }}
+        </p>
+
+        <!-- 表单 -->
+        <el-form ref="formRef" :model="form" :rules="formRules" label-position="top" class="space-y-5"
+          @keypress="handleKeyPress">
+          <template v-if="formMode === 'register'">
+            <el-form-item label="用户名" prop="username">
+              <el-input v-model="form.username" placeholder="请输入用户名">
+                <template #prefix>
+                  <i class="fa-solid fa-user text-gray-400"></i>
+                </template>
+              </el-input>
+            </el-form-item>
+          </template>
+
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="form.email" placeholder="请输入邮箱">
+              <template #prefix>
+                <i class="fa-solid fa-envelope text-gray-400"></i>
+              </template>
+            </el-input>
           </el-form-item>
-        </template>
 
-        <el-form-item label="邮箱" prop="email" class="custom-form-item">
-          <el-input v-model="form.email" placeholder="请输入邮箱" prefix-icon="el-icon-message"
-            class="custom-input"></el-input>
-        </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="form.password" type="password" placeholder="请输入密码" show-password>
+              <template #prefix>
+                <i class="fa-solid fa-lock text-gray-400"></i>
+              </template>
+            </el-input>
+          </el-form-item>
 
-        <el-form-item label="密码" prop="password" class="custom-form-item">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" prefix-icon="el-icon-lock" show-password
-            class="custom-input"></el-input>
-        </el-form-item>
+          <!-- 按钮区域 -->
+          <div class="pt-2 space-y-4">
+            <button type="button" @click="handleSubmit" :disabled="btnLoading"
+              class="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 px-4 rounded-lg transition-all duration-300 flex items-center justify-center hover:shadow-md disabled:opacity-70 disabled:cursor-not-allowed">
+              <i v-if="btnLoading" class="fa-solid fa-circle-notch fa-spin mr-2"></i>
+              <span>{{ btnLoading ? "处理中..." : (formMode === 'login' ? "登录" : "注册") }}</span>
+            </button>
 
-        <!-- 按钮区域 -->
-        <div class="pt-2 space-y-4">
-          <el-button type="primary" @click="handleSubmit" :loading="btnLoading"
-            class="w-full h-10 text-base font-medium rounded-lg hover:opacity-90 transition-opacity">
-            {{ btnLoading ? "处理中..." : (formMode === 'login' ? "登录" : "注册") }}
-          </el-button>
-
-          <div class="text-center">
-            <a href="#" @click="toggleMode" class="text-blue-600 hover:text-blue-700 text-sm">
-              {{ formMode === 'login' ? '没有账号？点击注册' : '已有账号？点击登录' }}
-            </a>
+            <div class="text-center mt-4">
+              <a href="#" @click="toggleMode" class="text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                {{ formMode === 'login' ? '没有账号？点击注册' : '已有账号？点击登录' }}
+              </a>
+            </div>
           </div>
+        </el-form>
+
+        <!-- 社交登录或其他信息 -->
+        <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <p class="text-xs text-center text-gray-500 dark:text-gray-400">
+            登录即表示您同意我们的
+            <a href="/disclaimer" class="text-blue-600 dark:text-blue-400 hover:underline">免责声明</a>
+            和
+            <a href="/copyright" class="text-blue-600 dark:text-blue-400 hover:underline">版权声明</a>
+          </p>
         </div>
-      </el-form>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.custom-form-item :deep(.el-form-item__label) {
+:deep(.el-form-item__label) {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #374151;
+  color: #4b5563;
   padding-bottom: 0.25rem;
-  line-height: 1.25;
 }
 
-.custom-input :deep(.el-input__wrapper) {
+:deep(.el-input__wrapper) {
   border-radius: 0.5rem;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  height: 2.5rem;
+  transition: all 0.2s;
 }
 
-.custom-input :deep(.el-input__wrapper.is-focus) {
+:deep(.el-input__wrapper.is-focus) {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-:deep(.el-button--primary) {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
+:deep(.el-input__prefix) {
+  padding-left: 0.5rem;
 }
 
-:deep(.el-button--primary:hover) {
-  background-color: #2563eb;
-  border-color: #2563eb;
+/* 黑暗模式下的样式调整 */
+.dark :deep(.el-input__wrapper) {
+  background-color: #1f2937;
+  box-shadow: none;
+  border: 1px solid #374151;
 }
 
-/* 响应式调整 */
-@media (max-width: 640px) {
-  .w-\[420px\] {
-    width: 90vw;
+.dark :deep(.el-input__inner) {
+  color: #f3f4f6;
+}
+
+.dark :deep(.el-form-item__label) {
+  color: #d1d5db;
+}
+
+/* 按钮悬停效果 */
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* 加载动画效果 */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
   }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fa-spin {
+  animation: spin 1s linear infinite;
 }
 </style>
