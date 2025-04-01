@@ -6,9 +6,8 @@
           <div class="absolute -bottom-12 left-6">
             <div class="w-24 h-24 rounded-full bg-white dark:bg-gray-700 p-1 cursor-pointer group relative"
               @click="showAvatarDialog = true">
-              <img
-                :src="getAvatarUrl(form.username || 'default', form.avatarStyle)"
-                alt="avatar" class="w-full h-full rounded-full object-cover" />
+              <img :src="getAvatarUrl(form.username || 'default', form.avatarStyle)" alt="avatar"
+                class="w-full h-full rounded-full object-cover" />
               <div
                 class="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <el-icon class="text-white text-xl">
@@ -43,34 +42,35 @@
       </div>
     </div>
     <!-- 头像选择对话框 -->
-  <el-dialog v-model="showAvatarDialog" title="选择头像风格" width="600px">
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      <div v-for="style in avatarStyles" :key="style.value"
-        class="cursor-pointer rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-        :class="{ 'bg-blue-50 dark:bg-blue-900': form.avatarStyle === style.value }"
-        @click="selectAvatarStyle(style.value)">
-        <div class="aspect-square rounded-lg overflow-hidden mb-2">
-          <img :src="getAvatarUrl(form.username || 'default', style.value)" :alt="style.label"
-            class="w-full h-full object-cover" />
+    <el-dialog v-model="showAvatarDialog" title="选择头像风格" width="600px">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div v-for="style in avatarStyles" :key="style.value"
+          class="cursor-pointer rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+          :class="{ 'bg-blue-50 dark:bg-blue-900': form.avatarStyle === style.value }"
+          @click="selectAvatarStyle(style.value)">
+          <div class="aspect-square rounded-lg overflow-hidden mb-2">
+            <img :src="getAvatarUrl(form.username || 'default', style.value)" :alt="style.label"
+              class="w-full h-full object-cover" />
+          </div>
+          <div class="text-center text-sm text-gray-600 dark:text-gray-300">{{ style.label }}</div>
         </div>
-        <div class="text-center text-sm text-gray-600 dark:text-gray-300">{{ style.label }}</div>
       </div>
-    </div>
-  </el-dialog>
+    </el-dialog>
   </div>
 
-  
+
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { Edit } from '@element-plus/icons-vue'
+import { useUserStore } from '~/stores/user'
 
 definePageMeta({
   middleware: ['auth']
 })
 
-const token = useCookie('token')
+const userStore = useUserStore()
 const formRef = ref(null)
 const loading = ref(false)
 const showAvatarDialog = ref(false)
@@ -115,23 +115,13 @@ const selectAvatarStyle = (style) => {
 }
 
 // 获取用户信息
-const fetchUserInfo = async () => {
-  try {
-    const res = await $fetch('/api/user/info', {
-      headers: {
-        'Authorization': `Bearer ${token.value}`
-      }
-    })
-    if (res.code === 200) {
-      form.value = {
-        username: res.data.username,
-        email: res.data.email,
-        avatarStyle: res.data.avatarStyle || 'avataaars'
-      }
+const fetchUserInfo = () => {
+  if (userStore.user) {
+    form.value = {
+      username: userStore.user.username || '',
+      email: userStore.user.email || '',
+      avatarStyle: userStore.user.avatarStyle || 'avataaars'
     }
-  } catch (error) {
-    console.error('获取用户信息失败:', error)
-    ElMessage.error('获取用户信息失败')
   }
 }
 
@@ -146,12 +136,14 @@ const handleSubmit = async () => {
     const res = await $fetch('/api/user/profile/update', {
       method: 'PUT',
       headers: {
-        'Authorization': `Bearer ${token.value}`
+        'Authorization': `Bearer ${userStore.token}`
       },
       body: form.value
     })
 
     if (res.code === 200) {
+      // 更新用户信息到store
+      userStore.user = res.data
       ElMessage.success('更新成功')
       navigateTo('/user/dashboard')
     }
@@ -166,4 +158,4 @@ const handleSubmit = async () => {
 onMounted(() => {
   fetchUserInfo()
 })
-</script> 
+</script>
