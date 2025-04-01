@@ -87,6 +87,22 @@
 
                 <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                     <div class="flex items-center space-x-2">
+                        <el-icon :size="20" class="text-red-500">
+                            <User />
+                        </el-icon>
+                        <h3 class="text-gray-500 text-sm font-medium">用户数量</h3>
+                    </div>
+                    <div class="mt-2 flex items-baseline">
+                        <el-skeleton-item v-if="stats.users.loading" variant="text" class="w-16 h-8" />
+                        <template v-else>
+                            <span class="text-2xl font-semibold text-gray-900">{{ stats.users.count }}</span>
+                            <span class="ml-2 text-sm text-gray-500">位用户</span>
+                        </template>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-center space-x-2">
                         <el-icon :size="20" class="text-purple-500">
                             <Monitor />
                         </el-icon>
@@ -135,7 +151,8 @@ import {
     ArrowRight,
     TrendCharts,
     CircleCheck,
-    ChatLineRound
+    ChatLineRound,
+    User
 } from '@element-plus/icons-vue'
 const { logout } = useAuth();
 
@@ -165,6 +182,13 @@ const menuCards = [
         icon: Monitor,
         link: '/admin/alist',
         color: 'bg-purple-500'
+    },
+    {
+        title: '用户管理',
+        description: '管理用户账号、权限和资料',
+        icon: User,
+        link: '/admin/users',
+        color: 'bg-red-500'
     },
     {
         title: '评论管理',
@@ -218,6 +242,10 @@ const stats = reactive({
         loading: true
     },
     comments: {
+        count: 0,
+        loading: true
+    },
+    users: {
         count: 0,
         loading: true
     }
@@ -291,12 +319,30 @@ const getCommentsCount = async () => {
     }
 }
 
+// 获取用户数量
+const getUsersCount = async () => {
+    try {
+        const res = await $fetch('/api/admin/user-center/stats', {
+            method: 'GET',
+            headers: {
+                "authorization": "Bearer " + useCookie('token').value
+            }
+        })
+        stats.users.count = res.count
+    } catch (error) {
+        console.error('Failed to fetch users count:', error)
+    } finally {
+        stats.users.loading = false
+    }
+}
+
 // 页面加载时获取统计数据
 onMounted(() => {
     getCloudFilesCount()
     getBlogPostsCount()
     getAlistSourcesCount()
     getCommentsCount()
+    getUsersCount()
 })
 
 const handleLogout = () => {
