@@ -5,38 +5,56 @@
 
     <!-- Category Tabs -->
     <div
-      class="w-full backdrop-blur-md bg-white/40 dark:bg-gray-800/40 sticky top-0 z-10 shadow-sm transition-all duration-300">
-      <div class="max-w-[1240px] mx-auto px-4 py-4">
-        <div class="flex flex-col sm:flex-row gap-4">
-          <!-- Category Selection -->
-          <div class="flex gap-3 transition-all duration-300">
-            <el-button v-for="(item, index) in categories" :key="index" :class="[
-              'relative transition-all duration-300 rounded-lg transform group',
-              category === item.value
-                ? 'shadow-lg !text-white scale-105'
-                : 'hover:scale-105 hover:bg-white/50 dark:hover:bg-gray-600/50',
-              category === item.value
-                ? '!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
-                : '',
-            ]" :title="item.description" type="primary" :plain="category !== item.value"
-              @click="switchCategory(item.value)">
-              <i :class="item.icon" class="mr-2"></i>
-              {{ item.label }}
+      class="w-full  sticky top-0 z-10  transition-all duration-300 border-b border-gray-100/50 dark:border-gray-700/50">
+      <div class="max-w-[1240px] mx-auto px-4 py-3">
+        <div class="flex flex-col sm:flex-row items-center gap-4">
+          <!-- Category Selection with Enhanced UI -->
+          <div class="w-full sm:w-auto flex gap-2 overflow-x-auto hide-scrollbar snap-x px-2 py-2 transition-all duration-300 
+                      rounded-xl bg-white/30 dark:bg-gray-800/30 ring-1 ring-gray-200/50 dark:ring-gray-700/50">
+            <el-button v-for="(item, index) in categories" :key="index"
+              class="snap-start min-w-fit transition-all duration-300 rounded-xl group relative" :class="[
+                category === item.value
+                  ? 'shadow-lg !text-white scale-105 !bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
+                  : 'bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80',
+                (index === 0) && 'ml-0.5',
+                (index === categories.length - 1) && 'mr-0.5'
+              ]" :title="item.description" @click="switchCategory(item.value)" type="primary"
+              :plain="category !== item.value">
+
+              <!-- Background hover effect -->
+              <span v-if="category !== item.value" class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 
+                          opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+
+              <!-- Icon and text with better alignment -->
+              <div class="flex items-center gap-2">
+                <i :class="item.icon" class="text-lg"></i>
+                <span>{{ item.label }}</span>
+              </div>
+
+              <!-- Active indicator with enhanced animation -->
               <span v-if="category === item.value" class="absolute -top-1 -right-1 flex">
                 <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-purple-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
               </span>
+
+              <!-- Bottom border animation for active tab -->
+              <span v-if="category === item.value"
+                class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-blue-400"></span>
             </el-button>
-            <!-- VOD登录提示 -->
-            <el-popover v-if="!userStore.loggedIn" placement="bottom" :width="320" trigger="hover"
-              popper-class="backdrop-blur-md bg-white/90 dark:bg-gray-800/90">
+
+            <!-- Settings button with tooltip -->
+            <el-popover v-if="!userStore.loggedIn" placement="bottom-end" trigger="hover" :width="320"
+              popper-class="backdrop-blur-md bg-white/90 dark:bg-gray-800/90 border border-gray-100/50 dark:border-gray-700/50 rounded-xl shadow-xl">
               <template #reference>
-                <el-button class="flex items-center gap-1">
-                  <i class="fas fa-info-circle text-blue-500"></i>
-                  <span>提示</span>
+                <el-button
+                  class="snap-start min-w-fit rounded-xl bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80 group">
+                  <div class="flex items-center gap-2">
+                    <i class="fas fa-cog text-lg group-hover:rotate-45 transition-transform duration-500"></i>
+                    <span>配置</span>
+                  </div>
                 </el-button>
               </template>
-              <div class="p-2">
+              <div class="p-3">
                 <div class="flex items-start gap-3">
                   <div class="text-blue-500 mt-1">
                     <i class="fas fa-info-circle text-xl"></i>
@@ -47,10 +65,10 @@
                       登录后可以将您的视频源配置保存到云端，在任何设备上使用相同的视频源。
                     </p>
                     <div class="flex gap-2">
-                      <el-button type="primary" @click="navigateTo('/login')" size="small">
+                      <el-button type="primary" @click="navigateTo('/login')" size="small" class="!rounded-lg">
                         <i class="fas fa-sign-in-alt mr-1"></i> 登录
                       </el-button>
-                      <el-button @click="navigateTo('/user/vod-settings')" size="small">
+                      <el-button @click="navigateTo('/user/vod-settings')" size="small" class="!rounded-lg">
                         <i class="fas fa-cog mr-1"></i> 管理配置
                       </el-button>
                     </div>
@@ -61,24 +79,20 @@
           </div>
 
           <!-- Stats Display with Enhanced Visual -->
-          <div v-if="category === 'clouddrive' && loadingProgress.isLoading"
-            class="flex-1 flex items-center gap-4 bg-white/50 dark:bg-gray-700/50 rounded-lg p-3 transition-all duration-300 backdrop-blur-sm">
-            <div class="flex-1 relative">
-              <el-progress :percentage="Math.round(
-                (loadingProgress.completed / loadingProgress.total) * 100
-              )
-                " :stroke-width="4" :show-text="false" class="flex-1">
+          <div v-if="category === 'clouddrive' && loadingProgress.isLoading" class="w-full sm:flex-1 flex items-center gap-4 bg-white/50 dark:bg-gray-700/50 rounded-xl p-3 transition-all duration-300 backdrop-blur-sm
+                   ring-1 ring-gray-200/50 dark:ring-gray-700/50 shadow-sm group">
+            <div class="flex-1 relative overflow-hidden rounded-md">
+              <el-progress :percentage="Math.round((loadingProgress.completed / loadingProgress.total) * 100)"
+                :stroke-width="6" :show-text="false" class="flex-1">
               </el-progress>
               <div
-                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer">
+                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer">
               </div>
             </div>
             <span
               class="text-sm text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap flex items-center gap-2">
-              <i class="fas fa-spinner fa-spin"></i>
-              搜索中... {{ loadingProgress.completed }}/{{
-                loadingProgress.total
-              }}
+              <i class="fas fa-spinner fa-spin group-hover:animate-bounce"></i>
+              搜索中... <span class="font-semibold">{{ loadingProgress.completed }}/{{ loadingProgress.total }}</span>
             </span>
           </div>
         </div>
@@ -1139,6 +1153,19 @@ const switchCategory = (e) => {
 
 .el-button:hover::after {
   transform: translateX(100%);
+}
+
+/* Hide scrollbar but allow scrolling */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari and Opera */
 }
 
 /* Enhanced loading animations */
