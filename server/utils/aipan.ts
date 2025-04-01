@@ -90,7 +90,7 @@ export const fetchWithRetry = async <T>(url: string, options: any, retries = CAC
 export const fetchApi = async (url: string, body: SearchBody, token: string, append: Record<string, any> = {}): Promise<Result> => {
     try {
         const cacheKey = `${url}_${JSON.stringify(body)}_${JSON.stringify(append)}`
-        
+
         const cachedResult = searchCache.get(cacheKey)
         if (cachedResult) {
             return cachedResult
@@ -221,13 +221,13 @@ export const executeApiRequests = async (
                     hasValidResponse = true
                 }
             } catch (error: any) {
-                const errorMessage = error.response?.data?.msg || 
-                                   error.response?.msg || 
-                                   error.message || 
-                                   'Unknown error'
-                errors.push({ 
-                    url: endpoint.url, 
-                    error: errorMessage 
+                const errorMessage = error.response?.data?.msg ||
+                    error.response?.msg ||
+                    error.message ||
+                    'Unknown error'
+                errors.push({
+                    url: endpoint.url,
+                    error: errorMessage
                 })
                 console.error(`Failed to fetch from ${endpoint.url}:`, {
                     message: errorMessage,
@@ -236,9 +236,9 @@ export const executeApiRequests = async (
                 })
             }
         })
-        
+
         await Promise.all(batchPromises)
-        
+
         // If we have valid responses from high-priority endpoints, we can stop
         if (hasValidResponse && i < batchSize) {
             break
@@ -258,12 +258,12 @@ export const executeApiRequests = async (
         const pathname = new URL(e.url).pathname
         return `${pathname}: ${e.error}`
     }).join('; ')
-    
+
     return {
         list: transformedList,
         code: transformedList.length > 0 ? 200 : (errors.length === apiEndpoints.length ? 500 : 206),
-        msg: errors.length > 0 ? 
-            `${errors.length} of ${apiEndpoints.length} requests failed (${errorMessages})` : 
+        msg: errors.length > 0 ?
+            `${errors.length} of ${apiEndpoints.length} requests failed (${errorMessages})` :
             (transformedList.length === 0 ? 'No results found' : undefined)
     }
 }

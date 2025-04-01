@@ -21,10 +21,11 @@ const router = useRouter();
 
 // 网盘图标映射
 const diskIcons = {
-  ALIYUN: new URL('@/assets/netdisk/aliyun.png', import.meta.url).href,
-  QUARK: new URL('@/assets/netdisk/quark.png', import.meta.url).href,
+  ALIYUN: new URL('@/assets/netdisk/aliyun1.png', import.meta.url).href,
+  QUARK: new URL('@/assets/netdisk/quark1.png', import.meta.url).href,
   BAIDU: new URL('@/assets/netdisk/baidu.png', import.meta.url).href,
   XUNLEI: new URL('@/assets/netdisk/xunlei.png', import.meta.url).href,
+  UC: new URL('@/assets/netdisk/uc.png', import.meta.url).href,
   OTHER: new URL('@/assets/netdisk/xunlei.png', import.meta.url).href,
 }
 

@@ -60,7 +60,9 @@ export default defineEventHandler(async (event) => {
                         if (link.value.includes('pan.baidu.com')) service = 'BAIDU';
                         else if (link.value.includes('pan.xunlei.com')) service = 'XUNLEI';
                         else if (link.value.includes('pan.quark.cn')) service = 'QUARK';
-                        else if (link.value.includes('www.aliyundrive.com')) service = 'ALIYUN';
+                        else if (link.value.includes('aliyundrive.com')) service = 'ALIYUN';
+                        else if (link.value.includes('pan.uc.cn')) service = 'UC';
+                        else if (link.value.includes('alipan.com')) service = 'ALIYUN';
                     }
                     return { pwd: "", link: link.value, service };
                 });
