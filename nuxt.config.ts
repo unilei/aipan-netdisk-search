@@ -44,7 +44,6 @@ export default defineNuxtConfig({
             '爱盼, 开源, 免费资源搜索, 网盘搜索, 音乐下载, TVBox数据接口, 电视直播, 博客发布, 影视资源, 教学工具, 非商业用途',
         },
         {
-          hid: 'description',
           name: 'description',
           content:
             '爱盼是一个开源免费的资源搜索平台，提供网盘资源搜索、音乐下载、TV直播、TVBox接口地址以及博客发布等多项功能，打造丰富的影视音聚合体验，供学习与探索使用，不支持商业用途。',
@@ -101,7 +100,6 @@ export default defineNuxtConfig({
     '@element-plus/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/device',
-    '@nuxtjs/i18n',
     '@nuxtjs/google-fonts',
     '@nuxtjs/color-mode',
     '@pinia/nuxt',
@@ -152,25 +150,6 @@ export default defineNuxtConfig({
       'Briem Hand': [100, 200, 300, 400, 500, 600, 700, 800, 900],
       'Noto Sans Simplified Chinese': [100, 200, 300, 400, 500, 600, 700, 800, 900],
     },
-  },
-
-  i18n: {
-    defaultLocale: 'cn',
-    langDir: './assets/lang/',
-    locales: [
-      {
-        code: 'en',
-        name: 'English',
-        language: 'en-US',
-        file: 'en-US.json',
-      },
-      {
-        code: 'cn',
-        name: '中文',
-        language: 'zh-CN',
-        file: 'zh-CN.json',
-      },
-    ],
   },
   plugins: [],
   nitro: {
