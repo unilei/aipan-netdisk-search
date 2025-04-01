@@ -1,8 +1,10 @@
 <script setup>
 import { onMounted } from 'vue';
+import { useUserStore } from '~/stores/user';
 
 const token = useCookie('token');
 const router = useRouter();
+const userStore = useUserStore();
 
 const form = reactive({
   email: "",
@@ -83,8 +85,10 @@ const handleSubmit = async () => {
       return;
     }
 
-    token.value = res.data.token;
+    // 使用user store保存用户信息
+    userStore.setUser(res.data.user, res.data.token);
     ElMessage.success(res.msg);
+
     // 根据用户角色跳转到不同的仪表盘
     const redirectPath = res.data.user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
     navigateTo({ path: redirectPath });
@@ -105,25 +109,10 @@ const handleKeyPress = (e) => {
 
 // 添加登录状态检查
 onMounted(async () => {
-  if (token.value) {
-    try {
-      // 验证当前用户信息
-      const userInfo = await $fetch('/api/user/info', {
-        headers: {
-          Authorization: `Bearer ${token.value}`
-        }
-      });
-
-      if (userInfo.code === 200) {
-        // 根据用户角色跳转
-        const redirectPath = userInfo.data.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
-        router.push(redirectPath);
-      }
-    } catch (error) {
-      console.error('Error checking user status:', error);
-      // 如果验证失败，清除 token
-      token.value = null;
-    }
+  if (userStore.loggedIn) {
+    // 根据用户角色跳转
+    const redirectPath = userStore.isAdmin ? '/admin/dashboard' : '/user/dashboard';
+    router.push(redirectPath);
   }
 });
 </script>

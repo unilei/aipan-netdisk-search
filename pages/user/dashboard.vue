@@ -6,9 +6,7 @@
         <div class="relative h-32 bg-gradient-to-r from-blue-500 to-purple-500">
           <div class="absolute -bottom-12 left-6">
             <div class="w-24 h-24 rounded-full bg-white dark:bg-gray-700 p-1">
-              <img
-                :src="`https://api.dicebear.com/7.x/${user?.avatarStyle || 'avataaars'}/svg?seed=${encodeURIComponent(user?.username || 'default')}`"
-                alt="avatar" class="w-full h-full rounded-full object-cover" />
+              <img :src="userStore.userAvatar" alt="avatar" class="w-full h-full rounded-full object-cover" />
             </div>
           </div>
         </div>
@@ -16,10 +14,10 @@
           <div class="flex justify-between items-start">
             <div>
               <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-200">
-                {{ user?.username }}
+                {{ userStore.user?.username }}
               </h1>
               <p class="text-gray-500 dark:text-gray-400 mt-1">
-                {{ user?.email }}
+                {{ userStore.user?.email }}
               </p>
             </div>
             <div class="flex items-center space-x-3">
@@ -102,7 +100,8 @@
             </el-icon>
             <div>
               <p class="text-gray-900 dark:text-gray-200">{{ activity.content }}</p>
-              <p class="text-sm text-gray-500 dark:text-gray-400">{{ new Date(activity.createdAt).toLocaleString() }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ new Date(activity.createdAt).toLocaleString() }}
+              </p>
             </div>
           </div>
         </div>
@@ -116,49 +115,32 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { 
-  UserFilled, 
-  Files, 
-  Document, 
-  Star, 
-  Download, 
-  Upload, 
-  Edit, 
-  Management 
+import {
+  UserFilled,
+  Files,
+  Document,
+  Star,
+  Download,
+  Upload,
+  Edit,
+  Management
 } from '@element-plus/icons-vue'
+import { useUserStore } from '~/stores/user'
 
-const { logout } = useAuth()
+const userStore = useUserStore()
 definePageMeta({
   middleware: ['auth']
 })
 
-const token = useCookie('token')
-const user = ref(null)
 const stats = ref(null)
 const activities = ref([])
-
-// 获取用户信息
-const fetchUserInfo = async () => {
-  try {
-    const res = await $fetch('/api/user/info', {
-      headers: {
-        'Authorization': `Bearer ${token.value}`
-      }
-    })
-    if (res.code === 200) {
-      user.value = res.data
-    }
-  } catch (error) {
-    console.error('获取用户信息失败:', error)
-  }
-}
 
 // 获取统计数据
 const fetchStats = async () => {
   try {
     const res = await $fetch('/api/user/stats', {
       headers: {
-        'Authorization': `Bearer ${token.value}`
+        'Authorization': `Bearer ${userStore.token}`
       }
     })
     if (res.code === 200) {
@@ -174,7 +156,7 @@ const fetchActivities = async () => {
   try {
     const res = await $fetch('/api/user/activities', {
       headers: {
-        'Authorization': `Bearer ${token.value}`
+        'Authorization': `Bearer ${userStore.token}`
       }
     })
     if (res.code === 200) {
@@ -207,12 +189,13 @@ const getActivityIconClass = (type) => {
   return classMap[type] || 'text-gray-500'
 }
 
+// 处理登出
 const handleLogout = () => {
-  logout()
+  userStore.clearUser()
+  navigateTo('/')
 }
 
 onMounted(() => {
-  fetchUserInfo()
   fetchStats()
   fetchActivities()
 })

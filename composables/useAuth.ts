@@ -1,7 +1,10 @@
+import { useUserStore } from '~/stores/user';
+
 export const useAuth = () => {
+    const userStore = useUserStore();
+
     const logout = () => {
-        const token = useCookie('token');
-        token.value = null;
+        userStore.clearUser();
         return navigateTo('/login');
     };
 

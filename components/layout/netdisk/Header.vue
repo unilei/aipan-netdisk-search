@@ -1,12 +1,37 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useColorMode } from '#imports'
+import { useUserStore } from '~/stores/user'
+
 const colorMode = useColorMode()
 const isMenuOpen = ref(false)
+const userStore = useUserStore()
+const dropdownVisible = ref(false)
+const userMenuRef = ref(null)
 
 const toggleMenu = () => {
     isMenuOpen.value = !isMenuOpen.value
 }
+
+const handleLogout = () => {
+    userStore.clearUser()
+    navigateTo('/')
+}
+
+const closeDropdown = (event) => {
+    if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
+        dropdownVisible.value = false
+    }
+}
+
+onMounted(() => {
+    userStore.fetchUser()
+    document.addEventListener('click', closeDropdown)
+})
+
+onBeforeUnmount(() => {
+    document.removeEventListener('click', closeDropdown)
+})
 </script>
 <template>
     <div class="backdrop-blur py-4 fixed top-0 left-0 w-full z-50">
@@ -43,27 +68,42 @@ const toggleMenu = () => {
             </div>
 
             <!-- Mobile Navigation -->
-            <div v-show="isMenuOpen" class="md:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg">
+            <div v-show="isMenuOpen"
+                class="md:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg">
                 <div class="flex flex-col py-2">
-                    <nuxt-link to="/" class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" @click="isMenuOpen = false">
+                    <nuxt-link to="/"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        @click="isMenuOpen = false">
                         <i class="fa-solid fa-house"></i> 首页
                     </nuxt-link>
-                    <nuxt-link to="/blog" class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" @click="isMenuOpen = false">
+                    <nuxt-link to="/blog"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        @click="isMenuOpen = false">
                         <i class="fa-solid fa-book"></i> 我的博客
                     </nuxt-link>
-                    <nuxt-link to="/tv" class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" @click="isMenuOpen = false">
+                    <nuxt-link to="/tv"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        @click="isMenuOpen = false">
                         <i class="fa-solid fa-tv"></i> 电视TV
                     </nuxt-link>
-                    <nuxt-link to="/tvbox" class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" @click="isMenuOpen = false">
+                    <nuxt-link to="/tvbox"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        @click="isMenuOpen = false">
                         <i class="fa-solid fa-tv"></i> TVbox接口
                     </nuxt-link>
-                    <nuxt-link to="/about" class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" @click="isMenuOpen = false">
+                    <nuxt-link to="/about"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        @click="isMenuOpen = false">
                         <i class="fa-solid fa-circle-info"></i> 关于网站
                     </nuxt-link>
-                    <nuxt-link to="/disclaimer" class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" @click="isMenuOpen = false">
+                    <nuxt-link to="/disclaimer"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        @click="isMenuOpen = false">
                         <i class="fa-solid fa-shield"></i> 免责声明
                     </nuxt-link>
-                    <nuxt-link to="/copyright" class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700" @click="isMenuOpen = false">
+                    <nuxt-link to="/copyright"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        @click="isMenuOpen = false">
                         <i class="fa-solid fa-copyright"></i> 侵权投诉
                     </nuxt-link>
                 </div>
@@ -81,6 +121,52 @@ const toggleMenu = () => {
                     <nuxt-link class="text-sm text-slate-600 font-bold dark:text-white" href="/music" title="音乐搜索小助手">
                         <i class="fa-solid fa-music text-base"></i>
                     </nuxt-link>
+
+                    <!-- 登录按钮 / 用户菜单 -->
+                    <div class="relative" ref="userMenuRef">
+                        <!-- 未登录状态显示登录按钮 -->
+                        <nuxt-link v-if="!userStore.loggedIn" to="/login"
+                            class="text-sm text-slate-600 font-bold dark:text-white flex items-center">
+                            <el-button type="primary" size="small" class="flex items-center">
+                                <i class="fa-solid fa-user mr-1"></i> 登录
+                            </el-button>
+                        </nuxt-link>
+
+                        <!-- 已登录状态显示用户头像和下拉菜单 -->
+                        <div v-else class="flex items-center">
+                            <div class="cursor-pointer flex items-center"
+                                @click.stop="dropdownVisible = !dropdownVisible">
+                                <img :src="userStore.userAvatar" class="w-8 h-8 rounded-full" alt="用户头像">
+                                <span class="ml-2 hidden sm:inline text-sm text-slate-600 dark:text-white">{{
+                                    userStore.user?.username }}</span>
+                                <i class="fa-solid fa-chevron-down ml-1 text-xs text-slate-600 dark:text-white"></i>
+                            </div>
+
+                            <!-- 下拉菜单 -->
+                            <div v-show="dropdownVisible"
+                                class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                                <nuxt-link v-if="userStore.isAdmin" to="/admin/dashboard"
+                                    class="block px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    @click="dropdownVisible = false">
+                                    <i class="fa-solid fa-gauge-high mr-2"></i> 管理后台
+                                </nuxt-link>
+                                <nuxt-link to="/user/dashboard"
+                                    class="block px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    @click="dropdownVisible = false">
+                                    <i class="fa-solid fa-user mr-2"></i> 个人中心
+                                </nuxt-link>
+                                <nuxt-link to="/user/profile"
+                                    class="block px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    @click="dropdownVisible = false">
+                                    <i class="fa-solid fa-gear mr-2"></i> 账号设置
+                                </nuxt-link>
+                                <div class="block px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                    @click="handleLogout">
+                                    <i class="fa-solid fa-right-from-bracket mr-2"></i> 退出登录
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </client-only>
             </div>
         </div>
