@@ -33,13 +33,29 @@ export default defineEventHandler(async (event) => {
 
         // 获取文件内容
         const response = await fetch(musicInfo.url);
+
+        // 检查响应状态
+        if (!response.ok) {
+            console.error(`Failed to fetch music: ${response.status} ${response.statusText}`);
+            return {
+                msg: "error",
+                error: `Failed to fetch music: ${response.status} ${response.statusText}`,
+            };
+        }
+
         const arrayBuffer = await response.arrayBuffer();
 
         // 设置响应头，同时提供 ASCII 和 UTF-8 编码的文件名
         const asciiFilename = encodeURIComponent(filename as string).replace(/%./g, '_');
+
+        // 获取源响应的内容类型
+        const contentType = response.headers.get('content-type') ||
+            (quality === "standard" || quality === "exhigh" ? "audio/mpeg" : "audio/flac");
+
         setResponseHeaders(event, {
-            "Content-Type": quality === "standard" || quality === "exhigh" ? "audio/mpeg" : "audio/flac",
+            "Content-Type": contentType,
             "Content-Disposition": `attachment; filename="${asciiFilename}"; filename*=UTF-8''${encodeURIComponent(filename as string)}`,
+            "Content-Length": arrayBuffer.byteLength.toString(),
         });
 
         // 返回文件内容

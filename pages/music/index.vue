@@ -160,7 +160,9 @@ const kwGetUrl = async (id) => {
     },
   });
   if (res.msg === "success") {
-    return res.url;
+    // 使用代理URL而不是直接使用HTTP链接
+    // 这样可以通过我们的服务器代理这个请求，避免浏览器混合内容限制
+    return `/api/music/proxy-stream?url=${encodeURIComponent(res.url)}`;
   } else {
     return alert("获取链接失败, 请重试");
   }
@@ -182,9 +184,9 @@ const handlePrevPage = () => {
   }
 };
 const handleDownload = async (song) => {
-  let downloadUrl = await kwGetUrl(song.id);
-  if (downloadUrl) {
-    window.open(downloadUrl, "_blank");
+  let proxyUrl = await kwGetUrl(song.id);
+  if (proxyUrl) {
+    window.open(proxyUrl, "_blank");
   }
 };
 const downloadVisible = ref(false);
@@ -215,6 +217,41 @@ const handleCopySongName = (song) => {
     copyTipsMsg("reset");
   }, 3000);
 };
+const handleCopyUrl = async (song) => {
+  let originalUrl = await kwGetUrl(song.id);
+  if (!originalUrl) return;
+
+  try {
+    // 由于我们现在使用代理，复制直接链接对用户更有用
+    // 获取原始URL而不是代理URL
+    const res = await $fetch("/api/music/kw-url", {
+      method: "GET",
+      query: {
+        id: song.id,
+        quality: quality.value,
+      },
+    });
+
+    if (res.msg === "success") {
+      await navigator.clipboard.writeText(res.url);
+      copyTipsMsg("success");
+      setTimeout(() => {
+        copyTipsMsg("reset");
+      }, 3000);
+    } else {
+      copyTipsMsg("fail");
+      setTimeout(() => {
+        copyTipsMsg("reset");
+      }, 3000);
+    }
+  } catch (error) {
+    copyTipsMsg("fail");
+    setTimeout(() => {
+      copyTipsMsg("reset");
+    }, 3000);
+  }
+};
+
 const handleCopySongUrl = async (song) => {
   try {
     if (isDownloading.value) return;
@@ -225,13 +262,17 @@ const handleCopySongUrl = async (song) => {
     const extension = quality.value === 'standard' || quality.value === 'exhigh' ? 'mp3' : 'flac';
     const fileName = `${song.name} - ${song.artist}.${extension}`;
 
-    // 使用新的下载接口
-    const downloadUrl = `/api/music/kw-download?id=${song.id}&quality=${quality.value}&filename=${encodeURIComponent(fileName)}`;
+    // 获取音乐URL (使用代理URL)
+    const downloadUrl = await kwGetUrl(song.id);
+    if (!downloadUrl) {
+      isDownloading.value = false;
+      return;
+    }
 
     // 使用fetch获取文件
     const response = await fetch(downloadUrl);
     const reader = response.body.getReader();
-    const contentLength = +response.headers.get('Content-Length');
+    const contentLength = +response.headers.get('Content-Length') || 0;
 
     // 读取数据流
     let receivedLength = 0;
@@ -246,7 +287,12 @@ const handleCopySongUrl = async (song) => {
       receivedLength += value.length;
 
       // 更新进度
-      downloadProgress.value = (receivedLength / contentLength) * 100;
+      if (contentLength > 0) {
+        downloadProgress.value = (receivedLength / contentLength) * 100;
+      } else {
+        // 如果没有contentLength，显示不确定进度
+        downloadProgress.value = 50;
+      }
     }
 
     // 合并数据块并下载
@@ -273,25 +319,6 @@ const handleCopySongUrl = async (song) => {
   } finally {
     isDownloading.value = false;
     downloadProgress.value = 0;
-  }
-};
-
-// 添加一个新的函数用于复制下载链接
-const handleCopyUrl = async (song) => {
-  let downloadUrl = await kwGetUrl(song.id);
-  if (!downloadUrl) return;
-
-  try {
-    await navigator.clipboard.writeText(downloadUrl);
-    copyTipsMsg("success");
-    setTimeout(() => {
-      copyTipsMsg("reset");
-    }, 3000);
-  } catch (error) {
-    copyTipsMsg("fail");
-    setTimeout(() => {
-      copyTipsMsg("reset");
-    }, 3000);
   }
 };
 
@@ -1017,7 +1044,7 @@ const formatPlayTime = (seconds) => {
                       </svg>
                     </button>
                     <div class="flex-1 min-w-0">
-                      <p class="font-medium text-sm truncate text-gray-800 dark:text-white" v-html="song.name"></p>
+                      <p class="font-medium text-sm truncate dark:text-white" v-html="song.name"></p>
                       <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ song.artist }}</p>
                     </div>
                   </div>
