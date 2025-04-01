@@ -693,25 +693,6 @@ const queueState = reactive({
   isPaused: false, // 添加暂停功能
 });
 
-// 添加队列控制函数
-const queueControls = {
-  pause() {
-    queueState.isPaused = true;
-  },
-  resume() {
-    queueState.isPaused = false;
-    processQueue();
-  },
-  clear() {
-    queueState.tasks = [];
-    queueState.isProcessing = false;
-    queueState.successCount = 0;
-    queueState.processedTasks = 0;
-    queueState.errorCount = 0;
-    queueState.lastError = null;
-  },
-};
-
 // 添加随机延时函数
 const randomDelay = (min, max) => {
   const delay = Math.floor(Math.random() * (max - min + 1) + min);

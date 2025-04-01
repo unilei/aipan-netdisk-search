@@ -61,7 +61,8 @@ onMounted(() => {
                 <div class="relative h-24 bg-gradient-to-r from-blue-500 to-purple-500">
                     <div class="absolute bottom-0 left-0 right-0 px-6 py-4 bg-white/10 backdrop-blur-sm">
                         <div class="flex items-center space-x-2 text-sm text-white">
-                            <nuxt-link to="/user/dashboard" class="hover:text-white/80 flex items-center transition-colors duration-200">
+                            <nuxt-link to="/user/dashboard"
+                                class="hover:text-white/80 flex items-center transition-colors duration-200">
                                 <el-icon class="mr-1">
                                     <House />
                                 </el-icon>
@@ -122,12 +123,8 @@ onMounted(() => {
                         <el-table-column prop="categories" label="分类" min-width="150">
                             <template #default="{ row }">
                                 <div class="flex flex-wrap gap-1">
-                                    <el-tag 
-                                        v-for="category in row.categories" 
-                                        :key="category.categoryId"
-                                        size="small"
-                                        type="info"
-                                    >
+                                    <el-tag v-for="category in row.categories" :key="category.categoryId" size="small"
+                                        type="info">
                                         {{ category.category.name }}
                                     </el-tag>
                                 </div>
@@ -136,12 +133,7 @@ onMounted(() => {
                         <el-table-column prop="tags" label="标签" min-width="150">
                             <template #default="{ row }">
                                 <div class="flex flex-wrap gap-1">
-                                    <el-tag 
-                                        v-for="tag in row.tags" 
-                                        :key="tag"
-                                        size="small"
-                                        type="success"
-                                    >
+                                    <el-tag v-for="tag in row.tags" :key="tag" size="small" type="success">
                                         {{ tag }}
                                     </el-tag>
                                 </div>
@@ -149,7 +141,8 @@ onMounted(() => {
                         </el-table-column>
                         <el-table-column prop="createdAt" label="创建时间" width="180">
                             <template #default="{ row }">
-                                <span class="text-gray-500 dark:text-gray-400">{{ new Date(row.createdAt).toLocaleString() }}</span>
+                                <span class="text-gray-500 dark:text-gray-400">{{ new
+                                    Date(row.createdAt).toLocaleString() }}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="status" label="状态" width="120">

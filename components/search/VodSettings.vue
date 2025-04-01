@@ -1,12 +1,9 @@
 <template>
     <div>
-        <!-- Settings Button -->
-        <el-button :class="[
-            'relative transition-all duration-300 rounded-lg transform group',
-            'hover:scale-105 hover:bg-white/50 dark:hover:bg-gray-600/50',
-        ]" type="primary" plain @click="showDialog = true" title="VOD设置">
-            <i class="fas fa-cog mr-0"></i>
-            <span class="ml-2">设置</span>
+        <!-- Settings Button (仅在inline模式下显示) -->
+        <el-button v-if="!props.inline" type="warning" plain @click="showDialog = true" title="VOD设置">
+            <i class="fas fa-cog mr-1"></i>
+            <span>设置</span>
         </el-button>
 
         <!-- Settings Dialog -->
@@ -134,7 +131,7 @@
                         </el-button>
                         <div class="space-x-2">
                             <el-button @click="showDialog = false">取消</el-button>
-                            <el-button type="primary" @click="saveSources">
+                            <el-button type="primary" @click="handleSave">
                                 <i class="fas fa-save mr-1"></i>
                                 保存
                             </el-button>
@@ -150,9 +147,18 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useWindowSize } from '@vueuse/core'
+import { useVodSources } from '~/composables/useVodSources'
 
 const { width } = useWindowSize()
 const isMobile = computed(() => width.value < 640)
+const { sources: savedSources, saveSources: saveVodSources } = useVodSources()
+
+const props = defineProps({
+    inline: {
+        type: Boolean,
+        default: false
+    }
+})
 
 const emit = defineEmits(['update:sources'])
 
@@ -230,26 +236,48 @@ const resetSources = () => {
 }
 
 // 保存所有源
-const saveSources = () => {
+const handleSave = async () => {
     // 合并手动输入的源
     const allSources = [...currentSources.value, ...manualSources.value]
 
-    // 保存到localStorage
-    localStorage.setItem('vod_sources', JSON.stringify(allSources))
+    // 检查源的合法性
+    const invalidSources = allSources.filter(source =>
+        !source.key || !source.name || !source.api || !source.playUrl || !source.type
+    )
 
-    // 触发更新
-    emit('update:sources', allSources)
+    if (invalidSources.length > 0) {
+        ElMessage.error('部分源配置不完整，请检查所有必填字段')
+        return
+    }
 
-    ElMessage.success('保存成功')
-    showDialog.value = false
+    // 使用composable保存数据
+    loading.value = true
+    try {
+        const result = await saveVodSources(allSources)
+        if (result) {
+            // 触发更新
+            emit('update:sources', allSources)
+            ElMessage.success('保存成功')
+            showDialog.value = false
+        } else {
+            ElMessage.error('保存失败，请重试')
+        }
+    } catch (error) {
+        console.error('保存视频源配置时出错:', error)
+        ElMessage.error('保存失败：' + (error.message || '未知错误'))
+    } finally {
+        loading.value = false
+    }
 }
 
-// 初始化时从localStorage加载
+// 初始化时加载已保存的设置
 onMounted(() => {
-    const savedSources = localStorage.getItem('vod_sources')
-    if (savedSources) {
-        currentSources.value = JSON.parse(savedSources)
-    }
+    currentSources.value = savedSources.value || []
+})
+
+// 暴露方法和属性给父组件
+defineExpose({
+    showDialog
 })
 </script>
 
