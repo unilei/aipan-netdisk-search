@@ -245,40 +245,42 @@ model ForumCategory {
 
 // 论坛主题模型
 model ForumTopic {
-  id             Int      @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   title          String
-  slug           String   @unique
-  content        String   @db.Text
-  isSticky       Boolean  @default(false) // 是否置顶
-  isLocked       Boolean  @default(false) // 是否锁定（不允许新回复）
-  viewCount      Int      @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  lastActivityAt DateTime @default(now())
-
-  categoryId Int
-  category   ForumCategory @relation(fields: [categoryId], references: [id])
-  authorId   Int
-  author     User          @relation(fields: [authorId], references: [id])
-  posts      ForumPost[]
+  content        String
+  slug           String        @unique
+  isSticky       Boolean       @default(false)
+  isLocked       Boolean       @default(false)
+  viewCount      Int           @default(0)
+  status         String        @default("pending")
+  categoryId     Int
+  authorId       Int
+  lastActivityAt DateTime      @default(now())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  author         User          @relation(fields: [authorId], references: [id])
+  category       ForumCategory @relation(fields: [categoryId], references: [id])
+  posts          ForumPost[]
 
   @@index([categoryId])
   @@index([authorId])
   @@index([lastActivityAt])
+  @@index([status])
 }
 
 // 论坛回复模型
 model ForumPost {
-  id        Int      @id @default(autoincrement())
-  content   String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  topicId  Int
-  topic    ForumTopic @relation(fields: [topicId], references: [id])
-  authorId Int
-  author   User       @relation(fields: [authorId], references: [id])
+  id        Int        @id @default(autoincrement())
+  content   String
+  status    String     @default("pending")
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  topicId   Int
+  authorId  Int
+  author    User       @relation(fields: [authorId], references: [id])
+  topic     ForumTopic @relation(fields: [topicId], references: [id])
 
   @@index([topicId])
   @@index([authorId])
+  @@index([status])
 }
