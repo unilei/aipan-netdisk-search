@@ -7,7 +7,9 @@ const colorMode = useColorMode()
 const isMenuOpen = ref(false)
 const userStore = useUserStore()
 const dropdownVisible = ref(false)
+const aboutDropdownVisible = ref(false)
 const userMenuRef = ref(null)
+const aboutMenuRef = ref(null)
 
 const toggleMenu = () => {
     isMenuOpen.value = !isMenuOpen.value
@@ -21,6 +23,9 @@ const handleLogout = () => {
 const closeDropdown = (event) => {
     if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
         dropdownVisible.value = false
+    }
+    if (aboutMenuRef.value && !aboutMenuRef.value.contains(event.target)) {
+        aboutDropdownVisible.value = false
     }
 }
 
@@ -48,7 +53,10 @@ onBeforeUnmount(() => {
                     <i class="fa-solid fa-house"></i> 首页
                 </nuxt-link>
                 <nuxt-link to="/blog" class="text-sm text-slate-600 dark:text-white">
-                    <i class="fa-solid fa-book"></i> 我的博客
+                    <i class="fa-solid fa-book"></i> 博客
+                </nuxt-link>
+                <nuxt-link to="/forum" class="text-sm text-slate-600 dark:text-white">
+                    <i class="fa-solid fa-comments"></i> 论坛
                 </nuxt-link>
                 <nuxt-link to="/tv" class="text-sm text-slate-600 dark:text-white">
                     <i class="fa-solid fa-tv"></i> 电视TV
@@ -56,15 +64,38 @@ onBeforeUnmount(() => {
                 <nuxt-link to="/tvbox" class="text-sm text-slate-600 dark:text-white">
                     <i class="fa-solid fa-tv"></i> TVbox接口
                 </nuxt-link>
-                <nuxt-link to="/about" class="text-sm text-slate-600 dark:text-white">
-                    <i class="fa-solid fa-circle-info"></i> 关于网站
-                </nuxt-link>
-                <nuxt-link to="/disclaimer" class="text-sm text-slate-600 dark:text-white">
-                    <i class="fa-solid fa-shield"></i> 免责声明
-                </nuxt-link>
-                <nuxt-link to="/copyright" class="text-sm text-slate-600 dark:text-white">
-                    <i class="fa-solid fa-copyright"></i> 侵权投诉
-                </nuxt-link>
+
+                <!-- 关于网站下拉菜单 -->
+                <div class="relative" ref="aboutMenuRef">
+                    <div class="flex items-center cursor-pointer group"
+                        @click.stop="aboutDropdownVisible = !aboutDropdownVisible">
+                        <span class="text-sm text-slate-600 dark:text-white flex items-center">
+                            <i class="fa-solid fa-circle-info mr-1"></i> 免责声明
+                            <i
+                                class="fa-solid fa-chevron-down text-xs group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"></i>
+                        </span>
+                    </div>
+
+                    <!-- 下拉菜单内容 -->
+                    <div v-show="aboutDropdownVisible"
+                        class="absolute top-full left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50 border border-gray-100 dark:border-gray-700">
+                        <nuxt-link to="/about"
+                            class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            @click="aboutDropdownVisible = false">
+                            <i class="fa-solid fa-circle-info mr-2"></i> 关于网站
+                        </nuxt-link>
+                        <nuxt-link to="/disclaimer"
+                            class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            @click="aboutDropdownVisible = false">
+                            <i class="fa-solid fa-shield mr-2"></i> 免责声明
+                        </nuxt-link>
+                        <nuxt-link to="/copyright"
+                            class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                            @click="aboutDropdownVisible = false">
+                            <i class="fa-solid fa-copyright mr-2"></i> 侵权投诉
+                        </nuxt-link>
+                    </div>
+                </div>
             </div>
 
             <!-- Mobile Navigation -->
@@ -91,18 +122,25 @@ onBeforeUnmount(() => {
                         @click="isMenuOpen = false">
                         <i class="fa-solid fa-tv"></i> TVbox接口
                     </nuxt-link>
+
+                    <!-- 移动端关于网站分组标题 -->
+                    <div
+                        class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-750">
+                        <i class="fa-solid fa-circle-info"></i> 关于
+                    </div>
+
                     <nuxt-link to="/about"
-                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
                         @click="isMenuOpen = false">
                         <i class="fa-solid fa-circle-info"></i> 关于网站
                     </nuxt-link>
                     <nuxt-link to="/disclaimer"
-                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
                         @click="isMenuOpen = false">
                         <i class="fa-solid fa-shield"></i> 免责声明
                     </nuxt-link>
                     <nuxt-link to="/copyright"
-                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+                        class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
                         @click="isMenuOpen = false">
                         <i class="fa-solid fa-copyright"></i> 侵权投诉
                     </nuxt-link>
