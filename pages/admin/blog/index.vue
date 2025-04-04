@@ -62,7 +62,9 @@ onMounted(() => {
                     <div>
                         <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
                             <nuxt-link to="/admin/dashboard" class="hover:text-primary flex items-center">
-                                <el-icon class="mr-1"><House /></el-icon>
+                                <el-icon class="mr-1">
+                                    <House />
+                                </el-icon>
                                 后台管理面板
                             </nuxt-link>
                             <span>/</span>
@@ -72,7 +74,9 @@ onMounted(() => {
                         <p class="text-gray-500 mt-1">管理和维护博客文章内容</p>
                     </div>
                     <el-button @click="() => navigateTo('/admin/dashboard')" class="flex items-center">
-                        <el-icon class="mr-1"><ArrowLeft /></el-icon>
+                        <el-icon class="mr-1">
+                            <ArrowLeft />
+                        </el-icon>
                         返回面板
                     </el-button>
                 </div>
@@ -82,7 +86,9 @@ onMounted(() => {
             <div class="bg-white rounded-lg p-6 shadow-sm">
                 <div class="flex items-center space-x-4">
                     <el-button type="primary" @click="handleAddPost()" class="flex items-center">
-                        <el-icon class="mr-1"><Plus /></el-icon>
+                        <el-icon class="mr-1">
+                            <Plus />
+                        </el-icon>
                         新建文章
                     </el-button>
                 </div>
@@ -91,17 +97,14 @@ onMounted(() => {
             <!-- 表格区域 -->
             <div class="bg-white rounded-lg p-6 shadow-sm">
                 <template v-if="postsData && postsData.length">
-                    <el-table 
-                        :data="postsData" 
-                        style="width: 100%"
-                        :border="true"
-                        class="mt-4"
-                    >
+                    <el-table :data="postsData" style="width: 100%" :border="true" class="mt-4">
                         <el-table-column type="index" label="序号" width="80" align="center" />
                         <el-table-column prop="title" label="文章标题" min-width="200">
                             <template #default="{ row }">
                                 <div class="flex items-center">
-                                    <el-icon class="mr-2 text-blue-500"><Document /></el-icon>
+                                    <el-icon class="mr-2 text-blue-500">
+                                        <Document />
+                                    </el-icon>
                                     <span>{{ row.title }}</span>
                                 </div>
                             </template>
@@ -121,24 +124,18 @@ onMounted(() => {
                         <el-table-column label="操作" width="200" fixed="right">
                             <template #default="scope">
                                 <el-button-group>
-                                    <el-button 
-                                        type="primary" 
-                                        size="small"
-                                        @click="handleEditPostsById(scope.row)"
-                                    >
-                                        <el-icon><Edit /></el-icon>
+                                    <el-button type="primary" size="small" @click="handleEditPostsById(scope.row)">
+                                        <el-icon>
+                                            <Edit />
+                                        </el-icon>
                                         编辑
                                     </el-button>
-                                    <el-popconfirm
-                                        title="确定要删除这篇文章吗？"
-                                        @confirm="handleDeletePostsById(scope.row)"
-                                    >
+                                    <el-popconfirm title="确定要删除这篇文章吗？" @confirm="handleDeletePostsById(scope.row)">
                                         <template #reference>
-                                            <el-button 
-                                                type="danger"
-                                                size="small"
-                                            >
-                                                <el-icon><Delete /></el-icon>
+                                            <el-button type="danger" size="small">
+                                                <el-icon>
+                                                    <Delete />
+                                                </el-icon>
                                                 删除
                                             </el-button>
                                         </template>
@@ -150,16 +147,9 @@ onMounted(() => {
 
                     <!-- 分页器 -->
                     <div class="mt-6 flex justify-center">
-                        <el-pagination
-                            v-model:current-page="page"
-                            v-model:page-size="pageSize"
-                            :page-sizes="[10, 20, 50, 100]"
-                            background
-                            layout="total, sizes, prev, pager, next, jumper"
-                            :total="totalCount"
-                            @size-change="handleSizeChange"
-                            @current-change="handleCurrentChange"
-                        />
+                        <el-pagination v-model:current-page="page" v-model:page-size="pageSize"
+                            :page-sizes="[10, 20, 50, 100]" background layout="total, sizes, prev, pager, next, jumper"
+                            :total="totalCount" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
                     </div>
                 </template>
                 <template v-else>

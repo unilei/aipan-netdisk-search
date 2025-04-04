@@ -1,6 +1,7 @@
 <script setup>
 import { House, Document, Edit, Delete, Plus, ArrowLeft, Refresh } from '@element-plus/icons-vue'
-import { MdEditor } from 'md-editor-v3'
+import { ElMessage } from 'element-plus'
+import { defineAsyncComponent, shallowRef } from 'vue'
 import 'md-editor-v3/lib/style.css'
 import { uploadImages } from '~/utils/uploadImage'
 
@@ -65,7 +66,7 @@ const handleSubmitAddCategory = async () => {
                 "authorization": "Bearer " + useCookie('token').value
             }
         })
-        
+
         if (res.code === 200) {
             ElMessage.success('添加分类成功')
             categoryDialogShow.value = false
@@ -93,7 +94,7 @@ const handleDeleteCategory = async (category, index) => {
                 type: 'warning',
             }
         )
-        
+
         loading.value = true
         const res = await $fetch(`/api/user/blog/category/${category.id}`, {
             method: 'DELETE',
@@ -101,7 +102,7 @@ const handleDeleteCategory = async (category, index) => {
                 "authorization": "Bearer " + useCookie('token').value
             }
         })
-        
+
         if (res.code === 200) {
             ElMessage.success('删除分类成功')
             // 如果当前文章使用了这个分类，也要移除
@@ -135,17 +136,32 @@ const formRef = ref()
 // 上传状态
 const uploadingCount = ref(0)
 
-// Markdown 编辑器配置
-const editorConfig = {
-    toolbars: [
-        'bold', 'underline', 'italic', 'strikethrough', 'sub', 'sup', 'quote', 'unordered-list', 'ordered-list', 
-        'task-list', '-', 'code', 'code-block', 'link', 'image', 'table', 'mermaid', 'katex', '-', 
-        'preview', 'fullscreen'
-    ],
+// 使用defineAsyncComponent异步加载编辑器组件
+const LazyMdEditor = defineAsyncComponent({
+    loader: () => import('md-editor-v3').then(mod => mod.MdEditor),
+    delay: 200,
+    timeout: 3000,
+    errorComponent: {
+        template: `<div class="border border-red-200 dark:border-red-800 rounded p-4 bg-red-50 dark:bg-red-900/50">
+                <p class="text-red-500 dark:text-red-400">编辑器加载失败，请刷新页面重试</p>
+               </div>`
+    },
+    suspensible: false
+})
+
+// 编辑器工具栏预定义
+const mdEditorToolbars = shallowRef([
+    'bold', 'italic', 'strikethrough', 'sub', 'sup', 'quote',
+    'unorderedList', 'orderedList', 'codeRow', 'code',
+    'link', 'image', 'table', 'revoke', 'next', 'preview'
+])
+
+// 编辑器配置
+const editorConfig = shallowRef({
     uploadImages: true,
-    autoFocus: true,
+    autoFocus: false,
     showCodeRowNumber: true
-}
+})
 
 // 处理图片上传
 const onUploadImg = async (files, callback) => {
@@ -179,12 +195,12 @@ const submit = async () => {
     try {
         await formRef.value.validate()
         submitting.value = true
-        
-        const api = isEdit.value 
+
+        const api = isEdit.value
             ? `/api/user/blog/posts/${form.id}`
             : '/api/user/blog/posts/post'
         const method = isEdit.value ? 'PUT' : 'POST'
-        
+
         const res = await $fetch(api, {
             method,
             body: form,
@@ -192,7 +208,7 @@ const submit = async () => {
                 "authorization": "Bearer " + useCookie('token').value
             }
         })
-        
+
         if (res.code === 200) {
             ElMessage.success(isEdit.value ? '更新文章成功' : '发布文章成功')
             router.push('/user/posts/list')
@@ -237,7 +253,7 @@ onMounted(async () => {
     try {
         loading.value = true
         await getCategories()
-        
+
         if (route.params.id && route.params.id !== 'new') {
             isEdit.value = true
             const res = await $fetch(`/api/user/blog/posts/${route.params.id}`, {
@@ -246,7 +262,7 @@ onMounted(async () => {
                     "authorization": "Bearer " + useCookie('token').value
                 }
             })
-            
+
             if (res.code === 200) {
                 Object.assign(form, res.data)
                 form.categoryIds = res.data.categories.map(item => item.categoryId)
@@ -287,32 +303,37 @@ onMounted(async () => {
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div>
                                 <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                                    <nuxt-link to="/user/dashboard" class="hover:text-primary transition-colors flex items-center">
-                                        <el-icon class="mr-1"><House /></el-icon>
+                                    <nuxt-link to="/user/dashboard"
+                                        class="hover:text-primary transition-colors flex items-center">
+                                        <el-icon class="mr-1">
+                                            <House />
+                                        </el-icon>
                                         用户中心
                                     </nuxt-link>
                                     <span>/</span>
-                                    <nuxt-link to="/user/posts/list" class="hover:text-primary transition-colors flex items-center">
+                                    <nuxt-link to="/user/posts/list"
+                                        class="hover:text-primary transition-colors flex items-center">
                                         我的博客
                                     </nuxt-link>
                                     <span>/</span>
                                     <span class="text-gray-900">{{ isEdit ? '编辑文章' : '新建文章' }}</span>
                                 </div>
-                                <h1 class="text-xl md:text-2xl font-bold text-gray-900">{{ isEdit ? '编辑文章' : '新建文章' }}</h1>
+                                <h1 class="text-xl md:text-2xl font-bold text-gray-900">{{ isEdit ? '编辑文章' : '新建文章' }}
+                                </h1>
                                 <p class="text-gray-500 mt-1 text-sm">{{ isEdit ? '修改现有文章内容' : '创建一篇新的博客文章' }}</p>
                             </div>
                             <div class="flex items-center space-x-3">
                                 <el-button @click="() => router.push('/user/posts/list')" class="!flex items-center">
-                                    <el-icon class="mr-1"><ArrowLeft /></el-icon>
+                                    <el-icon class="mr-1">
+                                        <ArrowLeft />
+                                    </el-icon>
                                     返回列表
                                 </el-button>
-                                <el-button 
-                                    type="primary" 
-                                    @click="submit" 
-                                    class="!flex items-center"
-                                    :loading="submitting"
-                                >
-                                    <el-icon class="mr-1"><Document /></el-icon>
+                                <el-button type="primary" @click="submit" class="!flex items-center"
+                                    :loading="submitting">
+                                    <el-icon class="mr-1">
+                                        <Document />
+                                    </el-icon>
                                     {{ submitting ? '保存中...' : '保存文章' }}
                                 </el-button>
                             </div>
@@ -334,31 +355,20 @@ onMounted(async () => {
                 <template #default>
                     <div class="bg-white rounded-xl p-4 md:p-6 shadow-sm border border-gray-100">
                         <el-form ref="formRef" :model="form" label-width="80px" class="space-y-6">
-                            <el-form-item 
-                                label="标题" 
-                                prop="title"
-                                :rules="[
-                                    { required: true, message: '请输入文章标题', trigger: 'blur' },
-                                ]"
-                            >
-                                <el-input 
-                                    v-model="form.title" 
-                                    placeholder="请输入文章标题" 
-                                    class="w-full !rounded-lg"
-                                />
+                            <el-form-item label="标题" prop="title" :rules="[
+                                { required: true, message: '请输入文章标题', trigger: 'blur' },
+                            ]">
+                                <el-input v-model="form.title" placeholder="请输入文章标题" class="w-full !rounded-lg" />
                             </el-form-item>
 
-                            <el-form-item 
-                                label="分类" 
-                                prop="categoryIds"
-                                :rules="[
-                                    { type: 'array', required: true, message: '请至少选择一个分类', trigger: 'change' }
-                                ]"
-                            >
+                            <el-form-item label="分类" prop="categoryIds" :rules="[
+                                { type: 'array', required: true, message: '请至少选择一个分类', trigger: 'change' }
+                            ]">
                                 <div class="space-y-4">
                                     <!-- 分类标签区域 -->
                                     <div class="flex flex-wrap gap-3">
-                                        <el-empty v-if="!categoriesLoading && !categoriesData.length" description="暂无分类" />
+                                        <el-empty v-if="!categoriesLoading && !categoriesData.length"
+                                            description="暂无分类" />
                                         <el-skeleton v-else-if="categoriesLoading" :count="3" animated>
                                             <template #template>
                                                 <div class="flex gap-3">
@@ -369,29 +379,23 @@ onMounted(async () => {
                                             </template>
                                         </el-skeleton>
                                         <template v-else>
-                                            <div v-for="category in categoriesData" 
-                                                :key="category.id"
-                                                class="group relative"
-                                            >
-                                                <div 
-                                                    class="px-4 py-2 rounded-full cursor-pointer transition-all duration-200"
+                                            <div v-for="category in categoriesData" :key="category.id"
+                                                class="group relative">
+                                                <div class="px-4 py-2 rounded-full cursor-pointer transition-all duration-200"
                                                     :class="[
-                                                        form.categoryIds.includes(category.id) 
-                                                            ? 'bg-primary text-white shadow-sm' 
+                                                        form.categoryIds.includes(category.id)
+                                                            ? 'bg-primary text-white shadow-sm'
                                                             : 'bg-gray-50 hover:bg-gray-100'
-                                                    ]"
-                                                    @click="handleSelectCategory(category)"
-                                                >
+                                                    ]" @click="handleSelectCategory(category)">
                                                     {{ category.name }}
                                                 </div>
                                                 <el-button
                                                     class="!absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                                    type="danger"
-                                                    size="small"
-                                                    circle
-                                                    @click="handleDeleteCategory(category)"
-                                                >
-                                                    <el-icon><Delete /></el-icon>
+                                                    type="danger" size="small" circle
+                                                    @click="handleDeleteCategory(category)">
+                                                    <el-icon>
+                                                        <Delete />
+                                                    </el-icon>
                                                 </el-button>
                                             </div>
                                         </template>
@@ -399,73 +403,54 @@ onMounted(async () => {
 
                                     <!-- 分类操作按钮 -->
                                     <div class="flex items-center space-x-3">
-                                        <el-button 
-                                            type="primary" 
-                                            @click="handleAddCategory"
-                                            class="!flex items-center"
-                                            :loading="loading"
-                                        >
-                                            <el-icon class="mr-1"><Plus /></el-icon>
+                                        <el-button type="primary" @click="handleAddCategory" class="!flex items-center"
+                                            :loading="loading">
+                                            <el-icon class="mr-1">
+                                                <Plus />
+                                            </el-icon>
                                             添加分类
                                         </el-button>
-                                        <el-button 
-                                            @click="getCategories"
-                                            class="!flex items-center"
-                                            :loading="categoriesLoading"
-                                        >
-                                            <el-icon class="mr-1"><Refresh /></el-icon>
+                                        <el-button @click="getCategories" class="!flex items-center"
+                                            :loading="categoriesLoading">
+                                            <el-icon class="mr-1">
+                                                <Refresh />
+                                            </el-icon>
                                             刷新列表
                                         </el-button>
                                     </div>
                                 </div>
                             </el-form-item>
 
-                            <el-form-item 
-                                label="标签" 
-                                prop="tags"
-                                :rules="[
-                                    { type: 'array', required: true, message: '请至少添加一个标签', trigger: 'change' }
-                                ]"
-                            >
+                            <el-form-item label="标签" prop="tags" :rules="[
+                                { type: 'array', required: true, message: '请至少添加一个标签', trigger: 'change' }
+                            ]">
                                 <div class="flex flex-wrap gap-2 border rounded-lg p-3 bg-gray-50/50">
-                                    <el-tag
-                                        v-for="tag in form.tags"
-                                        :key="tag"
-                                        closable
-                                        :disable-transitions="false"
-                                        @close="handleTagClose(tag)"
-                                        class="!rounded-full"
-                                    >
+                                    <el-tag v-for="tag in form.tags" :key="tag" closable :disable-transitions="false"
+                                        @close="handleTagClose(tag)" class="!rounded-full">
                                         {{ tag }}
                                     </el-tag>
-                                    <el-input
-                                        v-if="inputTagVisible"
-                                        ref="InputRef"
-                                        v-model="inputTagValue"
-                                        class="w-[100px]"
-                                        size="small"
-                                        @keyup.enter="handleTagInputConfirm"
-                                        @blur="handleTagInputConfirm"
-                                    />
+                                    <el-input v-if="inputTagVisible" ref="InputRef" v-model="inputTagValue"
+                                        class="w-[100px]" size="small" @keyup.enter="handleTagInputConfirm"
+                                        @blur="handleTagInputConfirm" />
                                     <el-button v-else size="small" @click="showTagInput" class="!rounded-full">
                                         + 新标签
                                     </el-button>
                                 </div>
                             </el-form-item>
 
-                            <el-form-item 
-                                label="内容" 
-                                prop="content"
-                                :rules="[
-                                    { required: true, message: '请输入文章内容', trigger: 'blur' }
-                                ]"
-                            >
-                                <MdEditor 
-                                    v-model="form.content" 
-                                    :editorConfig="editorConfig" 
-                                    @onUploadImg="onUploadImg"
-                                    class="w-full"
-                                />
+                            <el-form-item label="内容" prop="content" :rules="[
+                                { required: true, message: '请输入文章内容', trigger: 'blur' }
+                            ]">
+                                <client-only>
+                                    <template #fallback>
+                                        <div
+                                            class="border border-gray-200 dark:border-gray-700 rounded p-4 h-[400px] flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                                            <p class="text-gray-400">编辑器加载中...</p>
+                                        </div>
+                                    </template>
+                                    <lazy-md-editor v-model="form.content" :toolbars="mdEditorToolbars"
+                                        :editorConfig="editorConfig" @onUploadImg="onUploadImg" class="w-full" />
+                                </client-only>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -473,48 +458,22 @@ onMounted(async () => {
             </el-skeleton>
 
             <!-- 添加分类对话框 -->
-            <el-dialog 
-                v-model="categoryDialogShow" 
-                title="添加文章分类"
-                width="500px"
-                destroy-on-close
-                class="rounded-xl"
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-            >
-                <el-form 
-                    ref="categoryFormRef" 
-                    :model="categoryForm" 
-                    label-width="80px"
-                >
-                    <el-form-item 
-                        label="分类名称" 
-                        prop="name" 
-                        :rules="[
-                            { required: true, message: '请输入分类名称', trigger: 'blur' }
-                        ]"
-                    >
-                        <el-input 
-                            v-model="categoryForm.name" 
-                            placeholder="请输入分类名称" 
-                            class="!rounded-lg"
-                            :disabled="loading"
-                        />
+            <el-dialog v-model="categoryDialogShow" title="添加文章分类" width="500px" destroy-on-close class="rounded-xl"
+                :close-on-click-modal="false" :close-on-press-escape="false">
+                <el-form ref="categoryFormRef" :model="categoryForm" label-width="80px">
+                    <el-form-item label="分类名称" prop="name" :rules="[
+                        { required: true, message: '请输入分类名称', trigger: 'blur' }
+                    ]">
+                        <el-input v-model="categoryForm.name" placeholder="请输入分类名称" class="!rounded-lg"
+                            :disabled="loading" />
                     </el-form-item>
                 </el-form>
                 <template #footer>
                     <div class="flex justify-end space-x-3">
-                        <el-button 
-                            @click="categoryDialogShow = false"
-                            :disabled="loading"
-                        >
+                        <el-button @click="categoryDialogShow = false" :disabled="loading">
                             取消
                         </el-button>
-                        <el-button 
-                            type="primary" 
-                            @click="handleSubmitAddCategory"
-                            :loading="loading"
-                        >
+                        <el-button type="primary" @click="handleSubmitAddCategory" :loading="loading">
                             确认
                         </el-button>
                     </div>

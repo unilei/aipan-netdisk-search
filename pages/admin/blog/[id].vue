@@ -1,6 +1,7 @@
 <script setup>
 import { House, Document, Edit, Delete, Plus, ArrowLeft, Refresh } from '@element-plus/icons-vue'
-import { MdEditor } from 'md-editor-v3'
+import { ElMessage } from 'element-plus'
+import { defineAsyncComponent, shallowRef } from 'vue'
 import 'md-editor-v3/lib/style.css'
 import { uploadImages } from '~/utils/uploadImage'
 
@@ -76,17 +77,32 @@ const formRef = ref()
 // 上传状态
 const uploadingCount = ref(0)
 
-// Markdown 编辑器配置
-const editorConfig = {
-    toolbars: [
-        'bold', 'underline', 'italic', 'strikethrough', 'sub', 'sup', 'quote', 'unordered-list', 'ordered-list', 
-        'task-list', '-', 'code', 'code-block', 'link', 'image', 'table', 'mermaid', 'katex', '-', 
-        'preview', 'fullscreen'
-    ],
+// 使用defineAsyncComponent异步加载编辑器组件
+const LazyMdEditor = defineAsyncComponent({
+    loader: () => import('md-editor-v3').then(mod => mod.MdEditor),
+    delay: 200,
+    timeout: 3000,
+    errorComponent: {
+        template: `<div class="border border-red-200 dark:border-red-800 rounded p-4 bg-red-50 dark:bg-red-900/50">
+                <p class="text-red-500 dark:text-red-400">编辑器加载失败，请刷新页面重试</p>
+               </div>`
+    },
+    suspensible: false
+})
+
+// 编辑器工具栏预定义
+const mdEditorToolbars = shallowRef([
+    'bold', 'italic', 'strikethrough', 'sub', 'sup', 'quote',
+    'unorderedList', 'orderedList', 'codeRow', 'code',
+    'link', 'image', 'table', 'revoke', 'next', 'preview'
+])
+
+// 编辑器配置
+const editorConfig = shallowRef({
     uploadImages: true,
-    autoFocus: true,
+    autoFocus: false,
     showCodeRowNumber: true
-}
+})
 
 // 处理图片上传
 const onUploadImg = async (files, callback) => {
@@ -187,7 +203,9 @@ onMounted(async () => {
                     <div>
                         <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
                             <nuxt-link to="/admin/dashboard" class="hover:text-primary flex items-center">
-                                <el-icon class="mr-1"><House /></el-icon>
+                                <el-icon class="mr-1">
+                                    <House />
+                                </el-icon>
                                 后台管理面板
                             </nuxt-link>
                             <span>/</span>
@@ -202,11 +220,15 @@ onMounted(async () => {
                     </div>
                     <div class="flex items-center space-x-4">
                         <el-button @click="() => router.push('/admin/blog')" class="flex items-center">
-                            <el-icon class="mr-1"><ArrowLeft /></el-icon>
+                            <el-icon class="mr-1">
+                                <ArrowLeft />
+                            </el-icon>
                             返回列表
                         </el-button>
                         <el-button type="primary" @click="submit" class="flex items-center">
-                            <el-icon class="mr-1"><Document /></el-icon>
+                            <el-icon class="mr-1">
+                                <Document />
+                            </el-icon>
                             保存文章
                         </el-button>
                     </div>
@@ -216,54 +238,34 @@ onMounted(async () => {
             <!-- 表单区域 -->
             <div class="bg-white rounded-lg p-6 shadow-sm">
                 <el-form ref="formRef" :model="form" label-width="80px" class="space-y-6">
-                    <el-form-item 
-                        label="标题" 
-                        prop="title"
-                        :rules="[
-                            { required: true, message: '请输入文章标题', trigger: 'blur' },
-                        ]"
-                    >
-                        <el-input 
-                            v-model="form.title" 
-                            placeholder="请输入文章标题" 
-                            class="w-full"
-                        />
+                    <el-form-item label="标题" prop="title" :rules="[
+                        { required: true, message: '请输入文章标题', trigger: 'blur' },
+                    ]">
+                        <el-input v-model="form.title" placeholder="请输入文章标题" class="w-full" />
                     </el-form-item>
 
-                    <el-form-item 
-                        label="分类" 
-                        prop="categoryIds"
-                        :rules="[
-                            { type: 'array', required: true, message: '请至少选择一个分类', trigger: 'change' }
-                        ]"
-                    >
+                    <el-form-item label="分类" prop="categoryIds" :rules="[
+                        { type: 'array', required: true, message: '请至少选择一个分类', trigger: 'change' }
+                    ]">
                         <div class="space-y-4">
                             <!-- 分类标签区域 -->
                             <div class="flex flex-wrap gap-3">
                                 <template v-if="categoriesData.length">
-                                    <div v-for="category in categoriesData" 
-                                        :key="category.id"
-                                        class="group relative"
-                                    >
-                                        <div 
-                                            class="px-4 py-2 rounded-full cursor-pointer transition-colors duration-200"
+                                    <div v-for="category in categoriesData" :key="category.id" class="group relative">
+                                        <div class="px-4 py-2 rounded-full cursor-pointer transition-colors duration-200"
                                             :class="[
-                                                form.categoryIds.includes(category.id) 
-                                                    ? 'bg-blue-500 text-white' 
+                                                form.categoryIds.includes(category.id)
+                                                    ? 'bg-blue-500 text-white'
                                                     : 'bg-gray-100 hover:bg-gray-200'
-                                            ]"
-                                            @click="handleSelectCategory(category)"
-                                        >
+                                            ]" @click="handleSelectCategory(category)">
                                             {{ category.name }}
                                         </div>
                                         <el-button
                                             class="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                                            type="danger"
-                                            size="small"
-                                            circle
-                                            @click="handleDeleteCategory(category)"
-                                        >
-                                            <el-icon><Delete /></el-icon>
+                                            type="danger" size="small" circle @click="handleDeleteCategory(category)">
+                                            <el-icon>
+                                                <Delete />
+                                            </el-icon>
                                         </el-button>
                                     </div>
                                 </template>
@@ -272,61 +274,45 @@ onMounted(async () => {
 
                             <!-- 分类操作按钮 -->
                             <div class="flex items-center space-x-4">
-                                <el-button 
-                                    type="primary" 
-                                    @click="handleAddCategory"
-                                    class="flex items-center"
-                                >
-                                    <el-icon class="mr-1"><Plus /></el-icon>
+                                <el-button type="primary" @click="handleAddCategory" class="flex items-center">
+                                    <el-icon class="mr-1">
+                                        <Plus />
+                                    </el-icon>
                                     添加分类
                                 </el-button>
-                                <el-button 
-                                    @click="getCategories"
-                                    class="flex items-center"
-                                >
-                                    <el-icon class="mr-1"><Refresh /></el-icon>
+                                <el-button @click="getCategories" class="flex items-center">
+                                    <el-icon class="mr-1">
+                                        <Refresh />
+                                    </el-icon>
                                     刷新列表
                                 </el-button>
                             </div>
                         </div>
                     </el-form-item>
 
-                    <el-form-item 
-                        label="内容" 
-                        prop="content"
-                        :rules="[
-                            { required: true, message: '请输入文章内容', trigger: 'blur' }
-                        ]"
-                    >
-                        <MdEditor 
-                            v-model="form.content" 
-                            :editorConfig="editorConfig" 
-                            @onUploadImg="onUploadImg"
-                            class="w-full"
-                        />
+                    <el-form-item label="内容" prop="content" :rules="[
+                        { required: true, message: '请输入文章内容', trigger: 'blur' }
+                    ]">
+                        <client-only>
+                            <template #fallback>
+                                <div
+                                    class="border border-gray-200 dark:border-gray-700 rounded p-4 h-[400px] flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                                    <p class="text-gray-400">编辑器加载中...</p>
+                                </div>
+                            </template>
+                            <lazy-md-editor v-model="form.content" :toolbars="mdEditorToolbars"
+                                :editorConfig="editorConfig" @onUploadImg="onUploadImg" class="w-full" />
+                        </client-only>
                     </el-form-item>
                 </el-form>
             </div>
 
             <!-- 添加分类对话框 -->
-            <el-dialog 
-                v-model="categoryDialogShow" 
-                title="添加文章分类"
-                width="500px"
-                destroy-on-close
-            >
-                <el-form 
-                    ref="categoryFormRef" 
-                    :model="categoryForm" 
-                    label-width="80px"
-                >
-                    <el-form-item 
-                        label="分类名称" 
-                        prop="name" 
-                        :rules="[
-                            { required: true, message: '请输入分类名称', trigger: 'blur' }
-                        ]"
-                    >
+            <el-dialog v-model="categoryDialogShow" title="添加文章分类" width="500px" destroy-on-close>
+                <el-form ref="categoryFormRef" :model="categoryForm" label-width="80px">
+                    <el-form-item label="分类名称" prop="name" :rules="[
+                        { required: true, message: '请输入分类名称', trigger: 'blur' }
+                    ]">
                         <el-input v-model="categoryForm.name" placeholder="请输入分类名称" />
                     </el-form-item>
                 </el-form>
