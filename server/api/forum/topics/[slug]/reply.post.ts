@@ -50,12 +50,16 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 创建回复
+        // 判断用户角色，管理员创建的回复直接审核通过
+        const status = user.role === 'admin' ? 'approved' : 'pending';
+
+        // 创建回复，添加状态字段
         const post = await prisma.forumPost.create({
             data: {
                 content,
                 topicId: topic.id,
                 authorId: user.userId,
+                status: status // 添加状态字段，非管理员创建的回复默认为待审核状态
             },
             include: {
                 author: {
@@ -69,14 +73,17 @@ export default defineEventHandler(async (event) => {
             }
         })
 
-        // 更新主题的最后活动时间
-        await prisma.forumTopic.update({
-            where: { id: topic.id },
-            data: { lastActivityAt: new Date() }
-        })
+        // 如果是已审核状态，则更新主题的最后活动时间
+        if (status === 'approved') {
+            await prisma.forumTopic.update({
+                where: { id: topic.id },
+                data: { lastActivityAt: new Date() }
+            })
+        }
 
         return {
             success: true,
+            message: status === 'approved' ? '回复已发布' : '回复已提交，等待审核',
             data: post
         }
     } catch (error: any) {
