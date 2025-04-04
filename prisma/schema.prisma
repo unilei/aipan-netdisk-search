@@ -37,6 +37,8 @@ model User {
   blogPosts     BlogPost[] // 用户的博客文章
   userResources UserResource[] // 用户的资源投稿
   vodConfigs    UserVodConfig[]
+  forumTopics   ForumTopic[] // 用户的论坛主题
+  forumPosts    ForumPost[] // 用户的论坛回复
 }
 
 model ResourceType {
@@ -225,4 +227,58 @@ model UserVodConfig {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// 论坛板块模型
+model ForumCategory {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String   @db.Text
+  slug        String   @unique
+  order       Int      @default(0)
+  icon        String? // 图标
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  topics ForumTopic[]
+}
+
+// 论坛主题模型
+model ForumTopic {
+  id             Int      @id @default(autoincrement())
+  title          String
+  slug           String   @unique
+  content        String   @db.Text
+  isSticky       Boolean  @default(false) // 是否置顶
+  isLocked       Boolean  @default(false) // 是否锁定（不允许新回复）
+  viewCount      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  lastActivityAt DateTime @default(now())
+
+  categoryId Int
+  category   ForumCategory @relation(fields: [categoryId], references: [id])
+  authorId   Int
+  author     User          @relation(fields: [authorId], references: [id])
+  posts      ForumPost[]
+
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([lastActivityAt])
+}
+
+// 论坛回复模型
+model ForumPost {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  topicId  Int
+  topic    ForumTopic @relation(fields: [topicId], references: [id])
+  authorId Int
+  author   User       @relation(fields: [authorId], references: [id])
+
+  @@index([topicId])
+  @@index([authorId])
 }
