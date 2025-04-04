@@ -9,7 +9,11 @@ export default defineEventHandler(async (event) => {
         const page = query.page ? parseInt(query.page as string) : 1
         const pageSize = query.pageSize ? parseInt(query.pageSize as string) : 20
 
-        const where = categoryId ? { categoryId } : {}
+        // 构建查询条件，添加状态过滤，只显示已批准的主题
+        const where = {
+            ...(categoryId ? { categoryId } : {}),
+            status: 'approved'  // 只返回已批准的主题
+        }
 
         // 获取总数
         const total = await prisma.forumTopic.count({ where })
