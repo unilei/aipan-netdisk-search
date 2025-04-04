@@ -91,6 +91,19 @@
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">我的论坛</h2>
+            <el-icon class="text-2xl text-indigo-500">
+              <i class="fas fa-comments"></i>
+            </el-icon>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">管理您的主题和回复</p>
+          <el-button type="primary" @click="() => navigateTo('/user/forum')" class="w-full">
+            <i class="fas fa-list-ul mr-1"></i>
+            管理论坛内容
+          </el-button>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
+          <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">VOD 视频源</h2>
             <el-icon class="text-2xl text-purple-500">
               <i class="fas fa-film"></i>
