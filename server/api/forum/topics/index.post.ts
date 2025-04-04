@@ -25,53 +25,44 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 使用 GithubSlugger 生成初始 slug（与博客系统类似）
+        // 创建slug
         const slugger = new GithubSlugger()
-        let initSlug = slugger.slug(title)
+        let slug = slugger.slug(title)
 
         // 如果无法从标题生成有效的slug，使用时间戳
-        if (!initSlug || initSlug === '') {
-            initSlug = `topic-${Date.now()}`
+        if (!slug || slug === '') {
+            slug = `topic-${Date.now()}`
         }
 
         // 检查slug是否已存在
         const existingTopicWithSlug = await prisma.forumTopic.findUnique({
-            where: { slug: initSlug }
+            where: { slug }
         })
 
         if (existingTopicWithSlug) {
             // 如果slug已存在，添加时间戳后缀
-            initSlug = `${initSlug}-${Date.now().toString().slice(-6)}`
+            slug = `${slug}-${Date.now().toString().slice(-6)}`
         }
 
         // 判断用户角色，管理员创建的主题直接审核通过
         const status = user.role === 'admin' ? 'approved' : 'pending';
 
-        // 创建主题，添加状态字段
+        // 创建主题
         const topic = await prisma.forumTopic.create({
             data: {
                 title,
                 content,
-                slug: initSlug,
-                categoryId: parseInt(categoryId),
+                slug,
                 authorId: user.userId,
+                categoryId: Number(categoryId),
                 status: status // 添加状态字段，非管理员创建的主题默认为待审核状态
             }
         })
 
-        // 创建更具体的最终slug（包含主题ID）
-        const finalSlug = slugger.slug(`${title}-${topic.id}`)
-
-        // 更新主题的slug
-        const updatedTopic = await prisma.forumTopic.update({
-            where: { id: topic.id },
-            data: { slug: finalSlug }
-        })
-
         return {
             success: true,
-            message: status === 'approved' ? '主题已发布' : '主题已提交，等待审核',
-            data: updatedTopic
+            message: status === 'approved' ? '主题发布成功' : '主题已提交，等待审核',
+            data: topic
         }
     } catch (error: any) {
         console.error('创建主题失败:', error)

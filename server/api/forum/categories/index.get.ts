@@ -11,7 +11,11 @@ export default defineEventHandler(async (event) => {
             include: {
                 _count: {
                     select: {
-                        topics: true
+                        topics: {
+                            where: {
+                                status: 'approved'
+                            }
+                        }
                     }
                 }
             }

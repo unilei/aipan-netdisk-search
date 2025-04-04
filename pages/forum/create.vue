@@ -160,34 +160,53 @@ const rules = {
 // 表单提交
 const submitting = ref(false)
 
-const handleSubmit = () => {
-    formRef.value.validate(async (valid) => {
-        if (!valid) return
+const handleSubmit = async () => {
+    if (submitting.value) return
 
+    if (!form.title.trim()) {
+        ElMessage.error('请输入标题')
+        return
+    }
+
+    if (!form.content.trim()) {
+        ElMessage.error('请输入内容')
+        return
+    }
+
+    try {
         submitting.value = true
+        const response = await $fetch('/api/forum/topics', {
+            method: 'POST',
+            body: {
+                title: form.title,
+                content: form.content,
+                categoryId: form.categoryId
+            },
+            headers: {
+                "authorization": "Bearer " + useCookie('token').value
+            }
+        })
 
-        try {
-            const response = await $fetch('/api/forum/topics', {
-                method: 'POST',
-                body: form,
-                headers: {
-                    "authorization": "Bearer " + useCookie('token').value
-                }
-            })
-
-            if (response.success) {
-                ElMessage.success('主题发布成功')
+        if (response.success) {
+            // 根据主题状态决定后续操作
+            if (response.data && response.data.status === 'approved') {
+                // 已批准的主题直接跳转到详情页
+                ElMessage.success('发布成功')
                 router.push(`/forum/topic/${response.data.slug}`)
             } else {
-                ElMessage.error(response.message || '发布失败')
+                // 待审核的主题显示提示信息并返回论坛首页
+                ElMessage.success('主题已提交，等待审核')
+                router.push('/forum')
             }
-        } catch (error) {
-            console.error('发布主题失败:', error)
-            ElMessage.error('发布失败，请稍后重试')
-        } finally {
-            submitting.value = false
+        } else {
+            ElMessage.error(response.message || '发布失败')
         }
-    })
+    } catch (error) {
+        console.error('主题发布失败:', error)
+        ElMessage.error('发布失败')
+    } finally {
+        submitting.value = false
+    }
 }
 
 function navigateToLogin() {

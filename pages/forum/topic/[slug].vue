@@ -19,7 +19,7 @@
                     </client-only>
                     <i class="fas fa-chevron-right mx-2 text-gray-400 text-[10px]"></i>
                     <span class="text-gray-900 dark:text-white truncate">{{ topic?.title || '加载中...'
-                        }}</span>
+                    }}</span>
                 </div>
             </div>
         </div>
@@ -129,7 +129,7 @@
                                     </div>
                                     <div class="text-[10px] text-gray-500 dark:text-gray-400">{{
                                         formatDate(post.createdAt)
-                                        }}</div>
+                                    }}</div>
                                 </div>
                             </div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">
@@ -255,9 +255,8 @@ async function submitReply() {
         return
     }
 
-    submitting.value = true
-
     try {
+        submitting.value = true
         const response = await $fetch(`/api/forum/topics/${slug}/reply`, {
             method: 'POST',
             body: {
@@ -269,15 +268,19 @@ async function submitReply() {
         })
 
         if (response.success) {
-            ElMessage.success('回复成功')
+            ElMessage.success(response.message || '回复成功')
             replyContent.value = ''
-            refresh()
+
+            // 如果回复状态是approved，则直接添加到页面，否则不添加
+            if (response.data && response.data.status === 'approved') {
+                refresh() // 刷新数据以显示新回复
+            }
         } else {
             ElMessage.error(response.message || '回复失败')
         }
     } catch (error) {
-        console.error('回复发送失败:', error)
-        ElMessage.error('回复失败，请稍后重试')
+        console.error('发布回复失败:', error)
+        ElMessage.error('发布回复失败')
     } finally {
         submitting.value = false
     }
