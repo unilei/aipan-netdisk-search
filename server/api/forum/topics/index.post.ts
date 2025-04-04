@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-import slugify from 'slugify'
+import GithubSlugger from 'github-slugger'
 import prisma from "~/lib/prisma"
 
 export default defineEventHandler(async (event) => {
@@ -25,15 +25,23 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 生成唯一的slug
-        let slug = slugify(title, { lower: true, strict: true })
+        // 使用 GithubSlugger 生成初始 slug（与博客系统类似）
+        const slugger = new GithubSlugger()
+        let initSlug = slugger.slug(title)
+
+        // 如果无法从标题生成有效的slug，使用时间戳
+        if (!initSlug || initSlug === '') {
+            initSlug = `topic-${Date.now()}`
+        }
+
+        // 检查slug是否已存在
         const existingTopicWithSlug = await prisma.forumTopic.findUnique({
-            where: { slug }
+            where: { slug: initSlug }
         })
 
         if (existingTopicWithSlug) {
-            // 如果slug已存在，添加随机后缀
-            slug = `${slug}-${Date.now().toString().slice(-6)}`
+            // 如果slug已存在，添加时间戳后缀
+            initSlug = `${initSlug}-${Date.now().toString().slice(-6)}`
         }
 
         // 创建主题
@@ -41,15 +49,24 @@ export default defineEventHandler(async (event) => {
             data: {
                 title,
                 content,
-                slug,
+                slug: initSlug,
                 categoryId: parseInt(categoryId),
                 authorId: user.userId,
             }
         })
 
+        // 创建更具体的最终slug（包含主题ID）
+        const finalSlug = slugger.slug(`${title}-${topic.id}`)
+
+        // 更新主题的slug
+        const updatedTopic = await prisma.forumTopic.update({
+            where: { id: topic.id },
+            data: { slug: finalSlug }
+        })
+
         return {
             success: true,
-            data: topic
+            data: updatedTopic
         }
     } catch (error: any) {
         console.error('创建主题失败:', error)

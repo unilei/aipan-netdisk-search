@@ -3,82 +3,82 @@
         <!-- 返回导航 -->
         <div
             class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10 shadow-sm">
-            <div class="container mx-auto px-4">
-                <div class="py-4 flex items-center text-sm">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="py-3 flex items-center text-xs">
                     <NuxtLink to="/forum"
                         class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center">
-                        <i class="fas fa-home mr-1"></i>
+                        <i class="fas fa-home mr-1 text-xs"></i>
                         论坛首页
                     </NuxtLink>
-                    <i class="fas fa-chevron-right mx-2 text-gray-400 text-xs"></i>
+                    <i class="fas fa-chevron-right mx-2 text-gray-400 text-[10px]"></i>
                     <client-only>
                         <NuxtLink v-if="topic?.category" :to="`/forum/category/${topic.category.slug}`"
                             class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
                             {{ topic.category.name }}
                         </NuxtLink>
                     </client-only>
-                    <i class="fas fa-chevron-right mx-2 text-gray-400 text-xs"></i>
-                    <span class="text-gray-900 dark:text-white font-medium truncate">{{ topic?.title || '加载中...'
-                    }}</span>
+                    <i class="fas fa-chevron-right mx-2 text-gray-400 text-[10px]"></i>
+                    <span class="text-gray-900 dark:text-white truncate">{{ topic?.title || '加载中...'
+                        }}</span>
                 </div>
             </div>
         </div>
 
-        <div class="container mx-auto px-4 py-6">
+        <div class="max-w-6xl mx-auto px-4 py-4">
             <!-- 加载状态 -->
-            <div v-if="loading" class="flex flex-col space-y-4">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <div v-if="loading" class="flex flex-col space-y-3">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
                     <el-skeleton :rows="2" animated />
                 </div>
-                <div v-for="i in 3" :key="i" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <el-skeleton :rows="6" animated />
+                <div v-for="i in 3" :key="i" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+                    <el-skeleton :rows="4" animated />
                 </div>
             </div>
 
-            <div v-else-if="error" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-                <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">加载失败</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-6">{{ error.message || '无法加载主题内容' }}</p>
-                <div class="flex justify-center space-x-4">
-                    <el-button @click="refresh">重试</el-button>
+            <div v-else-if="error" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 text-center">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-3"></i>
+                <h2 class="text-base font-medium text-gray-800 dark:text-gray-200 mb-2">加载失败</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">{{ error.message || '无法加载主题内容' }}</p>
+                <div class="flex justify-center space-x-3">
+                    <el-button @click="refresh" size="small" class="!text-xs">重试</el-button>
                     <NuxtLink to="/forum">
-                        <el-button>返回论坛</el-button>
+                        <el-button size="small" class="!text-xs">返回论坛</el-button>
                     </NuxtLink>
                 </div>
             </div>
 
             <div v-else>
                 <!-- 主题标题卡片 -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-                    <div class="flex justify-between items-start mb-4">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4">
+                    <div class="flex justify-between items-start mb-3">
                         <div>
                             <div class="flex items-center">
                                 <span v-if="topic.isSticky"
-                                    class="inline-block bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-xs font-medium px-2 py-0.5 rounded-full mr-2">
-                                    <i class="fas fa-thumbtack mr-1"></i>置顶
+                                    class="inline-block bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-[10px] font-medium px-1.5 py-0.5 rounded-full mr-1.5">
+                                    <i class="fas fa-thumbtack mr-0.5 text-[10px]"></i>置顶
                                 </span>
                                 <span v-if="topic.isLocked"
-                                    class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs font-medium px-2 py-0.5 rounded-full mr-2">
-                                    <i class="fas fa-lock mr-1"></i>已锁定
+                                    class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-[10px] font-medium px-1.5 py-0.5 rounded-full mr-1.5">
+                                    <i class="fas fa-lock mr-0.5 text-[10px]"></i>已锁定
                                 </span>
-                                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ topic.title }}</h1>
+                                <h1 class="text-base font-medium text-gray-900 dark:text-white">{{ topic.title }}</h1>
                             </div>
-                            <div class="mt-2 flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400">
-                                <div class="flex items-center mr-4">
+                            <div class="mt-2 flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400">
+                                <div class="flex items-center mr-3">
                                     <div
-                                        class="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-400 mr-1 overflow-hidden">
+                                        class="w-4 h-4 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-400 mr-1 overflow-hidden text-[10px]">
                                         <span>{{ topic.author.username.charAt(0).toUpperCase() }}</span>
                                     </div>
                                     <span>{{ topic.author.username }}</span>
                                 </div>
-                                <span class="mr-4">
-                                    <i class="far fa-clock mr-1"></i>{{ formatDate(topic.createdAt) }}
+                                <span class="mr-3">
+                                    <i class="far fa-clock mr-1 text-xs"></i>{{ formatDate(topic.createdAt) }}
                                 </span>
-                                <span class="mr-4">
-                                    <i class="far fa-eye mr-1"></i>{{ topic.viewCount }} 次浏览
+                                <span class="mr-3">
+                                    <i class="far fa-eye mr-1 text-xs"></i>{{ topic.viewCount }} 次浏览
                                 </span>
                                 <span>
-                                    <i class="far fa-comment mr-1"></i>{{ posts?.length || 0 }} 个回复
+                                    <i class="far fa-comment mr-1 text-xs"></i>{{ posts?.length || 0 }} 个回复
                                 </span>
                             </div>
                         </div>
@@ -86,63 +86,65 @@
                         <div class="flex space-x-2">
                             <client-only>
                                 <el-button v-if="canModerate && !topic.isSticky" size="small" @click="toggleSticky"
-                                    class="!bg-purple-50 !text-purple-700 !border-purple-200 hover:!bg-purple-100">
-                                    <i class="fas fa-thumbtack mr-1"></i>置顶
+                                    class="!bg-purple-50 !text-purple-700 !border-purple-200 hover:!bg-purple-100 !text-xs !h-7">
+                                    <i class="fas fa-thumbtack mr-1 text-xs"></i>置顶
                                 </el-button>
                                 <el-button v-if="canModerate && topic.isSticky" size="small" @click="toggleSticky"
-                                    class="!bg-purple-100 !text-purple-700 !border-purple-200 hover:!bg-purple-200">
-                                    <i class="fas fa-thumbtack mr-1"></i>取消置顶
+                                    class="!bg-purple-100 !text-purple-700 !border-purple-200 hover:!bg-purple-200 !text-xs !h-7">
+                                    <i class="fas fa-thumbtack mr-1 text-xs"></i>取消置顶
                                 </el-button>
                                 <el-button v-if="canModerate && !topic.isLocked" size="small" @click="toggleLock"
-                                    class="!bg-gray-50 !text-gray-700 !border-gray-200 hover:!bg-gray-100">
-                                    <i class="fas fa-lock mr-1"></i>锁定
+                                    class="!bg-gray-50 !text-gray-700 !border-gray-200 hover:!bg-gray-100 !text-xs !h-7">
+                                    <i class="fas fa-lock mr-1 text-xs"></i>锁定
                                 </el-button>
                                 <el-button v-if="canModerate && topic.isLocked" size="small" @click="toggleLock"
-                                    class="!bg-gray-100 !text-gray-700 !border-gray-200 hover:!bg-gray-200">
-                                    <i class="fas fa-lock-open mr-1"></i>解除锁定
+                                    class="!bg-gray-100 !text-gray-700 !border-gray-200 hover:!bg-gray-200 !text-xs !h-7">
+                                    <i class="fas fa-lock-open mr-1 text-xs"></i>解除锁定
                                 </el-button>
                             </client-only>
                         </div>
                     </div>
 
-                    <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
-                        <div class="prose dark:prose-invert max-w-none" v-html="topic.content"></div>
+                    <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
+                        <div class="prose dark:prose-invert max-w-none text-sm" v-html="topic.content"></div>
                     </div>
                 </div>
 
                 <!-- 回复列表 -->
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">回复 ({{ posts?.length || 0 }})</h2>
+                <h2 class="text-sm font-medium text-gray-900 dark:text-white mb-3">回复 ({{ posts?.length || 0 }})</h2>
 
-                <div v-if="posts && posts.length > 0" class="space-y-4 mb-8">
+                <div v-if="posts && posts.length > 0" class="space-y-3 mb-6">
                     <div v-for="(post, index) in posts" :key="post.id"
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
                         <div
-                            class="bg-gray-50 dark:bg-gray-750 px-6 py-3 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                            class="bg-gray-50 dark:bg-gray-750 px-4 py-2 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
                             <div class="flex items-center">
                                 <div
-                                    class="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-400 mr-2 overflow-hidden">
+                                    class="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-400 mr-2 overflow-hidden text-[11px]">
                                     <span>{{ post.author.username.charAt(0).toUpperCase() }}</span>
                                 </div>
                                 <div>
-                                    <div class="font-medium text-gray-900 dark:text-white">{{ post.author.username }}
+                                    <div class="text-xs font-medium text-gray-900 dark:text-white">{{
+                                        post.author.username }}
                                     </div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(post.createdAt)
+                                    <div class="text-[10px] text-gray-500 dark:text-gray-400">{{
+                                        formatDate(post.createdAt)
                                         }}</div>
                                 </div>
                             </div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                            <div class="text-xs text-gray-500 dark:text-gray-400">
                                 #{{ index + 1 }}
                             </div>
                         </div>
-                        <div class="p-6">
-                            <div class="prose dark:prose-invert max-w-none" v-html="post.content"></div>
+                        <div class="p-4">
+                            <div class="prose dark:prose-invert max-w-none text-xs" v-html="post.content"></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 回复表单 -->
-                <div v-if="!topic.isLocked" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">发表回复</h3>
+                <div v-if="!topic.isLocked" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+                    <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">发表回复</h3>
 
                     <div v-if="user">
                         <el-form @submit.prevent="submitReply">
@@ -150,35 +152,35 @@
                                 <client-only>
                                     <template #fallback>
                                         <div
-                                            class="border border-gray-200 dark:border-gray-700 rounded p-4 h-[300px] flex items-center justify-center bg-gray-50 dark:bg-gray-800">
-                                            <p class="text-gray-400">编辑器加载中...</p>
+                                            class="border border-gray-200 dark:border-gray-700 rounded p-4 h-[250px] flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+                                            <p class="text-gray-400 text-xs">编辑器加载中...</p>
                                         </div>
                                     </template>
                                     <lazy-md-editor v-model="replyContent" placeholder="在这里输入您的回复内容..." language="zh-CN"
-                                        :toolbars="mdEditorToolbars" style="height: 300px" />
+                                        :toolbars="mdEditorToolbars" style="height: 250px" />
                                 </client-only>
                             </el-form-item>
                             <el-form-item>
                                 <el-button type="primary" :loading="submitting" @click="submitReply"
-                                    class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0">
+                                    class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs !h-8">
                                     发表回复
                                 </el-button>
                             </el-form-item>
                         </el-form>
                     </div>
                     <div v-else
-                        class="text-center py-6 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-750">
-                        <p class="text-gray-600 dark:text-gray-400 mb-4">您需要登录后才能回复</p>
-                        <el-button type="primary" @click="navigateToLogin"
-                            class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0">
+                        class="text-center py-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-750">
+                        <p class="text-gray-600 dark:text-gray-400 text-xs mb-3">您需要登录后才能回复</p>
+                        <el-button type="primary" @click="navigateToLogin" size="small"
+                            class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
                             登录 / 注册
                         </el-button>
                     </div>
                 </div>
 
-                <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center">
-                    <i class="fas fa-lock text-gray-400 text-xl mb-2"></i>
-                    <p class="text-gray-600 dark:text-gray-400">该主题已被锁定，无法回复</p>
+                <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 text-center">
+                    <i class="fas fa-lock text-gray-400 text-sm mb-2"></i>
+                    <p class="text-gray-600 dark:text-gray-400 text-xs">该主题已被锁定，无法回复</p>
                 </div>
             </div>
         </div>
@@ -199,7 +201,7 @@ const LazyMdEditor = defineAsyncComponent({
     timeout: 3000,
     errorComponent: {
         template: `<div class="border border-red-200 dark:border-red-800 rounded p-4 bg-red-50 dark:bg-red-900/50">
-                <p class="text-red-500 dark:text-red-400">编辑器加载失败，请刷新页面重试</p>
+                <p class="text-red-500 dark:text-red-400 text-xs">编辑器加载失败，请刷新页面重试</p>
                </div>`
     },
     suspensible: false
@@ -369,18 +371,27 @@ onMounted(async () => {
 }
 
 .prose pre {
-    @apply rounded-md bg-gray-100 dark:bg-gray-800 p-4 overflow-x-auto text-sm;
+    @apply rounded-md bg-gray-100 dark:bg-gray-800 p-3 overflow-x-auto text-xs;
 }
 
 .prose code {
-    @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm;
+    @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-xs;
 }
 
 .prose blockquote {
-    @apply border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic;
+    @apply border-l-4 border-gray-300 dark:border-gray-600 pl-3 italic;
 }
 
 .prose a {
     @apply text-blue-600 dark:text-blue-400 hover:underline;
+}
+
+/* 缩小编辑器字体大小 */
+:deep(.md-editor-content) {
+    font-size: 0.875rem;
+}
+
+:deep(.md-editor-toolbar) {
+    font-size: 0.875rem;
 }
 </style>
