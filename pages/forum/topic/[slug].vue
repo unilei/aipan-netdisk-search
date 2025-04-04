@@ -105,8 +105,9 @@
                         </div>
                     </div>
 
-                    <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
-                        <div class="prose dark:prose-invert max-w-none text-sm" v-html="topic.content"></div>
+                    <div class="px-6 py-4">
+                        <div class="markdown-body prose prose-sm dark:prose-invert max-w-none" v-html="parsedContent">
+                        </div>
                     </div>
                 </div>
 
@@ -136,8 +137,9 @@
                                 #{{ index + 1 }}
                             </div>
                         </div>
-                        <div class="p-4">
-                            <div class="prose dark:prose-invert max-w-none text-xs" v-html="post.content"></div>
+                        <div class="px-6 py-4">
+                            <div class="markdown-body prose prose-sm dark:prose-invert max-w-none"
+                                v-html="parseMarkdown(post.content)"></div>
                         </div>
                     </div>
                 </div>
@@ -191,8 +193,11 @@
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { ElMessage } from 'element-plus'
-import { defineAsyncComponent, shallowRef } from 'vue'
+import { defineAsyncComponent, shallowRef, computed, ref, onMounted } from 'vue'
 import 'md-editor-v3/lib/style.css'
+import { marked } from "marked";
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-dark.css";
 
 // 使用defineAsyncComponent异步加载编辑器组件，并添加loading和error处理
 const LazyMdEditor = defineAsyncComponent({
@@ -240,6 +245,35 @@ const canModerate = computed(() => {
 
 const replyContent = ref('')
 const submitting = ref(false)
+
+const mounted = ref(false);
+
+// 配置 marked.js
+onMounted(() => {
+    mounted.value = true;
+
+    // 配置 marked.js
+    marked.setOptions({
+        gfm: true,
+        breaks: true,
+        headerIds: true,
+        langPrefix: "hljs language-",
+        highlight: function (code, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+                try {
+                    return hljs.highlight(code, { language: lang }).value;
+                } catch (__) { }
+            }
+            return hljs.highlightAuto(code).value;
+        },
+    });
+});
+
+// Computed property to safely parse the topic content
+const parsedContent = computed(() => {
+    if (!topic.value?.content || !mounted.value) return "";
+    return marked.parse(topic.value.content);
+});
 
 function formatDate(dateString) {
     try {
@@ -358,6 +392,12 @@ onMounted(async () => {
         console.error('增加浏览量失败:', error)
     }
 })
+
+// 解析markdown内容的函数
+function parseMarkdown(content) {
+    if (!content || !mounted.value) return "";
+    return marked.parse(content);
+}
 </script>
 
 <style>
@@ -367,25 +407,30 @@ onMounted(async () => {
 }
 
 /* 文章内容样式 */
-.prose img {
+.markdown-body {
+    @apply text-gray-800 dark:text-gray-200;
+    font-size: 14px;
+}
+
+.markdown-body img {
     @apply rounded-lg;
     max-width: 100%;
     height: auto;
 }
 
-.prose pre {
-    @apply rounded-md bg-gray-100 dark:bg-gray-800 p-3 overflow-x-auto text-xs;
+.markdown-body pre {
+    @apply rounded-md bg-gray-100 dark:bg-gray-800 p-3 overflow-x-auto;
 }
 
-.prose code {
-    @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-xs;
+.markdown-body code {
+    @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded;
 }
 
-.prose blockquote {
+.markdown-body blockquote {
     @apply border-l-4 border-gray-300 dark:border-gray-600 pl-3 italic;
 }
 
-.prose a {
+.markdown-body a {
     @apply text-blue-600 dark:text-blue-400 hover:underline;
 }
 

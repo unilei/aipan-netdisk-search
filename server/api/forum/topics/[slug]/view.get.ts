@@ -2,7 +2,7 @@ import prisma from "~/lib/prisma"
 
 export default defineEventHandler(async (event) => {
     try {
-        const slug = event.context.params?.slug
+        const { slug } = getRouterParams(event)
 
         if (!slug) {
             return {
@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
         // 查找主题
         const topic = await prisma.forumTopic.findUnique({
-            where: { slug }
+            where: { slug: decodeURI(slug) }
         })
 
         if (!topic) {
