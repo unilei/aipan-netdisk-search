@@ -17,12 +17,59 @@
         </div>
 
         <div class="max-w-6xl mx-auto px-4 py-4">
-            <div v-if="loading" class="flex flex-col space-y-3">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-                    <el-skeleton :rows="2" animated />
+            <div v-if="loading" class="flex flex-col space-y-4">
+                <!-- 分类信息卡片骨架屏 -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-3 mb-4">
+                    <div class="flex items-start">
+                        <div class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg mr-3 flex-shrink-0"></div>
+                        <div class="flex-1">
+                            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-2"></div>
+                            <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mb-2"></div>
+                            <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mt-2"></div>
+                        </div>
+                        <div class="flex-shrink-0">
+                            <div class="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        </div>
+                    </div>
                 </div>
-                <div v-for="i in 5" :key="i" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-                    <el-skeleton :rows="3" animated />
+
+                <!-- 主题列表骨架屏 -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+                    <!-- 表头骨架 -->
+                    <div
+                        class="border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 py-2 px-4 flex">
+                        <div class="flex-1 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        <div class="w-24 hidden md:block ml-2 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        <div class="w-24 hidden md:block ml-2 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                        <div class="w-36 hidden md:block ml-2 h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </div>
+
+                    <!-- 主题项骨架 -->
+                    <div v-for="i in 5" :key="i"
+                        class="border-b border-gray-100 dark:border-gray-700 last:border-none py-3 px-4">
+                        <div class="flex">
+                            <div class="flex-1 pr-3">
+                                <div class="flex items-center mb-2">
+                                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded-full mr-2"></div>
+                                    <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                                </div>
+                            </div>
+                            <div class="w-24 text-center hidden md:block">
+                                <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-8 mb-1"></div>
+                                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-12"></div>
+                            </div>
+                            <div class="w-24 text-center hidden md:block">
+                                <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-8 mb-1"></div>
+                                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-12"></div>
+                            </div>
+                            <div class="w-36 text-center hidden md:block">
+                                <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded mx-auto w-20"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -180,8 +227,8 @@ const page = ref(parseInt(route.query.page || '1'))
 const pageSize = 20
 const categoryId = ref(null)
 
-// 先获取分类信息
-const { data: categoryData, pending: categoryLoading, refresh: refreshCategory } = await useFetch(`/api/forum/categories`)
+// 先获取分类信息，移除 await 使其异步加载
+const { data: categoryData, pending: categoryLoading, refresh: refreshCategory } = useFetch(`/api/forum/categories`)
 
 const category = computed(() => {
     if (!categoryData.value?.success) return null
@@ -192,8 +239,8 @@ const category = computed(() => {
     return foundCategory
 })
 
-// 在分类信息加载后获取主题列表
-const { data, pending: topicsLoading, refresh: refreshTopics } = await useFetch(`/api/forum/topics`, {
+// 异步获取主题列表，移除 await
+const { data, pending: topicsLoading, refresh: refreshTopics } = useFetch(`/api/forum/topics`, {
     query: {
         categoryId: computed(() => categoryId.value),
         page: page,
