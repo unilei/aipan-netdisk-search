@@ -11,9 +11,12 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 获取主题详情
-        const topic = await prisma.forumTopic.findUnique({
-            where: { slug },
+        // 获取主题详情，只返回已批准的主题
+        const topic = await prisma.forumTopic.findFirst({
+            where: {
+                slug,
+                status: 'approved' // 只返回已批准的主题
+            },
             include: {
                 author: {
                     select: {
@@ -40,11 +43,17 @@ export default defineEventHandler(async (event) => {
         const pageSize = query.pageSize ? parseInt(query.pageSize as string) : 20
 
         const total = await prisma.forumPost.count({
-            where: { topicId: topic.id }
+            where: {
+                topicId: topic.id,
+                status: 'approved' // 只统计已批准的回复
+            }
         })
 
         const posts = await prisma.forumPost.findMany({
-            where: { topicId: topic.id },
+            where: {
+                topicId: topic.id,
+                status: 'approved' // 只查询已批准的回复
+            },
             orderBy: { createdAt: 'asc' },
             include: {
                 author: {

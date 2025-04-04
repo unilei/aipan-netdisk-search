@@ -44,7 +44,10 @@ export default defineEventHandler(async (event) => {
             initSlug = `${initSlug}-${Date.now().toString().slice(-6)}`
         }
 
-        // 创建主题
+        // 判断用户角色，管理员创建的主题直接审核通过
+        const status = user.role === 'admin' ? 'approved' : 'pending';
+
+        // 创建主题，添加状态字段
         const topic = await prisma.forumTopic.create({
             data: {
                 title,
@@ -52,6 +55,7 @@ export default defineEventHandler(async (event) => {
                 slug: initSlug,
                 categoryId: parseInt(categoryId),
                 authorId: user.userId,
+                status: status // 添加状态字段，非管理员创建的主题默认为待审核状态
             }
         })
 
@@ -66,6 +70,7 @@ export default defineEventHandler(async (event) => {
 
         return {
             success: true,
+            message: status === 'approved' ? '主题已发布' : '主题已提交，等待审核',
             data: updatedTopic
         }
     } catch (error: any) {
