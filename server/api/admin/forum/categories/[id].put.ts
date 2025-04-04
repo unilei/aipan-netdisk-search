@@ -22,20 +22,25 @@ export default defineEventHandler(async (event) => {
         }
 
         const body = await readBody(event)
-        const { name, description, icon, order } = body
+        const { name, description, icon, order, slug } = body
 
         // 验证
-        if (!name || !description) {
+        if (!name || !description || !slug) {
             return {
                 success: false,
-                message: '分类名称和描述不能为空'
+                message: '分类名称、描述和URL标识不能为空'
             }
         }
 
-        // 生成slug
-        const slug = slugify(name, { lower: true, strict: true })
+        // 验证slug格式
+        if (!/^[a-z0-9-]+$/.test(slug)) {
+            return {
+                success: false,
+                message: 'URL标识格式不正确，只能包含小写字母、数字和连字符'
+            }
+        }
 
-        // 检查名称是否已存在（排除当前编辑的分类）
+        // 检查名称和slug是否已存在（排除当前编辑的分类）
         const existingCategory = await prisma.forumCategory.findFirst({
             where: {
                 OR: [
