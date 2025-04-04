@@ -19,7 +19,7 @@
                     </client-only>
                     <i class="fas fa-chevron-right mx-2 text-gray-400 text-xs"></i>
                     <span class="text-gray-900 dark:text-white font-medium truncate">{{ topic?.title || '加载中...'
-                        }}</span>
+                    }}</span>
                 </div>
             </div>
         </div>
@@ -127,7 +127,7 @@
                                     <div class="font-medium text-gray-900 dark:text-white">{{ post.author.username }}
                                     </div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(post.createdAt)
-                                    }}</div>
+                                        }}</div>
                                 </div>
                             </div>
                             <div class="text-sm text-gray-500 dark:text-gray-400">

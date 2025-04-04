@@ -25,6 +25,12 @@
                             </el-icon>
                             添加分类
                         </el-button>
+                        <el-button type="warning" @click="fixAllSlugs" :loading="loading" class="flex items-center">
+                            <el-icon class="mr-1">
+                                <Refresh />
+                            </el-icon>
+                            修复URL标识
+                        </el-button>
                         <el-button @click="() => navigateTo('/admin/dashboard')" class="flex items-center">
                             <el-icon class="mr-1">
                                 <ArrowLeft />
@@ -83,9 +89,15 @@
 
         <!-- 创建/编辑分类对话框 -->
         <el-dialog v-model="dialogVisible" :title="isEdit ? '编辑分类' : '添加分类'" width="500px">
-            <el-form :model="form" label-width="80px" @submit.prevent="submitForm">
+            <el-form :model="form" label-width="80px" @submit.prevent="submitForm" :rules="rules">
                 <el-form-item label="名称" required>
                     <el-input v-model="form.name" placeholder="请输入分类名称" />
+                </el-form-item>
+                <el-form-item label="URL标识" required>
+                    <el-input v-model="form.slug" placeholder="请输入URL标识，如：general-discussion" />
+                    <div class="text-xs text-gray-500 mt-1">
+                        只能包含小写字母、数字和连字符，不能包含空格和特殊字符
+                    </div>
                 </el-form-item>
                 <el-form-item label="描述" required>
                     <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入分类描述" />
@@ -120,7 +132,7 @@
 </template>
 
 <script setup>
-import { House, Plus, ArrowLeft, Edit, Delete } from '@element-plus/icons-vue'
+import { House, Plus, ArrowLeft, Edit, Delete, Refresh } from '@element-plus/icons-vue'
 
 definePageMeta({
     middleware: ['admin']
@@ -145,15 +157,38 @@ const selectedCategory = ref(null)
 const form = reactive({
     id: null,
     name: '',
+    slug: '',
     description: '',
     icon: '',
     order: 0
 })
 
+// 增加表单验证
+const validateSlug = (rule, value, callback) => {
+    if (!value) {
+        callback(new Error('URL标识不能为空'))
+    } else if (!/^[a-z0-9-]+$/.test(value)) {
+        callback(new Error('URL标识只能包含小写字母、数字和连字符'))
+    } else {
+        callback()
+    }
+}
+
+// 表单验证规则
+const rules = {
+    name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
+    slug: [
+        { required: true, message: 'URL标识不能为空', trigger: 'blur' },
+        { validator: validateSlug, trigger: 'blur' }
+    ],
+    description: [{ required: true, message: '请输入分类描述', trigger: 'blur' }]
+}
+
 // 重置表单
 function resetForm() {
     form.id = null
     form.name = ''
+    form.slug = ''
     form.description = ''
     form.icon = ''
     form.order = 0
@@ -172,6 +207,7 @@ function handleEdit(category) {
     isEdit.value = true
     form.id = category.id
     form.name = category.name
+    form.slug = category.slug
     form.description = category.description
     form.icon = category.icon || ''
     form.order = category.order
@@ -202,6 +238,7 @@ async function submitForm() {
             method,
             body: {
                 name: form.name,
+                slug: form.slug,
                 description: form.description,
                 icon: form.icon,
                 order: form.order
@@ -253,6 +290,33 @@ async function confirmDelete() {
         ElMessage.error('删除失败，请重试')
     } finally {
         deleting.value = false
+    }
+}
+
+// 添加修复slug的方法
+async function fixAllSlugs() {
+    try {
+        loading.value = true
+        const token = useCookie('token').value
+        const response = await $fetch('/api/admin/forum/categories/fix-slugs', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        if (response.success) {
+            ElMessage.success(response.message || '所有分类URL标识已修复')
+            // 重新加载分类数据
+            refresh()
+        } else {
+            ElMessage.error(response.message || '修复URL标识失败')
+        }
+    } catch (error) {
+        console.error('修复URL标识失败:', error)
+        ElMessage.error('修复URL标识失败，请稍后重试')
+    } finally {
+        loading.value = false
     }
 }
 </script>
