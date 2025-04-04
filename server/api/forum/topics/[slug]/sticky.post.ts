@@ -21,7 +21,8 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        const slug = event.context.params?.slug
+        const { slug } = getRouterParams(event)
+
         if (!slug) {
             return {
                 success: false,
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
 
         // 检查主题是否存在
         const topic = await prisma.forumTopic.findUnique({
-            where: { slug }
+            where: { slug: decodeURI(slug) }
         })
 
         if (!topic) {
