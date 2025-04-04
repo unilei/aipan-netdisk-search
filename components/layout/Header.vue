@@ -24,35 +24,33 @@ const navItems = [
       dark: "fa-solid fa-blog",
     },
   },
+  {
+    name: "论坛",
+    path: "/forum",
+    icon: {
+      light: "fa-solid fa-comments",
+      dark: "fa-solid fa-comments",
+    },
+  },
 ];
 </script>
 
 <template>
   <el-affix :z-index="3000">
-    <header
-      class="border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm bg-white/80 dark:bg-gray-700"
-    >
+    <header class="border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm bg-white/80 dark:bg-gray-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <!-- Logo 区域 -->
           <div
             class="flex cursor-pointer items-center justify-center gap-2 md:gap-2 hover:scale-105 transition-transform duration-300"
-            @click="goHome()"
-          >
-            <img
-              class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90"
-              src="@/assets/my-logo.png"
-              alt="logo"
-            />
+            @click="goHome()">
+            <img class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
             <div class="text-left">
               <h1
-                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
-              >
+                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                 AIPAN.ME
               </h1>
-              <p
-                class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400"
-              >
+              <p class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400">
                 爱盼 - 资源随心，娱乐无限
               </p>
             </div>
@@ -63,16 +61,10 @@ const navItems = [
             <div class="flex items-center space-x-4">
               <!-- 导航菜单 -->
               <nav class="hidden sm:flex items-center space-x-4">
-                <nuxt-link
-                  v-for="item in navItems"
-                  :key="item.path"
-                  :to="item.path"
-                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
-                >
-                  <i
-                    :class="colorMode.preference === 'light' ? item.icon.light : item.icon.dark"
-                    class="mr-2 transition-opacity duration-200 dark:opacity-90"
-                  ></i>
+                <nuxt-link v-for="item in navItems" :key="item.path" :to="item.path"
+                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80">
+                  <i :class="colorMode.preference === 'light' ? item.icon.light : item.icon.dark"
+                    class="mr-2 transition-opacity duration-200 dark:opacity-90"></i>
                   {{ item.name }}
                 </nuxt-link>
               </nav>
@@ -82,17 +74,11 @@ const navItems = [
                 class="p-2 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
                 @click="
                   colorMode.preference =
-                    colorMode.preference === 'dark' ? 'light' : 'dark'
-                "
-              >
-                <i
-                  v-if="colorMode.preference === 'dark'"
-                  class="fa-solid fa-sun   transition-transform duration-300 hover:rotate-90"
-                ></i>
-                <i
-                  v-else
-                  class="fa-solid fa-moon  transition-transform duration-300 hover:rotate-90"
-                ></i>
+                  colorMode.preference === 'dark' ? 'light' : 'dark'
+                  ">
+                <i v-if="colorMode.preference === 'dark'"
+                  class="fa-solid fa-sun   transition-transform duration-300 hover:rotate-90"></i>
+                <i v-else class="fa-solid fa-moon  transition-transform duration-300 hover:rotate-90"></i>
               </button>
             </div>
           </client-only>
