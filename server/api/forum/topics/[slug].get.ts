@@ -2,7 +2,7 @@ import prisma from "~/lib/prisma"
 
 export default defineEventHandler(async (event) => {
     try {
-        const slug = event.context.params?.slug
+        const { slug } = getRouterParams(event)
 
         if (!slug) {
             return {
@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
         // 获取主题详情，只返回已批准的主题
         const topic = await prisma.forumTopic.findFirst({
             where: {
-                slug,
+                slug: decodeURI(slug),
                 status: 'approved' // 只返回已批准的主题
             },
             include: {
