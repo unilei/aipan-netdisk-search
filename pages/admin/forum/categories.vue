@@ -31,6 +31,18 @@
                             </el-icon>
                             修复URL标识
                         </el-button>
+                        <el-button @click="() => navigateTo('/admin/forum/topics')" class="flex items-center">
+                            <el-icon class="mr-1">
+                                <Document />
+                            </el-icon>
+                            主题管理
+                        </el-button>
+                        <el-button @click="() => navigateTo('/admin/forum/posts')" class="flex items-center">
+                            <el-icon class="mr-1">
+                                <ChatDotRound />
+                            </el-icon>
+                            回复管理
+                        </el-button>
                         <el-button @click="() => navigateTo('/admin/dashboard')" class="flex items-center">
                             <el-icon class="mr-1">
                                 <ArrowLeft />
@@ -132,7 +144,7 @@
 </template>
 
 <script setup>
-import { House, Plus, ArrowLeft, Edit, Delete, Refresh } from '@element-plus/icons-vue'
+import { House, Plus, ArrowLeft, Edit, Delete, Refresh, Document, ChatDotRound } from '@element-plus/icons-vue'
 
 definePageMeta({
     middleware: ['admin']

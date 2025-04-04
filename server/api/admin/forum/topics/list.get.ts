@@ -12,18 +12,28 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        // 统计论坛主题数量
-        const count = await prisma.forumTopic.count()
+        // 获取简化的主题列表，用于下拉选择框
+        const topics = await prisma.forumTopic.findMany({
+            select: {
+                id: true,
+                title: true,
+                slug: true
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            take: 100 // 限制返回数量，避免数据过多
+        })
 
         return {
             success: true,
-            count
+            data: topics
         }
     } catch (error) {
-        console.error('获取论坛主题统计失败:', error)
+        console.error('获取主题列表失败:', error)
         return {
             success: false,
-            message: '获取论坛主题统计失败'
+            message: '获取主题列表失败'
         }
     }
 }) 

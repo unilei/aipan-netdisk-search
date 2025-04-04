@@ -203,7 +203,7 @@ const menuCards = [
         title: '论坛管理',
         description: '管理论坛分类和内容',
         icon: ChatLineRound,
-        link: '/admin/forum/categories',
+        link: '/admin/forum/topics',
         color: 'bg-cyan-500'
     },
     {

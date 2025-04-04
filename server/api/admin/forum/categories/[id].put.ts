@@ -1,11 +1,11 @@
 import prisma from "~/lib/prisma"
-import slugify from 'slugify'
+import GithubSlugger from 'github-slugger'
 
 export default defineEventHandler(async (event) => {
     try {
-        // 检查管理员权限
+        // 权限验证
         const user = event.context.user
-        if (!user || user.role !== 'admin') {
+        if (!user || user.role !== "admin") {
             throw createError({
                 statusCode: 403,
                 statusMessage: "Forbidden",
@@ -13,77 +13,71 @@ export default defineEventHandler(async (event) => {
             })
         }
 
-        const id = event.context.params?.id
-        if (!id) {
+        // 获取分类ID
+        const id = parseInt(event.context.params?.id || '')
+        if (!id || isNaN(id)) {
             return {
                 success: false,
-                message: '分类ID不能为空'
+                message: '无效的分类ID'
             }
         }
 
+        // 获取请求体
         const body = await readBody(event)
-        const { name, description, icon, order, slug } = body
+        const { name, slug, description, icon, order } = body
 
-        // 验证
-        if (!name || !description || !slug) {
+        // 验证必填字段
+        if (!name || !description) {
             return {
                 success: false,
-                message: '分类名称、描述和URL标识不能为空'
+                message: '分类名称和描述不能为空'
             }
         }
 
-        // 验证slug格式
-        if (!/^[a-z0-9-]+$/.test(slug)) {
-            return {
-                success: false,
-                message: 'URL标识格式不正确，只能包含小写字母、数字和连字符'
-            }
+        // 生成slug，如果没有提供
+        let finalSlug = slug
+        if (!finalSlug) {
+            const slugger = new GithubSlugger()
+            finalSlug = slugger.slug(name)
         }
 
-        // 检查名称和slug是否已存在（排除当前编辑的分类）
+        // 检查slug是否已被其他分类使用
         const existingCategory = await prisma.forumCategory.findFirst({
             where: {
-                OR: [
-                    { name },
-                    { slug }
-                ],
-                NOT: {
-                    id: parseInt(id)
-                }
+                slug: finalSlug,
+                id: { not: id }
             }
         })
 
         if (existingCategory) {
             return {
                 success: false,
-                message: '分类名称或URL已存在'
+                message: '该URL标识已被其他分类使用'
             }
         }
 
         // 更新分类
-        const category = await prisma.forumCategory.update({
-            where: { id: parseInt(id) },
+        const updatedCategory = await prisma.forumCategory.update({
+            where: { id },
             data: {
                 name,
+                slug: finalSlug,
                 description,
-                slug,
-                icon: icon || null,
-                order: order !== undefined ? parseInt(order) : 0,
+                icon: icon || 'fa fa-folder',
+                order: order ? parseInt(order) : 0
             }
         })
 
         return {
             success: true,
-            data: category
+            message: '分类更新成功',
+            data: updatedCategory
         }
-    } catch (error: any) {
-        console.error('更新论坛分类失败:', error)
-        if (error.statusCode) {
-            throw error
-        }
+    } catch (error) {
+        console.error('更新分类失败:', error)
         return {
             success: false,
-            message: '更新论坛分类失败'
+            message: '更新分类失败'
         }
     }
 }) 
