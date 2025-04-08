@@ -19,11 +19,11 @@ async function fetchWithRetry(url: string, options: any, retries = MAX_RETRIES):
         return await $fetch(url, options);
     } catch (error) {
         if (retries > 0) {
-            console.warn(`Request failed, retrying... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`, { url, error });
+
             await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
             return fetchWithRetry(url, options, retries - 1);
         }
-        console.error('All retry attempts failed', { url, error });
+
         throw error;
     }
 }
@@ -56,7 +56,6 @@ export default defineEventHandler(async (event) => {
         return result;
 
     } catch (e) {
-        console.error('Search API error:', e);
         return {
             code: 500,
             msg: 'error',

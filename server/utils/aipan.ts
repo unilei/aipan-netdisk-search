@@ -1,6 +1,5 @@
 import { LRUCache } from 'lru-cache';
 import { $fetch } from 'ofetch'
-import { decrypt } from "~/utils/tools"
 
 // Types
 export type Result = {
@@ -79,7 +78,6 @@ export const fetchWithRetry = async <T>(url: string, options: any, retries = CAC
         return response
     } catch (error: any) {
         if (retries > 0 && (error.status === 502 || error.status === 503 || error.status === 504)) {
-            console.warn(`Retrying failed request to ${url}, ${retries} attempts remaining`)
             await sleep(CACHE_CONFIG.RETRY_DELAY)
             return fetchWithRetry<T>(url, options, retries - 1)
         }
@@ -101,16 +99,6 @@ export const fetchApi = async (url: string, body: SearchBody, token: string, app
             ...append,
             token
         })
-
-        // console.log('API Response Structure:', {
-        //     url: url,
-        //     hasData: !!response?.data,
-        //     hasDataList: !!response?.data?.list,
-        //     hasList: !!response?.list,
-        //     isArray: Array.isArray(response),
-        //     responseType: typeof response,
-        //     response: JSON.stringify(response, null, 2)
-        // })
 
         // Handle different response formats
         let result: Result
@@ -157,12 +145,6 @@ export const fetchApi = async (url: string, body: SearchBody, token: string, app
 
         return result
     } catch (error: any) {
-        console.error(`API request failed for ${url}:`, {
-            error: error.message,
-            response: error.response?.data,
-            status: error.response?.status,
-            fullError: error
-        })
         throw error
     }
 }
@@ -229,11 +211,7 @@ export const executeApiRequests = async (
                     url: endpoint.url,
                     error: errorMessage
                 })
-                console.error(`Failed to fetch from ${endpoint.url}:`, {
-                    message: errorMessage,
-                    response: error.response,
-                    error
-                })
+
             }
         })
 
@@ -263,7 +241,7 @@ export const executeApiRequests = async (
         list: transformedList,
         code: transformedList.length > 0 ? 200 : (errors.length === apiEndpoints.length ? 500 : 206),
         msg: errors.length > 0 ?
-            `${errors.length} of ${apiEndpoints.length} requests failed (${errorMessages})` :
+            `${errors.length} of ${apiEndpoints.length} requests failed` :
             (transformedList.length === 0 ? 'No results found' : undefined)
     }
 }
