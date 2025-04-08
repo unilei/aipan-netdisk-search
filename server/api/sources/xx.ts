@@ -1,5 +1,4 @@
 import { H3Event } from 'h3'
-import { decrypt } from "~/utils/tools"
 import {
     executeApiRequests
 } from '~/server/utils/aipan'
@@ -8,13 +7,6 @@ import type {
     TransformedResult,
     ApiEndpoint
 } from '~/server/utils/aipan'
-
-// Constants
-const DECRYPT_CONFIG = {
-    iv: '4ccfd90fd778ad0d284b6c6e182063f0',
-    key: '1cc5d119477a952d96e63d2a92cb4b188eb4189c758be1fb648caeae9cfc08eb',
-    encryptedData: '0a2471511ba2e5ed3b5c4daa6ec0bae30d295361d47455731675d39b09ecdcbc'
-}
 
 const getApiEndpoints = (baseUrl: string, searchTerm: string): ApiEndpoint[] => [
     {
@@ -46,22 +38,19 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
             throw new Error('Search term is required')
         }
 
-        const baseUrl = decrypt(DECRYPT_CONFIG)
-        if (!baseUrl) {
-            throw new Error('Failed to decrypt API base URL')
-        }
+        const baseUrl = "http://m.kkqws.com"
 
-        const token = "i69" // TODO: Implement proper token management if needed
+        const token = "i69"
 
         const apiEndpoints = getApiEndpoints(baseUrl, body.name)
         return await executeApiRequests(apiEndpoints, body, token)
 
     } catch (error) {
-        console.error('API Error:', error)
+
         return {
             list: [],
             code: 500,
-            msg: error instanceof Error ? error.message : 'Internal server error'
+            msg: 'Internal server error'
         }
     }
 })

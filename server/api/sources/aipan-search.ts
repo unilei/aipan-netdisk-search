@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
                 });
                 return { name: item.name, links: linksArr };
             } catch (e) {
-                console.error('Error parsing links for item:', item.name, e);
+
                 return { name: item.name, links: [] };
             }
         });
@@ -79,7 +79,7 @@ export default defineEventHandler(async (event) => {
         };
 
     } catch (e) {
-        console.error('Search error:', e);
+
         return {
             code: 500,
             msg: 'An error occurred while searching for resources',

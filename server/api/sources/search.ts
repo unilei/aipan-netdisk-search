@@ -1,4 +1,4 @@
-import {XMLBuilder, XMLParser, XMLValidator} from "fast-xml-parser"
+import { XMLBuilder, XMLParser, XMLValidator } from "fast-xml-parser"
 
 export default defineEventHandler(async (event) => {
 
@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
         });
         return res
     } catch (e) {
-        console.log(e)
+
         return {
             code: 500,
             data: e,
