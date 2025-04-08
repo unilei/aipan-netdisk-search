@@ -1,5 +1,13 @@
 import prisma from "~/lib/prisma"
 
+// 定义回复类型接口
+interface PostWithChildren extends Omit<any, 'children'> {
+    id: string;
+    parentId: string | null;
+    children: PostWithChildren[];
+    [key: string]: any;
+}
+
 export default defineEventHandler(async (event) => {
     try {
         const { slug } = getRouterParams(event)
@@ -49,6 +57,7 @@ export default defineEventHandler(async (event) => {
             }
         })
 
+        // 获取所有回复，包括父子关系
         const posts = await prisma.forumPost.findMany({
             where: {
                 topicId: topic.id,
@@ -69,6 +78,35 @@ export default defineEventHandler(async (event) => {
             take: pageSize,
         })
 
+        // 构建回复树结构
+        const rootPosts: PostWithChildren[] = []
+        const replyMap = new Map<string, PostWithChildren>()
+        
+        // 首先将所有回复放入映射表中
+        posts.forEach((post: any) => {
+            // 确保回复有子回复数组
+            const postWithChildren = post as PostWithChildren
+            postWithChildren.children = []
+            replyMap.set(post.id, postWithChildren)
+        })
+        
+        // 然后构建树结构
+        posts.forEach((post: any) => {
+            if (post.parentId) {
+                // 如果有父回复，将当前回复添加到父回复的子回复数组中
+                const parentPost = replyMap.get(post.parentId)
+                if (parentPost) {
+                    parentPost.children.push(replyMap.get(post.id) as PostWithChildren)
+                } else {
+                    // 如果找不到父回复（可能是分页问题），则作为根回复处理
+                    rootPosts.push(replyMap.get(post.id) as PostWithChildren)
+                }
+            } else {
+                // 如果没有父回复，则是根回复
+                rootPosts.push(replyMap.get(post.id) as PostWithChildren)
+            }
+        })
+
         // 更新浏览次数
         await prisma.forumTopic.update({
             where: { id: topic.id },
@@ -79,7 +117,7 @@ export default defineEventHandler(async (event) => {
             success: true,
             data: {
                 topic,
-                posts,
+                posts: rootPosts,
                 pagination: {
                     total,
                     page,

@@ -1,6 +1,4 @@
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import prisma from '~/lib/prisma'
 
 export default defineEventHandler(async (event) => {
     try {
@@ -23,6 +21,7 @@ export default defineEventHandler(async (event) => {
             where,
             orderBy: [
                 { isSticky: 'desc' },
+                { createdAt: 'desc' },
                 { lastActivityAt: 'desc' }
             ],
             include: {

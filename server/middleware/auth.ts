@@ -17,8 +17,8 @@ export default defineEventHandler(async (event: H3Event) => {
             event.node.req.url?.startsWith("/api/user/profile") ||
             event.node.req.url?.startsWith("/api/user/vod-config") ||
             event.node.req.url?.startsWith("/api/forum/topics") && event.node.req.method === "POST" ||
-            event.node.req.url?.startsWith("/api/forum/posts") && event.node.req.method === "POST" ||
             event.node.req.url?.startsWith("/api/user/forum") ||
+            event.node.req.url?.startsWith("/api/notifications") ||
             (event.node.req.url?.startsWith("/api/user/protected") ?? false)
         );
 

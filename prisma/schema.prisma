@@ -39,6 +39,7 @@ model User {
   vodConfigs    UserVodConfig[]
   forumTopics   ForumTopic[] // 用户的论坛主题
   forumPosts    ForumPost[] // 用户的论坛回复
+  notifications Notification[] // 用户的通知
 }
 
 model ResourceType {
@@ -270,17 +271,40 @@ model ForumTopic {
 
 // 论坛回复模型
 model ForumPost {
-  id        Int        @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   content   String
-  status    String     @default("pending")
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  status    String      @default("pending")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
   topicId   Int
   authorId  Int
-  author    User       @relation(fields: [authorId], references: [id])
-  topic     ForumTopic @relation(fields: [topicId], references: [id])
+  parentId  Int? // 添加父回复ID字段，用于回复的回复功能
+  author    User        @relation(fields: [authorId], references: [id])
+  topic     ForumTopic  @relation(fields: [topicId], references: [id])
+  parent    ForumPost?  @relation("PostToPost", fields: [parentId], references: [id], onDelete: SetNull)
+  replies   ForumPost[] @relation("PostToPost")
 
   @@index([topicId])
   @@index([authorId])
   @@index([status])
+  @@index([parentId])
+}
+
+// 通知模型
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int // 接收通知的用户ID
+  type      String // 通知类型：'reply'（回复）, 'mention'（提及）, 'topic'（新主题）等
+  title     String // 通知标题
+  content   String   @db.Text // 通知内容
+  isRead    Boolean  @default(false) // 是否已读
+  relatedId Int? // 相关内容的ID（如主题ID或回复ID）
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
 }
