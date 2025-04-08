@@ -1,6 +1,9 @@
 import prisma from "~/lib/prisma"
+import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
 
 export default defineEventHandler(async (event) => {
+    // 过滤并解析评论内容
+
     try {
         // 检查用户是否已登录
         const user = event.context.user
@@ -42,13 +45,13 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 判断用户角色，管理员创建的回复直接审核通过
-        const status = user.role === 'admin' ? 'approved' : 'pending';
+        // 判断用户角色，管理员创建的回复直接审核通过 暂时所有的都approved
+        const status = user.role === 'admin' ? 'approved' : 'approved';
 
         // 创建回复，添加状态字段
         const post = await prisma.forumPost.create({
             data: {
-                content,
+                content: sensitiveWordFilter.filter(content),
                 topicId: parseInt(topicId),
                 authorId: user.userId,
                 status: status // 添加状态字段，非管理员创建的回复默认为待审核状态

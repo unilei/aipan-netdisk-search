@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client'
 import GithubSlugger from 'github-slugger'
 import prisma from "~/lib/prisma"
+import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
 
 export default defineEventHandler(async (event) => {
     try {
@@ -45,13 +45,13 @@ export default defineEventHandler(async (event) => {
         }
 
         // 判断用户角色，管理员创建的主题直接审核通过
-        const status = user.role === 'admin' ? 'approved' : 'pending';
+        const status = user.role === 'admin' ? 'approved' : 'approved';
 
         // 创建主题
         const topic = await prisma.forumTopic.create({
             data: {
-                title,
-                content,
+                title: sensitiveWordFilter.filter(title),
+                content: sensitiveWordFilter.filter(content),
                 slug,
                 authorId: user.userId,
                 categoryId: Number(categoryId),
