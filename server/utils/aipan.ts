@@ -237,11 +237,12 @@ export const executeApiRequests = async (
         return `${pathname}: ${e.error}`
     }).join('; ')
 
+    console.log(errorMessages)
     return {
         list: transformedList,
         code: transformedList.length > 0 ? 200 : (errors.length === apiEndpoints.length ? 500 : 206),
         msg: errors.length > 0 ?
-            `${errors.length} of ${apiEndpoints.length} requests failed` :
+            `${errors.length} of ${apiEndpoints.length} requests failed ` :
             (transformedList.length === 0 ? 'No results found' : undefined)
     }
 }
