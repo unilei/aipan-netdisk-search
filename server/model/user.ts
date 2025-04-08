@@ -21,7 +21,7 @@ export const registerUser = async () => {
     },
   });
 
-  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1d" });
   return { user, token };
 };
 
@@ -38,7 +38,7 @@ export const loginUser = async (email: string, password: string) => {
   if (!isMatch) {
     return null;
   }
-  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1h" });
+  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1d" });
   return { user, token };
 };
 

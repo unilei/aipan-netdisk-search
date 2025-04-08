@@ -1,10 +1,11 @@
 import prisma from "~/lib/prisma"
 import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
-
+ 
 export default defineEventHandler(async (event) => {
     try {
         // 检查用户是否已登录
         const user = event.context.user
+    
         if (!user || !user.userId) {
             throw createError({
                 statusCode: 401,
@@ -23,7 +24,7 @@ export default defineEventHandler(async (event) => {
         }
 
         const body = await readBody(event)
-        const { content } = body
+        const { content, parentId } = body
 
         // 基本验证
         if (!content) {
@@ -35,7 +36,8 @@ export default defineEventHandler(async (event) => {
 
         // 检查主题是否存在且未锁定
         const topic = await prisma.forumTopic.findUnique({
-            where: { slug: decodeURI(slug) }
+            where: { slug: decodeURI(slug) },
+            include: { author: true }
         })
 
         if (!topic) {
@@ -61,6 +63,7 @@ export default defineEventHandler(async (event) => {
                 content: sensitiveWordFilter.filter(content),
                 topicId: topic.id,
                 authorId: user.userId,
+                parentId: parentId ? parseInt(parentId) : null,
                 status: status // 添加状态字段，非管理员创建的回复默认为待审核状态
             },
             include: {
@@ -81,6 +84,41 @@ export default defineEventHandler(async (event) => {
                 where: { id: topic.id },
                 data: { lastActivityAt: new Date() }
             })
+        }
+        const userData = await prisma.user.findUnique({
+            where: { id: user.userId },
+        })
+        // 如果回复的是主题作者，且不是自己回复自己，则创建通知
+        if (topic.authorId !== user.userId) {
+            await prisma.notification.create({
+                data: {
+                    userId: topic.authorId,
+                    type: 'reply',
+                    title: '收到新回复',
+                    content: `用户 ${userData.username} 在您的主题 "${topic.title}" 中发表了新回复`,
+                    relatedId: post.id
+                }
+            })
+        }
+
+        // 如果回复的是其他用户的回复，且不是自己回复自己，则创建通知
+        if (parentId) {
+            const parentPost = await prisma.forumPost.findUnique({
+                where: { id: parseInt(parentId) },
+                include: { author: true }
+            })
+
+            if (parentPost && parentPost.authorId !== user.userId) {
+                await prisma.notification.create({
+                    data: {
+                        userId: parentPost.authorId,
+                        type: 'reply',
+                        title: '收到新回复',
+                        content: `用户 ${userData.username} 回复了您在主题 "${topic.title}" 中的评论`,
+                        relatedId: post.id
+                    }
+                })
+            }
         }
 
         return {

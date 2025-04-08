@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useColorMode } from '#imports'
 import { useUserStore } from '~/stores/user'
+import NotificationIcon from '~/components/NotificationIcon.vue'
 
 const colorMode = useColorMode()
 const isMenuOpen = ref(false)
@@ -159,6 +160,9 @@ onBeforeUnmount(() => {
                     <nuxt-link class="text-sm text-slate-600 font-bold dark:text-white" href="/music" title="音乐搜索小助手">
                         <i class="fa-solid fa-music text-base"></i>
                     </nuxt-link>
+
+                    <!-- 通知组件 -->
+                    <NotificationIcon v-if="userStore.loggedIn" />
 
                     <!-- 登录按钮 / 用户菜单 -->
                     <div class="relative" ref="userMenuRef">
