@@ -27,6 +27,12 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    // 获取分页参数
+    const query = getQuery(event)
+    const page = parseInt(query.page as string || '1')
+    const pageSize = parseInt(query.pageSize as string || '10')
+    const search = (query.search as string || '').trim()
+
     // 验证用户是否有权限查看聊天室
     const userRoom = await prisma.chatRoomUser.findUnique({
       where: {
@@ -75,20 +81,49 @@ export default defineEventHandler(async (event) => {
 
     const memberIds = roomMembers.map(member => member.userId)
 
+    // 构建查询条件
+    const whereCondition: any = {
+      id: {
+        notIn: memberIds
+      }
+    }
+
+    // 如果有搜索关键词，添加搜索条件
+    if (search) {
+      whereCondition.username = {
+        contains: search
+      }
+    }
+
+    // 获取总数，用于判断是否有更多用户
+    const totalCount = await prisma.user.count({
+      where: whereCondition
+    })
+
     // 获取不在聊天室的用户
     const availableUsers = await prisma.user.findMany({
-      where: {
-        id: {
-          notIn: memberIds
-        }
-      },
+      where: whereCondition,
       select: {
         id: true,
         username: true
+      },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      orderBy: {
+        username: 'asc' // 按用户名排序
       }
     })
 
-    return availableUsers
+    // 返回分页数据
+    return {
+      users: availableUsers,
+      pagination: {
+        page,
+        pageSize,
+        total: totalCount,
+        hasMore: page * pageSize < totalCount
+      }
+    }
 
   } catch (error) {
     console.error('获取可邀请用户失败:', error)

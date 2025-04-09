@@ -25,7 +25,7 @@
       >
         <div class="flex items-center mb-1">
           <span class="text-gray-500 mr-1">回复</span>
-          <span class="font-medium">{{ message.replyTo.user.username }}:</span>
+          <span class="font-medium">{{ message.replyTo?.user?.username || '未知用户' }}:</span>
         </div>
         <div class="text-gray-600 dark:text-gray-300 truncate">{{ message.replyTo.content }}</div>
       </div>

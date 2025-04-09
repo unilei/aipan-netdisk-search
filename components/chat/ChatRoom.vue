@@ -22,7 +22,7 @@
       <div class="flex gap-3">
         <button
           @click="showInviteDrawer = true"
-          class="text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
           v-if="
             roomInfo &&
             !roomInfo.isPublic &&
@@ -36,7 +36,7 @@
         </button>
         <button
           @click="showMembersDrawer = true"
-          class="text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
           v-if="roomInfo?.type === 'group'"
           title="查看成员"
         >
@@ -56,7 +56,7 @@
     <div class="flex-1 overflow-y-auto p-4 space-y-4" ref="messagesContainer">
       <div v-if="messagesLoading" class="flex justify-center py-6">
         <i
-          class="fas fa-circle-notch fa-spin text-2xl text-primary-500 opacity-80"
+          class="fas fa-circle-notch fa-spin text-2xl text-blue-500 opacity-80"
         ></i>
       </div>
 
@@ -127,7 +127,7 @@
 
         <button
           @click="sendMessage"
-          class="px-4 py-2 h-10 bg-primary-600 hover:bg-primary-700 text-white rounded-md transition duration-200 flex items-center justify-center"
+          class="px-4 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200 flex items-center justify-center"
           :disabled="sending || !newMessage.trim()"
         >
           <i
@@ -195,7 +195,7 @@
         <div class="p-4 h-full flex flex-col">
           <div v-if="loadingInviteUsers" class="flex justify-center py-8">
             <i
-              class="fas fa-circle-notch fa-spin text-2xl text-primary-500 opacity-80"
+              class="fas fa-circle-notch fa-spin text-2xl text-blue-500 opacity-80"
             ></i>
           </div>
           <div
@@ -216,7 +216,7 @@
                 class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               />
             </div>
-            <div class="space-y-2">
+            <div class="space-y-2 flex-1">
               <div
                 v-for="user in filteredAvailableUsers"
                 :key="user.id"
@@ -224,7 +224,7 @@
               >
                 <div class="flex items-center">
                   <div
-                    class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-400 font-medium"
+                    class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium"
                   >
                     {{ user.username.charAt(0).toUpperCase() }}
                   </div>
@@ -234,7 +234,7 @@
                 </div>
                 <button
                   @click="inviteUser(user.id)"
-                  class="px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium transition duration-200 flex items-center"
+                  class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition duration-200 flex items-center"
                   :disabled="invitingUser === user.id"
                 >
                   <i
@@ -242,6 +242,20 @@
                     class="fas fa-circle-notch fa-spin mr-1.5 text-sm"
                   ></i>
                   <span>邀请</span>
+                </button>
+              </div>
+              <!-- 加载更多按钮 -->
+              <div v-if="hasMoreUsers" class="py-3 text-center">
+                <button
+                  @click="loadMoreUsers"
+                  class="text-blue-600 hover:text-blue-800 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200"
+                  :disabled="loadingMoreUsers"
+                >
+                  <i
+                    v-if="loadingMoreUsers"
+                    class="fas fa-circle-notch fa-spin mr-1.5 text-sm"
+                  ></i>
+                  <span>{{ loadingMoreUsers ? "加载中..." : "加载更多" }}</span>
                 </button>
               </div>
             </div>
@@ -313,15 +327,26 @@ const availableUsers = ref([]);
 const loadingInviteUsers = ref(false);
 const inviteSearchQuery = ref("");
 const invitingUser = ref(null);
+const currentPage = ref(1);
+const pageSize = ref(10);
+const hasMoreUsers = ref(true);
+const loadingMoreUsers = ref(false);
 
 // 计算过滤后的可邀请用户
 const filteredAvailableUsers = computed(() => {
-  if (!inviteSearchQuery.value) return availableUsers.value;
+  return availableUsers.value;
+});
 
-  const query = inviteSearchQuery.value.toLowerCase();
-  return availableUsers.value.filter((user) => {
-    return user.username.toLowerCase().includes(query);
-  });
+// 监听搜索框输入，延时搜索
+let searchTimeout = null;
+watch(inviteSearchQuery, (newValue) => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+
+  searchTimeout = setTimeout(() => {
+    currentPage.value = 1; // 重置页码
+    availableUsers.value = []; // 清空用户列表
+    fetchAvailableUsers(); // 重新获取
+  }, 300);
 });
 
 // 监听roomId变化，切换聊天室
@@ -357,10 +382,15 @@ watch(
   { immediate: true }
 );
 
-// 监听邀请用户抽屉
-watch(showInviteDrawer, async (newVal) => {
-  if (newVal) {
-    await fetchAvailableUsers();
+// 监听抽屉显示状态变化
+watch(showInviteDrawer, (isVisible) => {
+  if (isVisible) {
+    // 重置状态并加载用户
+    currentPage.value = 1;
+    availableUsers.value = [];
+    hasMoreUsers.value = true;
+    inviteSearchQuery.value = "";
+    fetchAvailableUsers();
   }
 });
 
@@ -401,26 +431,67 @@ function setupSocketListeners() {
     // 如果是自己发的消息，已经在发送时处理了
     if (message.userId === props.currentUserId) {
       sending.value = false;
-    }
 
-    // 避免重复添加消息
-    const exists = messages.value.some((m) => m.id === message.id);
-    if (!exists) {
-      messages.value.push(message);
+      // 查找并替换临时消息 - 使用更可靠的方式识别临时消息
+      // 1. 检查是否有pending状态的临时消息
+      // 2. 确认用户ID匹配
+      // 3. 内容匹配
+      // 4. 如果有replyToId也要匹配
+      const tempIndex = messages.value.findIndex(
+        (m) =>
+          m.pending &&
+          m.userId === props.currentUserId &&
+          m.content === message.content &&
+          ((!m.replyTo && !message.replyToId) ||
+            m.replyTo?.id === message.replyToId)
+      );
 
-      // 如果不是自己发的消息，并且已经滚动到底部，则保持滚动到底部
-      if (message.userId !== props.currentUserId && isScrolledToBottom()) {
-        nextTick(() => {
+      if (tempIndex !== -1) {
+        // 替换临时消息
+        messages.value.splice(tempIndex, 1, message);
+      } else {
+        // 检查是否已存在相同消息（通过ID或内容匹配）
+        const exists = messages.value.some(
+          (m) =>
+            m.id === message.id ||
+            (!m.pending &&
+              m.userId === message.userId &&
+              m.content === message.content)
+        );
+
+        if (!exists) {
+          messages.value.push(message);
+        }
+      }
+    } else {
+      // 避免重复添加消息 - 增强重复检测
+      const exists = messages.value.some(
+        (m) =>
+          m.id === message.id ||
+          (!m.pending &&
+            m.userId === message.userId &&
+            m.content === message.content)
+      );
+
+      if (!exists) {
+        messages.value.push(message);
+
+        // 如果不是自己发的消息，并且已经滚动到底部，则保持滚动到底部
+        if (isScrolledToBottom()) {
           scrollToBottom();
-        });
+        }
       }
     }
   });
 
   // 有人正在输入
   socketInstance.on("user_typing", ({ roomId, username, isTyping }) => {
-    // 确保是当前聊天室的输入状态
-    if (roomId.toString() !== props.roomId.toString()) return;
+    // 确保是当前聊天室的输入状态和参数有效
+    if (!roomId || !props.roomId) return;
+
+    const currentRoomId = String(props.roomId);
+    const receivedRoomId = String(roomId);
+    if (receivedRoomId !== currentRoomId) return;
 
     // 确保不是自己的输入状态
     if (username === userStore.user?.username) return;
@@ -549,30 +620,76 @@ async function sendMessage() {
   try {
     sending.value = true;
 
-    const messageData = {
-      roomId: props.roomId,
-      content: newMessage.value,
-      ...(replyTo.value && { replyToId: replyTo.value.id }),
-    };
+    // 保存当前消息内容和回复ID
+    const messageContent = newMessage.value;
+    const replyToId = replyTo.value?.id;
 
-    // 使用Socket发送
-    await socketSendMessage(props.roomId, newMessage.value, replyTo.value?.id);
-
-    // 清空输入和回复状态
+    // 立即清空输入框和回复状态，提高响应性
     newMessage.value = "";
     replyTo.value = null;
+
+    // 创建一个临时消息对象显示在UI上
+    const tempMessage = {
+      id: "temp-" + Date.now(),
+      content: messageContent,
+      userId: props.currentUserId,
+      user: userStore.user,
+      createdAt: new Date().toISOString(),
+      pending: true,
+    };
+
+    // 如果是回复消息，添加完整的回复信息
+    if (replyToId) {
+      // 在消息列表中查找被回复的消息
+      const originalMessage = messages.value.find((m) => m.id === replyToId);
+      if (originalMessage) {
+        // 复制完整的回复信息，包括user对象
+        tempMessage.replyTo = {
+          id: originalMessage.id,
+          content: originalMessage.content,
+          user: originalMessage.user,
+        };
+      } else {
+        // 如果找不到原始消息，至少提供ID防止报错
+        tempMessage.replyTo = { id: replyToId };
+      }
+    }
+
+    // 立即添加到消息列表
+    messages.value.push(tempMessage);
+
+    // 立即滚动到底部
+    scrollToBottom();
 
     // 发送停止输入信号
     sendTypingIndicator(false);
 
-    // 滚动到底部
-    nextTick(() => {
-      scrollToBottom();
-    });
+    // 使用Socket发送 (异步)
+    socketSendMessage(props.roomId, messageContent, replyToId)
+      .then(() => {
+        // 消息发送成功后的处理
+        const index = messages.value.findIndex((m) => m.id === tempMessage.id);
+        if (index !== -1) {
+          // 移除临时消息的pending状态
+          messages.value[index].pending = false;
+        }
+      })
+      .catch((error) => {
+        console.error("发送消息失败:", error);
+        ElMessage.error("发送消息失败");
+
+        // 标记临时消息发送失败
+        const index = messages.value.findIndex((m) => m.id === tempMessage.id);
+        if (index !== -1) {
+          messages.value[index].error = true;
+        }
+      })
+      .finally(() => {
+        sending.value = false;
+      });
   } catch (error) {
-    console.error("发送消息失败:", error);
+    console.error("发送消息处理失败:", error);
     ElMessage.error("发送消息失败");
-  } finally {
     sending.value = false;
   }
 }
@@ -630,7 +747,10 @@ function sendTypingIndicator(isTyping) {
 // 滚动到底部
 function scrollToBottom() {
   if (messagesContainer.value) {
-    messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    // 使用requestAnimationFrame确保在DOM更新后执行滚动
+    requestAnimationFrame(() => {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    });
   }
 }
 
@@ -653,17 +773,43 @@ async function fetchAvailableUsers() {
         headers: {
           Authorization: "Bearer " + userStore.token,
         },
+        params: {
+          page: currentPage.value,
+          pageSize: pageSize.value,
+          search: inviteSearchQuery.value,
+        },
       }
     );
 
     if (response) {
-      availableUsers.value = response;
+      // 如果是第一页，直接赋值；否则追加
+      if (currentPage.value === 1) {
+        availableUsers.value = response.users;
+      } else {
+        availableUsers.value = [...availableUsers.value, ...response.users];
+      }
+
+      // 更新分页信息
+      hasMoreUsers.value = response.pagination.hasMore;
     }
   } catch (error) {
     console.error("获取可邀请用户失败:", error);
     ElMessage.error("获取可邀请用户失败");
   } finally {
     loadingInviteUsers.value = false;
+  }
+}
+
+// 加载更多用户
+async function loadMoreUsers() {
+  if (loadingMoreUsers.value || !hasMoreUsers.value) return;
+
+  try {
+    loadingMoreUsers.value = true;
+    currentPage.value++;
+    await fetchAvailableUsers();
+  } finally {
+    loadingMoreUsers.value = false;
   }
 }
 
