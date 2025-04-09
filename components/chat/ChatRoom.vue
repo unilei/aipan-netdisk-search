@@ -19,34 +19,54 @@
         </span>
       </div>
 
-      <div class="flex gap-2">
+      <div class="flex gap-3">
+        <button
+          @click="showInviteDrawer = true"
+          class="text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          v-if="
+            roomInfo &&
+            !roomInfo.isPublic &&
+            roomInfo.creator &&
+            roomInfo.creator.id === props.currentUserId &&
+            roomInfo.type === 'group'
+          "
+          title="邀请用户"
+        >
+          <i class="fas fa-user-plus text-lg w-5 text-center"></i>
+        </button>
         <button
           @click="showMembersDrawer = true"
-          class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          class="text-gray-500 hover:text-primary-600 dark:hover:text-primary-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
           v-if="roomInfo?.type === 'group'"
+          title="查看成员"
         >
-          <i class="i-carbon-user-multiple text-xl"></i>
+          <i class="fas fa-users text-lg w-5 text-center"></i>
         </button>
         <button
           @click="$emit('leave')"
-          class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          class="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          title="关闭聊天"
         >
-          <i class="i-carbon-close text-xl"></i>
+          <i class="fas fa-times text-lg w-5 text-center"></i>
         </button>
       </div>
     </div>
 
     <!-- 聊天消息区域 -->
     <div class="flex-1 overflow-y-auto p-4 space-y-4" ref="messagesContainer">
-      <div v-if="messagesLoading" class="flex justify-center py-4">
-        <i class="i-carbon-circle-dash animate-spin text-2xl"></i>
+      <div v-if="messagesLoading" class="flex justify-center py-6">
+        <i
+          class="fas fa-circle-notch fa-spin text-2xl text-primary-500 opacity-80"
+        ></i>
       </div>
 
       <div
         v-else-if="messages.length === 0"
-        class="flex flex-col items-center justify-center h-full text-gray-500"
+        class="flex flex-col items-center justify-center h-full text-gray-500 py-12"
       >
-        <i class="i-carbon-chat-launch text-4xl mb-2"></i>
+        <i
+          class="fas fa-comment-alt text-5xl mb-4 text-gray-300 dark:text-gray-600"
+        ></i>
         <p>还没有消息，发送第一条消息开始聊天吧！</p>
       </div>
 
@@ -83,7 +103,7 @@
         }}</span>
       </div>
       <button @click="replyTo = null" class="text-gray-500 hover:text-gray-700">
-        <i class="i-carbon-close"></i>
+        <i class="fas fa-times"></i>
       </button>
     </div>
 
@@ -107,11 +127,15 @@
 
         <button
           @click="sendMessage"
-          class="px-4 py-2 h-10 bg-primary-600 hover:bg-primary-700 text-white rounded-md"
+          class="px-4 py-2 h-10 bg-primary-600 hover:bg-primary-700 text-white rounded-md transition duration-200 flex items-center justify-center"
           :disabled="sending || !newMessage.trim()"
         >
-          <i v-if="sending" class="i-carbon-circle-dash animate-spin"></i>
-          <i v-else class="i-carbon-send"></i>
+          <i
+            v-if="sending"
+            class="fas fa-circle-notch fa-spin mr-1 text-base"
+          ></i>
+          <i v-else class="fas fa-paper-plane mr-1 text-base"></i>
+          <span class="text-sm font-medium">发送</span>
         </button>
       </div>
     </div>
@@ -159,6 +183,72 @@
         </div>
       </el-drawer>
     </ClientOnly>
+
+    <!-- 邀请用户抽屉 -->
+    <ClientOnly>
+      <el-drawer
+        v-model="showInviteDrawer"
+        direction="rtl"
+        size="300px"
+        title="邀请用户加入"
+      >
+        <div class="p-4 h-full flex flex-col">
+          <div v-if="loadingInviteUsers" class="flex justify-center py-8">
+            <i
+              class="fas fa-circle-notch fa-spin text-2xl text-primary-500 opacity-80"
+            ></i>
+          </div>
+          <div
+            v-else-if="availableUsers.length === 0"
+            class="text-center py-8 text-gray-500"
+          >
+            <i
+              class="fas fa-user-search text-5xl mb-4 text-gray-300 dark:text-gray-600"
+            ></i>
+            <p>没有可邀请的用户</p>
+          </div>
+          <div v-else class="flex-1 overflow-y-auto">
+            <div class="mb-4">
+              <input
+                v-model="inviteSearchQuery"
+                type="text"
+                placeholder="搜索用户..."
+                class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+            </div>
+            <div class="space-y-2">
+              <div
+                v-for="user in filteredAvailableUsers"
+                :key="user.id"
+                class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+              >
+                <div class="flex items-center">
+                  <div
+                    class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center text-primary-600 dark:text-primary-400 font-medium"
+                  >
+                    {{ user.username.charAt(0).toUpperCase() }}
+                  </div>
+                  <div class="ml-3">
+                    <p class="font-medium">{{ user.username }}</p>
+                  </div>
+                </div>
+                <button
+                  @click="inviteUser(user.id)"
+                  class="px-4 py-1.5 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium transition duration-200 flex items-center"
+                  :disabled="invitingUser === user.id"
+                >
+                  <i
+                    v-if="invitingUser === user.id"
+                    class="fas fa-circle-notch fa-spin mr-1.5 text-sm"
+                  ></i>
+                  <span>邀请</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-drawer>
+    </ClientOnly>
   </div>
 </template>
 
@@ -172,37 +262,42 @@ const userStore = useUserStore();
 
 const props = defineProps({
   roomId: {
-    type: [Number, String],
+    type: [String, Number],
+    required: true,
+  },
+  currentUserId: {
+    type: [String, Number],
     required: true,
   },
 });
 
-const emit = defineEmits(["leave"]);
+// 聊天室信息
+const roomInfo = ref(null);
+const loading = ref(true);
+const members = ref([]);
 
+// 消息相关
+const messages = ref([]);
+const messagesContainer = ref(null);
+const messagesLoading = ref(false);
+const loadingMore = ref(false);
+const hasMoreMessages = ref(true);
+
+// 输入相关
+const newMessage = ref("");
+const sending = ref(false);
+const inputElement = ref(null);
+const replyTo = ref(null);
+
+// Socket.io
 const {
-  initSocket,
   joinRoom,
-  leaveRoom,
   sendMessage: socketSendMessage,
   sendTypingStatus,
+  leaveRoom,
 } = useSocketIo();
 
-// 聊天室状态
-const loading = ref(true);
-const roomInfo = ref(null);
-const messagesLoading = ref(true);
-const messages = ref([]);
-const hasMoreMessages = ref(true);
-const loadingMore = ref(false);
-const sending = ref(false);
-const newMessage = ref("");
-const replyTo = ref(null);
-const messagesContainer = ref(null);
-const inputElement = ref(null);
-const currentUserId = computed(() => userStore.user?.id);
-const socket = ref(null);
-
-// WebSocket状态
+// 输入状态
 const someoneTyping = ref(false);
 const typingUser = ref("");
 const typingTimeout = ref(null);
@@ -211,6 +306,23 @@ const typingThrottleTimeout = ref(null);
 
 // 成员列表抽屉
 const showMembersDrawer = ref(false);
+
+// 邀请用户相关
+const showInviteDrawer = ref(false);
+const availableUsers = ref([]);
+const loadingInviteUsers = ref(false);
+const inviteSearchQuery = ref("");
+const invitingUser = ref(null);
+
+// 计算过滤后的可邀请用户
+const filteredAvailableUsers = computed(() => {
+  if (!inviteSearchQuery.value) return availableUsers.value;
+
+  const query = inviteSearchQuery.value.toLowerCase();
+  return availableUsers.value.filter((user) => {
+    return user.username.toLowerCase().includes(query);
+  });
+});
 
 // 监听roomId变化，切换聊天室
 watch(
@@ -245,18 +357,25 @@ watch(
   { immediate: true }
 );
 
-// 初始化
-onMounted(() => {
-  // 初始化WebSocket
-  socket.value = initSocket();
-  if (socket.value) {
-    // 监听WebSocket事件
-    setupSocketListeners();
+// 监听邀请用户抽屉
+watch(showInviteDrawer, async (newVal) => {
+  if (newVal) {
+    await fetchAvailableUsers();
   }
 });
 
-// 在组件卸载时清理
-onBeforeUnmount(() => {
+// 初始化
+onMounted(() => {
+  // 初始化WebSocket
+  const socketIo = useSocketIo();
+  socketIo.initSocket();
+
+  // 监听WebSocket事件
+  setupSocketListeners();
+});
+
+// 组件销毁时清理
+onUnmounted(() => {
   if (props.roomId) {
     leaveRoom(props.roomId.toString());
   }
@@ -272,13 +391,15 @@ onBeforeUnmount(() => {
 
 // 设置WebSocket事件监听
 function setupSocketListeners() {
-  const socketInstance = socket.value;
+  // 获取socket实例
+  const socketIo = useSocketIo();
+  const socketInstance = socketIo.getSocket();
   if (!socketInstance) return;
 
   // 接收消息
   socketInstance.on("receive_message", (message) => {
     // 如果是自己发的消息，已经在发送时处理了
-    if (message.userId === currentUserId.value) {
+    if (message.userId === props.currentUserId) {
       sending.value = false;
     }
 
@@ -288,7 +409,7 @@ function setupSocketListeners() {
       messages.value.push(message);
 
       // 如果不是自己发的消息，并且已经滚动到底部，则保持滚动到底部
-      if (message.userId !== currentUserId.value && isScrolledToBottom()) {
+      if (message.userId !== props.currentUserId && isScrolledToBottom()) {
         nextTick(() => {
           scrollToBottom();
         });
@@ -296,27 +417,17 @@ function setupSocketListeners() {
     }
   });
 
-  // 用户加入聊天室
-  socketInstance.on("user_joined", (user) => {
-    if (user.userId !== currentUserId.value) {
-      ElMessage.info(`${user.username} 加入了聊天室`);
-    }
-  });
+  // 有人正在输入
+  socketInstance.on("user_typing", ({ roomId, username, isTyping }) => {
+    // 确保是当前聊天室的输入状态
+    if (roomId.toString() !== props.roomId.toString()) return;
 
-  // 用户离开聊天室
-  socketInstance.on("user_left", (user) => {
-    if (user.userId !== currentUserId.value) {
-      ElMessage.info(`${user.username} 离开了聊天室`);
-    }
-  });
+    // 确保不是自己的输入状态
+    if (username === userStore.user?.username) return;
 
-  // 用户正在输入
-  socketInstance.on("user_typing", (data) => {
-    if (data.userId === currentUserId.value) return;
-
-    if (data.isTyping) {
+    if (isTyping) {
+      typingUser.value = username;
       someoneTyping.value = true;
-      typingUser.value = data.username;
     } else {
       someoneTyping.value = false;
     }
@@ -333,16 +444,9 @@ async function fetchRoomInfo() {
       },
     });
 
-    roomInfo.value = data.value;
-
-    // 如果是私聊，设置显示名称为对方的用户名
-    if (data.value.type === "private") {
-      const otherUser = data.value.members.find(
-        (member) => member.id !== currentUserId.value
-      );
-      if (otherUser) {
-        roomInfo.value.displayName = otherUser.username;
-      }
+    if (data.value) {
+      roomInfo.value = data.value;
+      members.value = data.value.members || [];
     }
   } catch (error) {
     console.error("获取聊天室信息失败:", error);
@@ -537,5 +641,61 @@ function isScrolledToBottom() {
   const { scrollTop, scrollHeight, clientHeight } = messagesContainer.value;
   // 考虑一点误差范围
   return scrollHeight - scrollTop - clientHeight < 10;
+}
+
+// 加载可邀请的用户（不在聊天室的用户）
+async function fetchAvailableUsers() {
+  try {
+    loadingInviteUsers.value = true;
+    const response = await $fetch(
+      `/api/chat/rooms/${props.roomId}/available-users`,
+      {
+        headers: {
+          Authorization: "Bearer " + userStore.token,
+        },
+      }
+    );
+
+    if (response) {
+      availableUsers.value = response;
+    }
+  } catch (error) {
+    console.error("获取可邀请用户失败:", error);
+    ElMessage.error("获取可邀请用户失败");
+  } finally {
+    loadingInviteUsers.value = false;
+  }
+}
+
+// 邀请用户加入聊天室
+async function inviteUser(userId) {
+  try {
+    invitingUser.value = userId;
+
+    const response = await $fetch(`/api/chat/rooms/${props.roomId}/invite`, {
+      method: "POST",
+      body: { userId },
+      headers: {
+        Authorization: "Bearer " + userStore.token,
+      },
+    });
+
+    if (response) {
+      ElMessage.success("邀请成功");
+
+      // 更新可邀请用户列表
+      availableUsers.value = availableUsers.value.filter(
+        (user) => user.id !== userId
+      );
+
+      // 刷新聊天室信息
+      await fetchRoomInfo();
+    }
+  } catch (error) {
+    console.error("邀请用户失败:", error);
+    ElMessage.error("邀请用户失败");
+  } finally {
+    invitingUser.value = null;
+  }
 }
 </script>
