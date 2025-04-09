@@ -189,6 +189,7 @@
           :roomId="selectedRoomId"
           :currentUserId="userStore.user?.id"
           @leave="selectedRoomId = null"
+          @delete-room="handleDeleteRoom"
         />
       </div>
     </div>
@@ -448,6 +449,24 @@ async function createRoom() {
 // 选择聊天室
 function selectRoom(roomId) {
   selectedRoomId.value = roomId;
+}
+
+// 删除聊天室
+async function handleDeleteRoom(roomId) {
+  try {
+    await $fetch(`/api/chat/rooms/${roomId}/delete`, {
+      method: "DELETE",
+      headers: {
+        Authorization: "Bearer " + useCookie("token").value,
+      },
+    });
+    await fetchRooms();
+    selectedRoomId.value = null;
+    ElMessage.success("聊天室删除成功");
+  } catch (error) {
+    console.error("删除聊天室失败:", error);
+    ElMessage.error("删除聊天室失败");
+  }
 }
 
 // 格式化时间

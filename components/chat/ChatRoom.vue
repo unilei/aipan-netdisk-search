@@ -42,6 +42,19 @@
         >
           <i class="fas fa-users text-lg w-5 text-center"></i>
         </button>
+        <!-- 添加删除聊天室按钮 -->
+        <button
+          @click="confirmDeleteRoom"
+          class="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
+          v-if="
+            roomInfo &&
+            roomInfo.creator &&
+            roomInfo.creator.id === props.currentUserId
+          "
+          title="删除聊天室"
+        >
+          <i class="fas fa-trash-alt text-lg w-5 text-center"></i>
+        </button>
         <button
           @click="$emit('leave')"
           class="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -267,7 +280,7 @@
 </template>
 
 <script setup>
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { useSocketIo } from "~/composables/useSocketIo";
 import { useUserStore } from "~/stores/user";
 
@@ -284,6 +297,8 @@ const props = defineProps({
     required: true,
   },
 });
+
+const emit = defineEmits(["leave", "delete-room"]);
 
 // 聊天室信息
 const roomInfo = ref(null);
@@ -842,6 +857,30 @@ async function inviteUser(userId) {
     ElMessage.error("邀请用户失败");
   } finally {
     invitingUser.value = null;
+  }
+}
+
+// 确认删除聊天室
+function confirmDeleteRoom() {
+  ElMessageBox.confirm("确认删除聊天室？", "删除聊天室", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(() => {
+      deleteRoom();
+    })
+    .catch(() => {});
+}
+
+// 删除聊天室
+function deleteRoom() {
+  try {
+    // 只发出事件，由父组件处理实际的删除操作
+    emit("delete-room", props.roomId);
+  } catch (error) {
+    console.error("删除聊天室失败:", error);
+    ElMessage.error("删除失败");
   }
 }
 </script>
