@@ -153,6 +153,22 @@
                         </template>
                     </div>
                 </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                    <div class="flex items-center space-x-2">
+                        <el-icon :size="20" class="text-indigo-500">
+                            <ChatRound />
+                        </el-icon>
+                        <h3 class="text-gray-500 text-sm font-medium">聊天室数量</h3>
+                    </div>
+                    <div class="mt-2 flex items-baseline">
+                        <el-skeleton-item v-if="stats.chatRooms.loading" variant="text" class="w-16 h-8" />
+                        <template v-else>
+                            <span class="text-2xl font-semibold text-gray-900">{{ stats.chatRooms.count }}</span>
+                            <span class="ml-2 text-sm text-gray-500">个聊天室</span>
+                        </template>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -168,6 +184,7 @@ import {
     TrendCharts,
     CircleCheck,
     ChatLineRound,
+    ChatRound,
     User
 } from '@element-plus/icons-vue'
 const { logout } = useAuth();
@@ -198,6 +215,13 @@ const menuCards = [
         icon: Monitor,
         link: '/admin/alist',
         color: 'bg-purple-500'
+    },
+    {
+        title: '聊天管理',
+        description: '管理用户群聊和私聊消息内容',
+        icon: ChatRound,
+        link: '/admin/chat',
+        color: 'bg-indigo-500'
     },
     {
         title: '论坛管理',
@@ -273,6 +297,10 @@ const stats = reactive({
         loading: true
     },
     forumTopics: {
+        count: 0,
+        loading: true
+    },
+    chatRooms: {
         count: 0,
         loading: true
     }
@@ -380,6 +408,23 @@ const getForumTopicsCount = async () => {
     }
 }
 
+// 获取聊天室数量
+const getChatRoomsCount = async () => {
+    try {
+        const res = await $fetch('/api/admin/chat/stats', {
+            method: 'GET',
+            headers: {
+                "authorization": "Bearer " + useCookie('token').value
+            }
+        })
+        stats.chatRooms.count = res.count
+    } catch (error) {
+        console.error('Failed to fetch chat rooms count:', error)
+    } finally {
+        stats.chatRooms.loading = false
+    }
+}
+
 // 页面加载时获取统计数据
 onMounted(() => {
     getCloudFilesCount()
@@ -388,6 +433,7 @@ onMounted(() => {
     getCommentsCount()
     getUsersCount()
     getForumTopicsCount()
+    getChatRoomsCount()
 })
 
 const handleLogout = () => {
