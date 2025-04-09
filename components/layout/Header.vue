@@ -32,6 +32,14 @@ const navItems = [
       dark: "fa-solid fa-comments",
     },
   },
+  {
+    name: "聊天",
+    path: "/chat",
+    icon: {
+      light: "fa-solid fa-message",
+      dark: "fa-solid fa-message",
+    },
+  },
 ];
 </script>
 

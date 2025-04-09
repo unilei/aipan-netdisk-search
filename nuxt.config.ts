@@ -173,7 +173,8 @@ export default defineNuxtConfig({
       GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
       GITHUB_TOKEN: process.env.NUXT_PUBLIC_GITHUB_TOKEN,
       GITHUB_BRANCH: process.env.NUXT_PUBLIC_GITHUB_BRANCH,
-      QUARK_COOKIE: process.env.NUXT_PUBLIC_QUARK_COOKIE
+      QUARK_COOKIE: process.env.NUXT_PUBLIC_QUARK_COOKIE,
+      WS_PORT: process.env.NUXT_PUBLIC_WS_PORT || '3002'
     },
   },
   sitemap: {
