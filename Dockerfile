@@ -47,9 +47,12 @@ RUN npm install pm2 -g
 # 设置环境变量
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
+ENV WS_PORT=3002
+ENV NUXT_PUBLIC_WS_PORT=3002
 
 # 暴露端口
 EXPOSE 3000
+EXPOSE 3002
 
 # 使用 PM2 启动应用
 CMD ["pm2-runtime", "start", "ecosystem.config.js"]

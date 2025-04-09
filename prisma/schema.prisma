@@ -40,6 +40,11 @@ model User {
   forumTopics   ForumTopic[] // 用户的论坛主题
   forumPosts    ForumPost[] // 用户的论坛回复
   notifications Notification[] // 用户的通知
+  
+  // Chat related
+  messages        ChatMessage[]    // 用户发送的消息
+  chatRooms       ChatRoomUser[]   // 用户加入的聊天室
+  createdRooms    ChatRoom[]       // 用户创建的聊天室
 }
 
 model ResourceType {
@@ -307,4 +312,62 @@ model Notification {
   @@index([userId])
   @@index([isRead])
   @@index([createdAt])
+}
+
+// 聊天室模型
+model ChatRoom {
+  id          Int           @id @default(autoincrement())
+  name        String        // 聊天室名称
+  description String?       // 聊天室描述
+  type        String        // 聊天室类型: 'group', 'private'
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  creatorId   Int           // 创建者ID
+  isPublic    Boolean       @default(false) // 是否是公开聊天室
+  avatar      String?       // 聊天室头像
+  
+  creator     User          @relation(fields: [creatorId], references: [id])
+  users       ChatRoomUser[]// 聊天室用户
+  messages    ChatMessage[] // 聊天室消息
+
+  @@index([creatorId])
+  @@index([type])
+}
+
+// 聊天室用户关系模型
+model ChatRoomUser {
+  userId      Int
+  roomId      Int
+  joinedAt    DateTime      @default(now())
+  role        String        @default("member") // 用户在聊天室中的角色: 'admin', 'member'
+  
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room        ChatRoom      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  @@id([userId, roomId])
+  @@index([userId])
+  @@index([roomId])
+}
+
+// 聊天消息模型
+model ChatMessage {
+  id          Int           @id @default(autoincrement())
+  content     String        // 消息内容
+  userId      Int           // 发送者ID
+  roomId      Int           // 聊天室ID
+  createdAt   DateTime      @default(now())
+  replyToId   Int?          // 回复的消息ID，用于消息回复功能
+  isRead      Boolean       @default(false) // 是否已读
+  type        String        @default("text") // 消息类型: 'text', 'image', 'file'
+  fileUrl     String?       // 文件URL，用于图片和文件消息
+  
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room        ChatRoom      @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  replyTo     ChatMessage?  @relation("ReplyToMessage", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies     ChatMessage[] @relation("ReplyToMessage")
+  
+  @@index([userId])
+  @@index([roomId])
+  @@index([createdAt])
+  @@index([replyToId])
 }
