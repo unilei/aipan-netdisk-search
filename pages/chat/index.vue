@@ -5,12 +5,20 @@
       class="border-b dark:border-gray-700 bg-white dark:bg-gray-800 py-4 px-6 shadow-sm"
     >
       <div class="container mx-auto flex items-center justify-between">
-        <h1
-          class="text-2xl font-bold text-gray-800 dark:text-white flex items-center"
-        >
-          <i class="i-carbon-chat text-indigo-500 mr-2"></i>
-          爱盼聊天
-        </h1>
+        <div class="flex items-center">
+          <NuxtLink
+            to="/"
+            class="mr-4 text-gray-600 hover:text-indigo-600 dark:text-gray-300 dark:hover:text-indigo-400 transition-colors duration-200"
+          >
+            <i class="fas fa-arrow-left text-xl"></i>
+          </NuxtLink>
+          <h1
+            class="text-2xl font-bold text-gray-800 dark:text-white flex items-center"
+          >
+            <i class="i-carbon-chat text-indigo-500 mr-2"></i>
+            爱盼聊天
+          </h1>
+        </div>
         <button
           @click="showCreateRoomModal = true"
           class="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full transition-colors duration-200"
