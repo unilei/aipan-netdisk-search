@@ -33,8 +33,9 @@ export const useSocketIo = () => {
       // 开发环境使用端口
       wsUrl = `${wsProtocol}//${wsHost}:${wsPort}`
     } else {
-      // 生产环境使用直接连接，强制ws协议避开SSL证书问题
-      wsUrl = `ws://${window.location.hostname}:${wsPort}`
+      // 生产环境通过Nginx代理使用SSL
+      wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+      wsUrl = `${wsProtocol}//${window.location.host}/socket.io`
     }
     
     console.log('Connecting to WebSocket server at:', wsUrl)
