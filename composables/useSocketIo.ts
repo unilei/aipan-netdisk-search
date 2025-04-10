@@ -35,7 +35,7 @@ export const useSocketIo = () => {
     } else {
       // 生产环境通过Nginx代理使用SSL
       wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      wsUrl = `${wsProtocol}//${window.location.host}/socket.io`
+      wsUrl = `${wsProtocol}//${window.location.host}`
     }
     
     console.log('Connecting to WebSocket server at:', wsUrl)
@@ -44,6 +44,7 @@ export const useSocketIo = () => {
       auth: {
         token
       },
+      path: '/socket.io',
       transports: ['websocket']
     })
 
