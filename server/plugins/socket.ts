@@ -34,9 +34,9 @@ export default defineNitroPlugin((nitroApp) => {
     });
 
     // 在独立端口上启动WebSocket服务器
-    const WS_PORT = process.env.WS_PORT || 3002;
-    httpServer.listen(WS_PORT, () => {
-      console.log(`WebSocket服务器运行在端口 ${WS_PORT}`);
+    const WS_PORT = parseInt(process.env.WS_PORT || '3002', 10);
+    httpServer.listen(WS_PORT, '0.0.0.0', () => {
+      console.log(`WebSocket服务器运行在端口 ${WS_PORT}，监听所有网络接口`);
     });
 
     // Store online users
