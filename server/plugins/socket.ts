@@ -141,6 +141,7 @@ export default defineNitroPlugin((nitroApp) => {
         // Send message
         socket.on('send_message', async (data) => {
           const { roomId, message, replyTo } = data;
+          console.log(`收到消息请求: 用户${userId}(${username}) 发送到房间 ${roomId}:`, message);
 
           try {
             // Store message in database through the API
@@ -156,9 +157,12 @@ export default defineNitroPlugin((nitroApp) => {
               }
             });
 
+            console.log(`消息已保存到数据库，正在广播到房间 ${roomId}`);
+            
             // Broadcast message to room
             if (io) {
               io.to(roomId).emit('receive_message', response);
+              console.log(`消息已广播到房间 ${roomId}的所有成员`);
             }
           } catch (error) {
             console.error('Error sending message:', error);

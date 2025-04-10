@@ -53,7 +53,7 @@ export const useSocketIo = () => {
     })
 
     socket.on('connect_error', (error) => {
-      console.error('WebSocket connection error:', error)
+      console.error('WebSocket连接错误:', error.message)
     })
 
     socket.on('disconnect', () => {
@@ -62,6 +62,20 @@ export const useSocketIo = () => {
 
     socket.on('error', (error: any) => {
       console.error('WebSocket error:', error)
+    })
+
+    // 添加接收消息的调试
+    socket.on('receive_message', (data) => {
+      console.log('收到消息:', data)
+    })
+
+    // 添加其他事件监听
+    socket.on('user_joined', (data) => {
+      console.log('用户加入:', data)
+    })
+
+    socket.on('user_left', (data) => {
+      console.log('用户离开:', data)
     })
 
     return socket
@@ -91,12 +105,16 @@ export const useSocketIo = () => {
   const sendMessage = (roomId: string | number, message: string, replyToId?: number) => {
     if (!socket) return
     
+    console.log('正在发送消息:', { roomId, message, replyToId })
+    
     return new Promise((resolve, reject) => {
       socket?.emit('send_message', {
         roomId: roomId.toString(),
         message,
         replyTo: replyToId
       })
+
+      console.log('消息已发送到服务器')
 
       // 仅用于立即响应UI，实际消息会通过事件监听器接收
       resolve({
