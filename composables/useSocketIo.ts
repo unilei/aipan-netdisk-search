@@ -27,7 +27,16 @@ export const useSocketIo = () => {
       wsPort = '3002'
     }
     
-    const wsUrl = `${wsProtocol}//${wsHost}:${wsPort}`
+    // 根据环境选择不同的WebSocket连接URL
+    let wsUrl = ""
+    if (process.dev) {
+      // 开发环境使用端口
+      wsUrl = `${wsProtocol}//${wsHost}:${wsPort}`
+    } else {
+      // 生产环境使用路径
+      wsUrl = `${wsProtocol}//${window.location.host}/ws`
+    }
+    
     console.log('Connecting to WebSocket server at:', wsUrl)
     
     socket = io(wsUrl, {
