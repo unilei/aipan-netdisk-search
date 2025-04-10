@@ -1,6 +1,8 @@
 import { Server } from 'socket.io';
 import { verifyToken } from '../model/user';
 import { createServer } from 'node:http';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { createClient } from 'redis';
 
 // 定义聊天室接口
 interface ChatRoom {
@@ -32,6 +34,31 @@ export default defineNitroPlugin((nitroApp) => {
       pingTimeout: 30000,
       pingInterval: 25000
     });
+
+    // 配置Redis适配器
+    const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
+    const pubClient = createClient({ url: REDIS_URL });
+    const subClient = pubClient.duplicate();
+
+    // 处理Redis连接错误
+    pubClient.on('error', (err) => {
+      console.error('Redis Pub Client Error:', err);
+    });
+    
+    subClient.on('error', (err) => {
+      console.error('Redis Sub Client Error:', err);
+    });
+
+    // 连接Redis并设置适配器
+    Promise.all([pubClient.connect(), subClient.connect()])
+      .then(() => {
+        console.log('Redis adapter connected successfully');
+        io?.adapter(createAdapter(pubClient, subClient));
+      })
+      .catch((err) => {
+        console.error('Redis connection failed:', err);
+        console.log('Continuing with default in-memory adapter');
+      });
 
     // 在独立端口上启动WebSocket服务器
     const WS_PORT = parseInt(process.env.WS_PORT || '3002', 10);
