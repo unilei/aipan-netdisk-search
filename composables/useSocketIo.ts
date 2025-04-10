@@ -16,7 +16,7 @@ export const useSocketIo = () => {
     if (!token) return null
 
     // 动态获取WebSocket服务器地址
-    let wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+    let wsProtocol = 'ws:' // 强制使用非安全WebSocket
     let wsHost = window.location.hostname
     let wsPort = config.public.WS_PORT || '3002'
     
@@ -33,8 +33,8 @@ export const useSocketIo = () => {
       // 开发环境使用端口
       wsUrl = `${wsProtocol}//${wsHost}:${wsPort}`
     } else {
-      // 生产环境使用路径
-      wsUrl = `${wsProtocol}//${window.location.host}/ws`
+      // 生产环境使用直接连接，强制ws协议避开SSL证书问题
+      wsUrl = `ws://${window.location.hostname}:${wsPort}`
     }
     
     console.log('Connecting to WebSocket server at:', wsUrl)
