@@ -1,4 +1,4 @@
- services:
+services:
   aipan-netdisk-search:
     image: unilei/aipan-netdisk-search:latest # 如果你想从 Docker Hub 获取镜像，可以使用这一行
     container_name: aipan-netdisk-search-app
@@ -31,8 +31,11 @@
       - NUXT_PUBLIC_GITHUB_REPO=${NUXT_PUBLIC_GITHUB_REPO}
       - NUXT_PUBLIC_GITHUB_TOKEN=${NUXT_PUBLIC_GITHUB_TOKEN}
       - NUXT_PUBLIC_GITHUB_BRANCH=${NUXT_PUBLIC_GITHUB_BRANCH}
+      - WS_PORT=${WS_PORT:-3002}
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - prisma-migrate
+      - redis
 
   prisma-migrate:
     image: node:20.18.0-alpine
@@ -54,3 +57,16 @@
     environment:
       DATABASE_URL: ${DATABASE_URL}
     restart: "no"
+
+  redis:
+    image: redis:alpine
+    container_name: aipan-netdisk-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+
+volumes:
+  redis-data:
