@@ -10,10 +10,25 @@ export const useSocketIo = () => {
   // 初始化Socket连接
   const initSocket = () => {
     if (process.server) return null
-    if (socket) return socket
+    
+    // 如果已有连接，检查是否连接状态
+    if (socket) {
+      if (socket.connected) {
+        console.log('Socket已连接，复用现有连接')
+        return socket
+      } else {
+        console.log('Socket存在但未连接，重新初始化')
+        socket.disconnect()
+        socket.removeAllListeners()
+        socket = null
+      }
+    }
 
     const token = userStore.token
-    if (!token) return null
+    if (!token) {
+      console.error('未找到有效token，无法连接WebSocket')
+      return null
+    }
 
     // 动态获取WebSocket服务器地址
     let wsProtocol = 'ws:' // 强制使用非安全WebSocket
@@ -40,45 +55,53 @@ export const useSocketIo = () => {
     
     console.log('Connecting to WebSocket server at:', wsUrl)
     
-    socket = io(wsUrl, {
-      auth: {
-        token
-      },
-      path: '/socket.io',
-      transports: ['websocket']
-    })
+    try {
+      socket = io(wsUrl, {
+        auth: {
+          token
+        },
+        path: '/socket.io',
+        transports: ['websocket'],
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        timeout: 20000
+      });
 
-    socket.on('connect', () => {
-      console.log('WebSocket connected')
-    })
+      socket.on('connect', () => {
+        console.log('WebSocket connected, socket id:', socket?.id)
+      });
 
-    socket.on('connect_error', (error) => {
-      console.error('WebSocket连接错误:', error.message)
-    })
+      socket.on('connect_error', (error) => {
+        console.error('WebSocket连接错误:', error.message)
+      });
 
-    socket.on('disconnect', () => {
-      console.log('WebSocket disconnected')
-    })
+      socket.on('disconnect', (reason) => {
+        console.log('WebSocket disconnected, reason:', reason)
+      });
 
-    socket.on('error', (error: any) => {
-      console.error('WebSocket error:', error)
-    })
+      socket.on('error', (error: any) => {
+        console.error('WebSocket error:', error)
+      });
 
-    // 添加接收消息的调试
-    socket.on('receive_message', (data) => {
-      console.log('收到消息:', data)
-    })
+      // 添加接收消息的调试
+      socket.on('receive_message', (data) => {
+        console.log('收到消息:', data)
+      })
 
-    // 添加其他事件监听
-    socket.on('user_joined', (data) => {
-      console.log('用户加入:', data)
-    })
+      // 添加其他事件监听
+      socket.on('user_joined', (data) => {
+        console.log('用户加入:', data)
+      })
 
-    socket.on('user_left', (data) => {
-      console.log('用户离开:', data)
-    })
+      socket.on('user_left', (data) => {
+        console.log('用户离开:', data)
+      })
 
-    return socket
+      return socket
+    } catch (err) {
+      console.error('创建WebSocket连接失败:', err)
+      return null
+    }
   }
 
   // 关闭Socket连接
