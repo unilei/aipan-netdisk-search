@@ -4,7 +4,6 @@ import { badWords } from "~/utils/sensitiveWords";
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
 import { useDebounceFn } from "@vueuse/core";
 import navigationConfig from "@/assets/navigation/config.json";
-import { ElNotification } from "element-plus";
 
 definePageMeta({
   layout: "netdisk",
@@ -52,11 +51,10 @@ useHead({
   link: [{ rel: "canonical", href: "https://aipan.me" }],
 });
 
-const doubanCache = useCookie("doubanCache", {
-  maxAge: 60 * 60 * 24,
-});
+// 用于检查是否已从Redis服务器加载数据
+const doubanLoadedFromRedis = ref(false);
 
-// 添加分类选择的cookie持久化
+// 使用activeCategoryCookie作为备用
 const activeCategoryCookie = useCookie("activeCategory", {
   maxAge: 60 * 60 * 24 * 7, // 保存7天
 });
@@ -90,14 +88,58 @@ const goCopyright = () => {
   router.push("/copyright");
 };
 
-onMounted(async () => {
-  if (doubanCache.value === "aipan.me") {
-    doubanData.value = doubanStore.doubanData;
-  } else {
-    await doubanStore.getDoubanData();
-    doubanData.value = doubanStore.doubanData;
-    doubanCache.value = "aipan.me";
+// 获取活跃分类
+const getActiveCategory = async () => {
+  try {
+    const res = await $fetch("/api/home/category", {
+      method: "GET",
+      query: {
+        action: "get",
+      },
+    });
+
+    if (res.code === 200 && res.data) {
+      activeCategory.value = res.data;
+    } else {
+      // 如果Redis中没有数据，使用Cookie或默认值
+      activeCategory.value =
+        activeCategoryCookie.value || navigationConfig.categories[0].id;
+      // 将默认值保存到Redis
+      saveActiveCategoryToRedis(activeCategory.value);
+    }
+  } catch (error) {
+    console.error("Error fetching active category:", error);
+    // 出错时使用Cookie或默认值
+    activeCategory.value =
+      activeCategoryCookie.value || navigationConfig.categories[0].id;
   }
+};
+
+// 保存活跃分类到Redis
+const saveActiveCategoryToRedis = async (categoryId) => {
+  try {
+    await $fetch("/api/home/category", {
+      method: "GET",
+      query: {
+        action: "set",
+        categoryId: categoryId,
+      },
+    });
+  } catch (error) {
+    console.error("Error saving category to Redis:", error);
+    // 出错时回退到Cookie存储
+    activeCategoryCookie.value = categoryId;
+  }
+};
+
+onMounted(async () => {
+  // 加载豆瓣数据
+  await doubanStore.getDoubanData();
+  doubanData.value = doubanStore.doubanData;
+  doubanLoadedFromRedis.value = true;
+
+  // 获取活跃分类
+  await getActiveCategory();
 
   // 在页面加载完成后，将滚动位置重置到顶部
   window.scrollTo(0, 0);
@@ -112,132 +154,131 @@ watch(
   }
 );
 
-const activeCategory = ref(
-  activeCategoryCookie.value || navigationConfig.categories[0].id
-);
+const activeCategory = ref(navigationConfig.categories[0].id);
 const categories = navigationConfig.categories;
 
-// 监听activeCategory变化，保存到cookie
+// 监听activeCategory变化，保存到Redis和备用Cookie
 watch(activeCategory, (newValue) => {
-  activeCategoryCookie.value = newValue;
+  saveActiveCategoryToRedis(newValue);
+  activeCategoryCookie.value = newValue; // 作为备用
 });
 </script>
 
 <template>
   <div
-      class="custom-bg py-[60px] min-h-[calc(100vh-130px)] transition-colors duration-300"
+    class="custom-bg py-[60px] min-h-[calc(100vh-130px)] transition-colors duration-300"
+  >
+    <div
+      class="flex flex-col items-center justify-center gap-4 md:mt-[60px] mt-[30px] animate-fadeIn"
     >
       <div
-        class="flex flex-col items-center justify-center gap-4 md:mt-[60px] mt-[30px] animate-fadeIn"
+        class="flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform duration-300"
       >
-        <div
-          class="flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform duration-300"
-        >
-          <img
-            class="w-16 h-16 md:w-24 md:h-24 dark:opacity-90"
-            src="@/assets/my-logo.png"
-            alt="logo"
-          />
-          <div class="text-center">
-            <h1
-              class="text-3xl md:text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
-            >
-              AIPAN.ME
-            </h1>
-            <p
-              class="text-gray-600 text-xs md:text-sm dark:text-gray-400 mt-1 md:mt-2"
-            >
-              爱盼 - 资源随心，娱乐无限
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="max-w-[1240px] mx-auto mt-[20px] md:mt-[30px] px-4 md:px-0">
-        <div class="w-full md:w-[700px] mx-auto">
-          <div class="relative group">
-            <input
-              class="w-full pl-6 pr-[70px] py-4 rounded-full text-sm bg-white dark:bg-gray-800/80 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:shadow-gray-900/30 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-              v-model="searchKeyword"
-              placeholder="请输入关键词搜索"
-              @keydown.enter="search(searchKeyword)"
-            />
-            <button
-              type="button"
-              class="search-btn absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-blue-400/30"
-              @click="search(searchKeyword)"
-            >
-              <el-icon
-                :size="22"
-                class="transition-transform duration-300 group-hover:rotate-12"
-              >
-                <Search></Search>
-              </el-icon>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="max-w-[1240px] mx-auto mt-8 px-4">
-        <!-- 导航分类标签 -->
-        <div
-          class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide"
-        >
-          <button
-            v-for="category in categories"
-            :key="category.id"
-            class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 whitespace-nowrap"
-            :class="[
-              activeCategory === category.id
-                ? 'bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 text-white shadow-md'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
-            ]"
-            @click="activeCategory = category.id"
+        <img
+          class="w-16 h-16 md:w-24 md:h-24 dark:opacity-90"
+          src="@/assets/my-logo.png"
+          alt="logo"
+        />
+        <div class="text-center">
+          <h1
+            class="text-3xl md:text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
           >
-            {{ category.name }}
+            AIPAN.ME
+          </h1>
+          <p
+            class="text-gray-600 text-xs md:text-sm dark:text-gray-400 mt-1 md:mt-2"
+          >
+            爱盼 - 资源随心，娱乐无限
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-[1240px] mx-auto mt-[20px] md:mt-[30px] px-4 md:px-0">
+      <div class="w-full md:w-[700px] mx-auto">
+        <div class="relative group">
+          <input
+            class="w-full pl-6 pr-[70px] py-4 rounded-full text-sm bg-white dark:bg-gray-800/80 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:shadow-gray-900/30 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+            v-model="searchKeyword"
+            placeholder="请输入关键词搜索"
+            @keydown.enter="search(searchKeyword)"
+          />
+          <button
+            type="button"
+            class="search-btn absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-blue-400/30"
+            @click="search(searchKeyword)"
+          >
+            <el-icon
+              :size="22"
+              class="transition-transform duration-300 group-hover:rotate-12"
+            >
+              <Search></Search>
+            </el-icon>
           </button>
         </div>
-
-        <!-- 导航网格 -->
-        <div class="flex items-center justify-center flex-wrap gap-2">
-          <template v-for="category in categories" :key="category.id">
-            <template v-if="activeCategory === category.id">
-              <nuxt-link
-                v-for="item in category.items"
-                :key="item.path"
-                :to="item.path"
-                class="group flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10"
-              >
-                <div class="flex items-center justify-center shadow-lg">
-                  <i
-                    :class="['fa-solid', item.icon, 'dark:text-white text-xs']"
-                  ></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h3
-                    class="text-gray-800 dark:text-gray-200 text-xs font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300"
-                  >
-                    {{ item.title }}
-                  </h3>
-                  <!-- <p class="text-gray-500 dark:text-gray-400 text-[10px] truncate">{{ item.description }}</p> -->
-                </div>
-              </nuxt-link>
-            </template>
-          </template>
-        </div>
+      </div>
+    </div>
+    <div class="max-w-[1240px] mx-auto mt-8 px-4">
+      <!-- 导航分类标签 -->
+      <div
+        class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide"
+      >
+        <button
+          v-for="category in categories"
+          :key="category.id"
+          class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 whitespace-nowrap"
+          :class="[
+            activeCategory === category.id
+              ? 'bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 text-white shadow-md'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
+          ]"
+          @click="activeCategory = category.id"
+        >
+          {{ category.name }}
+        </button>
       </div>
 
-      <DoubanImageBox
-        :doubanData="doubanData"
-        @goDouban="goDouban"
-      ></DoubanImageBox>
-      <!-- Enhanced Backtop -->
-      <el-backtop
-        :right="24"
-        :bottom="24"
-        class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl dark:!shadow-gray-900/30 backdrop-blur-sm flex items-center justify-center"
-      >
-        <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
-      </el-backtop>
+      <!-- 导航网格 -->
+      <div class="flex items-center justify-center flex-wrap gap-2">
+        <template v-for="category in categories" :key="category.id">
+          <template v-if="activeCategory === category.id">
+            <nuxt-link
+              v-for="item in category.items"
+              :key="item.path"
+              :to="item.path"
+              class="group flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10"
+            >
+              <div class="flex items-center justify-center shadow-lg">
+                <i
+                  :class="['fa-solid', item.icon, 'dark:text-white text-xs']"
+                ></i>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h3
+                  class="text-gray-800 dark:text-gray-200 text-xs font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300"
+                >
+                  {{ item.title }}
+                </h3>
+                <!-- <p class="text-gray-500 dark:text-gray-400 text-[10px] truncate">{{ item.description }}</p> -->
+              </div>
+            </nuxt-link>
+          </template>
+        </template>
+      </div>
     </div>
+
+    <DoubanImageBox
+      :doubanData="doubanData"
+      @goDouban="goDouban"
+    ></DoubanImageBox>
+    <!-- Enhanced Backtop -->
+    <el-backtop
+      :right="24"
+      :bottom="24"
+      class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl dark:!shadow-gray-900/30 backdrop-blur-sm flex items-center justify-center"
+    >
+      <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
+    </el-backtop>
+  </div>
 </template>
 
 <style scoped>

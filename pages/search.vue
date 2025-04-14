@@ -1,29 +1,44 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-    <search-header :keyword="keyword" @search="search" class="mb-2"></search-header>
+    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300"
+  >
+    <search-header
+      :keyword="keyword"
+      @search="search"
+      class="mb-2"
+    ></search-header>
 
     <!-- Category Tabs -->
     <div
-      class="w-full  sticky top-0 z-10  transition-all duration-300 border-b border-gray-100/50 dark:border-gray-700/50">
+      class="w-full sticky top-0 z-10 transition-all duration-300 border-b border-gray-100/50 dark:border-gray-700/50"
+    >
       <div class="max-w-[1240px] mx-auto px-4 py-3">
         <div class="flex flex-col sm:flex-row items-center gap-4">
           <!-- Category Selection with Enhanced UI -->
-          <div class="w-full sm:w-auto flex gap-2 overflow-x-auto hide-scrollbar snap-x px-2 py-2 transition-all duration-300 
-                      rounded-xl bg-white/30 dark:bg-gray-800/30 ring-1 ring-gray-200/50 dark:ring-gray-700/50">
-            <el-button v-for="(item, index) in categories" :key="index"
-              class="snap-start min-w-fit transition-all duration-300 rounded-xl group relative" :class="[
+          <div
+            class="w-full sm:w-auto flex gap-2 overflow-x-auto hide-scrollbar snap-x px-2 py-2 transition-all duration-300 rounded-xl bg-white/30 dark:bg-gray-800/30 ring-1 ring-gray-200/50 dark:ring-gray-700/50"
+          >
+            <el-button
+              v-for="(item, index) in categories"
+              :key="index"
+              class="snap-start min-w-fit transition-all duration-300 rounded-xl group relative"
+              :class="[
                 category === item.value
                   ? 'shadow-lg !text-white scale-105 !bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
                   : 'bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80',
-                (index === 0) && 'ml-0.5',
-                (index === categories.length - 1) && 'mr-0.5'
-              ]" :title="item.description" @click="switchCategory(item.value)" type="primary"
-              :plain="category !== item.value">
-
+                index === 0 && 'ml-0.5',
+                index === categories.length - 1 && 'mr-0.5',
+              ]"
+              :title="item.description"
+              @click="switchCategory(item.value)"
+              type="primary"
+              :plain="category !== item.value"
+            >
               <!-- Background hover effect -->
-              <span v-if="category !== item.value" class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 
-                          opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+              <span
+                v-if="category !== item.value"
+                class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+              ></span>
 
               <!-- Icon and text with better alignment -->
               <div class="flex items-center gap-2">
@@ -32,24 +47,41 @@
               </div>
 
               <!-- Active indicator with enhanced animation -->
-              <span v-if="category === item.value" class="absolute -top-1 -right-1 flex">
-                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-purple-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+              <span
+                v-if="category === item.value"
+                class="absolute -top-1 -right-1 flex"
+              >
+                <span
+                  class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-purple-400 opacity-75"
+                ></span>
+                <span
+                  class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"
+                ></span>
               </span>
 
               <!-- Bottom border animation for active tab -->
-              <span v-if="category === item.value"
-                class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-blue-400"></span>
+              <span
+                v-if="category === item.value"
+                class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-blue-400"
+              ></span>
             </el-button>
 
             <!-- Settings button with tooltip -->
-            <el-popover v-if="!userStore.loggedIn" placement="bottom-end" trigger="hover" :width="320"
-              popper-class="backdrop-blur-md bg-white/90 dark:bg-gray-800/90 border border-gray-100/50 dark:border-gray-700/50 rounded-xl shadow-xl">
+            <el-popover
+              v-if="!userStore.loggedIn"
+              placement="bottom-end"
+              trigger="hover"
+              :width="320"
+              popper-class="backdrop-blur-md bg-white/90 dark:bg-gray-800/90 border border-gray-100/50 dark:border-gray-700/50 rounded-xl shadow-xl"
+            >
               <template #reference>
                 <el-button
-                  class="snap-start min-w-fit rounded-xl bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80 group">
+                  class="snap-start min-w-fit rounded-xl bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80 group"
+                >
                   <div class="flex items-center gap-2">
-                    <i class="fas fa-cog text-lg group-hover:rotate-45 transition-transform duration-500"></i>
+                    <i
+                      class="fas fa-cog text-lg group-hover:rotate-45 transition-transform duration-500"
+                    ></i>
                     <span>配置</span>
                   </div>
                 </el-button>
@@ -60,15 +92,28 @@
                     <i class="fas fa-info-circle text-xl"></i>
                   </div>
                   <div>
-                    <h4 class="font-medium text-gray-900 dark:text-gray-100 mb-2">登录以保存VOD配置</h4>
+                    <h4
+                      class="font-medium text-gray-900 dark:text-gray-100 mb-2"
+                    >
+                      登录以保存VOD配置
+                    </h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
                       登录后可以将您的视频源配置保存到云端，在任何设备上使用相同的视频源。
                     </p>
                     <div class="flex gap-2">
-                      <el-button type="primary" @click="navigateTo('/login')" size="small" class="!rounded-lg">
+                      <el-button
+                        type="primary"
+                        @click="navigateTo('/login')"
+                        size="small"
+                        class="!rounded-lg"
+                      >
                         <i class="fas fa-sign-in-alt mr-1"></i> 登录
                       </el-button>
-                      <el-button @click="navigateTo('/user/vod-settings')" size="small" class="!rounded-lg">
+                      <el-button
+                        @click="navigateTo('/user/vod-settings')"
+                        size="small"
+                        class="!rounded-lg"
+                      >
                         <i class="fas fa-cog mr-1"></i> 管理配置
                       </el-button>
                     </div>
@@ -79,20 +124,36 @@
           </div>
 
           <!-- Stats Display with Enhanced Visual -->
-          <div v-if="category === 'clouddrive' && loadingProgress.isLoading" class="w-full sm:flex-1 flex items-center gap-4 bg-white/50 dark:bg-gray-700/50 rounded-xl p-3 transition-all duration-300 backdrop-blur-sm
-                   ring-1 ring-gray-200/50 dark:ring-gray-700/50 shadow-sm group">
+          <div
+            v-if="category === 'clouddrive' && loadingProgress.isLoading"
+            class="w-full sm:flex-1 flex items-center gap-4 bg-white/50 dark:bg-gray-700/50 rounded-xl p-3 transition-all duration-300 backdrop-blur-sm ring-1 ring-gray-200/50 dark:ring-gray-700/50 shadow-sm group"
+          >
             <div class="flex-1 relative overflow-hidden rounded-md">
-              <el-progress :percentage="Math.round((loadingProgress.completed / loadingProgress.total) * 100)"
-                :stroke-width="6" :show-text="false" class="flex-1">
+              <el-progress
+                :percentage="
+                  Math.round(
+                    (loadingProgress.completed / loadingProgress.total) * 100
+                  )
+                "
+                :stroke-width="6"
+                :show-text="false"
+                class="flex-1"
+              >
               </el-progress>
               <div
-                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer">
-              </div>
+                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"
+              ></div>
             </div>
             <span
-              class="text-sm text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap flex items-center gap-2">
+              class="text-sm text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap flex items-center gap-2"
+            >
               <i class="fas fa-spinner fa-spin group-hover:animate-bounce"></i>
-              搜索中... <span class="font-semibold">{{ loadingProgress.completed }}/{{ loadingProgress.total }}</span>
+              搜索中...
+              <span class="font-semibold"
+                >{{ loadingProgress.completed }}/{{
+                  loadingProgress.total
+                }}</span
+              >
             </span>
           </div>
         </div>
@@ -106,7 +167,10 @@
         <transition name="fade" mode="out-in">
           <div class="p-4" v-if="category === 'clouddrive'">
             <div class="transition-all duration-300 space-y-2">
-              <disk-info-list :sources="sources" :skeleton-loading="skeletonLoading">
+              <disk-info-list
+                :sources="sources"
+                :skeleton-loading="skeletonLoading"
+              >
               </disk-info-list>
             </div>
           </div>
@@ -117,39 +181,64 @@
           <div v-if="category === 'onlineVod'" class="p-2">
             <div class="space-y-4">
               <!-- Loading Skeletons -->
-              <template v-if="
-                vodData.length === 0 &&
-                Array.from(loadingStatus.values()).some((status) => status)
-              ">
+              <template
+                v-if="
+                  vodData.length === 0 &&
+                  Array.from(loadingStatus.values()).some((status) => status)
+                "
+              >
                 <!-- Header Skeleton -->
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4 px-2 animate-pulse">
-                  <div class="h-6 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg w-48"></div>
-                  <div class="h-8 bg-red-100/50 dark:bg-red-900/30 rounded-full w-64"></div>
+                <div
+                  class="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4 px-2 animate-pulse"
+                >
+                  <div
+                    class="h-6 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg w-48"
+                  ></div>
+                  <div
+                    class="h-8 bg-red-100/50 dark:bg-red-900/30 rounded-full w-64"
+                  ></div>
                 </div>
 
                 <!-- Video Player Skeleton -->
-                <div class="relative rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-sm">
-                  <div class="aspect-video w-full bg-gray-200/50 dark:bg-gray-700/50 animate-pulse">
-                    <div class="absolute inset-0 flex items-center justify-center">
-                      <i class="fas fa-film text-4xl text-gray-400 dark:text-gray-600"></i>
+                <div
+                  class="relative rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-sm"
+                >
+                  <div
+                    class="aspect-video w-full bg-gray-200/50 dark:bg-gray-700/50 animate-pulse"
+                  >
+                    <div
+                      class="absolute inset-0 flex items-center justify-center"
+                    >
+                      <i
+                        class="fas fa-film text-4xl text-gray-400 dark:text-gray-600"
+                      ></i>
                     </div>
                   </div>
                 </div>
 
                 <!-- Episodes List Skeleton -->
-                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 p-2">
-                  <div v-for="i in 12" :key="i"
-                    class="h-10 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg animate-pulse"></div>
+                <div
+                  class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 p-2"
+                >
+                  <div
+                    v-for="i in 12"
+                    :key="i"
+                    class="h-10 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg animate-pulse"
+                  ></div>
                 </div>
               </template>
 
               <!-- VOD List -->
               <template v-else>
-                <vod-list :vod-data="vodData" class="transition-opacity duration-300" :class="{
-                  'opacity-0': Array.from(loadingStatus.values()).some(
-                    (status) => status
-                  ),
-                }"></vod-list>
+                <vod-list
+                  :vod-data="vodData"
+                  class="transition-opacity duration-300"
+                  :class="{
+                    'opacity-0': Array.from(loadingStatus.values()).some(
+                      (status) => status
+                    ),
+                  }"
+                ></vod-list>
               </template>
             </div>
           </div>
@@ -159,23 +248,39 @@
         <transition name="fade" mode="out-in">
           <div v-if="category === 'soupian'" class="h-full w-full py-4">
             <div
-              class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg shadow-sm hover:shadow-lg hover:bg-white/70 dark:hover:bg-gray-800/70 p-5 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300">
+              class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg shadow-sm hover:shadow-lg hover:bg-white/70 dark:hover:bg-gray-800/70 p-5 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300"
+            >
               <div class="relative w-full h-[calc(100vh-240px)]">
-                <div v-if="!iframeLoaded"
-                  class="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-gray-800/90 rounded-lg backdrop-blur-sm">
+                <div
+                  v-if="!iframeLoaded"
+                  class="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-gray-800/90 rounded-lg backdrop-blur-sm"
+                >
                   <div class="flex flex-col items-center gap-3">
                     <div class="relative w-12 h-12">
-                      <div class="absolute inset-0 border-4 border-purple-500/30 rounded-full"></div>
                       <div
-                        class="absolute inset-0 border-4 border-purple-500 border-t-transparent rounded-full animate-spin">
-                      </div>
+                        class="absolute inset-0 border-4 border-purple-500/30 rounded-full"
+                      ></div>
+                      <div
+                        class="absolute inset-0 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"
+                      ></div>
                     </div>
-                    <span class="text-sm text-purple-600 dark:text-purple-400 font-medium">加载中...</span>
+                    <span
+                      class="text-sm text-purple-600 dark:text-purple-400 font-medium"
+                      >加载中...</span
+                    >
                   </div>
                 </div>
-                <iframe id="soupian" :src="'https://soupian.pro/frame?movie=' + keyword"
+                <iframe
+                  id="soupian"
+                  :src="
+                    'https://soupian.pro/frame?movie=' +
+                    encodeURIComponent(keyword)
+                  "
                   class="w-full h-full rounded-lg border-0 bg-white/90 dark:bg-gray-900/90 transition-colors duration-300"
-                  loading="lazy" @load="iframeLoaded = true"></iframe>
+                  loading="lazy"
+                  @load="iframeLoaded = true"
+                  @error="handleIframeError"
+                ></iframe>
               </div>
             </div>
           </div>
@@ -183,43 +288,53 @@
       </div>
 
       <!-- Loading State -->
-      <div v-if="(category === 'clouddrive' && loadingProgress.isLoading) ||
-        (category === 'onlineVod' && Array.from(loadingStatus.values()).some((status) => status))"
-        class="flex flex-col items-center justify-center py-16">
+      <div
+        v-if="
+          (category === 'clouddrive' && loadingProgress.isLoading) ||
+          (category === 'onlineVod' &&
+            Array.from(loadingStatus.values()).some((status) => status))
+        "
+        class="flex flex-col items-center justify-center py-16"
+      >
         <div class="relative w-20 h-20 mb-6">
           <div class="absolute inset-0 flex items-center justify-center">
             <!-- Outer ring -->
-            <div class="absolute w-full h-full border-4 border-purple-200 dark:border-purple-900/30 rounded-full"></div>
+            <div
+              class="absolute w-full h-full border-4 border-purple-200 dark:border-purple-900/30 rounded-full"
+            ></div>
 
             <!-- Animated gradient ring -->
-            <div class="absolute w-full h-full rounded-full border-4 border-transparent 
-                        [border-top:4px_solid_theme(colors.purple.500)] 
-                        [border-right:4px_solid_theme(colors.blue.500)]
-                        [border-bottom:4px_solid_theme(colors.purple.500)]
-                        [border-left:4px_solid_theme(colors.blue.500)]
-                        animate-spin"></div>
+            <div
+              class="absolute w-full h-full rounded-full border-4 border-transparent [border-top:4px_solid_theme(colors.purple.500)] [border-right:4px_solid_theme(colors.blue.500)] [border-bottom:4px_solid_theme(colors.purple.500)] [border-left:4px_solid_theme(colors.blue.500)] animate-spin"
+            ></div>
 
             <!-- Inner pulsing dot -->
-            <div class="absolute w-3 h-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full animate-pulse">
-            </div>
+            <div
+              class="absolute w-3 h-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full animate-pulse"
+            ></div>
 
             <!-- Outer particles -->
             <div class="absolute w-full h-full">
               <span
-                class="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75"></span>
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75"
+              ></span>
               <span
-                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping opacity-75 animation-delay-300"></span>
+                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping opacity-75 animation-delay-300"
+              ></span>
               <span
-                class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-ping opacity-75 animation-delay-500"></span>
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-ping opacity-75 animation-delay-500"
+              ></span>
               <span
-                class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75 animation-delay-700"></span>
+                class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75 animation-delay-700"
+              ></span>
             </div>
           </div>
         </div>
 
         <div class="text-center">
           <h3
-            class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent relative">
+            class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent relative"
+          >
             正在搜索中
             <span class="inline-flex ml-1">
               <span class="animate-bounce mr-0.5 delay-100">.</span>
@@ -229,36 +344,49 @@
           </h3>
 
           <div
-            class="flex items-center justify-center mt-3 bg-white/40 dark:bg-gray-800/40 px-4 py-2 rounded-full backdrop-blur-sm shadow-sm">
-            <i class="fas fa-info-circle text-purple-500 dark:text-purple-400 mr-2"></i>
+            class="flex items-center justify-center mt-3 bg-white/40 dark:bg-gray-800/40 px-4 py-2 rounded-full backdrop-blur-sm shadow-sm"
+          >
+            <i
+              class="fas fa-info-circle text-purple-500 dark:text-purple-400 mr-2"
+            ></i>
             <p class="text-sm text-gray-600 dark:text-gray-300">
               <span v-if="category === 'clouddrive'">
-                正在搜索 <span class="font-medium text-purple-600 dark:text-purple-400">{{ loadingProgress.completed }}/{{
-                  loadingProgress.total }}</span> 个网盘
+                正在搜索
+                <span class="font-medium text-purple-600 dark:text-purple-400"
+                  >{{ loadingProgress.completed }}/{{
+                    loadingProgress.total
+                  }}</span
+                >
+                个网盘
               </span>
-              <span v-else>
-                正在查询最佳影视资源
-              </span>
+              <span v-else> 正在查询最佳影视资源 </span>
             </p>
           </div>
         </div>
       </div>
 
       <!-- Empty State with Enhanced Visual -->
-      <div v-if="
-        searchPerformed &&
-        !skeletonLoading &&
-        !loadingProgress.isLoading &&
-        !Array.from(loadingStatus.values()).some((status) => status) &&
-        ((category === 'clouddrive' && sources.length === 0) ||
-          (category === 'onlineVod' && vodData.length === 0))
-      " class="flex flex-col items-center justify-center py-16 text-gray-500 dark:text-gray-400">
+      <div
+        v-if="
+          searchPerformed &&
+          !skeletonLoading &&
+          !loadingProgress.isLoading &&
+          !Array.from(loadingStatus.values()).some((status) => status) &&
+          ((category === 'clouddrive' && sources.length === 0) ||
+            (category === 'onlineVod' && vodData.length === 0))
+        "
+        class="flex flex-col items-center justify-center py-16 text-gray-500 dark:text-gray-400"
+      >
         <div
-          class="p-8 rounded-full bg-gradient-to-br from-purple-100/50 to-blue-100/50 dark:from-purple-900/20 dark:to-blue-900/20 mb-6 shadow-lg backdrop-blur-sm group hover:scale-105 transition-all duration-300">
+          class="p-8 rounded-full bg-gradient-to-br from-purple-100/50 to-blue-100/50 dark:from-purple-900/20 dark:to-blue-900/20 mb-6 shadow-lg backdrop-blur-sm group hover:scale-105 transition-all duration-300"
+        >
           <i
-            class="fas fa-search text-5xl text-purple-500/70 dark:text-purple-400/70 group-hover:rotate-12 transition-transform duration-300"></i>
+            class="fas fa-search text-5xl text-purple-500/70 dark:text-purple-400/70 group-hover:rotate-12 transition-transform duration-300"
+          ></i>
         </div>
-        <h3 class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+        <h3
+          class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"
+        >
           未找到相关结果
         </h3>
         <p class="text-sm mt-3 opacity-75">试试以下建议：</p>
@@ -269,8 +397,11 @@
       </div>
 
       <!-- Enhanced Backtop -->
-      <el-backtop :right="24" :bottom="24"
-        class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center">
+      <el-backtop
+        :right="24"
+        :bottom="24"
+        class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center"
+      >
         <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
       </el-backtop>
     </div>
@@ -280,19 +411,19 @@
 <script setup>
 import SearchHeader from "~/components/search/SearchHeader.vue";
 import DiskInfoList from "~/components/diskInfoList.vue";
-import VodSettings from "~/components/search/VodSettings.vue";
 import sourcesApiEndpoints from "~/assets/vod/clouddrive.json";
 import { badWords } from "~/utils/sensitiveWords";
 import { useUserStore } from "~/stores/user";
 import { useVodSources } from "~/composables/useVodSources";
+import { useRedisCache } from "~/composables/useRedisCache";
 
 definePageMeta({
   layout: "custom",
 });
-
 const route = useRoute();
 const userStore = useUserStore();
 const { sources: vodConfigSources, loadSources } = useVodSources();
+const { getCache, setCache } = useRedisCache();
 const keyword = ref(decodeURIComponent(route.query.keyword));
 const sources = ref([]);
 const skeletonLoading = ref(false);
@@ -309,120 +440,166 @@ const config = useRuntimeConfig();
 
 // 智能缓存类
 class SmartCache {
-  constructor(maxSize = 100, storageKey = "smart_cache_data") {
+  constructor({
+    namespace = "smart-cache",
+    maxSize = 100,
+    useRedis = true,
+  } = {}) {
+    this.namespace = namespace;
     this.maxSize = maxSize;
-    this.storageKey = storageKey;
     this.cache = new Map();
     this.stats = {
       hits: 0,
       misses: 0,
-      total: 0,
+      sets: 0,
+      redisHits: 0,
+      deletes: 0,
     };
+    this.useRedis = useRedis;
 
-    // 初始化时不立即加载数据，而是等待客户端初始化
+    // 默认TTL (24小时)
+    this.defaultTTL = 86400000;
+
+    // 不立即加载，等待客户端初始化
     if (process.client) {
       this.init();
     }
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("SmartCache initialized", {
+        namespace,
+        maxSize,
+        cacheSize: this.cache.size,
+        useRedis,
+      });
+    }
   }
 
-  // 客户端初始化
+  // 初始化方法 - 加载缓存
   init() {
-    // 从localStorage加载缓存数据
-    this.loadFromStorage();
+    if (!process.client) return;
+    try {
+      // 从localStorage加载缓存数据
+      this.load();
 
-    // 定期保存缓存到localStorage
-    this.setupAutoSave();
+      // 定期保存缓存到localStorage
+      this.setupAutoSave();
 
-    // 定期清理过期数据
-    this.setupCleanupInterval();
+      // 定期清理过期数据
+      this.setupCleanupInterval();
+    } catch (error) {
+      console.error("Error initializing cache:", error);
+    }
   }
 
   // 从localStorage加载数据
-  loadFromStorage() {
+  load() {
     if (!process.client) return;
 
     try {
-      const savedData = localStorage.getItem(this.storageKey);
+      const savedData = localStorage.getItem(this.namespace);
       if (savedData) {
         const { cache, stats } = JSON.parse(savedData);
 
-        // 恢复缓存数据
-        Object.entries(cache).forEach(([key, item]) => {
-          // 检查数据是否过期
-          if (Date.now() <= item.expiry) {
-            this.cache.set(key, item);
-          }
-        });
+        // 重建缓存
+        this.cache.clear();
+        if (Array.isArray(cache)) {
+          // 新版本格式：entries数组
+          cache.forEach(([key, value]) => {
+            this.cache.set(key, value);
+          });
+        } else if (typeof cache === "object") {
+          // 旧版本格式：对象
+          Object.keys(cache).forEach((key) => {
+            this.cache.set(key, cache[key]);
+          });
+        }
 
-        // 恢复统计数据
-        this.stats = stats;
+        // 恢复统计信息
+        if (stats) {
+          this.stats = { ...this.stats, ...stats };
+        }
 
         if (process.env.NODE_ENV === "development") {
-          console.log("Cache loaded from localStorage:", this.getStats());
+          console.log("Cache loaded from localStorage", {
+            size: this.cache.size,
+            stats: this.stats,
+          });
         }
       }
-    } catch (err) {
-      console.error("Error loading cache from localStorage:", err);
-      this.clearStorage();
+    } catch (error) {
+      console.error("Error loading cache from localStorage:", error);
+      // 如果加载失败，清空缓存
+      this.cache.clear();
+      this.stats = {
+        hits: 0,
+        misses: 0,
+        sets: 0,
+        redisHits: 0,
+        deletes: 0,
+      };
     }
   }
 
   // 保存数据到localStorage
-  saveToStorage() {
+  save() {
     if (!process.client) return;
 
     try {
-      // 将Map转换为普通对象以便序列化
-      const cacheObj = {};
-      this.cache.forEach((value, key) => {
-        cacheObj[key] = value;
-      });
-
       const data = {
-        cache: cacheObj,
+        cache: Array.from(this.cache.entries()),
         stats: this.stats,
         timestamp: Date.now(),
       };
 
-      localStorage.setItem(this.storageKey, JSON.stringify(data));
+      localStorage.setItem(this.namespace, JSON.stringify(data));
 
       if (process.env.NODE_ENV === "development") {
         console.log("Cache saved to localStorage");
       }
-    } catch (err) {
-      console.error("Error saving cache to localStorage:", err);
+    } catch (error) {
+      console.error("Error saving cache to localStorage:", error);
       // 如果存储失败（比如超出配额），清理一部分数据后重试
       this.cleanup(true);
       try {
-        this.saveToStorage();
-      } catch (retryErr) {
-        console.error("Failed to save cache even after cleanup:", retryErr);
+        const data = {
+          cache: Array.from(this.cache.entries()),
+          stats: this.stats,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem(this.namespace, JSON.stringify(data));
+      } catch (error) {
+        console.error("Failed to save cache even after cleanup:", error);
       }
     }
   }
 
-  // 设置自动保存
+  // 设置自动保存定时器
   setupAutoSave() {
     if (!process.client) return;
 
-    // 每30秒保存一次
-    const saveInterval = setInterval(() => this.saveToStorage(), 30000);
+    // 每60秒保存一次缓存
+    const saveInterval = setInterval(() => {
+      this.save();
+    }, 60000);
 
-    // 页面关闭时保存
+    // 页面卸载前保存一次
     window.addEventListener("beforeunload", () => {
-      this.saveToStorage();
+      this.save();
       clearInterval(saveInterval);
     });
   }
 
-  // 设置定期清理
+  // 设置自动清理定时器
   setupCleanupInterval() {
     if (!process.client) return;
 
-    // 每5分钟清理一次过期数据
-    const cleanupInterval = setInterval(() => this.cleanup(), 5 * 60 * 1000);
+    // 每5分钟清理一次过期缓存
+    const cleanupInterval = setInterval(() => {
+      this.cleanup();
+    }, 300000);
 
-    // 页面关闭时清理定时器
+    // 页面卸载前清理定时器
     window.addEventListener("beforeunload", () => {
       clearInterval(cleanupInterval);
     });
@@ -433,7 +610,7 @@ class SmartCache {
     if (!process.client) return;
 
     try {
-      localStorage.removeItem(this.storageKey);
+      localStorage.removeItem(this.namespace);
       if (process.env.NODE_ENV === "development") {
         console.log("Cache storage cleared");
       }
@@ -449,26 +626,32 @@ class SmartCache {
       : ((this.stats.hits / this.stats.total) * 100).toFixed(2);
   }
 
+  // 获取Redis缓存命中率
+  getRedisHitRate() {
+    return this.stats.misses === 0
+      ? 0
+      : ((this.stats.redisHits / this.stats.misses) * 100).toFixed(2);
+  }
+
   // 动态计算缓存时间
   getDynamicTTL(key, value) {
-    const baseTime = 5 * 60 * 1000; // 基础5分钟
-    const hitRate = this.getHitRate();
+    // 默认24小时
+    let ttl = this.defaultTTL;
 
-    // 根据数据大小调整缓存时间
-    const sizeMultiplier = Array.isArray(value)
-      ? Math.min(1, 10 / value.length)
-      : 1;
-
-    // 根据命中率调整缓存时间
-    const hitRateMultiplier = hitRate > 80 ? 1.5 : 1;
-
-    // 根据访问频率调整
-    const accessCount = this.getAccessCount(key);
-    const frequencyMultiplier = Math.min(2, 1 + accessCount * 0.1);
-
-    return Math.floor(
-      baseTime * sizeMultiplier * hitRateMultiplier * frequencyMultiplier
-    );
+    // 可以根据缓存内容大小动态调整TTL
+    // 较大的数据可以设置较短的过期时间
+    if (value && Array.isArray(value)) {
+      if (value.length > 100) {
+        // 对于大数据集，缩短TTL
+        ttl = 3600000; // 1小时
+      } else if (value.length > 50) {
+        ttl = 7200000; // 2小时
+      } else if (value.length < 5) {
+        // 对于小数据集，延长TTL
+        ttl = 172800000; // 48小时
+      }
+    }
+    return ttl;
   }
 
   // 获取键的访问次数
@@ -502,7 +685,7 @@ class SmartCache {
       });
 
       // 保存更新后的缓存
-      this.saveToStorage();
+      this.save();
 
       if (process.env.NODE_ENV === "development") {
         console.log(`Cleaned up ${deleteCount} cache entries`);
@@ -510,7 +693,43 @@ class SmartCache {
     }
   }
 
-  // 获取缓存数据
+  // 解析缓存键获取搜索参数
+  parseCacheKey(key) {
+    try {
+      // 处理vod搜索缓存键
+      if (key.startsWith("vod-")) {
+        // 提取API和关键词部分
+        const matches = key.match(/^vod-(.+?)-(.+)$/);
+        if (matches && matches.length === 3) {
+          const [, api, encodedKeyword] = matches;
+          return {
+            category: "vod",
+            source: api,
+            keyword: decodeURIComponent(encodedKeyword),
+          };
+        }
+      }
+      // 处理普通搜索缓存键
+      else {
+        const matches = key.match(/^(.+?)-(.+)$/);
+        if (matches && matches.length === 3) {
+          const [, api, encodedKeyword] = matches;
+          return {
+            category: "search",
+            source: api,
+            keyword: decodeURIComponent(encodedKeyword),
+          };
+        }
+      }
+    } catch (error) {
+      console.error("Error parsing cache key:", error, key);
+    }
+
+    // 如果无法解析，返回一个默认对象
+    return { category: "unknown", source: "unknown", keyword: "" };
+  }
+
+  // 获取缓存数据 (同步版本，只检查本地缓存)
   get(key) {
     this.stats.total++;
     const item = this.cache.get(key);
@@ -533,10 +752,44 @@ class SmartCache {
     return item.value;
   }
 
-  // 设置缓存数据
+  // 异步获取缓存数据 (支持Redis)
+  async getWithRedis(key) {
+    // 先检查本地缓存
+    const localData = this.get(key);
+    if (localData) {
+      return localData;
+    }
+
+    // 本地缓存未命中，尝试从Redis获取
+    if (this.useRedis && process.client) {
+      try {
+        // 解析缓存键以确定Redis缓存参数
+        const { category, source, keyword } = this.parseCacheKey(key);
+
+        const result = await getCache({ category, source, keyword });
+
+        if (result && result.data) {
+          // Redis缓存命中
+          this.stats.redisHits++;
+
+          // 将Redis数据也保存到本地缓存
+          this.set(key, result.data);
+
+          return result.data;
+        }
+      } catch (error) {
+        console.error("Error fetching from Redis cache:", error);
+      }
+    }
+
+    return null;
+  }
+
+  // 设置缓存数据 (增加Redis支持)
   set(key, value) {
     const ttl = this.getDynamicTTL(key, value);
 
+    // 更新本地缓存
     this.cache.set(key, {
       value,
       expiry: Date.now() + ttl,
@@ -548,7 +801,60 @@ class SmartCache {
     this.cleanup();
 
     // 异步保存到localStorage
-    setTimeout(() => this.saveToStorage(), 0);
+    setTimeout(() => this.save(), 0);
+
+    // 同步保存到Redis
+    if (this.useRedis && process.client) {
+      try {
+        // 解析缓存键以确定Redis缓存参数
+        const { category, source, keyword } = this.parseCacheKey(key);
+
+        // 将TTL转换为秒
+        const ttlInSeconds = Math.floor(ttl / 1000);
+
+        // 异步保存到Redis
+        setCache({
+          data: value,
+          category,
+          source,
+          keyword,
+          ttl: ttlInSeconds,
+        }).catch((err) => console.error("Error setting Redis cache:", err));
+      } catch (error) {
+        console.error("Error saving to Redis cache:", error);
+      }
+    }
+
+    return value;
+  }
+
+  // 设置缓存数据 (支持Redis)
+  async setWithRedis(key, value, ttl = this.getDynamicTTL(key, value)) {
+    // 首先设置本地缓存
+    this.set(key, value, ttl);
+
+    // 如果启用了Redis，则同时设置Redis缓存
+    if (this.useRedis && process.client) {
+      try {
+        // 解析缓存键以确定Redis缓存参数
+        const { category, source, keyword } = this.parseCacheKey(key);
+
+        // 向Redis缓存写入数据
+        await setCache({
+          category,
+          source,
+          keyword,
+          data: value,
+          ttl,
+        });
+
+        if (process.env.NODE_ENV === "development") {
+          console.log("Cache saved to Redis:", key);
+        }
+      } catch (error) {
+        console.error("Error saving cache to Redis:", error);
+      }
+    }
   }
 
   // 获取缓存统计信息
@@ -561,6 +867,7 @@ class SmartCache {
     return {
       ...this.stats,
       hitRate: this.getHitRate(),
+      redisHitRate: this.getRedisHitRate(),
       size: this.cache.size,
       maxSize: this.maxSize,
       totalSize: `${(totalSize / 1024).toFixed(2)}KB`,
@@ -569,8 +876,12 @@ class SmartCache {
   }
 }
 
-// 创建智能缓存实例
-const smartCache = new SmartCache(100, "aipan_search_cache");
+// 创建SmartCache实例 - 使用新的参数结构
+const smartCache = new SmartCache({
+  namespace: "search-cache",
+  maxSize: 500,
+  useRedis: true,
+});
 
 // 在组件挂载后初始化缓存系统
 onMounted(async () => {
@@ -868,6 +1179,7 @@ const saveToQuarkAsync = async (link, name) => {
     return false;
   }
 };
+
 // 记录搜索关键词
 const recordSearch = async (keyword) => {
   try {
@@ -883,7 +1195,11 @@ const recordSearch = async (keyword) => {
 };
 
 const handleSearch = async () => {
-  if (!keyword.value) return;
+  if (!keyword.value || keyword.value.trim() === "") {
+    // 如果关键词为空，清空结果并返回
+    sources.value = [];
+    return;
+  }
 
   // 记录搜索
   recordSearch(keyword.value);
@@ -891,6 +1207,7 @@ const handleSearch = async () => {
   // Set search performed to true when search starts
   searchPerformed.value = true;
 
+  // 重置数据和状态
   sources.value = [];
   queue.length = 0;
   running = 0;
@@ -921,12 +1238,22 @@ const handleSearch = async () => {
   });
 };
 
+// 单个搜索处理函数
 const handleSingleSearch = async (item) => {
-  const cacheKey = `${item.api}-${keyword.value}`;
+  // 改进缓存键，确保关键词正确编码并包含在缓存键中
+  const encodedKeyword = encodeURIComponent(keyword.value.trim());
+  const cacheKey = `${item.api}-${encodedKeyword}`;
 
   const task = async () => {
     try {
-      const cachedData = smartCache.get(cacheKey);
+      // 首先尝试从本地缓存获取数据
+      let cachedData = smartCache.get(cacheKey);
+
+      // 如果本地缓存未命中，尝试从Redis获取
+      if (!cachedData) {
+        cachedData = await smartCache.getWithRedis(cacheKey);
+      }
+
       if (cachedData) {
         if (item.api === "/api/sources/aipan-search") {
           sources.value.unshift(...cachedData);
@@ -940,6 +1267,7 @@ const handleSingleSearch = async (item) => {
         return;
       }
 
+      // 从API获取新数据
       const res = await fetchWithRetry(item.api, {
         method: "POST",
         body: {
@@ -948,7 +1276,8 @@ const handleSingleSearch = async (item) => {
       });
 
       if (res.list && Array.isArray(res.list)) {
-        smartCache.set(cacheKey, res.list);
+        // 将结果保存到缓存中，同时同步到Redis
+        await smartCache.setWithRedis(cacheKey, res.list);
 
         if (item.api === "/api/sources/aipan-search") {
           sources.value.unshift(...res.list);
@@ -956,7 +1285,6 @@ const handleSingleSearch = async (item) => {
             window._needProcessQuarkLinks = true;
           }
         } else if (window._needProcessQuarkLinks && quarkConfig.value.enabled) {
-          // 检查是否启用
           // 先显示搜索结果
           sources.value.push(...res.list);
 
@@ -1012,13 +1340,39 @@ const handleSingleSearch = async (item) => {
   runQueue();
 };
 
+// 搜索VOD内容
+const searchVod = async () => {
+  if (!keyword.value || keyword.value.trim() === "") {
+    // 如果关键词为空，清空结果并返回
+    vodData.value = [];
+    return;
+  }
+
+  // 重置数据
+  vodData.value = [];
+
+  // 对每个视频API进行处理
+  for (const vodApi of vodApiList.value) {
+    await handleSingleVodSearch(vodApi);
+  }
+};
+
 // VOD搜索的单个处理函数
 const handleSingleVodSearch = async (vodApi) => {
-  const cacheKey = `vod-${vodApi.api}-${keyword.value}`;
+  // 改进缓存键，确保关键词正确编码并包含在缓存键中
+  const encodedKeyword = encodeURIComponent(keyword.value.trim());
+  const cacheKey = `vod-${vodApi.api}-${encodedKeyword}`;
   loadingStatus.value.set(vodApi.api, true);
 
   try {
-    const cachedData = smartCache.get(cacheKey);
+    // 首先尝试从本地缓存获取数据
+    let cachedData = smartCache.get(cacheKey);
+
+    // 如果本地缓存未命中，尝试从Redis获取
+    if (!cachedData) {
+      cachedData = await smartCache.getWithRedis(cacheKey);
+    }
+
     if (cachedData) {
       vodData.value = [...vodData.value, ...cachedData];
       loadingStatus.value.set(vodApi.api, false);
@@ -1042,7 +1396,8 @@ const handleSingleVodSearch = async (vodApi) => {
           item
         )
       );
-      smartCache.set(cacheKey, processedData);
+      // 将结果保存到缓存中
+      smartCache.setWithRedis(cacheKey, processedData);
       vodData.value = [...vodData.value, ...processedData];
     }
   } catch (err) {
@@ -1083,9 +1438,6 @@ const search = (e) => {
 
 const colorMode = useColorMode();
 const category = ref("clouddrive");
-
-// import vodApiEndpoints from "~/assets/vod/list";
-
 const vodData = ref([]);
 
 // 检查是否有可用的VOD源
@@ -1103,13 +1455,13 @@ const categories = computed(() => [
   },
   ...(hasVodSources.value
     ? [
-      {
-        value: "onlineVod",
-        label: "在线观影",
-        icon: "fas fa-film",
-        description: "搜索在线视频资源",
-      },
-    ]
+        {
+          value: "onlineVod",
+          label: "在线观影",
+          icon: "fas fa-film",
+          description: "搜索在线视频资源",
+        },
+      ]
     : []),
   // {
   //   value: "soupian",
@@ -1131,6 +1483,11 @@ const switchCategory = (e) => {
     vodData.value = [];
     searchByVod();
   }
+};
+
+const handleIframeError = () => {
+  console.error("Iframe loading error");
+  iframeLoaded.value = false;
 };
 </script>
 
@@ -1237,7 +1594,6 @@ const switchCategory = (e) => {
 
 /* Pulse animation with smoother transition */
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;
