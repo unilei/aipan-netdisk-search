@@ -3,6 +3,7 @@ import { verifyToken } from '../model/user';
 import { createServer } from 'node:http';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
+import { createRoom, joinRoom, getRoomById, getRooms, leaveRoom } from '../services/roomService';
 
 // 定义聊天室接口
 interface ChatRoom {
@@ -280,6 +281,34 @@ export default defineNitroPlugin((nitroApp) => {
           }
         });
 
+        // 获取房间内所有用户及其socketId
+        socket.on('get_room_users', (roomId) => {
+          console.log(`用户 ${userId} 请求获取房间 ${roomId} 所有用户信息`);
+          
+          const roomUsers = [];
+          
+          if (io) {
+            const room = io.sockets.adapter.rooms.get(roomId);
+            
+            if (room) {
+              // 遍历房间内所有socket
+              for (const socketId of room) {
+                const userSocket = io.sockets.sockets.get(socketId);
+                if (userSocket && userSocket.data.user) {
+                  roomUsers.push({
+                    userId: userSocket.data.user.id,
+                    socketId: socketId,
+                    username: userSocket.data.user.username
+                  });
+                }
+              }
+            }
+          }
+          
+          console.log(`房间 ${roomId} 的用户列表:`, roomUsers);
+          socket.emit('room_users', roomUsers);
+        });
+
         // Handle typing status
         socket.on('typing', (data) => {
           const { roomId, isTyping } = data;
@@ -302,6 +331,102 @@ export default defineNitroPlugin((nitroApp) => {
           if (io) {
             io.emit('users_online', Array.from(onlineUsers.values()));
           }
+        });
+
+        // 屏幕共享相关处理
+        // 创建屏幕共享房间
+        socket.on('create_room', (data, callback) => {
+          const { roomName } = data;
+          const room = createRoom(userId, roomName);
+          socket.join(room.id);
+          console.log(`用户 ${userId} (${username}) 创建了屏幕共享房间: ${room.id}, 房间名: ${roomName}`);
+          
+          // 修改返回格式以符合客户端期望
+          socket.emit('room_created', {
+            id: room.id,
+            name: room.name,
+            hostId: room.hostId,
+            viewers: []
+          });
+        });
+        
+        // 加入屏幕共享房间
+        socket.on('join_room', (roomId) => {
+          console.log(`用户 ${userId} (${username}) 尝试加入屏幕共享房间: ${roomId}`);
+          const room = joinRoom(roomId, userId);
+          
+          if (room) {
+            socket.join(roomId);
+            console.log(`用户 ${userId} (${username}) 成功加入了屏幕共享房间: ${roomId}`);
+            
+            // 添加socketId到userId的映射
+            socket.data.roomId = roomId;
+            
+            // 通知房间内所有其他用户有新用户加入
+            socket.to(roomId).emit('user_joined', {
+              userId,
+              username,
+              socketId: socket.id
+            });
+            
+            // 向加入者发送房间信息
+            socket.emit('room_joined', {
+              id: room.id,
+              name: room.name,
+              hostId: room.hostId,
+              viewers: room.viewers || []
+            });
+            
+            // 向所有房间用户广播socketId映射
+            const roomUsers = [];
+            if (io) {
+              const sockets = io.sockets.adapter.rooms.get(roomId);
+              if (sockets) {
+                for (const socketId of sockets) {
+                  const userSocket = io.sockets.sockets.get(socketId);
+                  if (userSocket && userSocket.data.user) {
+                    roomUsers.push({
+                      userId: userSocket.data.user.userId,
+                      socketId: socketId,
+                      username: userSocket.data.user.username
+                    });
+                  }
+                }
+              }
+              
+              // 立即广播给房间内所有用户
+              io.to(roomId).emit('room_users', roomUsers);
+            }
+          } else {
+            socket.emit('error', { message: '房间不存在或已关闭' });
+          }
+        });
+        
+        // 离开屏幕共享房间
+        socket.on('leave_room', (roomId) => {
+          const room = leaveRoom(roomId, userId);
+          
+          if (room) {
+            socket.leave(roomId);
+            console.log(`用户 ${userId} (${username}) 离开了屏幕共享房间: ${roomId}`);
+            
+            // 通知房间内其他用户
+            socket.to(roomId).emit('user_left', {
+              userId,
+              username
+            });
+          }
+        });
+        
+        // 处理WebRTC信令
+        socket.on('signal', (data) => {
+          const { to, signal } = data;
+          console.log(`用户 ${userId} 发送信令到用户 ${to}，信令类型:`, signal.type);
+          
+          socket.to(to).emit('signal', {
+            from: socket.id,
+            signal
+          });
         });
       });
     }
