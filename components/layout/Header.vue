@@ -1,8 +1,29 @@
 <script setup>
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useColorMode } from "#imports";
+import { useUserStore } from "~/stores/user";
+import NotificationIcon from "~/components/NotificationIcon.vue";
+
 const colorMode = useColorMode();
 const router = useRouter();
+const userStore = useUserStore();
+const dropdownVisible = ref(false);
+const userMenuRef = ref(null);
 
 const goHome = () => {
+  router.push("/");
+};
+
+// 关闭用户下拉菜单
+const closeDropdown = (event) => {
+  if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
+    dropdownVisible.value = false;
+  }
+};
+
+// 处理登出
+const handleLogout = () => {
+  userStore.clearUser();
   router.push("/");
 };
 
@@ -41,24 +62,43 @@ const navItems = [
     },
   },
 ];
+
+onMounted(() => {
+  userStore.fetchUser();
+  document.addEventListener("click", closeDropdown);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", closeDropdown);
+});
 </script>
 
 <template>
   <el-affix :z-index="3000">
-    <header class="border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm bg-white/80 dark:bg-gray-700">
+    <header
+      class="border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm bg-white/80 dark:bg-gray-700"
+    >
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <!-- Logo 区域 -->
           <div
             class="flex cursor-pointer items-center justify-center gap-2 md:gap-2 hover:scale-105 transition-transform duration-300"
-            @click="goHome()">
-            <img class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
+            @click="goHome()"
+          >
+            <img
+              class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90"
+              src="@/assets/my-logo.png"
+              alt="logo"
+            />
             <div class="text-left">
               <h1
-                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
+              >
                 AIPAN.ME
               </h1>
-              <p class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400">
+              <p
+                class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400"
+              >
                 爱盼 - 资源随心，娱乐无限
               </p>
             </div>
@@ -69,25 +109,115 @@ const navItems = [
             <div class="flex items-center space-x-4">
               <!-- 导航菜单 -->
               <nav class="hidden sm:flex items-center space-x-4">
-                <nuxt-link v-for="item in navItems" :key="item.path" :to="item.path"
-                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80">
-                  <i :class="colorMode.preference === 'light' ? item.icon.light : item.icon.dark"
-                    class="mr-2 transition-opacity duration-200 dark:opacity-90"></i>
+                <nuxt-link
+                  v-for="item in navItems"
+                  :key="item.path"
+                  :to="item.path"
+                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
+                >
+                  <i
+                    :class="
+                      colorMode.preference === 'light'
+                        ? item.icon.light
+                        : item.icon.dark
+                    "
+                    class="mr-2 transition-opacity duration-200 dark:opacity-90"
+                  ></i>
                   {{ item.name }}
                 </nuxt-link>
               </nav>
-
               <!-- 主题切换按钮 -->
               <button
                 class="p-2 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
                 @click="
                   colorMode.preference =
-                  colorMode.preference === 'dark' ? 'light' : 'dark'
-                  ">
-                <i v-if="colorMode.preference === 'dark'"
-                  class="fa-solid fa-sun   transition-transform duration-300 hover:rotate-90"></i>
-                <i v-else class="fa-solid fa-moon  transition-transform duration-300 hover:rotate-90"></i>
+                    colorMode.preference === 'dark' ? 'light' : 'dark'
+                "
+              >
+                <i
+                  v-if="colorMode.preference === 'dark'"
+                  class="fa-solid fa-sun transition-transform duration-300 hover:rotate-90"
+                ></i>
+                <i
+                  v-else
+                  class="fa-solid fa-moon transition-transform duration-300 hover:rotate-90"
+                ></i>
               </button>
+              <!-- 通知组件 -->
+              <NotificationIcon v-if="userStore.loggedIn" />
+
+              <!-- 登录按钮 / 用户菜单 -->
+              <div class="relative" ref="userMenuRef">
+                <!-- 未登录状态显示登录按钮 -->
+                <nuxt-link
+                  v-if="!userStore.loggedIn"
+                  to="/login"
+                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
+                >
+                  <i class="fa-solid fa-user mr-2"></i>
+                  登录
+                </nuxt-link>
+
+                <!-- 已登录状态显示用户头像和下拉菜单 -->
+                <div v-else class="flex items-center">
+                  <div
+                    class="cursor-pointer flex items-center group"
+                    @click.stop="dropdownVisible = !dropdownVisible"
+                  >
+                    <div
+                      class="w-8 h-8 rounded-full overflow-hidden border-2 border-transparent group-hover:border-blue-400 transition-all"
+                    >
+                      <img
+                        :src="userStore.userAvatar"
+                        class="w-full h-full object-cover"
+                        alt="用户头像"
+                      />
+                    </div>
+                    <i
+                      class="fa-solid fa-chevron-down ml-1 text-xs text-slate-600 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"
+                    ></i>
+                  </div>
+
+                  <!-- 下拉菜单 -->
+                  <div
+                    v-show="dropdownVisible"
+                    class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50 border border-gray-100 dark:border-gray-700 overflow-hidden"
+                  >
+                    <nuxt-link
+                      v-if="userStore.isAdmin"
+                      to="/admin/dashboard"
+                      class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      @click="dropdownVisible = false"
+                    >
+                      <i class="fa-solid fa-gauge-high mr-2 text-blue-500"></i>
+                      管理后台
+                    </nuxt-link>
+                    <nuxt-link
+                      to="/user/dashboard"
+                      class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      @click="dropdownVisible = false"
+                    >
+                      <i class="fa-solid fa-user mr-2 text-green-500"></i>
+                      个人中心
+                    </nuxt-link>
+                    <nuxt-link
+                      to="/user/profile"
+                      class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      @click="dropdownVisible = false"
+                    >
+                      <i class="fa-solid fa-gear mr-2 text-purple-500"></i>
+                      账号设置
+                    </nuxt-link>
+                    <div
+                      class="flex items-center px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      @click="handleLogout"
+                    >
+                      <i class="fa-solid fa-right-from-bracket mr-2"></i>
+                      退出登录
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </client-only>
         </div>
