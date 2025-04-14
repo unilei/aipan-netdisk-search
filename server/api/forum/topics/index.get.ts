@@ -21,8 +21,8 @@ export default defineEventHandler(async (event) => {
             where,
             orderBy: [
                 { isSticky: 'desc' },
-                { createdAt: 'desc' },
-                { lastActivityAt: 'desc' }
+                { lastActivityAt: 'desc' },
+                { createdAt: 'desc' }
             ],
             include: {
                 author: {
