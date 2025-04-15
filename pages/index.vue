@@ -54,7 +54,7 @@ useHead({
 // 用于检查是否已从Redis服务器加载数据
 const doubanLoadedFromRedis = ref(false);
 
-// 使用activeCategoryCookie作为备用
+// 使用activeCategoryCookie作为唯一存储方式
 const activeCategoryCookie = useCookie("activeCategory", {
   maxAge: 60 * 60 * 24 * 7, // 保存7天
 });
@@ -83,53 +83,11 @@ const goDouban = (movie) => {
   });
 };
 
-// 添加侵权投诉跳转函数
-const goCopyright = () => {
-  router.push("/copyright");
-};
-
-// 获取活跃分类
-const getActiveCategory = async () => {
-  try {
-    const res = await $fetch("/api/home/category", {
-      method: "GET",
-      query: {
-        action: "get",
-      },
-    });
-
-    if (res.code === 200 && res.data) {
-      activeCategory.value = res.data;
-    } else {
-      // 如果Redis中没有数据，使用Cookie或默认值
-      activeCategory.value =
-        activeCategoryCookie.value || navigationConfig.categories[0].id;
-      // 将默认值保存到Redis
-      saveActiveCategoryToRedis(activeCategory.value);
-    }
-  } catch (error) {
-    console.error("Error fetching active category:", error);
-    // 出错时使用Cookie或默认值
-    activeCategory.value =
-      activeCategoryCookie.value || navigationConfig.categories[0].id;
-  }
-};
-
-// 保存活跃分类到Redis
-const saveActiveCategoryToRedis = async (categoryId) => {
-  try {
-    await $fetch("/api/home/category", {
-      method: "GET",
-      query: {
-        action: "set",
-        categoryId: categoryId,
-      },
-    });
-  } catch (error) {
-    console.error("Error saving category to Redis:", error);
-    // 出错时回退到Cookie存储
-    activeCategoryCookie.value = categoryId;
-  }
+// 获取活跃分类 - 仅从cookie获取
+const getActiveCategory = () => {
+  // 使用Cookie或默认值
+  activeCategory.value =
+    activeCategoryCookie.value || navigationConfig.categories[0].id;
 };
 
 onMounted(async () => {
@@ -138,8 +96,8 @@ onMounted(async () => {
   doubanData.value = doubanStore.doubanData;
   doubanLoadedFromRedis.value = true;
 
-  // 获取活跃分类
-  await getActiveCategory();
+  // 获取活跃分类 - 从cookie
+  getActiveCategory();
 
   // 在页面加载完成后，将滚动位置重置到顶部
   window.scrollTo(0, 0);
@@ -157,10 +115,9 @@ watch(
 const activeCategory = ref(navigationConfig.categories[0].id);
 const categories = navigationConfig.categories;
 
-// 监听activeCategory变化，保存到Redis和备用Cookie
+// 监听activeCategory变化，只保存到cookie
 watch(activeCategory, (newValue) => {
-  saveActiveCategoryToRedis(newValue);
-  activeCategoryCookie.value = newValue; // 作为备用
+  activeCategoryCookie.value = newValue;
 });
 </script>
 
