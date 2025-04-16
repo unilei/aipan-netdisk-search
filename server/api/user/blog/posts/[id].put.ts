@@ -1,4 +1,6 @@
 import prisma from "~/lib/prisma";
+import { PrismaClient, Prisma } from '@prisma/client';
+
 export default defineEventHandler(async (event) => {
     const { id } = getRouterParams(event);
 
@@ -14,37 +16,69 @@ export default defineEventHandler(async (event) => {
     const currentPost = await prisma.blogPost.findUnique({
         where: {
             id: Number(id),
+        },
+        include: {
+            categories: {
+                include: {
+                    category: true
+                }
+            }
         }
-    })
+    });
 
     if (!currentPost) {
         throw createError({ statusCode: 404, statusMessage: 'Resource not found' });
     }
     if (currentPost.authorId !== userId) {
-        throw createError({ statusCode: 403, statusMessage: 'Forbidden' }); // 仅允许资源的创建者更新资源
+        throw createError({ statusCode: 403, statusMessage: 'Forbidden' }); // Only allow resource creators to update
     }
 
     try {
-        const updatedPost = await prisma.blogPost.update({
-            where: { id: Number(id) },
-            data: {
-                title: title,
-                content: content,
-                tags: tags,
-                categories: {
-                    deleteMany: {}, // 删除所有现有关联
-                    create: categoryIds.map((id: number) => ({
-                        category: { connect: { id } }
-                    }))
-                }
+        // Use a transaction to ensure both operations (delete and update) succeed or fail together
+        const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+            // If the post was previously published (has an associated Post record), delete that record
+            if (currentPost.status === 'published' && currentPost.postId) {
+                await tx.post.delete({
+                    where: { id: currentPost.postId }
+                });
+                console.log(`Deleted published Post with ID: ${currentPost.postId}`);
             }
-        })
+
+            // Update the blog post, reset status to pending
+            const updatedPost = await tx.blogPost.update({
+                where: { id: Number(id) },
+                data: {
+                    title: title,
+                    content: content,
+                    tags: tags,
+                    status: 'pending', // Force status to pending on edit
+                    postId: null,      // Clear the associated Post ID
+                    categories: {
+                        deleteMany: {}, // Delete all existing associations
+                        create: categoryIds.map((id: number) => ({
+                            category: { connect: { id } }
+                        }))
+                    }
+                },
+                include: {
+                    categories: {
+                        include: {
+                            category: true
+                        }
+                    }
+                }
+            });
+            
+            return updatedPost;
+        });
+
         return {
             code: 200,
             msg: 'success',
-            data: updatedPost
+            data: result
         };
     } catch (error) {
-        return { error: 'Unable to update post' }
+        console.error('Failed to update blog post:', error);
+        return { code: 500, error: 'Unable to update post', msg: String(error) }
     }
-})
+});

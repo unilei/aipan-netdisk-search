@@ -161,16 +161,18 @@ model BlogPostToCategory {
 
 // 博客文章模型
 model BlogPost {
-  id        Int      @id @default(autoincrement())
-  title     String
-  slug      String   @unique
-  content   String   @db.Text
-  tags      String[]
-  status    String   @default("pending") // pending, published, rejected
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  title            String
+  slug             String   @unique
+  content          String   @db.Text
+  tags             String[]
+  status           String   @default("pending") // pending, published, rejected
+  rejectionReason  String?  @db.Text // 拒绝原因
+  postId           Int?     // 关联到已发布的 Post 记录
+  author           User     @relation(fields: [authorId], references: [id])
+  authorId         Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   categories BlogPostToCategory[] // 使用中间表实现多对多关系
 }

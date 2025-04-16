@@ -317,7 +317,7 @@
               <li
                 v-for="topic in topics"
                 :key="topic.id"
-                class="border-b border-gray-100 dark:border-gray-700 last:border-none hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
+                class="border-b border-gray-100 dark:border-gray-700 last:border-none hover:bg-gray-50 dark:hover:bg-transparent transition-colors"
               >
                 <div class="py-3 px-4">
                   <div class="flex">

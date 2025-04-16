@@ -204,8 +204,8 @@
           </h3>
 
           <div v-if="user">
-            <el-form @submit.prevent="submitReply" ref="editorRef">
-              <el-form-item>
+            <div class="space-y-4">
+              <div>
                 <client-only>
                   <template #fallback>
                     <div
@@ -214,17 +214,16 @@
                       <p class="text-gray-400 text-xs">编辑器加载中...</p>
                     </div>
                   </template>
-                  <lazy-md-editor
+                  <MarkdownEditor
                     v-model="replyContent"
-                    placeholder="在这里输入您的回复内容..."
-                    language="zh-CN"
-                    ref="editorRef"
-                    :toolbars="mdEditorToolbars"
-                    style="height: 250px"
+                    placeholder="在这里输入您的回复内容，支持Markdown格式..."
+                    minHeight="150px"
+                    :onSave="submitReply"
+                    ref="mdEditorRef"
                   />
                 </client-only>
-              </el-form-item>
-              <el-form-item>
+              </div>
+              <div>
                 <el-button
                   type="primary"
                   :loading="submitting"
@@ -233,8 +232,8 @@
                 >
                   发表回复
                 </el-button>
-              </el-form-item>
-            </el-form>
+              </div>
+            </div>
           </div>
           <div
             v-else
@@ -272,57 +271,17 @@
 import { formatDistanceToNow } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { ElMessage } from "element-plus";
-import {
-  defineAsyncComponent,
-  shallowRef,
-  computed,
-  ref,
-  onMounted,
-} from "vue";
-import "md-editor-v3/lib/style.css";
+import { computed, ref, onMounted } from "vue";
 import { marked } from "marked";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
-
-// 使用defineAsyncComponent异步加载编辑器组件，并添加loading和error处理
-const LazyMdEditor = defineAsyncComponent({
-  loader: () => import("md-editor-v3").then((mod) => mod.MdEditor),
-  delay: 200,
-  timeout: 3000,
-  errorComponent: {
-    template: `<div class="border border-red-200 dark:border-red-800 rounded p-4 bg-red-50 dark:bg-red-900/50">
-                <p class="text-red-500 dark:text-red-400 text-xs">编辑器加载失败，请刷新页面重试</p>
-               </div>`,
-  },
-  suspensible: false,
-});
+import MarkdownEditor from "~/components/MarkdownEditor.vue";
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const user = computed(() => userStore.user);
 const slug = route.params.slug;
-
-// 编辑器工具栏预定义
-const mdEditorToolbars = shallowRef([
-  "bold",
-  "italic",
-  "strikethrough",
-  "sub",
-  "sup",
-  "quote",
-  "unorderedList",
-  "orderedList",
-  "codeRow",
-  "code",
-  "link",
-  "image",
-  "table",
-  "revoke",
-  "next",
-  "preview",
-]);
-
 const {
   data,
   pending: loading,
@@ -349,7 +308,7 @@ const canModerate = computed(() => {
 const replyContent = ref("");
 const submitting = ref(false);
 const replyingTo = ref(null); // 添加一个变量来跟踪回复的父评论ID
-const editorRef = ref(null); // 添加对编辑器容器的引用
+const mdEditorRef = ref(null); // 更改编辑器引用名称
 
 const mounted = ref(false);
 
@@ -434,8 +393,8 @@ function replyToPost(postId) {
   replyingTo.value = postId;
   // 添加滚动到编辑器的功能
   setTimeout(() => {
-    if (editorRef.value) {
-      editorRef.value.$el.scrollIntoView({
+    if (mdEditorRef.value) {
+      mdEditorRef.value.$el.scrollIntoView({
         behavior: "smooth",
         block: "center",
       });
@@ -519,12 +478,6 @@ onMounted(async () => {
     console.error("增加浏览量失败:", error);
   }
 });
-
-// 解析markdown内容的函数
-function parseMarkdown(content) {
-  if (!content || !mounted.value) return "";
-  return marked.parse(content);
-}
 </script>
 
 <style>
@@ -559,14 +512,5 @@ function parseMarkdown(content) {
 
 .markdown-body a {
   @apply text-blue-600 dark:text-blue-400 hover:underline;
-}
-
-/* 缩小编辑器字体大小 */
-:deep(.md-editor-content) {
-  font-size: 0.875rem;
-}
-
-:deep(.md-editor-toolbar) {
-  font-size: 0.875rem;
 }
 </style>
