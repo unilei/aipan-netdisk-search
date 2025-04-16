@@ -6,10 +6,28 @@ export default defineEventHandler(async (event) => {
   const pageSize = Number(query.pageSize) || 10;
   const skip = (page - 1) * pageSize;
   const take = pageSize;
-  // 获取总记录数
-  const totalCount = await prisma.blogPost.count();
+  const userId = event.context.user.userId;
+  if (!userId) {
+    return {
+      code: 401,
+      msg: 'Unauthorized',
+      data: null
+    };
+  }
+  
   try {
+    // 只获取该用户的博客文章总数
+    const totalCount = await prisma.blogPost.count({
+      where: {
+        authorId: userId
+      }
+    });
+    
+    // 获取该用户的博客文章列表
     const posts = await prisma.blogPost.findMany({
+      where: {
+        authorId: userId
+      },
       skip,
       take,
       include: {
@@ -31,11 +49,11 @@ export default defineEventHandler(async (event) => {
       pageSize,
       posts,
     };
-  } catch (error) {
+  } catch (error: any) {
     return {
       code: 500,
       msg: 'error',
       data: error
-    }
+    };
   }
 });

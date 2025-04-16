@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useColorMode } from "#imports";
 import { useUserStore } from "~/stores/user";
 import NotificationIcon from "~/components/NotificationIcon.vue";
@@ -9,6 +9,9 @@ const router = useRouter();
 const userStore = useUserStore();
 const dropdownVisible = ref(false);
 const userMenuRef = ref(null);
+const isHeaderFixed = ref(false);
+const headerHeight = ref(0);
+const headerRef = ref(null);
 
 const goHome = () => {
   router.push("/");
@@ -63,21 +66,48 @@ const navItems = [
   },
 ];
 
+// 监听滚动事件
+const handleScroll = () => {
+  if (!headerRef.value) return;
+
+  if (!headerHeight.value) {
+    headerHeight.value = headerRef.value.offsetHeight;
+  }
+
+  if (window.scrollY > 10) {
+    isHeaderFixed.value = true;
+  } else {
+    isHeaderFixed.value = false;
+  }
+};
+
+const headerClass = computed(() => {
+  return {
+    "border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm bg-white/80 dark:bg-gray-700 z-[3000]": true,
+    "fixed top-0 left-0 right-0 shadow-sm": isHeaderFixed.value,
+    relative: !isHeaderFixed.value,
+  };
+});
+
 onMounted(() => {
   userStore.fetchUser();
   document.addEventListener("click", closeDropdown);
+  window.addEventListener("scroll", handleScroll);
+
+  if (headerRef.value) {
+    headerHeight.value = headerRef.value.offsetHeight;
+  }
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener("click", closeDropdown);
+  window.removeEventListener("scroll", handleScroll);
 });
 </script>
 
 <template>
-  <el-affix :z-index="3000">
-    <header
-      class="border-b border-gray-200 dark:border-gray-700/50 backdrop-blur-sm bg-white/80 dark:bg-gray-700"
-    >
+  <div>
+    <header ref="headerRef" :class="headerClass">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <!-- Logo 区域 -->
@@ -181,7 +211,7 @@ onBeforeUnmount(() => {
                   <!-- 下拉菜单 -->
                   <div
                     v-show="dropdownVisible"
-                    class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50 border border-gray-100 dark:border-gray-700 overflow-hidden"
+                    class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-[9999] border border-gray-100 dark:border-gray-700 overflow-hidden"
                   >
                     <nuxt-link
                       v-if="userStore.isAdmin"
@@ -223,7 +253,9 @@ onBeforeUnmount(() => {
         </div>
       </div>
     </header>
-  </el-affix>
+    <!-- 当header固定时，添加一个占位元素避免内容跳动 -->
+    <div v-if="isHeaderFixed" :style="`height: ${headerHeight}px`"></div>
+  </div>
 </template>
 
 <style scoped>
