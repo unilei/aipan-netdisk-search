@@ -17,10 +17,8 @@ RUN npm install
 # 复制源代码
 COPY . .
 
-# 设置数据库连接环境变量（仅用于生成 Prisma 客户端）
 ENV DATABASE_URL="postgresql://postgres:postgres@postgres:5432/aipan?schema=public"
 
-# 生成 Prisma 客户端
 RUN npx prisma generate
 
 # 构建项目
@@ -46,7 +44,7 @@ COPY --from=builder /app/ecosystem.config.js ./ecosystem.config.js
 COPY --from=builder /app/prisma-esm-fix.mjs ./prisma-esm-fix.mjs
 COPY --from=builder /app/generated ./generated
 
-# 安装 PM2
+# 安装 PM2 和必要的依赖
 RUN npm install pm2 -g
 
 # 设置环境变量
