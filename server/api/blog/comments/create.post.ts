@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
-import prisma from '~/server/utils/prisma'
+import prisma from "~/lib/prisma";
 import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
 
 export default defineEventHandler(async (event) => {

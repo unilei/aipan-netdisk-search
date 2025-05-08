@@ -6,6 +6,7 @@ module.exports = {
       exec_mode: "cluster",
       instances: "max",
       script: "./.output/server/index.mjs",
+      node_args: "--import=./prisma-esm-fix.mjs",
       watch: true,
       env: {
         NODE_ENV: "development",
@@ -21,7 +22,7 @@ module.exports = {
         NUXT_PUBLIC_GITHUB_OWNER: process.env.NUXT_PUBLIC_GITHUB_OWNER,
         NUXT_PUBLIC_GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
         NUXT_PUBLIC_GITHUB_TOKEN: process.env.NUXT_PUBLIC_GITHUB_TOKEN,
-        NUXT_PUBLIC_GITHUB_BRANCH: process.env.NUXT_PUBLIC_GITHUB_BRANCH
+        NUXT_PUBLIC_GITHUB_BRANCH: process.env.NUXT_PUBLIC_GITHUB_BRANCH,
       },
     },
   ],

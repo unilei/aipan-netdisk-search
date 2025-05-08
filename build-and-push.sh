@@ -82,6 +82,8 @@ info "正在构建和推送镜像，这可能需要一些时间..."
 docker buildx build \
   --platform linux/amd64,linux/arm64 \
   --build-arg BUILDPLATFORM="linux/amd64" \
+  --build-arg NODE_ENV="production" \
+  --build-arg DATABASE_URL="postgresql://postgres:postgres@postgres:5432/aipan?schema=public" \
   -t ${IMAGE_NAME}:${TAG} \
   --push \
   .

@@ -1,5 +1,4 @@
 import prisma from '~/lib/prisma';
-import { Prisma } from '@prisma/client';
 
 export default defineEventHandler(async (event) => {
   const blogPostId = parseInt(event.context.params?.id as string);
@@ -16,7 +15,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 使用事务确保数据一致性
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const result = await prisma.$transaction(async (tx) => {
       // 1. 获取博客文章
       const blogPost = await tx.blogPost.findUnique({
         where: { id: blogPostId },
