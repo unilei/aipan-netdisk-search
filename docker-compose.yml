@@ -1,72 +1,98 @@
+version: '3.8'
+
 services:
-  aipan-netdisk-search:
-    image: unilei/aipan-netdisk-search:latest # 如果你想从 Docker Hub 获取镜像，可以使用这一行
-    container_name: aipan-netdisk-search-app
-    restart: always # 确保容器在停止后自动重启
-    build:
-      context: . # 构建上下文，通常是 Dockerfile 所在的目录
-      dockerfile: Dockerfile # Dockerfile 的名称
-      args:
-        ADMIN_USER: ${ADMIN_USER}
-        ADMIN_PASSWORD: ${ADMIN_PASSWORD}
-        ADMIN_EMAIL: ${ADMIN_EMAIL}
-        JWT_SECRET: ${JWT_SECRET}
-        DATABASE_URL: ${DATABASE_URL}
-        DATABASE_SCHEMA: ${DATABASE_SCHEMA}
-        
-    ports:
-      - "3000:3000" # 映射容器的 3000 端口到宿主机的 3000 端口
-      - "3002:3002" # 映射容器的 3002 端口到宿主机的 3002 端口
-    env_file:
-      - .env
+  # 数据库迁移服务
+  prisma-migrate:
+    image: unilei/aipan-netdisk-search:latest
+    container_name: aipan-prisma-migrate
+    restart: "no"
     environment:
-      - NODE_ENV=${NODE_ENV:-production}
-      - NUXT_ADMIN_USER=${ADMIN_USER}
-      - NUXT_ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - NUXT_ADMIN_EMAIL=${ADMIN_EMAIL}
-      - NUXT_JWT_SECRET=${JWT_SECRET}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+    command: ["/bin/sh", "-c", "cd /app && npx prisma migrate deploy && npx prisma db seed"]
+    depends_on:
+      - postgres
+    networks:
+      - aipan-network
+
+  # 主应用服务
+  aipan-netdisk-search:
+    image: unilei/aipan-netdisk-search:latest
+    container_name: aipan-netdisk-search-app
+    restart: always
+    ports:
+      - "${APP_PORT}:3000"  # Web应用端口
+      - "${WS_PORT}:3002"  # WebSocket端口
+    environment:
+      # 数据库配置
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+      - NUXT_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+      - DATABASE_SCHEMA=${DATABASE_SCHEMA}
       - NUXT_DATABASE_SCHEMA=${DATABASE_SCHEMA}
-      - NUXT_DATABASE_URL=${DATABASE_URL}
+      
+      # 管理员配置
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      
+      # 安全配置
+      - JWT_SECRET=${JWT_SECRET}
+      - NUXT_JWT_SECRET=${JWT_SECRET}
+      
+      # GitHub配置
       - NUXT_PUBLIC_GITHUB_OWNER=${NUXT_PUBLIC_GITHUB_OWNER}
       - NUXT_PUBLIC_GITHUB_REPO=${NUXT_PUBLIC_GITHUB_REPO}
       - NUXT_PUBLIC_GITHUB_TOKEN=${NUXT_PUBLIC_GITHUB_TOKEN}
       - NUXT_PUBLIC_GITHUB_BRANCH=${NUXT_PUBLIC_GITHUB_BRANCH}
-      - WS_PORT=${WS_PORT:-3002}
-      - REDIS_URL=redis://redis:6379
+      
+      # Quark配置
+      - NUXT_PUBLIC_QUARK_COOKIE=${NUXT_PUBLIC_QUARK_COOKIE}
+      
+      # WebSocket配置
+      - WS_PORT=${WS_PORT}
+      
+      # Redis配置
+      - REDIS_URL=${REDIS_URL}
+      
+      # 环境配置
+      - NODE_ENV=production
     depends_on:
-      - prisma-migrate
+      - postgres
       - redis
+      - prisma-migrate
+    networks:
+      - aipan-network
 
-  prisma-migrate:
-    image: node:20.18.0-alpine
-    container_name: aipan-netdisk-search-migrate
-    command: >
-      sh -c '
-      npm install prisma --no-save &&
-      if ! npx prisma migrate status | grep -q "Database schema is up to date"; then
-        echo "Running database migrations..." &&
-        npx prisma migrate deploy
-      else
-        echo "Database schema is already up to date, skipping migrations."
-      fi
-      '
-    working_dir: /app
-    volumes:
-      - ./prisma:/app/prisma
-      - ./.env:/app/.env
+  postgres:
+    image: postgres:15-alpine
+    container_name: aipan-postgres
+    restart: always
     environment:
-      DATABASE_URL: ${DATABASE_URL}
-    restart: "no"
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - aipan-network
 
   redis:
     image: redis:alpine
-    container_name: aipan-netdisk-redis
+    container_name: aipan-redis
     restart: always
-    ports:
-      - "6379:6379"
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    networks:
+      - aipan-network
 
 volumes:
+  postgres-data:
   redis-data:
+
+networks:
+  aipan-network:
+    driver: bridge
