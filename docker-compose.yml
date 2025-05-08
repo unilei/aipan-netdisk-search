@@ -8,7 +8,8 @@ services:
     restart: "no"
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
-    command: ["/bin/sh", "-c", "cd /app && npx prisma migrate deploy && npx prisma db seed"]
+      - SHADOW_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}
+    command: ["/bin/sh", "-c", "cd /app && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma migrate deploy && npx prisma db seed"]
     depends_on:
       - postgres
     networks:
@@ -28,6 +29,7 @@ services:
       - NUXT_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
       - DATABASE_SCHEMA=${DATABASE_SCHEMA}
       - NUXT_DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - SHADOW_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}
       
       # 管理员配置
       - ADMIN_USER=${ADMIN_USER}

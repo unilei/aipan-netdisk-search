@@ -1,6 +1,5 @@
 import { verifyToken } from '~/server/model/user'
-import { Prisma } from '@prisma/client'
-import prisma from '~/server/utils/prisma'
+import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
     // 验证管理员权限
@@ -22,12 +21,12 @@ export default defineEventHandler(async (event) => {
     const search = query.search as string || undefined
 
     // 构建查询条件
-    const where: Prisma.UserResourceWhereInput = {
+    const where = {
         ...(status && { status }),
         ...(search && {
             OR: [
-                { name: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
-                { description: { contains: search, mode: 'insensitive' as Prisma.QueryMode } }
+                { name: { contains: search, mode: 'insensitive' } },
+                { description: { contains: search, mode: 'insensitive' } }
             ]
         })
     }

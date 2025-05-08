@@ -1,5 +1,5 @@
 import { verifyToken } from '~/server/model/user'
-import prisma from '~/server/utils/prisma'
+import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
     try {

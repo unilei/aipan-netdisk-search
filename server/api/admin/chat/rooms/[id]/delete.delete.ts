@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client'
 import { verifyToken } from '~/server/model/user'
-
-const prisma = new PrismaClient()
+import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
   // 验证用户是否已登录并且是管理员

@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
                 email: true,
                 role: true,
                 avatarStyle: true,
-                createdAt: true,
+                createdAt: false,
                 isVerified: true
             }
         });
