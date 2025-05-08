@@ -358,7 +358,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}?schema=\${DATABASE_SCHEMA}
       - SHADOW_DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}_shadow?schema=\${DATABASE_SCHEMA}
-    command: ["/bin/sh", "-c", "cd /app && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma migrate deploy && npx prisma db seed"]
+    command: ["/bin/sh", "-c", "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma generate && npx prisma migrate deploy && npx prisma db seed"]
     depends_on:
       - postgres
     networks:
@@ -688,6 +688,55 @@ EOL
   info "===== 配置更新完成 ====="
 }
 
+# 重新生成 Prisma 客户端
+regenerate_prisma_client() {
+  info "===== 重新生成 Prisma 客户端 ====="
+  
+  # 检查并处理已存在的容器
+  if docker ps -a --format '{{.Names}}' | grep -q "^aipan-prisma-generate$"; then
+    info "移除旧的 Prisma 生成容器..."
+    docker rm -f aipan-prisma-generate > /dev/null 2>&1
+  fi
+  
+  # 运行 Prisma 客户端生成
+  info "正在生成 Prisma 客户端..."
+  docker run --rm \
+    --name aipan-prisma-generate \
+    -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
+    unilei/aipan-netdisk-search:latest \
+    /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Generating Prisma client with ESM fix')\" && npx prisma generate"
+  
+  if [ $? -eq 0 ]; then
+    info "Prisma 客户端生成成功! ✓"
+    
+    # 询问是否重启应用
+    info "是否要重启应用以使用新生成的 Prisma 客户端? (y/n)"
+    read -r restart_app
+    
+    if [[ "$restart_app" =~ ^[Yy]$ ]]; then
+      # 重启应用容器
+      info "重启应用容器..."
+      if [ "$USE_DOCKER_PLUGIN" = true ]; then
+        docker compose restart aipan-netdisk-search
+      else
+        docker-compose restart aipan-netdisk-search
+      fi
+      
+      if [ $? -eq 0 ]; then
+        info "应用容器重启成功! ✓"
+      else
+        error "应用容器重启失败"
+      fi
+    fi
+  else
+    error "Prisma 客户端生成失败，请检查日志"
+    return 1
+  fi
+  
+  info "===== Prisma 客户端生成完成 ====="
+  return 0
+}
+
 # 运行数据库迁移
 run_database_migration() {
   info "===== 运行数据库迁移 ====="
@@ -727,8 +776,9 @@ run_database_migration() {
     --name aipan-prisma-migrate \
     --network aipan-network \
     -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
+    -e SHADOW_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}" \
     unilei/aipan-netdisk-search:latest \
-    /bin/sh -c "cd /app && npx prisma migrate deploy && npx prisma db seed"
+    /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma generate && npx prisma migrate deploy && npx prisma db seed"
   
   if [ $? -eq 0 ]; then
     info "数据库迁移成功! ✓"
@@ -749,7 +799,8 @@ show_menu() {
   echo "  1) 完整部署 (首次部署或重新部署)"
   echo "  2) 更新配置 (仅修改配置并重启服务)"
   echo "  3) 运行数据库迁移 (初始化或更新数据库结构)"
-  echo "  4) 退出"
+  echo "  4) 重新生成 Prisma 客户端 (解决 Prisma 相关问题)"
+  echo "  5) 退出"
   echo ""
   info "请选择操作 [默认: 1]: "
   read -r choice
@@ -769,6 +820,16 @@ show_menu() {
       run_database_migration
       ;;
     4)
+      # 加载现有配置
+      if [ -f .env ]; then
+        source .env
+      else
+        error ".env文件不存在，请先运行完整部署"
+        exit 1
+      fi
+      regenerate_prisma_client
+      ;;
+    5)
       info "感谢使用AIPan网盘搜索部署脚本"
       exit 0
       ;;
