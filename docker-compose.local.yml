@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # 应用服务
+  aipan-netdisk-search:
+    container_name: aipan-netdisk-search-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Web应用端口
+      - "3002:3002"  # WebSocket端口
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan?schema=public
+      - NUXT_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan?schema=public
+      - DATABASE_SCHEMA=public
+      - NUXT_DATABASE_SCHEMA=public
+      - JWT_SECRET=local_development_secret_key
+      - NUXT_JWT_SECRET=local_development_secret_key
+      - WS_PORT=3002
+      - REDIS_URL=redis://redis:6379
+    volumes:
+      # 挂载源代码目录，便于开发时实时更新
+      - ./prisma:/app/prisma
+    depends_on:
+      - postgres
+      - redis
+      - prisma-migrate
+    restart: unless-stopped
+    networks:
+      - aipan-network
+
+  # PostgreSQL 数据库服务
+  postgres:
+    image: postgres:15-alpine
+    container_name: aipan-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=aipan
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - aipan-network
+
+  # Prisma 数据库迁移服务
+  prisma-migrate:
+    image: node:20.18.0-alpine
+    container_name: aipan-prisma-migrate
+    command: >
+      sh -c '
+      npm install prisma --no-save &&
+      npx prisma migrate deploy
+      '
+    working_dir: /app
+    volumes:
+      - ./prisma:/app/prisma
+      - ./.env:/app/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan?schema=public
+    depends_on:
+      - postgres
+    restart: "no"
+    networks:
+      - aipan-network
+
+  # Redis 服务（用于WebSocket）
+  redis:
+    image: redis:alpine
+    container_name: aipan-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - aipan-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  aipan-network:
+    driver: bridge

@@ -8,14 +8,17 @@ WORKDIR /app
 # 设置 Node.js 内存限制
 ENV NODE_OPTIONS="--max-old-space-size=8192"
 
-# 复制 package.json 和 lock 文件
-COPY package*.json ./
+# 复制 package.json  
+COPY package.json ./
 
 # 安装依赖
 RUN npm install
 
 # 复制源代码
 COPY . .
+
+# 设置数据库连接环境变量（仅用于生成 Prisma 客户端）
+ENV DATABASE_URL="postgresql://postgres:postgres@postgres:5432/aipan?schema=public"
 
 # 生成 Prisma 客户端
 RUN npx prisma generate
@@ -25,10 +28,10 @@ RUN npm run build
 
 # 清理不需要的文件和目录
 RUN rm -rf node_modules && \
-    rm -rf dist && \
-    rm -rf .git && \
-    rm -rf .nuxt && \
-    find . -maxdepth 1 ! -name '.output' ! -name 'prisma' ! -name 'ecosystem.config.js' ! -name '.' -exec rm -rf {} +
+  rm -rf dist && \
+  rm -rf .git && \
+  rm -rf .nuxt && \
+  find . -maxdepth 1 ! -name '.output' ! -name 'prisma' ! -name 'ecosystem.config.js' ! -name '.' -exec rm -rf {} +
 
 # 生产阶段
 FROM node:20.18.0-alpine
