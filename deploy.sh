@@ -103,6 +103,15 @@ generate_random_username() {
   echo "${prefix}_${suffix}"
 }
 
+# 生成随机邮箱
+generate_random_email() {
+  username=$(generate_random_string 8 6)
+  domains=("aipan.me")
+  domain_index=$((RANDOM % ${#domains[@]}))
+  domain=${domains[$domain_index]}
+  echo "${username}@${domain}"
+}
+
 # 生成随机密码
 generate_random_password() {
   length=16
@@ -263,6 +272,7 @@ create_config() {
     random_username=$(generate_random_username)
     random_password=$(generate_random_password)
     random_jwt_secret=$(generate_random_jwt_secret)
+    random_email=$(generate_random_email)
     
     # 验证生成的凭据
     if [ -z "$random_username" ] || [ ${#random_username} -lt 5 ]; then
@@ -282,6 +292,7 @@ create_config() {
     
     info "已生成随机管理员用户名: ${random_username}"
     info "已生成随机管理员密码: ${random_password}"
+    info "已生成随机管理员邮箱: ${random_email}"
     info "请保存这些凭据，它们只会显示一次!"
     
     cat > .env << EOL
@@ -296,7 +307,7 @@ SHADOW_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan_shadow?sc
 # 管理员配置
 ADMIN_USER=${random_username}
 ADMIN_PASSWORD=${random_password}
-ADMIN_EMAIL=admin@admin.com
+ADMIN_EMAIL=${random_email}
 
 # 安全配置
 JWT_SECRET=${random_jwt_secret}
@@ -332,6 +343,7 @@ EOL
 
 管理员用户名: ${random_username}
 管理员密码: ${random_password}
+管理员邮箱: ${random_email}
 JWT密钥: ${random_jwt_secret}
 
 部署时间: $(date)
@@ -358,7 +370,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}?schema=\${DATABASE_SCHEMA}
       - SHADOW_DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}_shadow?schema=\${DATABASE_SCHEMA}
-    command: ["/bin/sh", "-c", "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma generate && npx prisma migrate deploy && npx prisma db seed"]
+    command: ["/bin/sh", "-c", "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma migrate deploy && npx prisma db seed"]
     depends_on:
       - postgres
     networks:
@@ -384,6 +396,10 @@ services:
       - ADMIN_USER=\${ADMIN_USER}
       - ADMIN_PASSWORD=\${ADMIN_PASSWORD}
       - ADMIN_EMAIL=\${ADMIN_EMAIL}
+      # Nuxt 版本的管理员配置（用于 useRuntimeConfig 访问）
+      - NUXT_ADMIN_USER=\${ADMIN_USER}
+      - NUXT_ADMIN_PASSWORD=\${ADMIN_PASSWORD}
+      - NUXT_ADMIN_EMAIL=\${ADMIN_EMAIL}
       
       # 安全配置
       - JWT_SECRET=\${JWT_SECRET}
@@ -704,7 +720,7 @@ regenerate_prisma_client() {
     --name aipan-prisma-generate \
     -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
     unilei/aipan-netdisk-search:latest \
-    /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Generating Prisma client with ESM fix')\" && npx prisma generate"
+    /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Generating Prisma client with ESM fix')\""
   
   if [ $? -eq 0 ]; then
     info "Prisma 客户端生成成功! ✓"
@@ -778,7 +794,7 @@ run_database_migration() {
     -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
     -e SHADOW_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}" \
     unilei/aipan-netdisk-search:latest \
-    /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma generate && npx prisma migrate deploy && npx prisma db seed"
+    /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" npx prisma migrate deploy && npx prisma db seed"
   
   if [ $? -eq 0 ]; then
     info "数据库迁移成功! ✓"

@@ -164,10 +164,11 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
-    adminUser: process.env.ADMIN_USER,
-    adminPassword: process.env.ADMIN_PASSWORD,
-    adminEmail: process.env.ADMIN_EMAIL,
-    jwtSecret: process.env.JWT_SECRET,
+    // 兼容两种格式的环境变量，优先使用 NUXT_ 前缀的变量
+    adminUser: process.env.NUXT_ADMIN_USER || process.env.ADMIN_USER,
+    adminPassword: process.env.NUXT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD,
+    adminEmail: process.env.NUXT_ADMIN_EMAIL || process.env.ADMIN_EMAIL,
+    jwtSecret: process.env.NUXT_JWT_SECRET || process.env.JWT_SECRET,
     public: {
       GITHUB_OWNER: process.env.NUXT_PUBLIC_GITHUB_OWNER,
       GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
