@@ -136,6 +136,29 @@ if [ $? -eq 0 ]; then
     warn "镜像可能已成功上传，请手动检查 Docker Hub: https://hub.docker.com/r/${USERNAME}/${REPO}/tags"
   fi
   
+  # 验证镜像内文件是否完整
+  info "正在验证镜像内文件完整性..."
+  
+  # 为每个架构创建临时容器并检查文件
+  for arch in "amd64" "arm64"; do
+    info "检查 ${arch} 架构镜像文件结构..."
+    
+    # 创建一个临时容器来检查文件
+    CONTAINER_ID=$(docker run --platform linux/${arch} -d --rm ${IMAGE_NAME}:${TAG} sleep 60)
+    
+    if [ -z "$CONTAINER_ID" ]; then
+      warn "无法为 ${arch} 架构创建临时容器进行验证"
+      continue
+    fi
+    
+    # 检查必要文件是否存在
+    echo "${arch} 架构镜像文件检查结果:"
+    docker exec $CONTAINER_ID ls -la /app/ | grep -E 'ecosystem\.config\.js|prisma-esm-fix\.mjs|generated|prisma'
+    
+    # 停止并移除临时容器
+    docker stop $CONTAINER_ID > /dev/null
+  done
+  
   info "镜像 ${IMAGE_NAME}:${TAG} 现在支持 amd64 和 arm64 架构"
   info "您可以在 Docker Hub 上查看: https://hub.docker.com/r/${IMAGE_NAME}/tags"
 else
