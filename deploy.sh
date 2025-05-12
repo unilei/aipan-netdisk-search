@@ -257,12 +257,133 @@ configure_ports() {
   info "- WebSocket端口: $WS_PORT"
 }
 
+# 配置 PostgreSQL
+configure_postgres() {
+  info "配置 PostgreSQL 数据库..."
+  
+  # 设置默认值
+  local default_pg_user="postgres"
+  local default_pg_password="postgres"
+  local default_pg_db="aipan"
+  local default_pg_schema="public"
+  
+  # 询问是否要自定义 PostgreSQL 配置
+  info "是否要自定义 PostgreSQL 数据库配置？(y/n) [默认: n]"
+  read -r customize_pg
+  
+  if [[ "$customize_pg" =~ ^[Yy]$ ]]; then
+    # 用户名
+    info "请输入 PostgreSQL 用户名 [默认: $default_pg_user]: "
+    read -r input_pg_user
+    if [ -n "$input_pg_user" ]; then
+      POSTGRES_USER="$input_pg_user"
+    else
+      POSTGRES_USER="$default_pg_user"
+    fi
+    
+    # 密码
+    info "请输入 PostgreSQL 密码 [默认: $default_pg_password]: "
+    read -r input_pg_password
+    if [ -n "$input_pg_password" ]; then
+      POSTGRES_PASSWORD="$input_pg_password"
+    else
+      POSTGRES_PASSWORD="$default_pg_password"
+    fi
+    
+    # 数据库名
+    info "请输入 PostgreSQL 数据库名 [默认: $default_pg_db]: "
+    read -r input_pg_db
+    if [ -n "$input_pg_db" ]; then
+      POSTGRES_DB="$input_pg_db"
+    else
+      POSTGRES_DB="$default_pg_db"
+    fi
+    
+    # 模式
+    info "请输入 PostgreSQL 数据库模式 [默认: $default_pg_schema]: "
+    read -r input_pg_schema
+    if [ -n "$input_pg_schema" ]; then
+      DATABASE_SCHEMA="$input_pg_schema"
+    else
+      DATABASE_SCHEMA="$default_pg_schema"
+    fi
+  else
+    # 使用默认值
+    POSTGRES_USER="$default_pg_user"
+    POSTGRES_PASSWORD="$default_pg_password"
+    POSTGRES_DB="$default_pg_db"
+    DATABASE_SCHEMA="$default_pg_schema"
+  fi
+  
+  # 构建数据库连接字符串
+  DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}"
+  SHADOW_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}"
+  
+  # 确保数据库用户名在连接字符串中正确使用
+  info "注意: 数据库用户名将被设置为 '$POSTGRES_USER'"
+  info "请确保该用户在数据库中具有足够的权限"
+  
+  info "PostgreSQL 配置完成 ✓"
+  info "- 用户名: $POSTGRES_USER"
+  info "- 数据库: $POSTGRES_DB"
+  info "- 模式: $DATABASE_SCHEMA"
+}
+
+# 配置 Redis
+configure_redis() {
+  info "配置 Redis..."
+  
+  # 设置默认值
+  local default_redis_host="redis"
+  local default_redis_port="6379"
+  
+  # 询问是否要自定义 Redis 配置
+  info "是否要自定义 Redis 配置？(y/n) [默认: n]"
+  read -r customize_redis
+  
+  if [[ "$customize_redis" =~ ^[Yy]$ ]]; then
+    # 主机
+    info "请输入 Redis 主机 [默认: $default_redis_host]: "
+    read -r input_redis_host
+    if [ -n "$input_redis_host" ]; then
+      REDIS_HOST="$input_redis_host"
+    else
+      REDIS_HOST="$default_redis_host"
+    fi
+    
+    # 端口
+    info "请输入 Redis 端口 [默认: $default_redis_port]: "
+    read -r input_redis_port
+    if [ -n "$input_redis_port" ] && [ "$input_redis_port" -eq "$input_redis_port" ] 2>/dev/null; then
+      REDIS_PORT="$input_redis_port"
+    else
+      REDIS_PORT="$default_redis_port"
+    fi
+  else
+    # 使用默认值
+    REDIS_HOST="$default_redis_host"
+    REDIS_PORT="$default_redis_port"
+  fi
+  
+  # 构建 Redis 连接字符串
+  REDIS_URL="redis://${REDIS_HOST}:${REDIS_PORT}"
+  
+  info "Redis 配置完成 ✓"
+  info "- 连接 URL: $REDIS_URL"
+}
+
 # 创建配置文件
 create_config() {
   info "创建配置文件..."
   
   # 配置端口
   configure_ports
+  
+  # 配置 PostgreSQL
+  configure_postgres
+  
+  # 配置 Redis
+  configure_redis
   
   # 确保.env文件存在
   if [ ! -f .env ]; then
@@ -297,12 +418,12 @@ create_config() {
     
     cat > .env << EOL
 # 数据库配置
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=aipan
-DATABASE_SCHEMA=public
-DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan?schema=public
-SHADOW_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan_shadow?schema=public
+POSTGRES_USER=${POSTGRES_USER}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+POSTGRES_DB=${POSTGRES_DB}
+DATABASE_SCHEMA=${DATABASE_SCHEMA}
+DATABASE_URL=${DATABASE_URL}
+SHADOW_DATABASE_URL=${SHADOW_DATABASE_URL}
 
 # 管理员配置
 ADMIN_USER=${random_username}
@@ -317,7 +438,7 @@ APP_PORT=${APP_PORT}
 WS_PORT=${WS_PORT}
 
 # Redis配置
-REDIS_URL=redis://redis:6379
+REDIS_URL=${REDIS_URL}
 
 # GitHub Configuration
 NUXT_PUBLIC_GITHUB_OWNER=""
@@ -336,20 +457,37 @@ EOL
     # 保存凭据到安全文件
     cat > admin_credentials.txt << EOL
 ===============================================
-        AIPan网盘搜索应用 - 管理员凭据
+        AIPan网盘搜索应用 - 配置信息
 ===============================================
 
 请妥善保管以下信息，此文件仅生成一次！
 
+## 管理员信息
 管理员用户名: ${random_username}
 管理员密码: ${random_password}
 管理员邮箱: ${random_email}
+
+## 安全配置
 JWT密钥: ${random_jwt_secret}
+
+## 端口配置
+应用端口: ${APP_PORT}
+WebSocket端口: ${WS_PORT}
+
+## PostgreSQL 配置
+用户名: ${POSTGRES_USER}
+密码: ${POSTGRES_PASSWORD}
+数据库名: ${POSTGRES_DB}
+数据库模式: ${DATABASE_SCHEMA}
+连接字符串: ${DATABASE_URL}
+
+## Redis 配置
+连接URL: ${REDIS_URL}
 
 部署时间: $(date)
 ===============================================
 EOL
-    info "管理员凭据已保存到 admin_credentials.txt 文件 ✓"
+    info "所有配置信息已保存到 admin_credentials.txt 文件 ✓"
     info "请妥善保管此文件，并在安全的地方备份!"
     
   else
@@ -370,6 +508,10 @@ services:
     environment:
       - DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}?schema=\${DATABASE_SCHEMA}
       - SHADOW_DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}_shadow?schema=\${DATABASE_SCHEMA}
+      # 确保 Prisma 使用正确的数据库用户名
+      - POSTGRES_USER=\${POSTGRES_USER}
+      - POSTGRES_PASSWORD=\${POSTGRES_PASSWORD}
+      - POSTGRES_DB=\${POSTGRES_DB}
     command: ["/bin/sh", "-c", "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma migrate deploy && npx prisma db seed"]
     depends_on:
       - postgres
@@ -391,6 +533,10 @@ services:
       - DATABASE_SCHEMA=\${DATABASE_SCHEMA}
       - NUXT_DATABASE_SCHEMA=\${DATABASE_SCHEMA}
       - SHADOW_DATABASE_URL=postgresql://\${POSTGRES_USER}:\${POSTGRES_PASSWORD}@postgres:5432/\${POSTGRES_DB}_shadow?schema=\${DATABASE_SCHEMA}
+      # 数据库连接信息
+      - POSTGRES_USER=\${POSTGRES_USER}
+      - POSTGRES_PASSWORD=\${POSTGRES_PASSWORD}
+      - POSTGRES_DB=\${POSTGRES_DB}
       
       # 管理员配置
       - ADMIN_USER=\${ADMIN_USER}
@@ -535,6 +681,154 @@ clean_docker_resources() {
   fi
 }
 
+# 初始化数据库用户和权限
+initialize_database_user() {
+  info "初始化数据库用户和权限..."
+  
+  # 检查是否需要创建自定义用户
+  if [ "$POSTGRES_USER" != "postgres" ]; then
+    info "检测到自定义数据库用户: $POSTGRES_USER"
+    
+    # 等待PostgreSQL容器启动
+    info "等待PostgreSQL容器启动..."
+    sleep 5
+    
+    # 检查PostgreSQL容器是否在运行
+    if ! docker ps --format '{{.Names}}' | grep -q "^aipan-postgres$"; then
+      warn "PostgreSQL容器未运行，无法初始化用户"
+      return 1
+    fi
+    
+    # 检查用户是否已存在
+    info "检查用户是否已存在..."
+    user_exists=$(docker exec aipan-postgres psql -U postgres -t -c "SELECT 1 FROM pg_roles WHERE rolname='$POSTGRES_USER'" | tr -d '[:space:]')
+    
+    if [ "$user_exists" != "1" ]; then
+      info "创建数据库用户: $POSTGRES_USER"
+      docker exec aipan-postgres psql -U postgres -c "CREATE USER $POSTGRES_USER WITH PASSWORD '$POSTGRES_PASSWORD';" || {
+        error "创建用户失败"
+        return 1
+      }
+    else
+      info "用户 $POSTGRES_USER 已存在，更新密码"
+      docker exec aipan-postgres psql -U postgres -c "ALTER USER $POSTGRES_USER WITH PASSWORD '$POSTGRES_PASSWORD';" || {
+        error "更新用户密码失败"
+        return 1
+      }
+    fi
+    
+    # 检查数据库是否已存在
+    db_exists=$(docker exec aipan-postgres psql -U postgres -t -c "SELECT 1 FROM pg_database WHERE datname='$POSTGRES_DB'" | tr -d '[:space:]')
+    
+    if [ "$db_exists" != "1" ]; then
+      info "创建数据库: $POSTGRES_DB"
+      docker exec aipan-postgres psql -U postgres -c "CREATE DATABASE $POSTGRES_DB;" || {
+        error "创建数据库失败"
+        return 1
+      }
+    else
+      info "数据库 $POSTGRES_DB 已存在"
+    fi
+    
+    # 检查影子数据库是否已存在
+    shadow_db_exists=$(docker exec aipan-postgres psql -U postgres -t -c "SELECT 1 FROM pg_database WHERE datname='${POSTGRES_DB}_shadow'" | tr -d '[:space:]')
+    
+    if [ "$shadow_db_exists" != "1" ]; then
+      info "创建影子数据库: ${POSTGRES_DB}_shadow"
+      docker exec aipan-postgres psql -U postgres -c "CREATE DATABASE ${POSTGRES_DB}_shadow;" || {
+        error "创建影子数据库失败"
+        return 1
+      }
+    else
+      info "影子数据库 ${POSTGRES_DB}_shadow 已存在"
+    fi
+    
+    # 授予用户权限
+    info "授予用户 $POSTGRES_USER 对数据库的权限"
+    docker exec aipan-postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $POSTGRES_USER;" || {
+      error "授予数据库权限失败"
+      return 1
+    }
+    
+    docker exec aipan-postgres psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${POSTGRES_DB}_shadow TO $POSTGRES_USER;" || {
+      error "授予影子数据库权限失败"
+      return 1
+    }
+    
+    # 授予模式权限
+    info "授予用户 $POSTGRES_USER 对模式 $DATABASE_SCHEMA 的权限"
+    docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "CREATE SCHEMA IF NOT EXISTS $DATABASE_SCHEMA;" || {
+      warn "创建模式失败或模式已存在"
+    }
+    
+    docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "GRANT ALL ON SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
+      error "授予模式权限失败"
+      return 1
+    }
+    
+    # 授予用户对该模式下所有表的权限
+    docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "ALTER USER $POSTGRES_USER WITH SUPERUSER;" || {
+      warn "无法将用户设置为超级用户，尝试授予表级权限"
+      
+      # 如果无法设置超级用户，尝试授予表级权限
+      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
+        warn "授予表级权限失败，可能是因为表尚未创建"
+      }
+      
+      # 设置默认权限，使未来创建的表也自动授予权限
+      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "ALTER DEFAULT PRIVILEGES IN SCHEMA $DATABASE_SCHEMA GRANT ALL PRIVILEGES ON TABLES TO $POSTGRES_USER;" || {
+        warn "设置默认表权限失败"
+      }
+      
+      # 授予序列权限
+      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
+        warn "授予序列权限失败"
+      }
+      
+      # 设置默认序列权限
+      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "ALTER DEFAULT PRIVILEGES IN SCHEMA $DATABASE_SCHEMA GRANT ALL PRIVILEGES ON SEQUENCES TO $POSTGRES_USER;" || {
+        warn "设置默认序列权限失败"
+      }
+    }
+    
+    # 对影子数据库执行相同操作
+    docker exec aipan-postgres psql -U postgres -d ${POSTGRES_DB}_shadow -c "CREATE SCHEMA IF NOT EXISTS $DATABASE_SCHEMA;" || {
+      warn "创建影子数据库模式失败或模式已存在"
+    }
+    
+    docker exec aipan-postgres psql -U postgres -d ${POSTGRES_DB}_shadow -c "GRANT ALL ON SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
+      error "授予影子数据库模式权限失败"
+      return 1
+    }
+    
+    # 授予影子数据库的表级权限
+    docker exec aipan-postgres psql -U postgres -d ${POSTGRES_DB}_shadow -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
+      warn "授予影子数据库表级权限失败，可能是因为表尚未创建"
+    }
+    
+    # 设置影子数据库默认权限
+    docker exec aipan-postgres psql -U postgres -d ${POSTGRES_DB}_shadow -c "ALTER DEFAULT PRIVILEGES IN SCHEMA $DATABASE_SCHEMA GRANT ALL PRIVILEGES ON TABLES TO $POSTGRES_USER;" || {
+      warn "设置影子数据库默认表权限失败"
+    }
+    
+    # 授予影子数据库序列权限
+    docker exec aipan-postgres psql -U postgres -d ${POSTGRES_DB}_shadow -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
+      warn "授予影子数据库序列权限失败"
+    }
+    
+    # 设置影子数据库默认序列权限
+    docker exec aipan-postgres psql -U postgres -d ${POSTGRES_DB}_shadow -c "ALTER DEFAULT PRIVILEGES IN SCHEMA $DATABASE_SCHEMA GRANT ALL PRIVILEGES ON SEQUENCES TO $POSTGRES_USER;" || {
+      warn "设置影子数据库默认序列权限失败"
+    }
+    
+    info "数据库用户和权限初始化完成 ✓"
+  else
+    info "使用默认postgres用户，跳过用户初始化"
+  fi
+  
+  return 0
+}
+
 # 启动服务
 start_services() {
   # 首先检查并处理已存在的容器
@@ -547,6 +841,19 @@ start_services() {
   info "启动服务..."
   info "使用端口: APP_PORT=$APP_PORT, WS_PORT=$WS_PORT"
   
+  # 首先启动PostgreSQL容器
+  info "启动PostgreSQL容器..."
+  if [ "$USE_DOCKER_PLUGIN" = true ]; then
+    docker compose up -d postgres
+  else
+    docker-compose up -d postgres
+  fi
+  
+  # 初始化数据库用户和权限
+  initialize_database_user
+  
+  # 启动所有服务
+  info "启动所有服务..."
   if [ "$USE_DOCKER_PLUGIN" = true ]; then
     APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker compose up -d
   else
@@ -620,22 +927,46 @@ update_config() {
     
     info "已自动修复配置问题 ✓"
     
+    # 从.env文件中读取其他配置
+    if [ -f .env ]; then
+      source .env
+    fi
+    
     # 保存凭据到安全文件
     cat > admin_credentials_updated.txt << EOL
 ===============================================
-        AIPan网盘搜索应用 - 更新的管理员凭据
+        AIPan网盘搜索应用 - 更新的配置信息
 ===============================================
 
 请妥善保管以下信息，此文件仅生成一次！
 
+## 管理员信息
 管理员用户名: ${ADMIN_USER}
 管理员密码: ${ADMIN_PASSWORD}
+管理员邮箱: ${ADMIN_EMAIL}
+
+## 安全配置
 JWT密钥: ${JWT_SECRET}
+
+## 端口配置
+应用端口: ${APP_PORT}
+WebSocket端口: ${WS_PORT}
+
+## PostgreSQL 配置
+用户名: ${POSTGRES_USER}
+密码: ${POSTGRES_PASSWORD}
+数据库名: ${POSTGRES_DB}
+数据库模式: ${DATABASE_SCHEMA}
+连接字符串: ${DATABASE_URL}
+
+## Redis 配置
+连接URL: ${REDIS_URL}
 
 更新时间: $(date)
 ===============================================
 EOL
-    info "更新的管理员凭据已保存到 admin_credentials_updated.txt 文件 ✓"
+    info "所有配置信息已保存到 admin_credentials_updated.txt 文件 ✓"
+    warn "请立即查看并备份 admin_credentials_updated.txt 文件，其中包含所有重要的配置信息！"
   fi
   
   info "是否要编辑.env文件? (y/n)"
@@ -690,9 +1021,20 @@ EOL
   
   if [ $? -eq 0 ]; then
     info "服务已成功重启！新配置已生效 ✓"
+    
+    # 显示配置摘要
+    info "应用配置摘要:"
+    info "- 管理员用户名: $ADMIN_USER"
+    info "- 应用端口: $APP_PORT"
+    info "- WebSocket端口: $WS_PORT"
+    info "- PostgreSQL 数据库: $POSTGRES_DB (用户: $POSTGRES_USER)"
+    info "- Redis 连接: $REDIS_URL"
+    info "所有配置信息已保存到 admin_credentials_updated.txt 文件"
+    warn "请立即查看并备份 admin_credentials_updated.txt 文件，其中包含所有重要的配置信息！"
+    
     info "应用现在可以通过以下地址访问:"
-    info "- Web应用: http://localhost:3000"
-    info "- WebSocket: ws://localhost:3002"
+    info "- Web应用: http://localhost:$APP_PORT"
+    info "- WebSocket: ws://localhost:$WS_PORT"
   else
     error "服务重启失败，请检查日志"
     exit 1
@@ -798,6 +1140,33 @@ run_database_migration() {
   
   if [ $? -eq 0 ]; then
     info "数据库迁移成功! ✓"
+    
+    # 迁移后更新表权限
+    if [ "$POSTGRES_USER" != "postgres" ]; then
+      info "迁移后更新表权限..."
+      
+      # 授予用户对所有表的权限
+      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
+        warn "迁移后授予表权限失败"
+      }
+      
+      # 授予用户对所有序列的权限
+      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
+        warn "迁移后授予序列权限失败"
+      }
+      
+      # 尝试将表的所有权设置为用户
+      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "SELECT 'ALTER TABLE ' || schemaname || '.' || tablename || ' OWNER TO $POSTGRES_USER;' FROM pg_tables WHERE schemaname = '$DATABASE_SCHEMA' \gexec" || {
+        warn "设置表所有权失败"
+      }
+      
+      # 尝试将序列的所有权设置为用户
+      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || ' OWNER TO $POSTGRES_USER;' FROM information_schema.sequences WHERE sequence_schema = '$DATABASE_SCHEMA' \gexec" || {
+        warn "设置序列所有权失败"
+      }
+      
+      info "表权限更新完成 ✓"
+    fi
   else
     error "数据库迁移失败，请检查日志"
     return 1
@@ -885,10 +1254,26 @@ full_deployment() {
   show_logs
   
   info "===== 部署完成 ====="
-  info "如需停止服务，请运行: docker-compose down"
-  info "如需重启服务，请运行: docker-compose restart"
-  info "如需查看日志，请运行: docker-compose logs -f"
-  info "如需更新配置，请再次运行此脚本并选择选项 2"
+  
+  # 显示配置摘要
+  info "应用配置摘要:"
+  info "- 管理员用户名: $ADMIN_USER"
+  info "- 应用端口: $APP_PORT"
+  info "- WebSocket端口: $WS_PORT"
+  info "- PostgreSQL 数据库: $POSTGRES_DB (用户: $POSTGRES_USER)"
+  info "- Redis 连接: $REDIS_URL"
+  info "所有配置信息已保存到 admin_credentials.txt 文件"
+  warn "请立即查看并备份 admin_credentials.txt 文件，其中包含所有重要的配置信息！"
+  
+  info "应用访问地址:"
+  info "- Web应用: http://localhost:$APP_PORT"
+  info "- WebSocket: ws://localhost:$WS_PORT"
+  
+  info "常用命令:"
+  info "- 停止服务: docker-compose down"
+  info "- 重启服务: docker-compose restart"
+  info "- 查看日志: docker-compose logs -f"
+  info "- 更新配置: 再次运行 ./deploy.sh 并选择选项 2"
 }
 
 # 主函数
