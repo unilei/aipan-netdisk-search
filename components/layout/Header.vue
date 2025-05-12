@@ -64,6 +64,14 @@ const navItems = [
       dark: "fa-solid fa-message",
     },
   },
+  {
+    name: "游戏",
+    path: "/games",
+    icon: {
+      light: "fa-solid fa-gamepad",
+      dark: "fa-solid fa-gamepad",
+    },
+  },
 ];
 
 // 监听滚动事件
