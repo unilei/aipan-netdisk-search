@@ -54,6 +54,135 @@ check_docker() {
   fi
 }
 
+# 设置超级用户权限
+set_superuser() {
+  local conn_string="$1"
+  local target_user="$2"
+  
+  # 直接使用连接字符串解析
+  local temp_user="unknown"
+  local temp_password=""
+  local temp_host="unknown"
+  local temp_port="5432"
+  local temp_db="unknown"
+  
+  if [[ "$conn_string" == postgresql://* ]]; then
+    # 提取用户名和密码部分 (postgresql://user:pass@host:port/db)
+    local userpass=${conn_string#postgresql://}
+    local userpass=${userpass%%@*}
+    temp_user=${userpass%%:*}
+    if [[ "$userpass" == *:* ]]; then
+      temp_password=${userpass#*:}
+    fi
+    
+    # 提取主机和端口
+    local hostport=${conn_string#*@}
+    local hostport=${hostport%%/*}
+    temp_host=${hostport%%:*}
+    if [[ "$hostport" == *:* ]]; then
+      temp_port=${hostport#*:}
+    fi
+    
+    # 提取数据库名
+    local dbpart=${conn_string#*@}
+    local dbpart=${dbpart#*/}
+    temp_db=${dbpart%%\?*}
+    if [[ "$dbpart" == "$temp_db" ]]; then
+      temp_db=$dbpart
+    fi
+  fi
+  
+  local host="$temp_host"
+  local port="$temp_port"
+  
+  # 显示目标数据库信息
+  info "  主机: $host"
+  info "  端口: $port"
+  info "  用户: $temp_user"
+  info "  密码: ${temp_password:0:4}****"
+  info "  数据库: $temp_db"
+  
+  # 如果没有提供目标用户名，则使用连接字符串中的用户名
+  if [ -z "$target_user" ]; then
+    target_user="$temp_user"
+  fi
+  
+  # 询问管理员用户名和密码
+  info "请输入PostgreSQL超级用户名 [默认: postgres]"
+  info "提示: 如果您不知道超级用户名，请联系数据库管理员"
+  echo -n "> "
+  read input_admin_user
+  local admin_user=${input_admin_user:-"postgres"}
+  
+  local admin_password="postgres"
+  info "请输入PostgreSQL管理员密码 [默认: postgres]:"
+  echo -n "> "
+  read -s input_admin_password
+  echo ""
+  admin_password=${input_admin_password:-$admin_password}
+  
+  # 创建临时日志文件
+  local temp_log_file=$(mktemp)
+  
+  # 确保目标用户名非空
+  if [ -z "$target_user" ]; then
+    error "目标用户名为空，请检查连接字符串"
+    return 1
+  fi
+  
+  info "正在尝试将用户 $target_user 设置为超级用户..."
+  
+  # 执行超级用户设置
+  info "尝试方法 1: 使用 ALTER USER 命令..."
+  if [ "$USE_DOCKER" = true ]; then
+    docker run --rm -e PGPASSWORD="$admin_password" postgres:16-alpine psql -h "$host" -p "$port" -U "$admin_user" -d "postgres" -c "ALTER USER $target_user WITH SUPERUSER;" > "$temp_log_file" 2>&1
+  else
+    PGPASSWORD="$admin_password" psql -h "$host" -p "$port" -U "$admin_user" -d "postgres" -c "ALTER USER $target_user WITH SUPERUSER;" > "$temp_log_file" 2>&1
+  fi
+  
+  # 检查是否成功
+  if grep -q "ERROR:" "$temp_log_file" || grep -q "error:" "$temp_log_file"; then
+    warn "方法 1 失败，尝试方法 2: 直接修改数据库中的用户权限..."
+    > "$temp_log_file"  # 清空日志文件
+    
+    # 尝试直接修改pg_authid表中的超级用户标志
+    local update_cmd="UPDATE pg_authid SET rolsuper = true WHERE rolname = '$target_user';"
+    
+    if [ "$USE_DOCKER" = true ]; then
+      docker run --rm -e PGPASSWORD="$admin_password" postgres:16-alpine psql -h "$host" -p "$port" -U "$admin_user" -d "postgres" -c "$update_cmd" > "$temp_log_file" 2>&1
+    else
+      PGPASSWORD="$admin_password" psql -h "$host" -p "$port" -U "$admin_user" -d "postgres" -c "$update_cmd" > "$temp_log_file" 2>&1
+    fi
+    
+    # 检查是否成功
+    if grep -q "ERROR:" "$temp_log_file" || grep -q "error:" "$temp_log_file"; then
+      warn "方法 2 失败，尝试方法 3: 使用特殊命令..."
+      > "$temp_log_file"  # 清空日志文件
+      
+      # 尝试使用特殊命令
+      local special_cmd="DO \$\$ BEGIN EXECUTE 'ALTER ROLE $target_user WITH SUPERUSER'; EXCEPTION WHEN OTHERS THEN RAISE NOTICE 'Error occurred: %', SQLERRM; END \$\$;"
+      
+      if [ "$USE_DOCKER" = true ]; then
+        docker run --rm -e PGPASSWORD="$admin_password" postgres:16-alpine psql -h "$host" -p "$port" -U "$admin_user" -d "postgres" -c "$special_cmd" > "$temp_log_file" 2>&1
+      else
+        PGPASSWORD="$admin_password" psql -h "$host" -p "$port" -U "$admin_user" -d "postgres" -c "$special_cmd" > "$temp_log_file" 2>&1
+      fi
+    fi
+  fi
+  
+  # 检查操作是否成功
+  if grep -q "ERROR:" "$temp_log_file" || grep -q "error:" "$temp_log_file"; then
+    error "设置超级用户失败，请检查权限或手动设置"
+    cat "$temp_log_file"
+    rm -f "$temp_log_file"
+    return 1
+  fi
+  
+  info "用户 $target_user 已成功设置为超级用户 ✓"
+  rm -f "$temp_log_file"
+  return 0
+}
+
 # 测试连接函数
 test_connection() {
   local conn_string="$1"
@@ -211,11 +340,114 @@ test_connection() {
   return $result
 }
 
+# 清空数据库
+empty_database() {
+  local conn_string="$1"
+  
+  # 解析连接字符串
+  local temp_user="unknown"
+  local temp_password=""
+  local temp_host="unknown"
+  local temp_port="5432"
+  local temp_db="unknown"
+  
+  if [[ "$conn_string" == postgresql://* ]]; then
+    # 提取用户名和密码部分 (postgresql://user:pass@host:port/db)
+    local userpass=${conn_string#postgresql://}
+    local userpass=${userpass%%@*}
+    temp_user=${userpass%%:*}
+    if [[ "$userpass" == *:* ]]; then
+      temp_password=${userpass#*:}
+    fi
+    
+    # 提取主机和端口
+    local hostport=${conn_string#*@}
+    local hostport=${hostport%%/*}
+    temp_host=${hostport%%:*}
+    if [[ "$hostport" == *:* ]]; then
+      temp_port=${hostport#*:}
+    fi
+    
+    # 提取数据库名
+    local dbpart=${conn_string#*@}
+    local dbpart=${dbpart#*/}
+    temp_db=${dbpart%%\?*}
+    if [[ "$dbpart" == "$temp_db" ]]; then
+      temp_db=$dbpart
+    fi
+  fi
+  
+  # 创建临时日志文件
+  local temp_log_file=$(mktemp)
+  
+  info "正在清空数据库 $temp_db..."
+  
+  # 先检查用户是否是超级用户
+  local check_superuser="SELECT rolsuper FROM pg_roles WHERE rolname = '$temp_user';"
+  local is_superuser=false
+  local superuser_check_file=$(mktemp)
+  
+  if [ "$USE_DOCKER" = true ]; then
+    docker run --rm -e PGPASSWORD="$temp_password" postgres:16-alpine psql -h "$temp_host" -p "$temp_port" -U "$temp_user" -d "$temp_db" -t -c "$check_superuser" > "$superuser_check_file" 2>&1
+  else
+    PGPASSWORD="$temp_password" psql -h "$temp_host" -p "$temp_port" -U "$temp_user" -d "$temp_db" -t -c "$check_superuser" > "$superuser_check_file" 2>&1
+  fi
+  
+  if grep -q "t" "$superuser_check_file"; then
+    is_superuser=true
+    info "用户 $temp_user 是超级用户，将使用完全权限清空数据库"
+  else
+    warn "用户 $temp_user 不是超级用户，将尝试清空数据库，但可能会遇到权限问题"
+  fi
+  
+  # 创建一个临时SQL脚本来删除所有表（包括所有schema）
+  local drop_script=""
+  
+  if [ "$is_superuser" = true ]; then
+    # 超级用户可以使用更强大的命令
+    drop_script+="DO \$\$ DECLARE r RECORD; BEGIN "
+    drop_script+="FOR r IN (SELECT schemaname, tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')) LOOP "
+    drop_script+="EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.schemaname) || '.' || quote_ident(r.tablename) || ' CASCADE'; "
+    drop_script+="END LOOP; "
+    drop_script+="END \$\$;"
+  else
+    # 非超级用户只能删除自己拥有的表
+    drop_script+="DO \$\$ DECLARE r RECORD; BEGIN "
+    drop_script+="FOR r IN (SELECT schemaname, tablename FROM pg_tables "
+    drop_script+="WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')) LOOP "
+    drop_script+="BEGIN "
+    drop_script+="EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.schemaname) || '.' || quote_ident(r.tablename) || ' CASCADE'; "
+    drop_script+="EXCEPTION WHEN OTHERS THEN "
+    drop_script+="RAISE NOTICE 'Skipping table %.%: %', r.schemaname, r.tablename, SQLERRM; "
+    drop_script+="END; "
+    drop_script+="END LOOP; "
+    drop_script+="END \$\$;"
+  fi
+  
+  # 执行清空操作
+  if [ "$USE_DOCKER" = true ]; then
+    docker run --rm -e PGPASSWORD="$temp_password" postgres:16-alpine psql -h "$temp_host" -p "$temp_port" -U "$temp_user" -d "$temp_db" -c "$drop_script" > "$temp_log_file" 2>&1
+  else
+    PGPASSWORD="$temp_password" psql -h "$temp_host" -p "$temp_port" -U "$temp_user" -d "$temp_db" -c "$drop_script" > "$temp_log_file" 2>&1
+  fi
+  
+  # 检查清空操作是否成功
+  if grep -q "ERROR:" "$temp_log_file" || grep -q "error:" "$temp_log_file"; then
+    error "清空数据库失败，请检查权限或手动清空数据库"
+    cat "$temp_log_file"
+    rm -f "$temp_log_file"
+    return 1
+  fi
+  
+  info "数据库 $temp_db 已成功清空 ✓"
+  rm -f "$temp_log_file"
+  return 0
+}
+
 # 解析连接字符串函数
 parse_connection_string() {
   local conn_string="$1"
-  
-  # 使用更可靠的方法解析连接字符串
+  local prefix="$2" # 使用更可靠的方法解析连接字符串
   if [[ "$conn_string" == postgresql://* ]]; then
     # 提取用户名和密码部分 (postgresql://user:pass@host:port/db)
     local userpass=${conn_string#postgresql://}
@@ -486,16 +718,38 @@ migrate_full_database() {
     fi
   fi
   
-  local temp_dump_file="/tmp/pg_dump_full_$$.sql"
+  local temp_log_file=$(mktemp)
   
-  # 导出完整数据库
-  info "使用Docker容器执行完整数据库迁移..."
+  # 分步迁移：先迁移结构，再迁移数据
+  
+  # 步骤1: 导出和导入数据库结构
+  info "步骤1: 迁移数据库结构..."
   if [ "$USE_DOCKER" = true ]; then
     # 使用环境变量传递密码
-    docker run --rm -e PGPASSWORD="$src_password" postgres:16-alpine pg_dump --no-owner --no-acl -h "$src_host" -p "$src_port" -U "$src_user" -d "$src_db" | \
+    docker run --rm -e PGPASSWORD="$src_password" postgres:16-alpine pg_dump --clean --if-exists --no-owner --no-acl --schema-only -h "$src_host" -p "$src_port" -U "$src_user" -d "$src_db" | \
     docker run -i --rm -e PGPASSWORD="$dst_password" postgres:16-alpine psql -h "$dst_host" -p "$dst_port" -U "$dst_user" -d "$dst_db" > "$temp_log_file" 2>&1
   else
-    PGPASSWORD="$src_password" pg_dump --no-owner --no-acl -h "$src_host" -p "$src_port" -U "$src_user" -d "$src_db" | \
+    PGPASSWORD="$src_password" pg_dump --clean --if-exists --no-owner --no-acl --schema-only -h "$src_host" -p "$src_port" -U "$src_user" -d "$src_db" | \
+    PGPASSWORD="$dst_password" psql -h "$dst_host" -p "$dst_port" -U "$dst_user" -d "$dst_db" > "$temp_log_file" 2>&1
+  fi
+  
+  # 检查结构迁移是否成功
+  if grep -q "ERROR:" "$temp_log_file" || grep -q "error:" "$temp_log_file"; then
+    warn "数据库结构迁移过程中有警告，但将继续迁移数据"
+  else
+    info "数据库结构迁移成功 ✓"
+  fi
+  
+  # 步骤2: 导出和导入数据
+  info "步骤2: 迁移数据库数据..."
+  > "$temp_log_file"  # 清空日志文件
+  
+  if [ "$USE_DOCKER" = true ]; then
+    # 使用环境变量传递密码
+    docker run --rm -e PGPASSWORD="$src_password" postgres:16-alpine pg_dump --disable-triggers --data-only --inserts -h "$src_host" -p "$src_port" -U "$src_user" -d "$src_db" | \
+    docker run -i --rm -e PGPASSWORD="$dst_password" postgres:16-alpine psql -h "$dst_host" -p "$dst_port" -U "$dst_user" -d "$dst_db" > "$temp_log_file" 2>&1
+  else
+    PGPASSWORD="$src_password" pg_dump --disable-triggers --data-only --inserts -h "$src_host" -p "$src_port" -U "$src_user" -d "$src_db" | \
     PGPASSWORD="$dst_password" psql -h "$dst_host" -p "$dst_port" -U "$dst_user" -d "$dst_db" > "$temp_log_file" 2>&1
   fi
   
@@ -590,7 +844,9 @@ main() {
   info "请选择迁移类型:"
   echo "1) 完整数据库迁移"
   echo "2) 选择性表迁移"
-  echo -n "请输入选项编号 (1 或 2): "
+  echo "3) 清空目标数据库"
+  echo "4) 使用超级用户清空数据库 (从 README_MIGRATE.md 读取连接信息)"
+  echo -n "请输入选项编号 (1, 2, 3, 4): "
   read MIGRATION_TYPE
   
   # 如果用户没有输入，默认选择1
@@ -600,7 +856,21 @@ main() {
   case $MIGRATION_TYPE in
     1)
       # 确认操作
-      warn "这将覆盖目标数据库中的所有数据。是否继续?"
+      warn "这将覆盖目标数据库中的所有数据。是否需要先清空目标数据库?"
+      echo -n "请输入 (y/n): "
+      read EMPTY_FIRST
+      # 如果用户没有输入，默认为'n'
+      EMPTY_FIRST=${EMPTY_FIRST:-n}
+      info "用户选择清空数据库: $EMPTY_FIRST"
+      
+      if [[ "$EMPTY_FIRST" =~ ^[Yy]$ ]]; then
+        info "先清空目标数据库..."
+        if ! empty_database "$DST_CONN_STRING"; then
+          warn "清空数据库失败，但将继续迁移操作"
+        fi
+      fi
+      
+      warn "确认迁移所有数据到目标数据库？"
       echo -n "请输入 (y/n): "
       read CONFIRM
       # 如果用户没有输入，默认为'n'
@@ -685,6 +955,146 @@ main() {
           exit 0
         fi
       fi
+      ;;
+    3)
+      # 清空目标数据库
+      warn "这将清空目标数据库中的所有数据。此操作不可逆。是否继续?"
+      echo -n "请输入 (y/n): "
+      read CONFIRM
+      # 如果用户没有输入，默认为'n'
+      CONFIRM=${CONFIRM:-n}
+      info "用户选择: $CONFIRM"
+      if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
+        if empty_database "$DST_CONN_STRING"; then
+          info "目标数据库已成功清空"
+        else
+          error "清空目标数据库失败"
+          exit 1
+        fi
+      else
+        info "操作已取消"
+        exit 0
+      fi
+      ;;
+    4)
+      # 使用指定超级用户清空数据库
+      info "从 README_MIGRATE.md 文件读取目标数据库连接字符串..."
+      
+      # 从 README_MIGRATE.md 文件中读取目标数据库连接字符串
+      local readme_file="/Users/lei/workspace/aipan-netdisk-search/README_MIGRATE.md"
+      if [ ! -f "$readme_file" ]; then
+        error "README_MIGRATE.md 文件不存在"
+        exit 1
+      fi
+      
+      # 使用grep提取目标数据库连接字符串
+      local dst_conn_string=$(grep -A 1 "目标数据库连接字符串" "$readme_file" | tail -n 1)
+      
+      if [ -z "$dst_conn_string" ]; then
+        error "无法从 README_MIGRATE.md 文件中读取目标数据库连接字符串"
+        exit 1
+      fi
+      
+      info "读取到的连接字符串: ${dst_conn_string:0:20}..."
+      
+      # 从连接字符串中提取数据库信息
+      if [[ "$dst_conn_string" =~ postgresql://([^:]+):([^@]+)@([^:]+):([0-9]+)/([^\?]+) ]]; then
+        local dst_user="${BASH_REMATCH[1]}"
+        local dst_password="${BASH_REMATCH[2]}"
+        local dst_host="${BASH_REMATCH[3]}"
+        local dst_port="${BASH_REMATCH[4]}"
+        local dst_db="${BASH_REMATCH[5]}"
+        
+        # 如果数据库名称包含查询参数，去除查询参数
+        dst_db=${dst_db%%\?*}
+      else
+        error "无法解析连接字符串"
+        exit 1
+      fi
+      
+      # 构建连接字符串
+      local dst_conn="postgresql://$dst_user:$dst_password@$dst_host:$dst_port/$dst_db"
+      info "使用目标数据库连接字符串: postgresql://$dst_user:****@$dst_host:$dst_port/$dst_db"
+      
+      # 查询超级用户列表
+      info "正在查询数据库超级用户..."
+      local superusers_file=$(mktemp)
+      
+      # 检查连接参数是否完整
+      if [ -z "$dst_host" ] || [ -z "$dst_port" ] || [ -z "$dst_user" ] || [ -z "$dst_password" ] || [ -z "$dst_db" ]; then
+        error "数据库连接参数不完整，无法连接到数据库"
+        exit 1
+      fi
+      
+      # 强制使用Docker执行查询
+      info "尝试连接到数据库并查询超级用户..."
+      info "  连接字符串: postgresql://$dst_user:****@$dst_host:$dst_port/$dst_db"
+      
+      # 使用正确的参数格式
+      docker run --rm -e PGPASSWORD="$dst_password" postgres:16-alpine psql "postgresql://$dst_user:$dst_password@$dst_host:$dst_port/$dst_db" -c "SELECT usename FROM pg_user WHERE usesuper = true;" > "$superusers_file" 2>&1
+      
+      info "可用的超级用户:"
+      cat "$superusers_file"
+      
+      # 询问超级用户信息
+      info "请输入超级用户名:"
+      echo -n "> "
+      read super_user
+      
+      info "请输入超级用户密码:"
+      echo -n "> "
+      read -s super_password
+      echo ""
+      
+      warn "这将使用超级用户 $super_user 清空数据库 $dst_db。此操作不可逆。是否继续?"
+      echo -n "请输入 (y/n): "
+      read CONFIRM
+      # 如果用户没有输入，默认为'n'
+      CONFIRM=${CONFIRM:-n}
+      info "用户选择: $CONFIRM"
+      
+      if [[ "$CONFIRM" =~ ^[Yy]$ ]]; then
+        info "正在使用超级用户 $super_user 清空数据库 $dst_db..."
+        
+        # 创建临时日志文件
+        local temp_log_file=$(mktemp)
+        
+        # 创建一个临时SQL脚本来删除所有表
+        local drop_script=""
+        drop_script+="DO \$\$ DECLARE r RECORD; BEGIN "
+        drop_script+="FOR r IN (SELECT schemaname, tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')) LOOP "
+        drop_script+="EXECUTE 'DROP TABLE IF EXISTS ' || quote_ident(r.schemaname) || '.' || quote_ident(r.tablename) || ' CASCADE'; "
+        drop_script+="END LOOP; "
+        drop_script+="END \$\$;"
+        
+        # 执行清空操作 - 强制使用Docker
+        info "  使用超级用户连接数据库:"
+        info "  主机: $dst_host"
+        info "  端口: $dst_port"
+        info "  用户: $super_user"
+        info "  数据库: $dst_db"
+        
+        # 使用正确的连接字符串格式
+        docker run --rm -e PGPASSWORD="$super_password" postgres:16-alpine psql "postgresql://$super_user:$super_password@$dst_host:$dst_port/$dst_db" -c "$drop_script" > "$temp_log_file" 2>&1
+        
+        # 检查清空操作是否成功
+        if grep -q "ERROR:" "$temp_log_file" || grep -q "error:" "$temp_log_file"; then
+          error "清空数据库失败，请检查权限或手动清空数据库"
+          cat "$temp_log_file"
+          rm -f "$temp_log_file"
+          exit 1
+        fi
+        
+        info "数据库 $dst_db 已成功清空 ✓"
+        rm -f "$temp_log_file"
+      else
+        info "操作已取消"
+        exit 0
+      fi
+      ;;
+    5)
+      info "选项不存在，请选择1-4之间的选项"
+      exit 1
       ;;
     *)
       error "无效的选择"
