@@ -10,6 +10,12 @@
           "icon": "fa-paintbrush",
           "path": "/ai-search"
         },
+        {
+          "title": "休闲游戏",
+          "description": "休闲游戏",
+          "icon": "fa-gamepad",
+          "path": "/games"
+        },
          {
           "title": "FM电台",
           "description": "FM电台",
