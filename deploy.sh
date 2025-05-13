@@ -2,6 +2,12 @@
 # 简易部署脚本 - 适用于从Docker Hub拉取镜像并部署到服务器
 # 作者: Lei
 
+# 获取脚本所在目录的绝对路径
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# 切换到脚本目录
+cd "$SCRIPT_DIR"
+
 # 颜色设置
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -890,13 +896,15 @@ update_config() {
   info "===== 更新配置 ====="
   
   # 检查.env文件是否存在
-  if [ ! -f .env ]; then
+  if [ ! -f "$SCRIPT_DIR/.env" ]; then
     error ".env文件不存在，请先运行完整部署脚本"
+    error "当前目录: $(pwd)"
+    error "脚本目录: $SCRIPT_DIR"
     exit 1
   fi
   
   # 加载现有配置
-  source .env
+  parse_env_file
   
   # 验证现有配置
   if ! validate_config; then
@@ -928,8 +936,8 @@ update_config() {
     info "已自动修复配置问题 ✓"
     
     # 从.env文件中读取其他配置
-    if [ -f .env ]; then
-      source .env
+    if [ -f "$SCRIPT_DIR/.env" ]; then
+      parse_env_file
     fi
     
     # 保存凭据到安全文件
@@ -1176,16 +1184,171 @@ run_database_migration() {
   return 0
 }
 
+# 手动解析.env文件，避免source命令的问题
+parse_env_file() {
+  local env_file="$SCRIPT_DIR/.env"
+  info "正在解析配置文件: $env_file"
+  
+  if [ ! -f "$env_file" ]; then
+    error "配置文件不存在: $env_file"
+    error "当前目录内容:"
+    ls -la "$SCRIPT_DIR"
+    return 1
+  fi
+  
+  # 检查文件权限
+  if [ ! -r "$env_file" ]; then
+    error "配置文件没有读取权限: $env_file"
+    return 1
+  fi
+  
+  # 逐行读取并解析配置文件
+  while IFS= read -r line || [ -n "$line" ]; do
+    # 跳过注释和空行
+    [[ $line =~ ^\s*# ]] && continue
+    [[ -z $line ]] && continue
+    
+    # 提取变量名和值
+    if [[ $line =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+      local name="${BASH_REMATCH[1]}"
+      local value="${BASH_REMATCH[2]}"
+      
+      # 移除值两端的引号
+      value="${value#\"}"
+      value="${value%\"}"
+      value="${value#\'}"
+      value="${value%\'}"
+      
+      # 导出变量
+      export "$name"="$value"
+    fi
+  done < "$env_file"
+  
+  # 验证关键变量是否已设置
+  if [ -z "$APP_PORT" ]; then
+    APP_PORT=3000
+    warn "APP_PORT未设置，使用默认值: $APP_PORT"
+  fi
+  
+  if [ -z "$WS_PORT" ]; then
+    WS_PORT=3002
+    warn "WS_PORT未设置，使用默认值: $WS_PORT"
+  fi
+  
+  info "配置文件解析完成 ✓"
+  return 0
+}
+
+# 更新Docker镜像
+update_docker_image() {
+  info "===== 更新Docker镜像 ====="
+  
+  # 检查Docker是否安装
+  check_docker
+  
+  # 解析配置文件
+  parse_env_file || {
+    error "无法解析配置文件，请确保.env文件存在且有正确的权限"
+    exit 1
+  }
+  
+  # 询问是否要拉取最新镜像
+  info "是否拉取最新的Docker镜像? (y/n) [默认: y]"
+  read -r pull_latest
+  
+  if [[ ! "$pull_latest" =~ ^[Nn]$ ]]; then
+    info "拉取最新的Docker镜像..."
+    docker pull unilei/aipan-netdisk-search:latest
+    
+    if [ $? -ne 0 ]; then
+      error "拉取镜像失败，请检查网络连接或镜像名称"
+      return 1
+    fi
+    
+    info "镜像拉取成功 ✓"
+  fi
+  
+  # 检查容器是否存在
+  if ! docker ps -a | grep -q "aipan-netdisk-search-app"; then
+    warn "未找到运行中的容器，将执行完整部署而非更新"
+    info "是否继续执行完整部署? (y/n) [默认: y]"
+    read -r do_full_deploy
+    
+    if [[ ! "$do_full_deploy" =~ ^[Nn]$ ]]; then
+      full_deployment
+      return $?
+    else
+      error "操作已取消"
+      return 1
+    fi
+  fi
+  
+  # 停止并移除现有容器
+  info "停止并移除现有容器..."
+  
+  if [ "$USE_DOCKER_PLUGIN" = true ]; then
+    docker compose stop aipan-netdisk-search
+    docker compose rm -f aipan-netdisk-search
+  else
+    docker-compose stop aipan-netdisk-search
+    docker-compose rm -f aipan-netdisk-search
+  fi
+  
+  if [ $? -ne 0 ]; then
+    warn "停止或移除容器时出现问题，尝试强制移除..."
+    docker rm -f aipan-netdisk-search-app 2>/dev/null
+  fi
+  
+  # 启动新容器
+  info "使用最新镜像启动容器..."
+  
+  if [ "$USE_DOCKER_PLUGIN" = true ]; then
+    APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker compose up -d aipan-netdisk-search
+  else
+    APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker-compose up -d aipan-netdisk-search
+  fi
+  
+  if [ $? -eq 0 ]; then
+    info "容器已使用最新镜像成功启动! ✓"
+    info "应用现在可以通过以下地址访问:"
+    info "- Web应用: http://localhost:$APP_PORT"
+    info "- WebSocket: ws://localhost:$WS_PORT"
+    
+    # 显示日志
+    show_logs
+  else
+    error "使用最新镜像启动容器失败，尝试回滚..."
+    
+    # 尝试使用之前的设置重新启动
+    if [ "$USE_DOCKER_PLUGIN" = true ]; then
+      APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker compose up -d
+    else
+      APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker-compose up -d
+    fi
+    
+    if [ $? -eq 0 ]; then
+      warn "已回滚到之前的设置"
+    else
+      error "回滚失败，请手动检查并修复问题"
+      return 1
+    fi
+  fi
+  
+  info "===== 镜像更新完成 ====="
+  return 0
+}
+
 # 显示菜单
 show_menu() {
   echo ""
-  info "===== AIPan网盘搜索部署脚本 ====="
+  info "===== AIPan网盘搜索部署脚本 =====" 
   echo ""
   echo "  1) 完整部署 (首次部署或重新部署)"
   echo "  2) 更新配置 (仅修改配置并重启服务)"
   echo "  3) 运行数据库迁移 (初始化或更新数据库结构)"
   echo "  4) 重新生成 Prisma 客户端 (解决 Prisma 相关问题)"
-  echo "  5) 退出"
+  echo "  5) 更新Docker镜像 (拉取最新镜像并重启服务)"
+  echo "  6) 退出"
   echo ""
   info "请选择操作 [默认: 1]: "
   read -r choice
@@ -1196,25 +1359,32 @@ show_menu() {
       ;;
     3)
       # 加载现有配置
-      if [ -f .env ]; then
-        source .env
+      if [ -f "$SCRIPT_DIR/.env" ]; then
+        parse_env_file
       else
         error ".env文件不存在，请先运行完整部署"
+        error "当前目录: $(pwd)"
+        error "脚本目录: $SCRIPT_DIR"
         exit 1
       fi
       run_database_migration
       ;;
     4)
       # 加载现有配置
-      if [ -f .env ]; then
-        source .env
+      if [ -f "$SCRIPT_DIR/.env" ]; then
+        parse_env_file
       else
         error ".env文件不存在，请先运行完整部署"
+        error "当前目录: $(pwd)"
+        error "脚本目录: $SCRIPT_DIR"
         exit 1
       fi
       regenerate_prisma_client
       ;;
     5)
+      update_docker_image
+      ;;
+    6)
       info "感谢使用AIPan网盘搜索部署脚本"
       exit 0
       ;;
