@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import MemoryGame from '~/components/games/MemoryGame.vue';
 import SnakeGame from '~/components/games/SnakeGame.vue';
 import TicTacToeGame from '~/components/games/TicTacToeGame.vue';
 import PuzzleGame from '~/components/games/PuzzleGame.vue';
@@ -11,13 +10,25 @@ import TetrisGame from '~/components/games/TetrisGame.vue';
 import MinesweeperGame from '~/components/games/MinesweeperGame.vue';
 import ConnectFourGame from '~/components/games/ConnectFourGame.vue';
 
+useHead({
+  title: '休闲游戏',
+  meta: [
+    { charset: 'utf-8' },
+    { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+    { hid: 'description', name: 'description', content: '休闲游戏' },
+    { name: 'format-detection', content: 'telephone=no' }
+  ],
+  link: [
+    { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+  ]
+})
+
 // 游戏状态
-const activeGame = ref('memory');
-const gameTitle = ref('记忆配对');
-const gameDescription = ref('翻转卡片，找到所有匹配的对子');
+const activeGame = ref('snake');
+const gameTitle = ref('贪吃蛇');
+const gameDescription = ref('使用方向键控制蛇吃食物，不要撞到墙壁或自己');
 
 // 游戏组件引用
-const memoryGameRef = ref(null);
 const snakeGameRef = ref(null);
 const ticTacToeGameRef = ref(null);
 const puzzleGameRef = ref(null);
@@ -33,10 +44,6 @@ const setActiveGame = (game) => {
   activeGame.value = game;
   
   switch(game) {
-    case 'memory':
-      gameTitle.value = '记忆配对';
-      gameDescription.value = '翻转卡片，找到所有匹配的对子';
-      break;
     case 'snake':
       gameTitle.value = '贪吃蛇';
       gameDescription.value = '使用方向键控制蛇吃食物，不要撞到墙壁或自己';
@@ -79,9 +86,6 @@ const setActiveGame = (game) => {
 // 重启当前游戏
 const restartCurrentGame = () => {
   switch(activeGame.value) {
-    case 'memory':
-      memoryGameRef.value?.restartGame();
-      break;
     case 'snake':
       snakeGameRef.value?.restartGame();
       break;
@@ -143,18 +147,6 @@ onMounted(() => {
 
       <!-- 游戏选择 -->
       <div class="game-selection flex flex-wrap justify-center gap-3 mb-8">
-        <button 
-          @click="setActiveGame('memory')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'memory' 
-              ? 'bg-blue-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
-          <i class="fa-solid fa-brain mr-2"></i>
-          记忆配对
-        </button>
         <button 
           @click="setActiveGame('snake')" 
           :class="[
@@ -273,14 +265,6 @@ onMounted(() => {
 
       <!-- 游戏容器 -->
       <div class="game-container bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
-        <!-- 记忆配对游戏 -->
-        <MemoryGame 
-          v-if="activeGame === 'memory'" 
-          ref="memoryGameRef"
-          :active="activeGame === 'memory'"
-          @game-completed="onGameCompleted"
-        />
-
         <!-- 贪吃蛇游戏 -->
         <SnakeGame 
           v-if="activeGame === 'snake'" 
