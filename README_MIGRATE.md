@@ -4,7 +4,7 @@
 postgresql://aipan:aipan12345678@66.103.211.214:5432/aipan
 
 ## 目标数据库连接字符串
-postgresql://aipanme:aipanme123@142.171.105.185:5432/aipan?schema=public
+postgresql://aipanme:aipanme123@142.171.105.185:5432/aipanme
 
 <!-- postgresql://postgres:postgres@142.171.105.185:5432/aipan -->
 
