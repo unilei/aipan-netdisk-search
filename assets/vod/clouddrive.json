@@ -19,8 +19,5 @@
   },
   {
     "api": "/api/sources/xxx"
-  },
-  {
-    "api": "/api/sources/xxxx"
-  }
+  } 
 ]
