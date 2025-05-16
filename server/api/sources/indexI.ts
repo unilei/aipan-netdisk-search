@@ -6,10 +6,6 @@ interface Body {
     name: string
 }
 
-// Cache configuration
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
-const cache = new Map<string, { data: Result; timestamp: number }>();
-
 // Retry configuration
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000; // 1 second
@@ -30,27 +26,28 @@ async function fetchWithRetry(url: string, options: any, retries = MAX_RETRIES):
 
 export default defineEventHandler(async (event) => {
     try {
-        const body: Body = await readBody(event);
-        const cacheKey = `search:${body.name}`;
+        // Check domain access restriction
+        const host = getRequestHeader(event, 'host') || '';
+        const referer = getRequestHeader(event, 'referer') || '';
 
-        // Check cache
-        const cachedResult = cache.get(cacheKey);
-        if (cachedResult && Date.now() - cachedResult.timestamp < CACHE_TTL) {
-            return cachedResult.data;
+        const isValidDomain = host.endsWith('aipan.me') ||
+            referer.includes('aipan.me') || host.includes('localhost');
+
+        if (!isValidDomain) {
+            return {
+                code: 403,
+                msg: 'Access denied',
+            };
         }
 
-        // Fetch with retry if not in cache or cache expired
-        const result = await fetchWithRetry('https://netdisk.aipan.me/api/search/a', {
+        const body: Body = await readBody(event);
+
+        // Fetch with retry
+        const result = await fetchWithRetry('https://netdisk.aipan.me/api/search/a_search', {
             method: 'GET',
             query: {
                 ...body
             }
-        });
-
-        // Update cache
-        cache.set(cacheKey, {
-            data: result,
-            timestamp: Date.now()
         });
 
         return result;

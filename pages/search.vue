@@ -1,44 +1,28 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300"
-  >
-    <search-header
-      :keyword="keyword"
-      @search="search"
-      class="mb-2"
-    ></search-header>
+    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+    <search-header :keyword="keyword" @search="search" class="mb-2"></search-header>
 
     <!-- Category Tabs -->
     <div
-      class="w-full sticky top-0 z-10 transition-all duration-300 border-b border-gray-100/50 dark:border-gray-700/50"
-    >
+      class="w-full sticky top-0 z-10 transition-all duration-300 border-b border-gray-100/50 dark:border-gray-700/50">
       <div class="max-w-[1240px] mx-auto px-4 py-3">
         <div class="flex flex-col sm:flex-row items-center gap-4">
           <!-- Category Selection with Enhanced UI -->
           <div
-            class="w-full sm:w-auto flex gap-2 overflow-x-auto hide-scrollbar snap-x px-2 py-2 transition-all duration-300 rounded-xl bg-white/30 dark:bg-gray-800/30 ring-1 ring-gray-200/50 dark:ring-gray-700/50"
-          >
-            <el-button
-              v-for="(item, index) in categories"
-              :key="index"
-              class="snap-start min-w-fit transition-all duration-300 rounded-xl group relative"
-              :class="[
+            class="w-full sm:w-auto flex gap-2 overflow-x-auto hide-scrollbar snap-x px-2 py-2 transition-all duration-300 rounded-xl bg-white/30 dark:bg-gray-800/30 ring-1 ring-gray-200/50 dark:ring-gray-700/50">
+            <el-button v-for="(item, index) in categories" :key="index"
+              class="snap-start min-w-fit transition-all duration-300 rounded-xl group relative" :class="[
                 category === item.value
                   ? 'shadow-lg !text-white scale-105 !bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
                   : 'bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80',
                 index === 0 && 'ml-0.5',
                 index === categories.length - 1 && 'mr-0.5',
-              ]"
-              :title="item.description"
-              @click="switchCategory(item.value)"
-              type="primary"
-              :plain="category !== item.value"
-            >
+              ]" :title="item.description" @click="switchCategory(item.value)" type="primary"
+              :plain="category !== item.value">
               <!-- Background hover effect -->
-              <span
-                v-if="category !== item.value"
-                class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-              ></span>
+              <span v-if="category !== item.value"
+                class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
 
               <!-- Icon and text with better alignment -->
               <div class="flex items-center gap-2">
@@ -47,41 +31,24 @@
               </div>
 
               <!-- Active indicator with enhanced animation -->
-              <span
-                v-if="category === item.value"
-                class="absolute -top-1 -right-1 flex"
-              >
-                <span
-                  class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-purple-400 opacity-75"
-                ></span>
-                <span
-                  class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"
-                ></span>
+              <span v-if="category === item.value" class="absolute -top-1 -right-1 flex">
+                <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-purple-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
               </span>
 
               <!-- Bottom border animation for active tab -->
-              <span
-                v-if="category === item.value"
-                class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-blue-400"
-              ></span>
+              <span v-if="category === item.value"
+                class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-blue-400"></span>
             </el-button>
 
             <!-- Settings button with tooltip -->
-            <el-popover
-              v-if="!userStore.loggedIn"
-              placement="bottom-end"
-              trigger="hover"
-              :width="320"
-              popper-class="backdrop-blur-md bg-white/90 dark:bg-gray-800/90 border border-gray-100/50 dark:border-gray-700/50 rounded-xl shadow-xl"
-            >
+            <el-popover v-if="!userStore.loggedIn" placement="bottom-end" trigger="hover" :width="320"
+              popper-class="backdrop-blur-md bg-white/90 dark:bg-gray-800/90 border border-gray-100/50 dark:border-gray-700/50 rounded-xl shadow-xl">
               <template #reference>
                 <el-button
-                  class="snap-start min-w-fit rounded-xl bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80 group"
-                >
+                  class="snap-start min-w-fit rounded-xl bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80 group">
                   <div class="flex items-center gap-2">
-                    <i
-                      class="fas fa-cog text-lg group-hover:rotate-45 transition-transform duration-500"
-                    ></i>
+                    <i class="fas fa-cog text-lg group-hover:rotate-45 transition-transform duration-500"></i>
                     <span>配置</span>
                   </div>
                 </el-button>
@@ -92,28 +59,17 @@
                     <i class="fas fa-info-circle text-xl"></i>
                   </div>
                   <div>
-                    <h4
-                      class="font-medium text-gray-900 dark:text-gray-100 mb-2"
-                    >
+                    <h4 class="font-medium text-gray-900 dark:text-gray-100 mb-2">
                       登录以保存VOD配置
                     </h4>
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
                       登录后可以将您的视频源配置保存到云端，在任何设备上使用相同的视频源。
                     </p>
                     <div class="flex gap-2">
-                      <el-button
-                        type="primary"
-                        @click="navigateTo('/login')"
-                        size="small"
-                        class="!rounded-lg"
-                      >
+                      <el-button type="primary" @click="navigateTo('/login')" size="small" class="!rounded-lg">
                         <i class="fas fa-sign-in-alt mr-1"></i> 登录
                       </el-button>
-                      <el-button
-                        @click="navigateTo('/user/vod-settings')"
-                        size="small"
-                        class="!rounded-lg"
-                      >
+                      <el-button @click="navigateTo('/user/vod-settings')" size="small" class="!rounded-lg">
                         <i class="fas fa-cog mr-1"></i> 管理配置
                       </el-button>
                     </div>
@@ -124,36 +80,25 @@
           </div>
 
           <!-- Stats Display with Enhanced Visual -->
-          <div
-            v-if="category === 'clouddrive' && loadingProgress.isLoading"
-            class="w-full sm:flex-1 flex items-center gap-4 bg-white/50 dark:bg-gray-700/50 rounded-xl p-3 transition-all duration-300 backdrop-blur-sm ring-1 ring-gray-200/50 dark:ring-gray-700/50 shadow-sm group"
-          >
+          <div v-if="category === 'clouddrive' && loadingProgress.isLoading"
+            class="w-full sm:flex-1 flex items-center gap-4 bg-white/50 dark:bg-gray-700/50 rounded-xl p-3 transition-all duration-300 backdrop-blur-sm ring-1 ring-gray-200/50 dark:ring-gray-700/50 shadow-sm group">
             <div class="flex-1 relative overflow-hidden rounded-md">
-              <el-progress
-                :percentage="
-                  Math.round(
-                    (loadingProgress.completed / loadingProgress.total) * 100
-                  )
-                "
-                :stroke-width="6"
-                :show-text="false"
-                class="flex-1"
-              >
+              <el-progress :percentage="Math.round(
+                (loadingProgress.completed / loadingProgress.total) * 100
+              )
+                " :stroke-width="6" :show-text="false" class="flex-1">
               </el-progress>
               <div
-                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"
-              ></div>
+                class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer">
+              </div>
             </div>
             <span
-              class="text-sm text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap flex items-center gap-2"
-            >
+              class="text-sm text-purple-600 dark:text-purple-400 font-medium whitespace-nowrap flex items-center gap-2">
               <i class="fas fa-spinner fa-spin group-hover:animate-bounce"></i>
               搜索中...
-              <span class="font-semibold"
-                >{{ loadingProgress.completed }}/{{
-                  loadingProgress.total
-                }}</span
-              >
+              <span class="font-semibold">{{ loadingProgress.completed }}/{{
+                loadingProgress.total
+                }}</span>
             </span>
           </div>
         </div>
@@ -167,10 +112,7 @@
         <transition name="fade" mode="out-in">
           <div class="p-4" v-if="category === 'clouddrive'">
             <div class="transition-all duration-300 space-y-2">
-              <disk-info-list
-                :sources="sources"
-                :skeleton-loading="skeletonLoading"
-              >
+              <disk-info-list :sources="sources" :skeleton-loading="skeletonLoading">
               </disk-info-list>
             </div>
           </div>
@@ -181,64 +123,39 @@
           <div v-if="category === 'onlineVod'" class="p-2">
             <div class="space-y-4">
               <!-- Loading Skeletons -->
-              <template
-                v-if="
-                  vodData.length === 0 &&
-                  Array.from(loadingStatus.values()).some((status) => status)
-                "
-              >
+              <template v-if="
+                vodData.length === 0 &&
+                Array.from(loadingStatus.values()).some((status) => status)
+              ">
                 <!-- Header Skeleton -->
-                <div
-                  class="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4 px-2 animate-pulse"
-                >
-                  <div
-                    class="h-6 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg w-48"
-                  ></div>
-                  <div
-                    class="h-8 bg-red-100/50 dark:bg-red-900/30 rounded-full w-64"
-                  ></div>
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4 px-2 animate-pulse">
+                  <div class="h-6 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg w-48"></div>
+                  <div class="h-8 bg-red-100/50 dark:bg-red-900/30 rounded-full w-64"></div>
                 </div>
 
                 <!-- Video Player Skeleton -->
-                <div
-                  class="relative rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-sm"
-                >
-                  <div
-                    class="aspect-video w-full bg-gray-200/50 dark:bg-gray-700/50 animate-pulse"
-                  >
-                    <div
-                      class="absolute inset-0 flex items-center justify-center"
-                    >
-                      <i
-                        class="fas fa-film text-4xl text-gray-400 dark:text-gray-600"
-                      ></i>
+                <div class="relative rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-sm">
+                  <div class="aspect-video w-full bg-gray-200/50 dark:bg-gray-700/50 animate-pulse">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <i class="fas fa-film text-4xl text-gray-400 dark:text-gray-600"></i>
                     </div>
                   </div>
                 </div>
 
                 <!-- Episodes List Skeleton -->
-                <div
-                  class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 p-2"
-                >
-                  <div
-                    v-for="i in 12"
-                    :key="i"
-                    class="h-10 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg animate-pulse"
-                  ></div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 p-2">
+                  <div v-for="i in 12" :key="i"
+                    class="h-10 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg animate-pulse"></div>
                 </div>
               </template>
 
               <!-- VOD List -->
               <template v-else>
-                <vod-list
-                  :vod-data="vodData"
-                  class="transition-opacity duration-300"
-                  :class="{
-                    'opacity-0': Array.from(loadingStatus.values()).some(
-                      (status) => status
-                    ),
-                  }"
-                ></vod-list>
+                <vod-list :vod-data="vodData" class="transition-opacity duration-300" :class="{
+                  'opacity-0': Array.from(loadingStatus.values()).some(
+                    (status) => status
+                  ),
+                }"></vod-list>
               </template>
             </div>
           </div>
@@ -248,39 +165,25 @@
         <transition name="fade" mode="out-in">
           <div v-if="category === 'soupian'" class="h-full w-full py-4">
             <div
-              class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg shadow-sm hover:shadow-lg hover:bg-white/70 dark:hover:bg-gray-800/70 p-5 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300"
-            >
+              class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg shadow-sm hover:shadow-lg hover:bg-white/70 dark:hover:bg-gray-800/70 p-5 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300">
               <div class="relative w-full h-[calc(100vh-240px)]">
-                <div
-                  v-if="!iframeLoaded"
-                  class="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-gray-800/90 rounded-lg backdrop-blur-sm"
-                >
+                <div v-if="!iframeLoaded"
+                  class="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-gray-800/90 rounded-lg backdrop-blur-sm">
                   <div class="flex flex-col items-center gap-3">
                     <div class="relative w-12 h-12">
+                      <div class="absolute inset-0 border-4 border-purple-500/30 rounded-full"></div>
                       <div
-                        class="absolute inset-0 border-4 border-purple-500/30 rounded-full"
-                      ></div>
-                      <div
-                        class="absolute inset-0 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"
-                      ></div>
+                        class="absolute inset-0 border-4 border-purple-500 border-t-transparent rounded-full animate-spin">
+                      </div>
                     </div>
-                    <span
-                      class="text-sm text-purple-600 dark:text-purple-400 font-medium"
-                      >加载中...</span
-                    >
+                    <span class="text-sm text-purple-600 dark:text-purple-400 font-medium">加载中...</span>
                   </div>
                 </div>
-                <iframe
-                  id="soupian"
-                  :src="
-                    'https://soupian.pro/frame?movie=' +
-                    encodeURIComponent(keyword)
+                <iframe id="soupian" :src="'https://soupian.pro/frame?movie=' +
+                  encodeURIComponent(keyword)
                   "
                   class="w-full h-full rounded-lg border-0 bg-white/90 dark:bg-gray-900/90 transition-colors duration-300"
-                  loading="lazy"
-                  @load="iframeLoaded = true"
-                  @error="handleIframeError"
-                ></iframe>
+                  loading="lazy" @load="iframeLoaded = true" @error="handleIframeError"></iframe>
               </div>
             </div>
           </div>
@@ -288,53 +191,42 @@
       </div>
 
       <!-- Loading State -->
-      <div
-        v-if="
-          (category === 'clouddrive' && loadingProgress.isLoading) ||
-          (category === 'onlineVod' &&
-            Array.from(loadingStatus.values()).some((status) => status))
-        "
-        class="flex flex-col items-center justify-center py-16"
-      >
+      <div v-if="
+        (category === 'clouddrive' && loadingProgress.isLoading) ||
+        (category === 'onlineVod' &&
+          Array.from(loadingStatus.values()).some((status) => status))
+      " class="flex flex-col items-center justify-center py-16">
         <div class="relative w-20 h-20 mb-6">
           <div class="absolute inset-0 flex items-center justify-center">
             <!-- Outer ring -->
-            <div
-              class="absolute w-full h-full border-4 border-purple-200 dark:border-purple-900/30 rounded-full"
-            ></div>
+            <div class="absolute w-full h-full border-4 border-purple-200 dark:border-purple-900/30 rounded-full"></div>
 
             <!-- Animated gradient ring -->
             <div
-              class="absolute w-full h-full rounded-full border-4 border-transparent [border-top:4px_solid_theme(colors.purple.500)] [border-right:4px_solid_theme(colors.blue.500)] [border-bottom:4px_solid_theme(colors.purple.500)] [border-left:4px_solid_theme(colors.blue.500)] animate-spin"
-            ></div>
+              class="absolute w-full h-full rounded-full border-4 border-transparent [border-top:4px_solid_theme(colors.purple.500)] [border-right:4px_solid_theme(colors.blue.500)] [border-bottom:4px_solid_theme(colors.purple.500)] [border-left:4px_solid_theme(colors.blue.500)] animate-spin">
+            </div>
 
             <!-- Inner pulsing dot -->
-            <div
-              class="absolute w-3 h-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full animate-pulse"
-            ></div>
+            <div class="absolute w-3 h-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full animate-pulse">
+            </div>
 
             <!-- Outer particles -->
             <div class="absolute w-full h-full">
               <span
-                class="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75"
-              ></span>
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75"></span>
               <span
-                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping opacity-75 animation-delay-300"
-              ></span>
+                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping opacity-75 animation-delay-300"></span>
               <span
-                class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-ping opacity-75 animation-delay-500"
-              ></span>
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-ping opacity-75 animation-delay-500"></span>
               <span
-                class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75 animation-delay-700"
-              ></span>
+                class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75 animation-delay-700"></span>
             </div>
           </div>
         </div>
 
         <div class="text-center">
           <h3
-            class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent relative"
-          >
+            class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent relative">
             正在搜索中
             <span class="inline-flex ml-1">
               <span class="animate-bounce mr-0.5 delay-100">.</span>
@@ -344,19 +236,14 @@
           </h3>
 
           <div
-            class="flex items-center justify-center mt-3 bg-white/40 dark:bg-gray-800/40 px-4 py-2 rounded-full backdrop-blur-sm shadow-sm"
-          >
-            <i
-              class="fas fa-info-circle text-purple-500 dark:text-purple-400 mr-2"
-            ></i>
+            class="flex items-center justify-center mt-3 bg-white/40 dark:bg-gray-800/40 px-4 py-2 rounded-full backdrop-blur-sm shadow-sm">
+            <i class="fas fa-info-circle text-purple-500 dark:text-purple-400 mr-2"></i>
             <p class="text-sm text-gray-600 dark:text-gray-300">
               <span v-if="category === 'clouddrive'">
                 正在搜索
-                <span class="font-medium text-purple-600 dark:text-purple-400"
-                  >{{ loadingProgress.completed }}/{{
-                    loadingProgress.total
-                  }}</span
-                >
+                <span class="font-medium text-purple-600 dark:text-purple-400">{{ loadingProgress.completed }}/{{
+                  loadingProgress.total
+                  }}</span>
                 个网盘
               </span>
               <span v-else> 正在查询最佳影视资源 </span>
@@ -366,27 +253,20 @@
       </div>
 
       <!-- Empty State with Enhanced Visual -->
-      <div
-        v-if="
-          searchPerformed &&
-          !skeletonLoading &&
-          !loadingProgress.isLoading &&
-          !Array.from(loadingStatus.values()).some((status) => status) &&
-          ((category === 'clouddrive' && sources.length === 0) ||
-            (category === 'onlineVod' && vodData.length === 0))
-        "
-        class="flex flex-col items-center justify-center py-16 text-gray-500 dark:text-gray-400"
-      >
+      <div v-if="
+        searchPerformed &&
+        !skeletonLoading &&
+        !loadingProgress.isLoading &&
+        !Array.from(loadingStatus.values()).some((status) => status) &&
+        ((category === 'clouddrive' && sources.length === 0) ||
+          (category === 'onlineVod' && vodData.length === 0))
+      " class="flex flex-col items-center justify-center py-16 text-gray-500 dark:text-gray-400">
         <div
-          class="p-8 rounded-full bg-gradient-to-br from-purple-100/50 to-blue-100/50 dark:from-purple-900/20 dark:to-blue-900/20 mb-6 shadow-lg backdrop-blur-sm group hover:scale-105 transition-all duration-300"
-        >
+          class="p-8 rounded-full bg-gradient-to-br from-purple-100/50 to-blue-100/50 dark:from-purple-900/20 dark:to-blue-900/20 mb-6 shadow-lg backdrop-blur-sm group hover:scale-105 transition-all duration-300">
           <i
-            class="fas fa-search text-5xl text-purple-500/70 dark:text-purple-400/70 group-hover:rotate-12 transition-transform duration-300"
-          ></i>
+            class="fas fa-search text-5xl text-purple-500/70 dark:text-purple-400/70 group-hover:rotate-12 transition-transform duration-300"></i>
         </div>
-        <h3
-          class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent"
-        >
+        <h3 class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
           未找到相关结果
         </h3>
         <p class="text-sm mt-3 opacity-75">试试以下建议：</p>
@@ -397,11 +277,8 @@
       </div>
 
       <!-- Enhanced Backtop -->
-      <el-backtop
-        :right="24"
-        :bottom="24"
-        class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center"
-      >
+      <el-backtop :right="24" :bottom="24"
+        class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center">
         <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
       </el-backtop>
     </div>
@@ -1455,13 +1332,13 @@ const categories = computed(() => [
   },
   ...(hasVodSources.value
     ? [
-        {
-          value: "onlineVod",
-          label: "在线观影",
-          icon: "fas fa-film",
-          description: "搜索在线视频资源",
-        },
-      ]
+      {
+        value: "onlineVod",
+        label: "在线观影",
+        icon: "fas fa-film",
+        description: "搜索在线视频资源",
+      },
+    ]
     : []),
   // {
   //   value: "soupian",
@@ -1594,6 +1471,7 @@ const handleIframeError = () => {
 
 /* Pulse animation with smoother transition */
 @keyframes pulse {
+
   0%,
   100% {
     opacity: 1;
