@@ -39,6 +39,12 @@ export const useVodSources = () => {
      * 从localStorage加载配置
      */
     const loadFromLocalStorage = () => {
+        if (!process.client) {
+            console.log('在服务器端，跳过localStorage操作');
+            sources.value = [];
+            return;
+        }
+
         try {
             const key = getStorageKey()
             const savedSources = localStorage.getItem(key)
@@ -70,8 +76,10 @@ export const useVodSources = () => {
     const saveSources = async (newSources: VodSource[]) => {
         try {
             // 始终保存到localStorage作为备份
-            const key = getStorageKey()
-            localStorage.setItem(key, JSON.stringify(newSources))
+            if (process.client) {
+                const key = getStorageKey()
+                localStorage.setItem(key, JSON.stringify(newSources))
+            }
 
             // 如果用户已登录，则同时保存到服务器
             if (userStore.loggedIn && userStore.token) {

@@ -330,12 +330,18 @@ class SmartCache {
       misses: 0,
       sets: 0,
       redisHits: 0,
+      redisErrors: 0,
       deletes: 0,
     };
     this.useRedis = useRedis;
 
-    // 默认TTL (24小时)
-    this.defaultTTL = 86400000;
+    // 各种数据类型的TTL配置
+    this.ttlConfig = {
+      search: 5 * 60 * 1000, // 搜索结果缓存5分钟
+      vod: 15 * 60 * 1000,   // VOD结果缓存15分钟
+      config: 24 * 60 * 60 * 1000, // 配置信息缓存24小时
+      default: 60 * 60 * 1000 // 默认1小时
+    };
 
     // 不立即加载，等待客户端初始化
     if (process.client) {
@@ -413,6 +419,7 @@ class SmartCache {
         misses: 0,
         sets: 0,
         redisHits: 0,
+        redisErrors: 0,
         deletes: 0,
       };
     }
@@ -498,9 +505,8 @@ class SmartCache {
 
   // 获取缓存命中率
   getHitRate() {
-    return this.stats.total === 0
-      ? 0
-      : ((this.stats.hits / this.stats.total) * 100).toFixed(2);
+    const total = this.stats.hits + this.stats.misses;
+    return total === 0 ? 0 : ((this.stats.hits / total) * 100).toFixed(2);
   }
 
   // 获取Redis缓存命中率
@@ -510,24 +516,32 @@ class SmartCache {
       : ((this.stats.redisHits / this.stats.misses) * 100).toFixed(2);
   }
 
-  // 动态计算缓存时间
-  getDynamicTTL(key, value) {
-    // 默认24小时
-    let ttl = this.defaultTTL;
+  // 判断缓存是否过期
+  isStale(cacheItem, type = 'default') {
+    if (!cacheItem) return true;
 
-    // 可以根据缓存内容大小动态调整TTL
-    // 较大的数据可以设置较短的过期时间
-    if (value && Array.isArray(value)) {
+    // 获取该类型数据的TTL
+    const ttl = this.ttlConfig[type] || this.ttlConfig.default;
+
+    // 检查是否超过TTL
+    return Date.now() > cacheItem.timestamp + ttl;
+  }
+
+  // 获取特定类型数据的TTL
+  getTTL(type = 'default', value = null) {
+    let ttl = this.ttlConfig[type] || this.ttlConfig.default;
+
+    // 如果是search类型，可以根据数据量动态调整TTL
+    if (type === 'search' && value && Array.isArray(value)) {
       if (value.length > 100) {
-        // 对于大数据集，缩短TTL
-        ttl = 3600000; // 1小时
-      } else if (value.length > 50) {
-        ttl = 7200000; // 2小时
+        // 大数据集，缩短TTL
+        ttl = Math.min(ttl, 3 * 60 * 1000); // 最多3分钟
       } else if (value.length < 5) {
-        // 对于小数据集，延长TTL
-        ttl = 172800000; // 48小时
+        // 小数据集，可以稍微延长TTL
+        ttl = Math.min(this.ttlConfig.default, ttl * 2);
       }
     }
+
     return ttl;
   }
 
@@ -539,6 +553,8 @@ class SmartCache {
 
   // 检查是否需要清理缓存
   cleanup(force = false) {
+    if (!process.client) return;
+
     // 计算存储使用情况
     const storageUsed = localStorage.length;
     const storageLimit = 5 * 1024 * 1024; // 5MB限制
@@ -606,7 +622,18 @@ class SmartCache {
     return { category: "unknown", source: "unknown", keyword: "" };
   }
 
-  // 获取缓存数据 (同步版本，只检查本地缓存)
+  // 判断缓存键对应的数据类型
+  getCacheType(key) {
+    if (key.startsWith("vod-")) {
+      return "vod";
+    } else if (key.includes("config") || key.includes("setting")) {
+      return "config";
+    } else {
+      return "search";
+    }
+  }
+
+  // 仅从本地缓存获取数据
   get(key) {
     this.stats.total++;
     const item = this.cache.get(key);
@@ -616,8 +643,10 @@ class SmartCache {
       return null;
     }
 
+    const type = this.getCacheType(key);
+
     // 检查是否过期
-    if (Date.now() > item.expiry) {
+    if (this.isStale(item, type)) {
       this.cache.delete(key);
       this.stats.misses++;
       return null;
@@ -629,50 +658,75 @@ class SmartCache {
     return item.value;
   }
 
-  // 异步获取缓存数据 (支持Redis)
-  async getWithRedis(key) {
-    // 先检查本地缓存
-    const localData = this.get(key);
-    if (localData) {
-      return localData;
+  // 仅从Redis获取数据(不检查本地缓存)
+  async getFromRedisOnly(key) {
+    if (!this.useRedis || !process.client) {
+      return null;
     }
 
-    // 本地缓存未命中，尝试从Redis获取
-    if (this.useRedis && process.client) {
-      try {
-        // 解析缓存键以确定Redis缓存参数
-        const { category, source, keyword } = this.parseCacheKey(key);
+    try {
+      // 解析缓存键以确定Redis缓存参数
+      const { category, source, keyword } = this.parseCacheKey(key);
 
-        const result = await getCache({ category, source, keyword });
+      const result = await getCache({ category, source, keyword });
 
-        if (result && result.data) {
-          // Redis缓存命中
-          this.stats.redisHits++;
-
-          // 将Redis数据也保存到本地缓存
-          this.set(key, result.data);
-
-          return result.data;
-        }
-      } catch (error) {
-        console.error("Error fetching from Redis cache:", error);
+      if (result && result.data) {
+        // Redis缓存命中
+        this.stats.redisHits++;
+        return result.data;
       }
+    } catch (error) {
+      this.stats.redisErrors++;
+      console.error("Error fetching from Redis cache:", error);
     }
 
     return null;
   }
 
-  // 设置缓存数据 (增加Redis支持)
-  set(key, value) {
-    const ttl = this.getDynamicTTL(key, value);
+  // 综合获取缓存(Redis优先策略)
+  async getWithStrategy(key) {
+    try {
+      // 1. 首先尝试从Redis获取(数据真相的唯一来源)
+      const redisData = await this.getFromRedisOnly(key);
+
+      if (redisData) {
+        // 找到数据，同步更新本地缓存
+        this.set(key, redisData, this.getCacheType(key));
+        return redisData;
+      }
+
+      // 2. Redis未命中，再检查本地缓存
+      const localData = this.get(key);
+      if (localData) {
+        return localData;
+      }
+
+      // 两级缓存都未命中
+      return null;
+    } catch (error) {
+      console.error("Cache strategy error:", error);
+      // 出错时回退到本地缓存
+      return this.get(key);
+    }
+  }
+
+  // 设置缓存数据(本地)
+  set(key, value, type) {
+    if (!type) {
+      type = this.getCacheType(key);
+    }
+
+    const ttl = this.getTTL(type, value);
 
     // 更新本地缓存
     this.cache.set(key, {
       value,
+      timestamp: Date.now(),
       expiry: Date.now() + ttl,
       lastAccessed: Date.now(),
       accessCount: 1,
       size: JSON.stringify(value).length, // 记录数据大小
+      type
     });
 
     this.cleanup();
@@ -680,41 +734,26 @@ class SmartCache {
     // 异步保存到localStorage
     setTimeout(() => this.save(), 0);
 
-    // 同步保存到Redis
-    if (this.useRedis && process.client) {
-      try {
-        // 解析缓存键以确定Redis缓存参数
-        const { category, source, keyword } = this.parseCacheKey(key);
-
-        // 将TTL转换为秒
-        const ttlInSeconds = Math.floor(ttl / 1000);
-
-        // 异步保存到Redis
-        setCache({
-          data: value,
-          category,
-          source,
-          keyword,
-          ttl: ttlInSeconds,
-        }).catch((err) => console.error("Error setting Redis cache:", err));
-      } catch (error) {
-        console.error("Error saving to Redis cache:", error);
-      }
-    }
-
     return value;
   }
 
-  // 设置缓存数据 (支持Redis)
-  async setWithRedis(key, value, ttl = this.getDynamicTTL(key, value)) {
-    // 首先设置本地缓存
-    this.set(key, value, ttl);
+  // 设置缓存数据(支持Redis)
+  async setWithStrategy(key, value, type) {
+    if (!type) {
+      type = this.getCacheType(key);
+    }
 
-    // 如果启用了Redis，则同时设置Redis缓存
+    // 设置本地缓存
+    this.set(key, value, type);
+
+    // 同时设置Redis缓存(作为数据的真相源)
     if (this.useRedis && process.client) {
       try {
         // 解析缓存键以确定Redis缓存参数
         const { category, source, keyword } = this.parseCacheKey(key);
+
+        // 获取TTL(秒)
+        const ttlInSeconds = Math.floor(this.getTTL(type, value) / 1000);
 
         // 向Redis缓存写入数据
         await setCache({
@@ -722,7 +761,7 @@ class SmartCache {
           source,
           keyword,
           data: value,
-          ttl,
+          ttl: ttlInSeconds,
         });
 
         if (process.env.NODE_ENV === "development") {
@@ -732,6 +771,8 @@ class SmartCache {
         console.error("Error saving cache to Redis:", error);
       }
     }
+
+    return value;
   }
 
   // 获取缓存统计信息
@@ -866,6 +907,8 @@ const quarkConfig = ref({
 
 // 优化缓存保存函数
 const saveConfigToCache = (config) => {
+  if (!process.client) return;
+
   try {
     const cacheData = {
       data: config,
@@ -880,6 +923,8 @@ const saveConfigToCache = (config) => {
 
 // 优化缓存加载函数
 const loadConfigFromCache = () => {
+  if (!process.client) return false;
+
   try {
     const cached = localStorage.getItem(CACHE_CONFIG.key);
     if (cached) {
@@ -896,19 +941,26 @@ const loadConfigFromCache = () => {
     }
   } catch (error) {
     console.error("Error loading config from cache:", error);
-    localStorage.removeItem(CACHE_CONFIG.key);
+    if (process.client) {
+      localStorage.removeItem(CACHE_CONFIG.key);
+    }
   }
   return false;
 };
 
 // 修改获取配置的函数
 const getQuarkConfig = async () => {
-  // 先尝试从缓存加载
-  if (loadConfigFromCache()) {
-    return;
-  }
+  // 这是配置类型数据，使用缓存策略获取
+  const configCacheKey = "quark-config";
 
   try {
+    // 从缓存获取配置
+    const cachedConfig = await smartCache.getWithStrategy(configCacheKey);
+    if (cachedConfig) {
+      quarkConfig.value = cachedConfig;
+      return;
+    }
+
     const res = await $fetch("/api/quark/setting");
     if (res.code === 200 && res.data) {
       const config = {
@@ -919,8 +971,9 @@ const getQuarkConfig = async () => {
         enabled: res.data.enabled,
       };
       quarkConfig.value = config;
-      // 保存到缓存
-      saveConfigToCache(config);
+
+      // 保存到缓存，使用config类型
+      await smartCache.setWithStrategy(configCacheKey, config, "config");
     }
   } catch (error) {
     console.error("Failed to get quark config:", error);
@@ -929,7 +982,21 @@ const getQuarkConfig = async () => {
 
 // 添加清除缓存的函数（可在配置失效时调用）
 const clearConfigCache = () => {
-  localStorage.removeItem(CACHE_CONFIG.key);
+  if (process.client) {
+    // 从本地和Redis都清除
+    const configCacheKey = "quark-config";
+    smartCache.cache.delete(configCacheKey);
+
+    if (smartCache.useRedis) {
+      setCache({
+        category: "config",
+        source: "quark",
+        keyword: "settings",
+        data: null,
+        ttl: 1,  // 设置为1秒，相当于立即过期
+      }).catch(err => console.error("Error clearing Redis config cache:", err));
+    }
+  }
 };
 
 // 优化队列状态管理
@@ -1115,7 +1182,7 @@ const handleSearch = async () => {
   });
 };
 
-// 单个搜索处理函数
+// 单个搜索处理函数 - 使用更新后的缓存策略
 const handleSingleSearch = async (item) => {
   // 改进缓存键，确保关键词正确编码并包含在缓存键中
   const encodedKeyword = encodeURIComponent(keyword.value.trim());
@@ -1123,13 +1190,8 @@ const handleSingleSearch = async (item) => {
 
   const task = async () => {
     try {
-      // 首先尝试从本地缓存获取数据
-      let cachedData = smartCache.get(cacheKey);
-
-      // 如果本地缓存未命中，尝试从Redis获取
-      if (!cachedData) {
-        cachedData = await smartCache.getWithRedis(cacheKey);
-      }
+      // 使用新的Redis优先缓存策略获取数据
+      const cachedData = await smartCache.getWithStrategy(cacheKey);
 
       if (cachedData) {
         if (item.api === "/api/sources/aipan-search") {
@@ -1144,7 +1206,7 @@ const handleSingleSearch = async (item) => {
         return;
       }
 
-      // 从API获取新数据
+      // 缓存未命中，从API获取新数据
       const res = await fetchWithRetry(item.api, {
         method: "POST",
         body: {
@@ -1153,8 +1215,8 @@ const handleSingleSearch = async (item) => {
       });
 
       if (res.list && Array.isArray(res.list)) {
-        // 将结果保存到缓存中，同时同步到Redis
-        await smartCache.setWithRedis(cacheKey, res.list);
+        // 将结果保存到缓存中，使用新的缓存策略
+        await smartCache.setWithStrategy(cacheKey, res.list, "search");
 
         if (item.api === "/api/sources/aipan-search") {
           sources.value.unshift(...res.list);
@@ -1234,7 +1296,7 @@ const searchVod = async () => {
   }
 };
 
-// VOD搜索的单个处理函数
+// VOD搜索的单个处理函数 - 使用更新后的缓存策略
 const handleSingleVodSearch = async (vodApi) => {
   // 改进缓存键，确保关键词正确编码并包含在缓存键中
   const encodedKeyword = encodeURIComponent(keyword.value.trim());
@@ -1242,13 +1304,8 @@ const handleSingleVodSearch = async (vodApi) => {
   loadingStatus.value.set(vodApi.api, true);
 
   try {
-    // 首先尝试从本地缓存获取数据
-    let cachedData = smartCache.get(cacheKey);
-
-    // 如果本地缓存未命中，尝试从Redis获取
-    if (!cachedData) {
-      cachedData = await smartCache.getWithRedis(cacheKey);
-    }
+    // 使用新的Redis优先缓存策略获取数据
+    const cachedData = await smartCache.getWithStrategy(cacheKey);
 
     if (cachedData) {
       vodData.value = [...vodData.value, ...cachedData];
@@ -1273,8 +1330,8 @@ const handleSingleVodSearch = async (vodApi) => {
           item
         )
       );
-      // 将结果保存到缓存中
-      smartCache.setWithRedis(cacheKey, processedData);
+      // 将结果保存到缓存中，使用新的缓存策略
+      await smartCache.setWithStrategy(cacheKey, processedData, "vod");
       vodData.value = [...vodData.value, ...processedData];
     }
   } catch (err) {
