@@ -98,7 +98,7 @@
               搜索中...
               <span class="font-semibold">{{ loadingProgress.completed }}/{{
                 loadingProgress.total
-                }}</span>
+              }}</span>
             </span>
           </div>
         </div>
@@ -195,50 +195,17 @@
         (category === 'clouddrive' && loadingProgress.isLoading) ||
         (category === 'onlineVod' &&
           Array.from(loadingStatus.values()).some((status) => status))
-      " class="flex flex-col items-center justify-center py-16">
-        <div class="relative w-20 h-20 mb-6">
-          <div class="absolute inset-0 flex items-center justify-center">
-            <!-- Outer ring -->
-            <div class="absolute w-full h-full border-4 border-purple-200 dark:border-purple-900/30 rounded-full"></div>
-
-            <!-- Animated gradient ring -->
-            <div
-              class="absolute w-full h-full rounded-full border-4 border-transparent [border-top:4px_solid_theme(colors.purple.500)] [border-right:4px_solid_theme(colors.blue.500)] [border-bottom:4px_solid_theme(colors.purple.500)] [border-left:4px_solid_theme(colors.blue.500)] animate-spin">
-            </div>
-
-            <!-- Inner pulsing dot -->
-            <div class="absolute w-3 h-3 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full animate-pulse">
-            </div>
-
-            <!-- Outer particles -->
-            <div class="absolute w-full h-full">
-              <span
-                class="absolute top-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75"></span>
-              <span
-                class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping opacity-75 animation-delay-300"></span>
-              <span
-                class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-indigo-400 rounded-full animate-ping opacity-75 animation-delay-500"></span>
-              <span
-                class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-purple-400 rounded-full animate-ping opacity-75 animation-delay-700"></span>
-            </div>
-          </div>
-        </div>
-
+      " class="flex flex-col items-center justify-center py-10">
+        <!-- 移除原有的复杂加载动画，只保留文字 -->
         <div class="text-center">
-          <h3
-            class="text-xl font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent relative">
-            正在搜索中
-            <span class="inline-flex ml-1">
-              <span class="animate-bounce mr-0.5 delay-100">.</span>
-              <span class="animate-bounce mr-0.5 delay-200">.</span>
-              <span class="animate-bounce delay-300">.</span>
-            </span>
+          <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
+            正在搜索中...
           </h3>
 
           <div
-            class="flex items-center justify-center mt-3 bg-white/40 dark:bg-gray-800/40 px-4 py-2 rounded-full backdrop-blur-sm shadow-sm">
+            class="flex items-center justify-center mt-2 bg-white/40 dark:bg-gray-800/40 px-4 py-2 rounded-full backdrop-blur-sm shadow-sm">
             <i class="fas fa-info-circle text-purple-500 dark:text-purple-400 mr-2"></i>
-            <p class="text-sm text-gray-600 dark:text-gray-300">
+            <p class="text-xs text-gray-600 dark:text-gray-300">
               <span v-if="category === 'clouddrive'">
                 正在搜索
                 <span class="font-medium text-purple-600 dark:text-purple-400">{{ loadingProgress.completed }}/{{
@@ -315,7 +282,7 @@ const searchPerformed = ref(false);
 // 在 setup 中获取运行时配置
 const config = useRuntimeConfig();
 
-// 智能缓存类
+// 简化缓存类
 class SmartCache {
   constructor({
     namespace = "smart-cache",
@@ -325,17 +292,7 @@ class SmartCache {
     this.namespace = namespace;
     this.maxSize = maxSize;
     this.cache = new Map();
-    this.stats = {
-      hits: 0,
-      misses: 0,
-      sets: 0,
-      redisHits: 0,
-      redisErrors: 0,
-      deletes: 0,
-    };
     this.useRedis = useRedis;
-
-    // 各种数据类型的TTL配置
     this.ttlConfig = {
       search: 5 * 60 * 1000, // 搜索结果缓存5分钟
       vod: 15 * 60 * 1000,   // VOD结果缓存15分钟
@@ -343,255 +300,97 @@ class SmartCache {
       default: 60 * 60 * 1000 // 默认1小时
     };
 
-    // 不立即加载，等待客户端初始化
     if (process.client) {
       this.init();
     }
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("SmartCache initialized", {
-        namespace,
-        maxSize,
-        cacheSize: this.cache.size,
-        useRedis,
-      });
-    }
   }
 
-  // 初始化方法 - 加载缓存
   init() {
     if (!process.client) return;
     try {
-      // 从localStorage加载缓存数据
       this.load();
-
-      // 定期保存缓存到localStorage
       this.setupAutoSave();
-
-      // 定期清理过期数据
       this.setupCleanupInterval();
     } catch (error) {
       console.error("Error initializing cache:", error);
     }
   }
 
-  // 从localStorage加载数据
   load() {
     if (!process.client) return;
-
     try {
       const savedData = localStorage.getItem(this.namespace);
       if (savedData) {
-        const { cache, stats } = JSON.parse(savedData);
-
-        // 重建缓存
+        const { cache } = JSON.parse(savedData);
         this.cache.clear();
         if (Array.isArray(cache)) {
-          // 新版本格式：entries数组
           cache.forEach(([key, value]) => {
             this.cache.set(key, value);
           });
         } else if (typeof cache === "object") {
-          // 旧版本格式：对象
           Object.keys(cache).forEach((key) => {
             this.cache.set(key, cache[key]);
           });
         }
-
-        // 恢复统计信息
-        if (stats) {
-          this.stats = { ...this.stats, ...stats };
-        }
-
-        if (process.env.NODE_ENV === "development") {
-          console.log("Cache loaded from localStorage", {
-            size: this.cache.size,
-            stats: this.stats,
-          });
-        }
       }
     } catch (error) {
-      console.error("Error loading cache from localStorage:", error);
-      // 如果加载失败，清空缓存
+      console.error("Error loading cache:", error);
       this.cache.clear();
-      this.stats = {
-        hits: 0,
-        misses: 0,
-        sets: 0,
-        redisHits: 0,
-        redisErrors: 0,
-        deletes: 0,
-      };
     }
   }
 
-  // 保存数据到localStorage
   save() {
     if (!process.client) return;
-
     try {
-      const data = {
-        cache: Array.from(this.cache.entries()),
-        stats: this.stats,
-        timestamp: Date.now(),
-      };
-
+      const data = { cache: Array.from(this.cache.entries()), timestamp: Date.now() };
       localStorage.setItem(this.namespace, JSON.stringify(data));
-
-      if (process.env.NODE_ENV === "development") {
-        console.log("Cache saved to localStorage");
-      }
     } catch (error) {
-      console.error("Error saving cache to localStorage:", error);
-      // 如果存储失败（比如超出配额），清理一部分数据后重试
       this.cleanup(true);
       try {
-        const data = {
+        localStorage.setItem(this.namespace, JSON.stringify({
           cache: Array.from(this.cache.entries()),
-          stats: this.stats,
-          timestamp: Date.now(),
-        };
-        localStorage.setItem(this.namespace, JSON.stringify(data));
+          timestamp: Date.now()
+        }));
       } catch (error) {
-        console.error("Failed to save cache even after cleanup:", error);
+        console.error("Failed to save cache:", error);
       }
     }
   }
 
-  // 设置自动保存定时器
   setupAutoSave() {
     if (!process.client) return;
-
-    // 每60秒保存一次缓存
-    const saveInterval = setInterval(() => {
-      this.save();
-    }, 60000);
-
-    // 页面卸载前保存一次
+    const saveInterval = setInterval(() => this.save(), 60000);
     window.addEventListener("beforeunload", () => {
       this.save();
       clearInterval(saveInterval);
     });
   }
 
-  // 设置自动清理定时器
   setupCleanupInterval() {
     if (!process.client) return;
-
-    // 每5分钟清理一次过期缓存
-    const cleanupInterval = setInterval(() => {
-      this.cleanup();
-    }, 300000);
-
-    // 页面卸载前清理定时器
-    window.addEventListener("beforeunload", () => {
-      clearInterval(cleanupInterval);
-    });
+    const cleanupInterval = setInterval(() => this.cleanup(), 300000);
+    window.addEventListener("beforeunload", () => clearInterval(cleanupInterval));
   }
 
-  // 清理localStorage中的缓存数据
-  clearStorage() {
-    if (!process.client) return;
-
-    try {
-      localStorage.removeItem(this.namespace);
-      if (process.env.NODE_ENV === "development") {
-        console.log("Cache storage cleared");
-      }
-    } catch (err) {
-      console.error("Error clearing cache storage:", err);
-    }
-  }
-
-  // 获取缓存命中率
-  getHitRate() {
-    const total = this.stats.hits + this.stats.misses;
-    return total === 0 ? 0 : ((this.stats.hits / total) * 100).toFixed(2);
-  }
-
-  // 获取Redis缓存命中率
-  getRedisHitRate() {
-    return this.stats.misses === 0
-      ? 0
-      : ((this.stats.redisHits / this.stats.misses) * 100).toFixed(2);
-  }
-
-  // 判断缓存是否过期
   isStale(cacheItem, type = 'default') {
     if (!cacheItem) return true;
-
-    // 获取该类型数据的TTL
     const ttl = this.ttlConfig[type] || this.ttlConfig.default;
-
-    // 检查是否超过TTL
     return Date.now() > cacheItem.timestamp + ttl;
   }
 
-  // 获取特定类型数据的TTL
   getTTL(type = 'default', value = null) {
-    let ttl = this.ttlConfig[type] || this.ttlConfig.default;
-
-    // 如果是search类型，可以根据数据量动态调整TTL
-    if (type === 'search' && value && Array.isArray(value)) {
-      if (value.length > 100) {
-        // 大数据集，缩短TTL
-        ttl = Math.min(ttl, 3 * 60 * 1000); // 最多3分钟
-      } else if (value.length < 5) {
-        // 小数据集，可以稍微延长TTL
-        ttl = Math.min(this.ttlConfig.default, ttl * 2);
-      }
-    }
-
-    return ttl;
+    return this.ttlConfig[type] || this.ttlConfig.default;
   }
 
-  // 获取键的访问次数
-  getAccessCount(key) {
-    const item = this.cache.get(key);
-    return item ? item.accessCount || 0 : 0;
+  getCacheType(key) {
+    if (key.startsWith("vod-")) return "vod";
+    else if (key.includes("config") || key.includes("setting")) return "config";
+    return "search";
   }
 
-  // 检查是否需要清理缓存
-  cleanup(force = false) {
-    if (!process.client) return;
-
-    // 计算存储使用情况
-    const storageUsed = localStorage.length;
-    const storageLimit = 5 * 1024 * 1024; // 5MB限制
-
-    // 如果强制清理或缓存大小超出限制
-    if (force || this.cache.size > this.maxSize || storageUsed > storageLimit) {
-      const entries = Array.from(this.cache.entries()).sort((a, b) => {
-        const scoreA = a[1].lastAccessed * (a[1].accessCount || 1);
-        const scoreB = b[1].lastAccessed * (b[1].accessCount || 1);
-        return scoreA - scoreB;
-      });
-
-      // 删除最不常用的数据
-      const deleteCount = Math.max(
-        Math.floor(this.maxSize * 0.25),
-        Math.floor(entries.length * 0.25)
-      );
-
-      entries.slice(0, deleteCount).forEach(([key]) => {
-        this.cache.delete(key);
-      });
-
-      // 保存更新后的缓存
-      this.save();
-
-      if (process.env.NODE_ENV === "development") {
-        console.log(`Cleaned up ${deleteCount} cache entries`);
-      }
-    }
-  }
-
-  // 解析缓存键获取搜索参数
   parseCacheKey(key) {
     try {
-      // 处理vod搜索缓存键
       if (key.startsWith("vod-")) {
-        // 提取API和关键词部分
         const matches = key.match(/^vod-(.+?)-(.+)$/);
         if (matches && matches.length === 3) {
           const [, api, encodedKeyword] = matches;
@@ -601,9 +400,7 @@ class SmartCache {
             keyword: decodeURIComponent(encodedKeyword),
           };
         }
-      }
-      // 处理普通搜索缓存键
-      else {
+      } else {
         const matches = key.match(/^(.+?)-(.+)$/);
         if (matches && matches.length === 3) {
           const [, api, encodedKeyword] = matches;
@@ -615,147 +412,90 @@ class SmartCache {
         }
       }
     } catch (error) {
-      console.error("Error parsing cache key:", error, key);
+      console.error("Error parsing cache key:", error);
     }
-
-    // 如果无法解析，返回一个默认对象
     return { category: "unknown", source: "unknown", keyword: "" };
   }
 
-  // 判断缓存键对应的数据类型
-  getCacheType(key) {
-    if (key.startsWith("vod-")) {
-      return "vod";
-    } else if (key.includes("config") || key.includes("setting")) {
-      return "config";
-    } else {
-      return "search";
+  cleanup(force = false) {
+    if (!process.client) return;
+    if (force || this.cache.size > this.maxSize) {
+      const entries = Array.from(this.cache.entries()).sort((a, b) => {
+        return (a[1].lastAccessed || 0) - (b[1].lastAccessed || 0);
+      });
+      const deleteCount = Math.floor(this.maxSize * 0.25);
+      entries.slice(0, deleteCount).forEach(([key]) => this.cache.delete(key));
+      this.save();
     }
   }
 
-  // 仅从本地缓存获取数据
   get(key) {
-    this.stats.total++;
     const item = this.cache.get(key);
-
-    if (!item) {
-      this.stats.misses++;
-      return null;
-    }
+    if (!item) return null;
 
     const type = this.getCacheType(key);
-
-    // 检查是否过期
     if (this.isStale(item, type)) {
       this.cache.delete(key);
-      this.stats.misses++;
       return null;
     }
 
-    this.stats.hits++;
     item.lastAccessed = Date.now();
-    item.accessCount = (item.accessCount || 0) + 1;
     return item.value;
   }
 
-  // 仅从Redis获取数据(不检查本地缓存)
   async getFromRedisOnly(key) {
-    if (!this.useRedis || !process.client) {
-      return null;
-    }
-
+    if (!this.useRedis || !process.client) return null;
     try {
-      // 解析缓存键以确定Redis缓存参数
       const { category, source, keyword } = this.parseCacheKey(key);
-
       const result = await getCache({ category, source, keyword });
-
-      if (result && result.data) {
-        // Redis缓存命中
-        this.stats.redisHits++;
-        return result.data;
-      }
+      if (result && result.data) return result.data;
     } catch (error) {
-      this.stats.redisErrors++;
-      console.error("Error fetching from Redis cache:", error);
+      console.error("Redis cache error:", error);
     }
-
     return null;
   }
 
-  // 综合获取缓存(Redis优先策略)
   async getWithStrategy(key) {
     try {
-      // 1. 首先尝试从Redis获取(数据真相的唯一来源)
       const redisData = await this.getFromRedisOnly(key);
-
       if (redisData) {
-        // 找到数据，同步更新本地缓存
         this.set(key, redisData, this.getCacheType(key));
         return redisData;
       }
 
-      // 2. Redis未命中，再检查本地缓存
-      const localData = this.get(key);
-      if (localData) {
-        return localData;
-      }
-
-      // 两级缓存都未命中
-      return null;
+      return this.get(key);
     } catch (error) {
-      console.error("Cache strategy error:", error);
-      // 出错时回退到本地缓存
+      console.error("Cache error:", error);
       return this.get(key);
     }
   }
 
-  // 设置缓存数据(本地)
   set(key, value, type) {
-    if (!type) {
-      type = this.getCacheType(key);
-    }
+    if (!type) type = this.getCacheType(key);
 
     const ttl = this.getTTL(type, value);
-
-    // 更新本地缓存
     this.cache.set(key, {
       value,
       timestamp: Date.now(),
       expiry: Date.now() + ttl,
       lastAccessed: Date.now(),
-      accessCount: 1,
-      size: JSON.stringify(value).length, // 记录数据大小
       type
     });
 
     this.cleanup();
-
-    // 异步保存到localStorage
     setTimeout(() => this.save(), 0);
-
     return value;
   }
 
-  // 设置缓存数据(支持Redis)
   async setWithStrategy(key, value, type) {
-    if (!type) {
-      type = this.getCacheType(key);
-    }
+    if (!type) type = this.getCacheType(key);
 
-    // 设置本地缓存
     this.set(key, value, type);
 
-    // 同时设置Redis缓存(作为数据的真相源)
     if (this.useRedis && process.client) {
       try {
-        // 解析缓存键以确定Redis缓存参数
         const { category, source, keyword } = this.parseCacheKey(key);
-
-        // 获取TTL(秒)
         const ttlInSeconds = Math.floor(this.getTTL(type, value) / 1000);
-
-        // 向Redis缓存写入数据
         await setCache({
           category,
           source,
@@ -763,34 +503,12 @@ class SmartCache {
           data: value,
           ttl: ttlInSeconds,
         });
-
-        if (process.env.NODE_ENV === "development") {
-          console.log("Cache saved to Redis:", key);
-        }
       } catch (error) {
-        console.error("Error saving cache to Redis:", error);
+        console.error("Redis cache save error:", error);
       }
     }
 
     return value;
-  }
-
-  // 获取缓存统计信息
-  getStats() {
-    const totalSize = Array.from(this.cache.values()).reduce(
-      (sum, item) => sum + (item.size || 0),
-      0
-    );
-
-    return {
-      ...this.stats,
-      hitRate: this.getHitRate(),
-      redisHitRate: this.getRedisHitRate(),
-      size: this.cache.size,
-      maxSize: this.maxSize,
-      totalSize: `${(totalSize / 1024).toFixed(2)}KB`,
-      storageUsed: `${(localStorage.length / 1024).toFixed(2)}KB`,
-    };
   }
 }
 
@@ -823,56 +541,25 @@ onMounted(async () => {
   }
 });
 
-// 添加并发控制变量
+// 并发控制和简化的fetch
 const maxConcurrent = 3;
 const queue = [];
 let running = 0;
 
-// 增加超时时间，添加更多错误处理
-const fetchWithTimeout = async (url, options, timeout = 30000) => {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  try {
-    const response = await $fetch(url, {
-      ...options,
-      signal: controller.signal,
-      retry: 3,
-      retryDelay: 1000,
-      onRequestError: ({ error }) => {
-        console.error("Request error:", error);
-      },
-    });
-    return response;
-  } catch (error) {
-    if (error.name === "AbortError") {
-      console.error("Request timeout:", url);
-      throw new Error(`Request timeout for ${url}`);
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-};
-
-// 优化重试逻辑
 const fetchWithRetry = async (url, options, maxRetries = 3) => {
-  let lastError;
-  for (let i = 0; i < maxRetries; i++) {
-    try {
-      return await fetchWithTimeout(url, options);
-    } catch (error) {
-      console.error(`Attempt ${i + 1} failed:`, error);
-      lastError = error;
-      if (i < maxRetries - 1) {
-        await new Promise((resolve) => setTimeout(resolve, 2000 * (i + 1)));
-      }
-    }
+  try {
+    return await $fetch(url, {
+      ...options,
+      retry: maxRetries,
+      retryDelay: 1000
+    });
+  } catch (error) {
+    console.error("Request failed:", error);
+    throw error;
   }
-  throw lastError;
 };
 
-// 修改队列处理逻辑
+// 简化队列处理
 const runQueue = async () => {
   if (running >= maxConcurrent || queue.length === 0) return;
 
@@ -889,72 +576,20 @@ const runQueue = async () => {
   }
 };
 
-// 修改缓存相关常量
-const CACHE_CONFIG = {
-  key: "quark_config_cache",
-  expireTime: 10 * 60 * 1000, // 10分钟
-  version: "1.0", // 用于缓存版本控制
-};
-
-// 修改配置状态
+// 简化配置管理
 const quarkConfig = ref({
   apiUrl: "http://127.0.0.1:5000/api/quark/sharepage/save",
   quarkCookie: "",
   typeId: null,
   userId: null,
-  enabled: false, // 添加启用状态
+  enabled: false
 });
 
-// 优化缓存保存函数
-const saveConfigToCache = (config) => {
-  if (!process.client) return;
-
-  try {
-    const cacheData = {
-      data: config,
-      timestamp: Date.now(),
-      version: CACHE_CONFIG.version,
-    };
-    localStorage.setItem(CACHE_CONFIG.key, JSON.stringify(cacheData));
-  } catch (error) {
-    console.error("Error saving config to cache:", error);
-  }
-};
-
-// 优化缓存加载函数
-const loadConfigFromCache = () => {
-  if (!process.client) return false;
-
-  try {
-    const cached = localStorage.getItem(CACHE_CONFIG.key);
-    if (cached) {
-      const { data, timestamp, version } = JSON.parse(cached);
-      // 检查缓存版本和过期时间
-      if (
-        version === CACHE_CONFIG.version &&
-        Date.now() - timestamp < CACHE_CONFIG.expireTime
-      ) {
-        quarkConfig.value = data;
-        return true;
-      }
-      localStorage.removeItem(CACHE_CONFIG.key);
-    }
-  } catch (error) {
-    console.error("Error loading config from cache:", error);
-    if (process.client) {
-      localStorage.removeItem(CACHE_CONFIG.key);
-    }
-  }
-  return false;
-};
-
-// 修改获取配置的函数
+// 获取配置
 const getQuarkConfig = async () => {
-  // 这是配置类型数据，使用缓存策略获取
   const configCacheKey = "quark-config";
 
   try {
-    // 从缓存获取配置
     const cachedConfig = await smartCache.getWithStrategy(configCacheKey);
     if (cachedConfig) {
       quarkConfig.value = cachedConfig;
@@ -971,8 +606,6 @@ const getQuarkConfig = async () => {
         enabled: res.data.enabled,
       };
       quarkConfig.value = config;
-
-      // 保存到缓存，使用config类型
       await smartCache.setWithStrategy(configCacheKey, config, "config");
     }
   } catch (error) {
@@ -980,10 +613,9 @@ const getQuarkConfig = async () => {
   }
 };
 
-// 添加清除缓存的函数（可在配置失效时调用）
+// 清除配置缓存
 const clearConfigCache = () => {
   if (process.client) {
-    // 从本地和Redis都清除
     const configCacheKey = "quark-config";
     smartCache.cache.delete(configCacheKey);
 
@@ -993,38 +625,23 @@ const clearConfigCache = () => {
         source: "quark",
         keyword: "settings",
         data: null,
-        ttl: 1,  // 设置为1秒，相当于立即过期
-      }).catch(err => console.error("Error clearing Redis config cache:", err));
+        ttl: 1
+      }).catch(err => console.error("Redis cache clear error:", err));
     }
   }
 };
 
-// 优化队列状态管理
+// 简化队列状态
 const queueState = reactive({
   successCount: 0,
   isProcessing: false,
-  totalTasks: 0,
-  processedTasks: 0,
   tasks: [],
-  errorCount: 0,
-  lastError: null,
-  isPaused: false, // 添加暂停功能
+  errorCount: 0
 });
 
-// 添加随机延时函数
-const randomDelay = (min, max) => {
-  const delay = Math.floor(Math.random() * (max - min + 1) + min);
-  return new Promise((resolve) => setTimeout(resolve, delay));
-};
-
-// 优化队列处理函数
+// 简化队列处理
 const processQueue = async () => {
-  if (
-    queueState.isProcessing ||
-    queueState.tasks.length === 0 ||
-    queueState.successCount >= 5 ||
-    queueState.isPaused
-  ) {
+  if (queueState.isProcessing || queueState.tasks.length === 0 || queueState.successCount >= 5) {
     return;
   }
 
@@ -1032,7 +649,7 @@ const processQueue = async () => {
 
   try {
     const task = queueState.tasks[0];
-    await randomDelay(2000, 5000);
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     const success = await saveToQuarkAsync(task.link, task.name);
     if (success) {
@@ -1042,39 +659,27 @@ const processQueue = async () => {
     }
 
     queueState.tasks.shift();
-    queueState.processedTasks++;
   } catch (error) {
-    console.error("Error processing queue:", error);
+    console.error("Queue processing error:", error);
     queueState.errorCount++;
-    queueState.lastError = error.message;
   } finally {
     queueState.isProcessing = false;
-    if (
-      queueState.tasks.length > 0 &&
-      queueState.successCount < 5 &&
-      !queueState.isPaused
-    ) {
+    if (queueState.tasks.length > 0 && queueState.successCount < 5) {
       processQueue();
     }
   }
 };
 
-// 修改 saveToQuarkAsync 函数
+// 简化 saveToQuarkAsync 函数
 const saveToQuarkAsync = async (link, name) => {
-  // 如果功能未启用，直接返回
-  if (!quarkConfig.value.enabled) {
+  if (!quarkConfig.value.enabled ||
+    !quarkConfig.value.quarkCookie ||
+    !quarkConfig.value.typeId ||
+    !quarkConfig.value.userId) {
     return false;
   }
 
   try {
-    if (
-      !quarkConfig.value.quarkCookie ||
-      !quarkConfig.value.typeId ||
-      !quarkConfig.value.userId
-    ) {
-      throw new Error("夸克网盘配置不完整，请检查配置");
-    }
-
     const saveRes = await $fetch(quarkConfig.value.apiUrl, {
       method: "POST",
       body: {
@@ -1094,15 +699,13 @@ const saveToQuarkAsync = async (link, name) => {
       return false;
     }
 
-    let shareInfo = saveRes.data.share_info;
+    const shareInfo = saveRes.data.share_info;
     if (shareInfo) {
       await $fetch("/api/quark/post", {
         method: "POST",
         body: {
           name,
-          links: JSON.stringify([
-            { key: Date.now(), value: shareInfo.share_url },
-          ]),
+          links: JSON.stringify([{ key: Date.now(), value: shareInfo.share_url }]),
           typeId: quarkConfig.value.typeId,
           userId: quarkConfig.value.userId,
         },
@@ -1110,10 +713,11 @@ const saveToQuarkAsync = async (link, name) => {
       showSuccess(`${name} 转存成功`);
       return true;
     }
+
     showError(`${name} 转存失败`);
     return false;
   } catch (err) {
-    console.error("Error saving quark file:", err);
+    console.error("保存夸克文件失败:", err);
     if (err.status === 401 || err.status === 403) {
       clearConfigCache();
       showError("认证失败，请重新配置夸克网盘");
@@ -1124,38 +728,29 @@ const saveToQuarkAsync = async (link, name) => {
   }
 };
 
-// 记录搜索关键词
-const recordSearch = async (keyword) => {
-  try {
-    await $fetch("/api/search/record", {
-      method: "POST",
-      body: {
-        keyword,
-      },
-    });
-  } catch (error) {
-    console.error("记录搜索失败:", error);
-  }
-};
-
+// 处理搜索函数
 const handleSearch = async () => {
   if (!keyword.value || keyword.value.trim() === "") {
-    // 如果关键词为空，清空结果并返回
     sources.value = [];
     return;
   }
 
   // 记录搜索
-  recordSearch(keyword.value);
+  try {
+    await $fetch("/api/search/record", {
+      method: "POST",
+      body: { keyword: keyword.value },
+    });
+  } catch (error) {
+    console.error("记录搜索失败:", error);
+  }
 
-  // Set search performed to true when search starts
+  // 更新搜索状态
   searchPerformed.value = true;
-
-  // 重置数据和状态
   sources.value = [];
   queue.length = 0;
   running = 0;
-  window._needProcessQuarkLinks = false; // 重置标志
+  window._needProcessQuarkLinks = false;
 
   // 重置加载进度
   loadingProgress.value = {
@@ -1164,33 +759,28 @@ const handleSearch = async () => {
     isLoading: true,
   };
 
-  // 先处理 aipan-search
-  const aipanEndpoint = sourcesApiEndpoints.find(
-    (item) => item.api === "/api/sources/aipan-search"
-  );
-  const otherEndpoints = sourcesApiEndpoints.filter(
-    (item) => item.api !== "/api/sources/aipan-search"
-  );
+  // 优先处理 aipan-search
+  const aipanEndpoint = sourcesApiEndpoints.find(item => item.api === "/api/sources/aipan-search");
+  const otherEndpoints = sourcesApiEndpoints.filter(item => item.api !== "/api/sources/aipan-search");
 
   if (aipanEndpoint) {
     await handleSingleSearch(aipanEndpoint);
   }
 
-  // 然后处理其他接口
-  otherEndpoints.forEach((item) => {
+  // 处理其他接口
+  otherEndpoints.forEach(item => {
     handleSingleSearch(item);
   });
 };
 
-// 单个搜索处理函数 - 使用更新后的缓存策略
+// 处理单个搜索
 const handleSingleSearch = async (item) => {
-  // 改进缓存键，确保关键词正确编码并包含在缓存键中
   const encodedKeyword = encodeURIComponent(keyword.value.trim());
   const cacheKey = `${item.api}-${encodedKeyword}`;
 
   const task = async () => {
     try {
-      // 使用新的Redis优先缓存策略获取数据
+      // 尝试从缓存获取
       const cachedData = await smartCache.getWithStrategy(cacheKey);
 
       if (cachedData) {
@@ -1206,16 +796,13 @@ const handleSingleSearch = async (item) => {
         return;
       }
 
-      // 缓存未命中，从API获取新数据
+      // 缓存未命中，从API获取
       const res = await fetchWithRetry(item.api, {
         method: "POST",
-        body: {
-          name: keyword.value,
-        },
+        body: { name: keyword.value },
       });
 
       if (res.list && Array.isArray(res.list)) {
-        // 将结果保存到缓存中，使用新的缓存策略
         await smartCache.setWithStrategy(cacheKey, res.list, "search");
 
         if (item.api === "/api/sources/aipan-search") {
@@ -1224,31 +811,18 @@ const handleSingleSearch = async (item) => {
             window._needProcessQuarkLinks = true;
           }
         } else if (window._needProcessQuarkLinks && quarkConfig.value.enabled) {
-          // 先显示搜索结果
           sources.value.push(...res.list);
 
           // 重置队列状态
-          Object.assign(queueState, {
-            successCount: 0,
-            isProcessing: false,
-            totalTasks: 0,
-            processedTasks: 0,
-            tasks: [],
-            errorCount: 0,
-            lastError: null,
-          });
+          queueState.successCount = 0;
+          queueState.isProcessing = false;
+          queueState.tasks = [];
+          queueState.errorCount = 0;
 
-          // 获取所有夸克链接并添加到队列
-          const quarkLinks = res.list.filter((result) =>
-            result.links.some((link) => link.service === "QUARK")
-          );
-
-          // 将所有任务添加到队列
-          quarkLinks.forEach((result) => {
-            const links = result.links.filter(
-              (link) => link.service === "QUARK"
-            );
-            links.forEach((link) => {
+          // 添加夸克链接到队列
+          res.list.forEach(result => {
+            const links = result.links.filter(link => link.service === "QUARK");
+            links.forEach(link => {
               queueState.tasks.push({
                 link: link.link,
                 name: result.name,
@@ -1256,16 +830,14 @@ const handleSingleSearch = async (item) => {
             });
           });
 
-          queueState.totalTasks = queueState.tasks.length;
-
-          // 开始处理队列
+          // 处理队列
           processQueue();
         } else {
           sources.value.push(...res.list);
         }
       }
     } catch (err) {
-      console.error(`Error fetching from ${item.api}:`, err);
+      console.error(`搜索失败 ${item.api}:`, err);
     } finally {
       loadingProgress.value.completed++;
       if (loadingProgress.value.completed >= loadingProgress.value.total) {
@@ -1279,40 +851,22 @@ const handleSingleSearch = async (item) => {
   runQueue();
 };
 
-// 搜索VOD内容
-const searchVod = async () => {
-  if (!keyword.value || keyword.value.trim() === "") {
-    // 如果关键词为空，清空结果并返回
-    vodData.value = [];
-    return;
-  }
-
-  // 重置数据
-  vodData.value = [];
-
-  // 对每个视频API进行处理
-  for (const vodApi of vodApiList.value) {
-    await handleSingleVodSearch(vodApi);
-  }
-};
-
-// VOD搜索的单个处理函数 - 使用更新后的缓存策略
+// VOD搜索处理
 const handleSingleVodSearch = async (vodApi) => {
-  // 改进缓存键，确保关键词正确编码并包含在缓存键中
   const encodedKeyword = encodeURIComponent(keyword.value.trim());
   const cacheKey = `vod-${vodApi.api}-${encodedKeyword}`;
   loadingStatus.value.set(vodApi.api, true);
 
   try {
-    // 使用新的Redis优先缓存策略获取数据
+    // 尝试从缓存获取
     const cachedData = await smartCache.getWithStrategy(cacheKey);
-
     if (cachedData) {
       vodData.value = [...vodData.value, ...cachedData];
       loadingStatus.value.set(vodApi.api, false);
       return;
     }
 
+    // 从API获取
     const res = await fetchWithRetry("/api/vod/search", {
       method: "get",
       query: {
@@ -1324,33 +878,31 @@ const handleSingleVodSearch = async (vodApi) => {
     });
 
     if (res.code !== 500 && res.list && res.list.length) {
-      const processedData = res.list.map((item) =>
-        Object.assign(
-          { playUrl: vodApi.playUrl, sourceName: vodApi.name },
-          item
-        )
+      const processedData = res.list.map(item =>
+        Object.assign({ playUrl: vodApi.playUrl, sourceName: vodApi.name }, item)
       );
-      // 将结果保存到缓存中，使用新的缓存策略
       await smartCache.setWithStrategy(cacheKey, processedData, "vod");
       vodData.value = [...vodData.value, ...processedData];
     }
   } catch (err) {
-    console.error(`Error fetching VOD from ${vodApi.api}:`, err);
+    console.error(`VOD获取失败: ${vodApi.api}`, err);
   } finally {
     loadingStatus.value.set(vodApi.api, false);
   }
 };
 
+// 搜索VOD内容
 const searchByVod = async () => {
-  // Set search performed to true when VOD search starts
+  if (!keyword.value || keyword.value.trim() === "") {
+    vodData.value = [];
+    return;
+  }
+
   searchPerformed.value = true;
-
   vodData.value = [];
-  vodConfigSources.value.forEach((vodApi) => {
-    loadingStatus.value.set(vodApi.api, false);
-  });
 
-  vodConfigSources.value.forEach((vodApi) => {
+  vodConfigSources.value.forEach(vodApi => {
+    loadingStatus.value.set(vodApi.api, false);
     handleSingleVodSearch(vodApi);
   });
 };
@@ -1426,99 +978,64 @@ const handleIframeError = () => {
 </script>
 
 <style scoped>
-/* Enhanced button styles */
+/* Button styles */
 .el-button {
   @apply font-medium border-none shadow-sm hover:shadow-md relative overflow-hidden;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
 .el-button:hover {
   transform: translateY(-1px);
 }
 
-.el-button::after {
-  content: "";
-  @apply absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full;
-  transition: transform 0.6s ease;
-}
-
-.el-button:hover::after {
-  transform: translateX(100%);
-}
-
-/* Hide scrollbar but allow scrolling */
+/* Hide scrollbar */
 .hide-scrollbar {
   -ms-overflow-style: none;
-  /* IE and Edge */
   scrollbar-width: none;
-  /* Firefox */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
-  /* Chrome, Safari and Opera */
 }
 
-/* Enhanced loading animations */
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
+/* Progress bar */
 :deep(.el-progress-bar__inner) {
-  @apply bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 transition-all duration-300;
-  background-size: 200% 100%;
-  animation: gradient 2s ease infinite;
+  @apply bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500;
 }
 
 :deep(.el-progress-bar__outer) {
   @apply bg-gray-100/50 dark:bg-gray-700/50 rounded-full overflow-hidden;
-  backdrop-filter: blur(4px);
 }
 
-/* Enhanced transitions */
+/* Transitions */
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-  transform: translateY(10px) scale(0.98);
+  transform: translateY(10px);
 }
 
-/* Custom scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
   @apply w-1.5 h-1.5;
 }
 
-::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
 ::-webkit-scrollbar-thumb {
-  @apply bg-gradient-to-b from-purple-400/40 to-blue-400/40 rounded-full hover:from-purple-500/50 hover:to-blue-500/50 transition-colors duration-200;
+  @apply bg-gradient-to-b from-purple-400/40 to-blue-400/40 rounded-full;
 }
 
-/* Enhanced shimmer effect */
+/* Animations */
 @keyframes shimmer {
-  0% {
-    transform: translateX(-100%) skewX(-15deg);
+  from {
+    transform: translateX(-100%);
   }
 
-  100% {
-    transform: translateX(100%) skewX(-15deg);
+  to {
+    transform: translateX(100%);
   }
 }
 
@@ -1526,7 +1043,10 @@ const handleIframeError = () => {
   animation: shimmer 2s infinite;
 }
 
-/* Pulse animation with smoother transition */
+.animate-pulse {
+  animation: pulse 2s ease infinite;
+}
+
 @keyframes pulse {
 
   0%,
@@ -1537,34 +1057,5 @@ const handleIframeError = () => {
   50% {
     opacity: 0.5;
   }
-}
-
-.animate-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Enhanced hover effects */
-.hover\:shadow-lg {
-  --tw-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 10px 15px -3px var(--tw-shadow-color),
-    0 4px 6px -4px var(--tw-shadow-color);
-  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.dark .hover\:shadow-lg {
-  --tw-shadow-color: rgba(0, 0, 0, 0.25);
-}
-
-/* Card transitions */
-.scale-enter-active,
-.scale-leave-active {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.scale-enter-from,
-.scale-leave-to {
-  opacity: 0;
-  transform: scale(0.95) translateY(10px);
 }
 </style>
