@@ -96,7 +96,6 @@ export default defineNuxtConfig({
 
   // build modules
   modules: [
-    '@nuxt/image',
     '@element-plus/nuxt',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/device',
@@ -124,25 +123,6 @@ export default defineNuxtConfig({
     // 语言文件目录
     langDir: 'locales'
   },
-
-  image: {
-    provider: 'ipx',
-    dir: 'public',
-    screens: {
-      xs: 320,
-      sm: 640,
-      md: 768,
-      lg: 1024,
-      xl: 1280,
-      xxl: 1536,
-      '2xl': 1536,
-    },
-    domains: ['img1.doubanio.com', 'img2.doubanio.com', 'img3.doubanio.com', 'img9.doubanio.com'],
-    alias: {
-      douban: 'https://img1.doubanio.com',
-    },
-  },
-
   css: ['~/assets/css/main.css'],
 
   colorMode: {
