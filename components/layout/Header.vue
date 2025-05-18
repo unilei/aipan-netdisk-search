@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useColorMode } from "#imports";
 import { useUserStore } from "~/stores/user";
 import NotificationIcon from "~/components/NotificationIcon.vue";
+import { useI18n } from "vue-i18n";
 
 const colorMode = useColorMode();
 const router = useRouter();
@@ -12,6 +13,7 @@ const userMenuRef = ref(null);
 const isHeaderFixed = ref(false);
 const headerHeight = ref(0);
 const headerRef = ref(null);
+const { t } = useI18n();
 
 const goHome = () => {
   router.push("/");
@@ -33,7 +35,7 @@ const handleLogout = () => {
 // 导航菜单
 const navItems = [
   {
-    name: "音乐",
+    name: "header.navItems.music",
     path: "/music",
     icon: {
       light: "fa-solid fa-music",
@@ -41,7 +43,7 @@ const navItems = [
     },
   },
   {
-    name: "博客",
+    name: "header.navItems.blog",
     path: "/blog",
     icon: {
       light: "fa-solid fa-blog",
@@ -49,7 +51,7 @@ const navItems = [
     },
   },
   {
-    name: "论坛",
+    name: "header.navItems.forum",
     path: "/forum",
     icon: {
       light: "fa-solid fa-comments",
@@ -57,7 +59,7 @@ const navItems = [
     },
   },
   {
-    name: "聊天",
+    name: "header.navItems.chat",
     path: "/chat",
     icon: {
       light: "fa-solid fa-message",
@@ -65,7 +67,7 @@ const navItems = [
     },
   },
   {
-    name: "游戏",
+    name: "header.navItems.games",
     path: "/games",
     icon: {
       light: "fa-solid fa-gamepad",
@@ -121,23 +123,15 @@ onBeforeUnmount(() => {
           <!-- Logo 区域 -->
           <div
             class="flex cursor-pointer items-center justify-center gap-2 md:gap-2 hover:scale-105 transition-transform duration-300"
-            @click="goHome()"
-          >
-            <img
-              class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90"
-              src="@/assets/my-logo.png"
-              alt="logo"
-            />
+            @click="goHome()">
+            <img class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
             <div class="text-left">
               <h1
-                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
-              >
+                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                 AIPAN.ME
               </h1>
-              <p
-                class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400"
-              >
-                爱盼 - 资源随心，娱乐无限
+              <p class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400">
+                {{ $t('subtitle') }}
               </p>
             </div>
           </div>
@@ -147,21 +141,13 @@ onBeforeUnmount(() => {
             <div class="flex items-center space-x-4">
               <!-- 导航菜单 -->
               <nav class="hidden sm:flex items-center space-x-4">
-                <nuxt-link
-                  v-for="item in navItems"
-                  :key="item.path"
-                  :to="item.path"
-                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
-                >
-                  <i
-                    :class="
-                      colorMode.preference === 'light'
-                        ? item.icon.light
-                        : item.icon.dark
-                    "
-                    class="mr-2 transition-opacity duration-200 dark:opacity-90"
-                  ></i>
-                  {{ item.name }}
+                <nuxt-link v-for="item in navItems" :key="item.path" :to="item.path"
+                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80">
+                  <i :class="colorMode.preference === 'light'
+                      ? item.icon.light
+                      : item.icon.dark
+                    " class="mr-2 transition-opacity duration-200 dark:opacity-90"></i>
+                  {{ $t(item.name) }}
                 </nuxt-link>
               </nav>
               <!-- 主题切换按钮 -->
@@ -169,17 +155,11 @@ onBeforeUnmount(() => {
                 class="p-2 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
                 @click="
                   colorMode.preference =
-                    colorMode.preference === 'dark' ? 'light' : 'dark'
-                "
-              >
-                <i
-                  v-if="colorMode.preference === 'dark'"
-                  class="fa-solid fa-sun transition-transform duration-300 hover:rotate-90"
-                ></i>
-                <i
-                  v-else
-                  class="fa-solid fa-moon transition-transform duration-300 hover:rotate-90"
-                ></i>
+                  colorMode.preference === 'dark' ? 'light' : 'dark'
+                  ">
+                <i v-if="colorMode.preference === 'dark'"
+                  class="fa-solid fa-sun transition-transform duration-300 hover:rotate-90"></i>
+                <i v-else class="fa-solid fa-moon transition-transform duration-300 hover:rotate-90"></i>
               </button>
               <!-- 通知组件 -->
               <NotificationIcon v-if="userStore.loggedIn" />
@@ -187,71 +167,49 @@ onBeforeUnmount(() => {
               <!-- 登录按钮 / 用户菜单 -->
               <div class="relative" ref="userMenuRef">
                 <!-- 未登录状态显示登录按钮 -->
-                <nuxt-link
-                  v-if="!userStore.loggedIn"
-                  to="/login"
-                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
-                >
+                <nuxt-link v-if="!userStore.loggedIn" to="/login"
+                  class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80">
                   <i class="fa-solid fa-user mr-2"></i>
-                  登录
+                  {{ $t('header.user.login') }}
                 </nuxt-link>
 
                 <!-- 已登录状态显示用户头像和下拉菜单 -->
                 <div v-else class="flex items-center">
-                  <div
-                    class="cursor-pointer flex items-center group"
-                    @click.stop="dropdownVisible = !dropdownVisible"
-                  >
+                  <div class="cursor-pointer flex items-center group" @click.stop="dropdownVisible = !dropdownVisible">
                     <div
-                      class="w-8 h-8 rounded-full overflow-hidden border-2 border-transparent group-hover:border-blue-400 transition-all"
-                    >
-                      <img
-                        :src="userStore.userAvatar"
-                        class="w-full h-full object-cover"
-                        alt="用户头像"
-                      />
+                      class="w-8 h-8 rounded-full overflow-hidden border-2 border-transparent group-hover:border-blue-400 transition-all">
+                      <img :src="userStore.userAvatar" class="w-full h-full object-cover" alt="用户头像" />
                     </div>
                     <i
-                      class="fa-solid fa-chevron-down ml-1 text-xs text-slate-600 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"
-                    ></i>
+                      class="fa-solid fa-chevron-down ml-1 text-xs text-slate-600 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"></i>
                   </div>
 
                   <!-- 下拉菜单 -->
-                  <div
-                    v-show="dropdownVisible"
-                    class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-[9999] border border-gray-100 dark:border-gray-700 overflow-hidden"
-                  >
-                    <nuxt-link
-                      v-if="userStore.isAdmin"
-                      to="/admin/dashboard"
+                  <div v-show="dropdownVisible"
+                    class="absolute top-full right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-[9999] border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <nuxt-link v-if="userStore.isAdmin" to="/admin/dashboard"
                       class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      @click="dropdownVisible = false"
-                    >
+                      @click="dropdownVisible = false">
                       <i class="fa-solid fa-gauge-high mr-2 text-blue-500"></i>
-                      管理后台
+                      {{ $t('header.user.admin') }}
                     </nuxt-link>
-                    <nuxt-link
-                      to="/user/dashboard"
+                    <nuxt-link to="/user/dashboard"
                       class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      @click="dropdownVisible = false"
-                    >
+                      @click="dropdownVisible = false">
                       <i class="fa-solid fa-user mr-2 text-green-500"></i>
-                      个人中心
+                      {{ $t('header.user.dashboard') }}
                     </nuxt-link>
-                    <nuxt-link
-                      to="/user/profile"
+                    <nuxt-link to="/user/profile"
                       class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      @click="dropdownVisible = false"
-                    >
+                      @click="dropdownVisible = false">
                       <i class="fa-solid fa-gear mr-2 text-purple-500"></i>
-                      账号设置
+                      {{ $t('header.user.profile') }}
                     </nuxt-link>
                     <div
                       class="flex items-center px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      @click="handleLogout"
-                    >
+                      @click="handleLogout">
                       <i class="fa-solid fa-right-from-bracket mr-2"></i>
-                      退出登录
+                      {{ $t('header.user.logout') }}
                     </div>
                   </div>
                 </div>
