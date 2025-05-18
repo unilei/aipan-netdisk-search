@@ -105,7 +105,25 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/sitemap',
+    '@nuxtjs/i18n',
   ],
+
+  // i18n 配置 - 简化版本
+  i18n: {
+    // 禁用浏览器语言自动检测和重定向
+    detectBrowserLanguage: false,
+    // 支持的语言列表
+    locales: [
+      { code: 'zh', iso: 'zh-CN', name: '中文', file: 'zh.json' },
+      { code: 'en', iso: 'en-US', name: 'English', file: 'en.json' }
+    ],
+    // 默认语言
+    defaultLocale: 'zh',
+    // 路由策略: 除了默认语言外其他语言添加前缀
+    strategy: 'prefix_except_default',
+    // 语言文件目录
+    langDir: 'locales'
+  },
 
   image: {
     provider: 'ipx',
