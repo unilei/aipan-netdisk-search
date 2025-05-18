@@ -17,5 +17,39 @@
     "switch": "切换语言",
     "zh": "中文",
     "en": "English"
+  },
+  "header": {
+    "navItems": {
+      "music": "音乐",
+      "blog": "博客",
+      "forum": "论坛",
+      "chat": "聊天",
+      "games": "游戏",
+      "home": "首页",
+      "tv": "电视TV",
+      "tvbox": "TVbox接口"
+    },
+    "user": {
+      "login": "登录",
+      "logout": "退出登录",
+      "admin": "管理后台",
+      "dashboard": "个人中心",
+      "profile": "账号设置"
+    },
+    "about": {
+      "disclaimer": "免责声明",
+      "about": "关于网站",
+      "copyright": "侵权投诉",
+      "about_title": "关于"
+    }
+  },
+  "footer": {
+    "copyright": "© 2025 AIPAN.ME 爱盼 - 资源随心，娱乐无限",
+    "links": {
+      "about": "关于网站",
+      "disclaimer": "免责声明",
+      "copyright": "侵权投诉"
+    },
+    "statement": "声明：本站内容皆来自网络公开资源。本站不储存、复制、传播任何文件，不做任何盈利，仅作个人公益学习，请勿非法&商业传播。"
   }
 } 

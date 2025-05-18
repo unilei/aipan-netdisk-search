@@ -17,5 +17,39 @@
     "switch": "Switch Language",
     "zh": "中文",
     "en": "English"
+  },
+  "header": {
+    "navItems": {
+      "music": "Music",
+      "blog": "Blog",
+      "forum": "Forum",
+      "chat": "Chat",
+      "games": "Games",
+      "home": "Home",
+      "tv": "TV",
+      "tvbox": "TVbox API"
+    },
+    "user": {
+      "login": "Login",
+      "logout": "Logout",
+      "admin": "Admin",
+      "dashboard": "Dashboard",
+      "profile": "Profile"
+    },
+    "about": {
+      "disclaimer": "Disclaimer",
+      "about": "About",
+      "copyright": "Copyright",
+      "about_title": "About"
+    }
+  },
+  "footer": {
+    "copyright": "© 2025 AIPAN.ME - Resources at Will, Unlimited Entertainment",
+    "links": {
+      "about": "About Us",
+      "disclaimer": "Disclaimer",
+      "copyright": "Copyright"
+    },
+    "statement": "Disclaimer: All content on this site comes from public online resources. This site does not store, copy, or transmit any files, does not make any profit, and is only for personal non-profit learning. Please do not distribute illegally or commercially."
   }
 } 

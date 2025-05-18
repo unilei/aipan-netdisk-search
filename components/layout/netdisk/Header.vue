@@ -3,7 +3,9 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useColorMode } from "#imports";
 import { useUserStore } from "~/stores/user";
 import NotificationIcon from "~/components/NotificationIcon.vue";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const colorMode = useColorMode();
 const isMenuOpen = ref(false);
 const userStore = useUserStore();
@@ -51,19 +53,19 @@ onBeforeUnmount(() => {
       <!-- Desktop Navigation -->
       <div class="hidden md:flex flex-row items-center gap-4">
         <nuxt-link to="/" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-house"></i> 首页
+          <i class="fa-solid fa-house"></i> {{ $t('header.navItems.home') }}
         </nuxt-link>
         <nuxt-link to="/blog" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-book"></i> 博客
+          <i class="fa-solid fa-book"></i> {{ $t('header.navItems.blog') }}
         </nuxt-link>
         <nuxt-link to="/forum" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-comments"></i> 论坛
+          <i class="fa-solid fa-comments"></i> {{ $t('header.navItems.forum') }}
         </nuxt-link>
         <nuxt-link to="/tv" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-tv"></i> 电视TV
+          <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tv') }}
         </nuxt-link>
         <nuxt-link to="/tvbox" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-tv"></i> TVbox接口
+          <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tvbox') }}
         </nuxt-link>
 
         <!-- 关于网站下拉菜单 -->
@@ -71,7 +73,7 @@ onBeforeUnmount(() => {
           <div class="flex items-center cursor-pointer group"
             @click.stop="aboutDropdownVisible = !aboutDropdownVisible">
             <span class="text-sm text-slate-600 dark:text-white flex items-center">
-              <i class="fa-solid fa-circle-info mr-1"></i> 免责声明
+              <i class="fa-solid fa-circle-info mr-1"></i> {{ $t('header.about.disclaimer') }}
               <i
                 class="fa-solid fa-chevron-down text-xs group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"></i>
             </span>
@@ -83,17 +85,17 @@ onBeforeUnmount(() => {
             <nuxt-link to="/about"
               class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               @click="aboutDropdownVisible = false">
-              <i class="fa-solid fa-circle-info mr-2"></i> 关于网站
+              <i class="fa-solid fa-circle-info mr-2"></i> {{ $t('header.about.about') }}
             </nuxt-link>
             <nuxt-link to="/disclaimer"
               class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               @click="aboutDropdownVisible = false">
-              <i class="fa-solid fa-shield mr-2"></i> 免责声明
+              <i class="fa-solid fa-shield mr-2"></i> {{ $t('header.about.disclaimer') }}
             </nuxt-link>
             <nuxt-link to="/copyright"
               class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               @click="aboutDropdownVisible = false">
-              <i class="fa-solid fa-copyright mr-2"></i> 侵权投诉
+              <i class="fa-solid fa-copyright mr-2"></i> {{ $t('header.about.copyright') }}
             </nuxt-link>
           </div>
         </div>
@@ -105,48 +107,48 @@ onBeforeUnmount(() => {
           <nuxt-link to="/"
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             @click="isMenuOpen = false">
-            <i class="fa-solid fa-house"></i> 首页
+            <i class="fa-solid fa-house"></i> {{ $t('header.navItems.home') }}
           </nuxt-link>
           <nuxt-link to="/blog"
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             @click="isMenuOpen = false">
-            <i class="fa-solid fa-book"></i> 我的博客
+            <i class="fa-solid fa-book"></i> {{ $t('header.navItems.blog') }}
           </nuxt-link>
           <nuxt-link to="/forum"
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             @click="isMenuOpen = false">
-            <i class="fa-solid fa-comments"></i> 论坛
+            <i class="fa-solid fa-comments"></i> {{ $t('header.navItems.forum') }}
           </nuxt-link>
           <nuxt-link to="/tv"
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             @click="isMenuOpen = false">
-            <i class="fa-solid fa-tv"></i> 电视TV
+            <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tv') }}
           </nuxt-link>
           <nuxt-link to="/tvbox"
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
             @click="isMenuOpen = false">
-            <i class="fa-solid fa-tv"></i> TVbox接口
+            <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tvbox') }}
           </nuxt-link>
 
           <!-- 移动端关于网站分组标题 -->
           <div class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-750">
-            <i class="fa-solid fa-circle-info"></i> 关于
+            <i class="fa-solid fa-circle-info"></i> {{ $t('header.about.about_title') }}
           </div>
 
           <nuxt-link to="/about"
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
             @click="isMenuOpen = false">
-            <i class="fa-solid fa-circle-info"></i> 关于网站
+            <i class="fa-solid fa-circle-info"></i> {{ $t('header.about.about') }}
           </nuxt-link>
           <nuxt-link to="/disclaimer"
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
             @click="isMenuOpen = false">
-            <i class="fa-solid fa-shield"></i> 免责声明
+            <i class="fa-solid fa-shield"></i> {{ $t('header.about.disclaimer') }}
           </nuxt-link>
           <nuxt-link to="/copyright"
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
             @click="isMenuOpen = false">
-            <i class="fa-solid fa-copyright"></i> 侵权投诉
+            <i class="fa-solid fa-copyright"></i> {{ $t('header.about.copyright') }}
           </nuxt-link>
         </div>
       </div>
@@ -174,7 +176,7 @@ onBeforeUnmount(() => {
               <button
                 class="text-gray-600 hover:from-blue-600 hover:to-purple-600 text-sm py-1.5 px-4 rounded-full transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
                 <i class="fa-solid fa-user text-xs"></i>
-                <span>登录</span>
+                <span>{{ $t('header.user.login') }}</span>
               </button>
             </nuxt-link>
 
@@ -196,22 +198,22 @@ onBeforeUnmount(() => {
                   class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   @click="dropdownVisible = false">
                   <i class="fa-solid fa-gauge-high mr-2 text-blue-500"></i>
-                  管理后台
+                  {{ $t('header.user.admin') }}
                 </nuxt-link>
                 <nuxt-link to="/user/dashboard"
                   class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   @click="dropdownVisible = false">
-                  <i class="fa-solid fa-user mr-2 text-green-500"></i> 个人中心
+                  <i class="fa-solid fa-user mr-2 text-green-500"></i> {{ $t('header.user.dashboard') }}
                 </nuxt-link>
                 <nuxt-link to="/user/profile"
                   class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   @click="dropdownVisible = false">
-                  <i class="fa-solid fa-gear mr-2 text-purple-500"></i> 账号设置
+                  <i class="fa-solid fa-gear mr-2 text-purple-500"></i> {{ $t('header.user.profile') }}
                 </nuxt-link>
                 <div
                   class="flex items-center px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   @click="handleLogout">
-                  <i class="fa-solid fa-right-from-bracket mr-2"></i> 退出登录
+                  <i class="fa-solid fa-right-from-bracket mr-2"></i> {{ $t('header.user.logout') }}
                 </div>
               </div>
             </div>
