@@ -5,7 +5,7 @@ import { useUserStore } from "~/stores/user";
 import NotificationIcon from "~/components/NotificationIcon.vue";
 import { useI18n } from "vue-i18n";
 
-const { t } = useI18n();
+const { t, locale, locales, setLocale } = useI18n();
 const colorMode = useColorMode();
 const isMenuOpen = ref(false);
 const userStore = useUserStore();
@@ -13,6 +13,16 @@ const dropdownVisible = ref(false);
 const aboutDropdownVisible = ref(false);
 const userMenuRef = ref(null);
 const aboutMenuRef = ref(null);
+
+// 获取可用的语言列表（当前语言除外）
+const availableLocales = computed(() => {
+  return (locales.value).filter(i => i.code !== locale.value);
+});
+
+// 切换语言功能
+const switchLanguage = (localeCode) => {
+  setLocale(localeCode);
+};
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
@@ -150,11 +160,32 @@ onBeforeUnmount(() => {
             @click="isMenuOpen = false">
             <i class="fa-solid fa-copyright"></i> {{ $t('header.about.copyright') }}
           </nuxt-link>
+
+          <!-- 移动端语言切换按钮 -->
+          <div class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-750">
+            <i class="fa-solid fa-language"></i> {{ $t('language.switch') }}
+          </div>
+          <div class="px-4 py-3 flex gap-2">
+            <button v-for="loc in availableLocales" :key="loc.code"
+              class="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-300"
+              @click="switchLanguage(loc.code); isMenuOpen = false">
+              {{ $t(`language.${loc.code}`) }}
+            </button>
+          </div>
         </div>
       </div>
 
       <div class="flex flex-row items-center gap-4">
         <client-only>
+          <!-- 语言切换按钮 (仅桌面显示) -->
+          <div class="hidden md:flex items-center mr-2">
+            <button v-for="loc in availableLocales" :key="loc.code"
+              class="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+              @click="switchLanguage(loc.code)">
+              {{ $t(`language.${loc.code}`) }}
+            </button>
+          </div>
+
           <el-button v-if="colorMode.preference === 'dark'" link @click="colorMode.preference = 'light'">
             <i class="fa-solid fa-sun text-base"></i>
           </el-button>

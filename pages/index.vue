@@ -170,15 +170,6 @@ watch(
           </p>
         </div>
       </div>
-
-      <!-- 添加语言切换按钮 -->
-      <div class="flex items-center justify-center gap-2">
-        <button v-for="loc in availableLocales" :key="loc.code"
-          class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
-          @click="switchLanguage(loc.code)">
-          {{ $t(`language.${loc.code}`) }}
-        </button>
-      </div>
     </div>
     <div class="max-w-[1240px] mx-auto mt-[20px] md:mt-[30px] px-4 md:px-0">
       <div class="w-full md:w-[700px] mx-auto">

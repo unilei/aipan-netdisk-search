@@ -51,5 +51,10 @@
       "copyright": "Copyright"
     },
     "statement": "Disclaimer: All content on this site comes from public online resources. This site does not store, copy, or transmit any files, does not make any profit, and is only for personal non-profit learning. Please do not distribute illegally or commercially."
+  },
+  "douban": {
+    "movie_count": "movies",
+    "no_image": "No image",
+    "loading": "Loading"
   }
 } 
