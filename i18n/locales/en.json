@@ -1,0 +1,21 @@
+{
+  "welcome": "Welcome to AIPAN",
+  "search": "Search",
+  "app_title": "AIPAN - Unlimited Resources & Entertainment",
+  "subtitle": "Resources at Will, Unlimited Entertainment",
+  "search_placeholder": "Enter keywords to search",
+  "sensitive_word_alert": "Please do not enter sensitive words",
+  "meta": {
+    "title": "AIPAN.ME - Cloud Drive Search Engine",
+    "description": "AIPAN Cloud Drive Search is a powerful search engine providing massive movies, music, ebooks and other resources. Find what you need quickly, precisely and conveniently.",
+    "keywords": "cloud drive search,resource search,movie resources,music resources,ebooks,online search"
+  },
+  "broadcast": {
+    "message": "Bookmark our site: https://link0.me/aipan"
+  },
+  "language": {
+    "switch": "Switch Language",
+    "zh": "中文",
+    "en": "English"
+  }
+} 
