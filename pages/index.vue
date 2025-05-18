@@ -50,7 +50,7 @@ useHead({
       property: "og:description",
       content: t('meta.description'),
     },
-    { property: "og:image", content: `/api/og-image?t=${Date.now()}` },
+    { property: "og:image", content: `/api/og-image` },
     // Twitter
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: t('meta.title') },
@@ -58,7 +58,7 @@ useHead({
       name: "twitter:description",
       content: t('meta.description'),
     },
-    { name: "twitter:image", content: `/api/og-image?t=${Date.now()}` },
+    { name: "twitter:image", content: `/api/og-image` },
     // 其他重要的meta标签
     { name: "robots", content: "index,follow" },
     { name: "author", content: "AIPAN.ME" },
@@ -118,6 +118,30 @@ onBeforeMount(() => {
   }
 });
 
+// 确保服务器端和客户端一致的初始化
+const initCategory = () => {
+  if (process.client && categories.value && categories.value.length > 0) {
+    activeCategory.value = activeCategoryCookie.value || categories.value[0].id;
+  }
+};
+
+// 确保在客户端再次初始化
+onMounted(async () => {
+  // 确保只在客户端执行
+  if (process.client) {
+    // 初始化分类
+    initCategory();
+
+    // 加载豆瓣数据
+    await doubanStore.getDoubanData();
+    doubanData.value = doubanStore.doubanData;
+    doubanLoadedFromRedis.value = true;
+
+    // 在页面加载完成后，将滚动位置重置到顶部
+    window.scrollTo(0, 0);
+  }
+});
+
 // 监听activeCategory变化，只保存到cookie
 watch(activeCategory, (newValue) => {
   activeCategoryCookie.value = newValue;
@@ -135,100 +159,101 @@ watch(locale, () => {
   }
 });
 
-onMounted(async () => {
-  // 加载豆瓣数据
-  await doubanStore.getDoubanData();
-  doubanData.value = doubanStore.doubanData;
-  doubanLoadedFromRedis.value = true;
-
-  // 在页面加载完成后，将滚动位置重置到顶部
-  window.scrollTo(0, 0);
-});
-
 // 监听路由变化
 watch(
   () => router.currentRoute.value,
   () => {
     // 当路由发生变化时，将滚动位置重置到顶部
-    window.scrollTo(0, 0);
+    if (process.client) {
+      window.scrollTo(0, 0);
+    }
   }
 );
 </script>
 
 <template>
-  <div class="custom-bg py-[60px] min-h-[calc(100vh-130px)] transition-colors duration-300">
-    <div class="flex flex-col items-center justify-center gap-4 md:mt-[60px] mt-[30px] animate-fadeIn">
-      <div class="flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform duration-300">
-        <img class="w-16 h-16 md:w-24 md:h-24 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
-        <div class="text-center">
-          <h1
-            class="text-3xl md:text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-            AIPAN.ME
-          </h1>
-          <p class="text-gray-600 text-xs md:text-sm dark:text-gray-400 mt-1 md:mt-2">
-            {{ $t('subtitle') }}
-          </p>
+  <div>
+    <div class="custom-bg py-[60px] min-h-[calc(100vh-130px)] transition-colors duration-300">
+      <div class="flex flex-col items-center justify-center gap-4 md:mt-[60px] mt-[30px] animate-fadeIn">
+        <div class="flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform duration-300">
+          <img class="w-16 h-16 md:w-24 md:h-24 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
+          <div class="text-center">
+            <h1
+              class="text-3xl md:text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+              AIPAN.ME
+            </h1>
+            <p class="text-gray-600 text-xs md:text-sm dark:text-gray-400 mt-1 md:mt-2">
+              {{ $t('subtitle') }}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="max-w-[1240px] mx-auto mt-[20px] md:mt-[30px] px-4 md:px-0">
-      <div class="w-full md:w-[700px] mx-auto">
-        <div class="relative group">
-          <input
-            class="w-full pl-6 pr-[70px] py-4 rounded-full text-sm bg-white dark:bg-gray-800/80 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:shadow-gray-900/30 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-            v-model="searchKeyword" :placeholder="$t('search_placeholder')" @keydown.enter="search(searchKeyword)" />
-          <button type="button"
-            class="search-btn absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-blue-400/30"
-            @click="search(searchKeyword)">
-            <el-icon :size="22" class="transition-transform duration-300 group-hover:rotate-12">
-              <Search></Search>
-            </el-icon>
-          </button>
+      <div class="max-w-[1240px] mx-auto mt-[20px] md:mt-[30px] px-4 md:px-0">
+        <div class="w-full md:w-[700px] mx-auto">
+          <div class="relative group">
+            <input
+              class="w-full pl-6 pr-[70px] py-4 rounded-full text-sm bg-white dark:bg-gray-800/80 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:shadow-gray-900/30 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+              v-model="searchKeyword" :placeholder="$t('search_placeholder')" @keydown.enter="search(searchKeyword)" />
+            <button type="button"
+              class="search-btn absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-blue-400/30"
+              @click="search(searchKeyword)">
+              <el-icon :size="22" class="transition-transform duration-300 group-hover:rotate-12">
+                <Search></Search>
+              </el-icon>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="max-w-[1240px] mx-auto mt-4 px-4">
-      <!-- 导航分类标签 -->
-      <div class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
-        <button v-for="category in categories" :key="category.id"
-          class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 whitespace-nowrap" :class="[
-            activeCategory === category.id
-              ? 'bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 text-white shadow-md'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
-          ]" @click="activeCategory = category.id">
-          {{ category.name }}
-        </button>
-      </div>
+      <div class="max-w-[1240px] mx-auto mt-4 px-4">
+        <!-- 导航分类标签 -->
+        <client-only>
+          <div class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+            <button v-for="category in categories" :key="category.id"
+              class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 whitespace-nowrap" :class="[
+                activeCategory === category.id
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
+              ]" @click="activeCategory = category.id">
+              {{ category.name }}
+            </button>
+          </div>
 
-      <!-- 导航网格 -->
-      <div class="flex items-center justify-center flex-wrap gap-2">
-        <template v-for="category in categories" :key="category.id">
-          <template v-if="activeCategory === category.id">
-            <nuxt-link v-for="item in category.items" :key="item.path" :to="item.path"
-              class="group flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10">
-              <div class="flex items-center justify-center shadow-lg">
-                <i :class="['fa-solid', item.icon, 'dark:text-white text-xs']"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <h3
-                  class="text-gray-800 dark:text-gray-200 text-xs font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                  {{ item.title }}
-                </h3>
-                <!-- <p class="text-gray-500 dark:text-gray-400 text-[10px] truncate">{{ item.description }}</p> -->
-              </div>
-            </nuxt-link>
+          <!-- 导航网格 -->
+          <div class="flex items-center justify-center flex-wrap gap-2">
+            <template v-for="category in categories" :key="category.id">
+              <template v-if="activeCategory === category.id">
+                <nuxt-link v-for="item in category.items" :key="item.path" :to="item.path"
+                  class="group flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10">
+                  <div class="flex items-center justify-center shadow-lg">
+                    <i :class="['fa-solid', item.icon, 'dark:text-white text-xs']"></i>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h3
+                      class="text-gray-800 dark:text-gray-200 text-xs font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                      {{ item.title }}
+                    </h3>
+                    <!-- <p class="text-gray-500 dark:text-gray-400 text-[10px] truncate">{{ item.description }}</p> -->
+                  </div>
+                </nuxt-link>
+              </template>
+            </template>
+          </div>
+          <template #fallback>
+            <div class="flex items-center justify-center py-8">
+              <div class="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            </div>
           </template>
-        </template>
+        </client-only>
       </div>
-    </div>
 
-    <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
-    <!-- Enhanced Backtop -->
-    <el-backtop :right="24" :bottom="24"
-      class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl dark:!shadow-gray-900/30 backdrop-blur-sm flex items-center justify-center">
-      <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
-    </el-backtop>
+      <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
+      <!-- Enhanced Backtop -->
+      <el-backtop :right="24" :bottom="24"
+        class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl dark:!shadow-gray-900/30 backdrop-blur-sm flex items-center justify-center">
+        <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
+      </el-backtop>
+    </div>
   </div>
 </template>
 
