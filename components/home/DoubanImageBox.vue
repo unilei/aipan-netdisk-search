@@ -2,6 +2,9 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import { useColorMode } from "@vueuse/core";
 import placeHolderImage from "~/assets/placeholder.webp";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 defineProps({
   doubanData: {
@@ -138,7 +141,8 @@ const goDouban = (movie) => {
         <span class="w-1 h-5 bg-red-400 rounded-full group-hover:h-6 transition-all duration-300 delay-150"></span>
       </div>
       <span class="hover:text-blue-500 transition-colors duration-300 cursor-pointer">{{ item.name }}</span>
-      <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ item.data.length }} 部</span>
+      <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ item.data.length }} {{ $t('douban.movie_count')
+      }}</span>
     </h1>
 
     <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8 gap-4 mt-[10px]">
@@ -170,7 +174,7 @@ const goDouban = (movie) => {
               <el-icon class="text-gray-400 mb-2" :size="24">
                 <PictureFilled />
               </el-icon>
-              <p class="text-xs text-gray-500">暂无图片</p>
+              <p class="text-xs text-gray-500">{{ $t('douban.no_image') }}</p>
             </div>
           </div>
 

@@ -13,7 +13,17 @@ const userMenuRef = ref(null);
 const isHeaderFixed = ref(false);
 const headerHeight = ref(0);
 const headerRef = ref(null);
-const { t } = useI18n();
+const { t, locale, locales, setLocale } = useI18n();
+
+// 获取可用的语言列表（当前语言除外）
+const availableLocales = computed(() => {
+  return (locales.value).filter(i => i.code !== locale.value);
+});
+
+// 切换语言功能
+const switchLanguage = (localeCode) => {
+  setLocale(localeCode);
+};
 
 const goHome = () => {
   router.push("/");
@@ -144,12 +154,22 @@ onBeforeUnmount(() => {
                 <nuxt-link v-for="item in navItems" :key="item.path" :to="item.path"
                   class="flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80">
                   <i :class="colorMode.preference === 'light'
-                      ? item.icon.light
-                      : item.icon.dark
+                    ? item.icon.light
+                    : item.icon.dark
                     " class="mr-2 transition-opacity duration-200 dark:opacity-90"></i>
                   {{ $t(item.name) }}
                 </nuxt-link>
               </nav>
+
+              <!-- 语言切换按钮 -->
+              <div class="hidden sm:flex items-center space-x-2">
+                <button v-for="loc in availableLocales" :key="loc.code"
+                  class="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+                  @click="switchLanguage(loc.code)">
+                  {{ $t(`language.${loc.code}`) }}
+                </button>
+              </div>
+
               <!-- 主题切换按钮 -->
               <button
                 class="p-2 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
