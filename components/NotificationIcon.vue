@@ -1,59 +1,42 @@
 <template>
   <div class="relative">
-    <button
-      @click="toggleDropdown"
-      class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-    >
+    <button @click="toggleDropdown" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
       <div class="relative">
         <i class="fa-solid fa-bell text-gray-600 dark:text-gray-300"></i>
-        <span
-          v-if="unreadCount > 0"
-          class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"
-        >
+        <span v-if="unreadCount > 0"
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
           {{ unreadCount }}
         </span>
       </div>
     </button>
 
     <!-- 通知下拉菜单 -->
-    <div
-      v-if="isOpen"
-      class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-700"
-    >
+    <div v-if="isOpen"
+      class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 border border-gray-200 dark:border-gray-700">
       <div class="p-4 border-b border-gray-200 dark:border-gray-700">
         <div class="flex justify-between items-center">
           <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
             通知
           </h3>
-          <button
-            @click="markAllAsRead"
-            class="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-          >
+          <button @click="markAllAsRead"
+            class="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
             全部已读
           </button>
         </div>
       </div>
 
       <div class="max-h-96 overflow-y-auto">
-        <div
-          v-if="notifications.length === 0"
-          class="p-4 text-center text-gray-500 dark:text-gray-400"
-        >
+        <div v-if="notifications.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
           暂无通知
         </div>
         <div v-else>
-          <div
-            v-for="notification in notifications"
-            :key="notification.id"
+          <div v-for="notification in notifications" :key="notification.id"
             class="p-4 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
             :class="{ 'bg-gray-50 dark:bg-gray-700': !notification.isRead }"
-            @click="handleNotificationClick(notification)"
-          >
+            @click="handleNotificationClick(notification)">
             <div class="flex items-start">
               <div class="flex-1">
-                <div
-                  class="text-xs font-medium text-gray-900 dark:text-gray-100"
-                >
+                <div class="text-xs font-medium text-gray-900 dark:text-gray-100">
                   {{ notification.title }}
                 </div>
                 <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -63,20 +46,15 @@
                   {{ formatTime(notification.createdAt) }}
                 </div>
               </div>
-              <div
-                v-if="!notification.isRead"
-                class="w-2 h-2 bg-blue-500 rounded-full mt-2"
-              ></div>
+              <div v-if="!notification.isRead" class="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
             </div>
           </div>
         </div>
       </div>
 
       <div class="p-4 border-t border-gray-200 dark:border-gray-700">
-        <NuxtLink
-          to="/notifications"
-          class="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
-        >
+        <NuxtLink to="/notifications"
+          class="text-xs text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
           查看全部通知
         </NuxtLink>
       </div>
@@ -104,7 +82,16 @@ const fetchNotifications = async () => {
     });
     const data = await response.json();
     if (data.success) {
-      notifications.value = data.data.notifications;
+      // 通知去重处理
+      const notificationMap = new Map();
+      data.data.notifications.forEach(notification => {
+        const key = `${notification.type}-${notification.relatedId}`;
+        // 如果已经有相同key的通知，只保留创建时间最新的一条
+        if (!notificationMap.has(key) || new Date(notificationMap.get(key).createdAt) < new Date(notification.createdAt)) {
+          notificationMap.set(key, notification);
+        }
+      });
+      notifications.value = Array.from(notificationMap.values());
     }
   } catch (error) {
     console.error("获取通知失败:", error);
