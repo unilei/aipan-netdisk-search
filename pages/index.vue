@@ -3,7 +3,7 @@ import { useDoubanStore } from "~/stores/douban";
 import { badWords } from "~/utils/sensitiveWords";
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
 import { useDebounceFn } from "@vueuse/core";
-import navigationConfig from "@/assets/navigation/config.json";
+import i18nNavigationConfig from "@/assets/navigation/config.i18n.json";
 
 definePageMeta({
   layout: "netdisk",
@@ -11,39 +11,52 @@ definePageMeta({
 const doubanStore = useDoubanStore();
 const searchKeyword = ref("");
 const router = useRouter();
+const { locale, locales, setLocale, t } = useI18n();
 
 // 广播消息
-const broadcastMessage = ref("收藏网站发布页: https://link0.me/aipan");
+const broadcastMessage = ref("");
+
+// 获取语言设置
+const availableLocales = computed(() => {
+  return (locales.value).filter(i => i.code !== locale.value);
+});
+
+// 切换语言
+const switchLanguage = (localeCode) => {
+  setLocale(localeCode);
+};
+
+onMounted(() => {
+  // 设置广播消息
+  broadcastMessage.value = t('broadcast.message');
+});
 
 // SEO配置
 useHead({
-  title: "AIPAN.ME - 网盘资源搜索引擎",
+  title: t('meta.title'),
   meta: [
     {
       name: "description",
-      content:
-        "爱盼网盘搜索是一个强大的网盘资源搜索引擎，提供海量影视、音乐、电子书等资源的搜索服务。快速、精准、便捷地找到您需要的资源。",
+      content: t('meta.description'),
     },
     {
       name: "keywords",
-      content: "网盘搜索,资源搜索,影视资源,音乐资源,电子书,在线搜索",
+      content: t('meta.keywords'),
     },
     // Open Graph / Facebook
     { property: "og:type", content: "website" },
-    { property: "og:title", content: "AIPAN.ME - 网盘资源搜索引擎" },
+    { property: "og:title", content: t('meta.title') },
     {
       property: "og:description",
-      content:
-        "爱盼网盘搜索是一个强大的网盘资源搜索引擎，提供海量影视、音乐、电子书等资源的搜索服务。",
+      content: t('meta.description'),
     },
     { property: "og:image", content: `/api/og-image?t=${Date.now()}` },
     // Twitter
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: "AIPAN.ME - 网盘资源搜索引擎" },
+    { name: "twitter:title", content: t('meta.title') },
     {
       name: "twitter:description",
-      content:
-        "爱盼网盘搜索是一个强大的网盘资源搜索引擎，提供海量影视、音乐、电子书等资源的搜索服务。",
+      content: t('meta.description'),
     },
     { name: "twitter:image", content: `/api/og-image?t=${Date.now()}` },
     // 其他重要的meta标签
@@ -65,7 +78,7 @@ const activeCategoryCookie = useCookie("activeCategory", {
 const debouncedSearch = useDebounceFn((keyword) => {
   if (!keyword) return;
   if (badWords.includes(keyword)) {
-    return alert("请勿输入敏感词");
+    return alert(t('sensitive_word_alert'));
   }
   router.push({
     path: "/search",
@@ -86,21 +99,47 @@ const goDouban = (movie) => {
   });
 };
 
-// 获取活跃分类 - 仅从cookie获取
-const getActiveCategory = () => {
-  // 使用Cookie或默认值
-  activeCategory.value =
-    activeCategoryCookie.value || navigationConfig.categories[0].id;
-};
+// 从i18n导航配置中获取当前语言的导航
+const navigationConfig = computed(() => {
+  // 如果当前语言在配置中不存在，则使用中文作为默认配置
+  const currentLang = locale.value;
+  return i18nNavigationConfig[currentLang] || i18nNavigationConfig.zh;
+});
+
+// 获取分类
+const categories = computed(() => navigationConfig.value.categories);
+
+const activeCategory = ref("");
+
+// 确保在页面加载之前初始化活跃分类
+onBeforeMount(() => {
+  if (categories.value && categories.value.length > 0) {
+    activeCategory.value = activeCategoryCookie.value || categories.value[0].id;
+  }
+});
+
+// 监听activeCategory变化，只保存到cookie
+watch(activeCategory, (newValue) => {
+  activeCategoryCookie.value = newValue;
+});
+
+// 监听语言变化，确保在导航配置变化时更新活跃分类
+watch(locale, () => {
+  if (categories.value.length > 0) {
+    // 检查当前活跃分类在新语言中是否存在
+    const categoryExists = categories.value.some(c => c.id === activeCategory.value);
+    if (!categoryExists) {
+      // 如果不存在，使用第一个分类
+      activeCategory.value = categories.value[0].id;
+    }
+  }
+});
 
 onMounted(async () => {
   // 加载豆瓣数据
   await doubanStore.getDoubanData();
   doubanData.value = doubanStore.doubanData;
   doubanLoadedFromRedis.value = true;
-
-  // 获取活跃分类 - 从cookie
-  getActiveCategory();
 
   // 在页面加载完成后，将滚动位置重置到顶部
   window.scrollTo(0, 0);
@@ -114,14 +153,6 @@ watch(
     window.scrollTo(0, 0);
   }
 );
-
-const activeCategory = ref(navigationConfig.categories[0].id);
-const categories = navigationConfig.categories;
-
-// 监听activeCategory变化，只保存到cookie
-watch(activeCategory, (newValue) => {
-  activeCategoryCookie.value = newValue;
-});
 </script>
 
 <template>
@@ -135,19 +166,26 @@ watch(activeCategory, (newValue) => {
             AIPAN.ME
           </h1>
           <p class="text-gray-600 text-xs md:text-sm dark:text-gray-400 mt-1 md:mt-2">
-            爱盼 - 资源随心，娱乐无限
+            {{ $t('subtitle') }}
           </p>
         </div>
       </div>
 
-
+      <!-- 添加语言切换按钮 -->
+      <div class="flex items-center justify-center gap-2">
+        <button v-for="loc in availableLocales" :key="loc.code"
+          class="px-3 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+          @click="switchLanguage(loc.code)">
+          {{ $t(`language.${loc.code}`) }}
+        </button>
+      </div>
     </div>
     <div class="max-w-[1240px] mx-auto mt-[20px] md:mt-[30px] px-4 md:px-0">
       <div class="w-full md:w-[700px] mx-auto">
         <div class="relative group">
           <input
             class="w-full pl-6 pr-[70px] py-4 rounded-full text-sm bg-white dark:bg-gray-800/80 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:shadow-gray-900/30 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-            v-model="searchKeyword" placeholder="请输入关键词搜索" @keydown.enter="search(searchKeyword)" />
+            v-model="searchKeyword" :placeholder="$t('search_placeholder')" @keydown.enter="search(searchKeyword)" />
           <button type="button"
             class="search-btn absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-blue-400/30"
             @click="search(searchKeyword)">

@@ -1,0 +1,442 @@
+{
+  "zh": {
+    "categories": [
+      {
+        "id": "common",
+        "name": "常用",
+        "items": [
+          {
+            "title": "收藏发布页",
+            "description": "获取最新网站地址",
+            "icon": "fa-bookmark",
+            "path": "/collect"
+          },
+          {
+            "title": "AI网盘搜索",
+            "description": "AI网盘搜索（Beta）",
+            "icon": "fa-paintbrush",
+            "path": "/ai-search"
+          },
+          {
+            "title": "休闲游戏",
+            "description": "休闲游戏",
+            "icon": "fa-gamepad",
+            "path": "/games"
+          },
+          {
+            "title": "FM电台",
+            "description": "FM电台",
+            "icon": "fa-headphones",
+            "path": "/fm"
+          },
+          {
+            "title": "音乐海报生成",
+            "description": "将你喜爱的音乐转化为精美的视觉艺术",
+            "icon": "fa-music",
+            "path": "/beat-prints"
+          },
+          {
+            "title": "每日电影推荐",
+            "description": "发现精彩好片",
+            "icon": "fa-film",
+            "path": "/movie/daily"
+          },
+          {
+            "title": "本地音乐播放器",
+            "description": "享受本地音乐",
+            "icon": "fa-music",
+            "path": "/music/player"
+          },
+          {
+            "title": "新年倒计时",
+            "description": "倒计时迎接新的一年",
+            "icon": "fa-calendar-days",
+            "path": "/spring-festival"
+          }
+        ]
+      },
+      {
+        "id": "movie",
+        "name": "影视",
+        "items": [
+          {
+            "title": "每日电影推荐",
+            "description": "发现精彩好片",
+            "icon": "fa-film",
+            "path": "/movie/daily"
+          },
+          {
+            "title": "爱奇艺",
+            "description": "爱奇艺视频平台",
+            "icon": "fa-play",
+            "path": "https://www.iqiyi.com"
+          },
+          {
+            "title": "腾讯视频",
+            "description": "腾讯视频平台",
+            "icon": "fa-tv",
+            "path": "https://v.qq.com"
+          },
+          {
+            "title": "优酷视频",
+            "description": "优酷视频平台",
+            "icon": "fa-video",
+            "path": "https://www.youku.com"
+          },
+          {
+            "title": "芒果TV",
+            "description": "芒果TV视频平台",
+            "icon": "fa-display",
+            "path": "https://www.mgtv.com"
+          },
+          {
+            "title": "哔哩哔哩",
+            "description": "B站视频平台",
+            "icon": "fa-circle-play",
+            "path": "https://www.bilibili.com"
+          }
+        ]
+      },
+      {
+        "id": "music",
+        "name": "音乐",
+        "items": [
+          {
+            "title": "本地音乐播放器",
+            "description": "享受本地音乐",
+            "icon": "fa-music",
+            "path": "/music/player"
+          },
+          {
+            "title": "网易云音乐",
+            "description": "在线音乐平台",
+            "icon": "fa-music",
+            "path": "https://music.163.com"
+          },
+          {
+            "title": "QQ音乐",
+            "description": "在线音乐平台",
+            "icon": "fa-headphones",
+            "path": "https://y.qq.com"
+          },
+          {
+            "title": "酷狗音乐",
+            "description": "在线音乐平台",
+            "icon": "fa-compact-disc",
+            "path": "https://www.kugou.com"
+          },
+          {
+            "title": "咪咕音乐",
+            "description": "在线音乐平台",
+            "icon": "fa-music",
+            "path": "https://music.migu.cn"
+          }
+        ]
+      },
+      {
+        "id": "tools",
+        "name": "AI工具",
+        "items": [
+          {
+            "title": "DeepSeek",
+            "description": "中国领先的AI",
+            "icon": "fa-robot",
+            "path": "https://chat.deepseek.com"
+          },
+          {
+            "title": "ChatGPT",
+            "description": "OpenAI对话模型",
+            "icon": "fa-robot",
+            "path": "https://chat.openai.com"
+          },
+          {
+            "title": "通义千问",
+            "description": "阿里AI助手",
+            "icon": "fa-comment-dots",
+            "path": "https://tongyi.aliyun.com"
+          },
+          {
+            "title": "豆包",
+            "description": "字节AI助手",
+            "icon": "fa-message",
+            "path": "https://www.doubao.com"
+          },
+          {
+            "title": "Kimi",
+            "description": "Moonshot AI助手",
+            "icon": "fa-robot",
+            "path": "https://kimi.moonshot.cn"
+          },
+          {
+            "title": "文心一言",
+            "description": "百度AI助手",
+            "icon": "fa-comment",
+            "path": "https://yiyan.baidu.com"
+          },
+          {
+            "title": "讯飞星火",
+            "description": "科大讯飞AI助手",
+            "icon": "fa-fire",
+            "path": "https://xinghuo.xfyun.cn"
+          },
+          {
+            "title": "Midjourney",
+            "description": "AI图像生成",
+            "icon": "fa-image",
+            "path": "https://www.midjourney.com"
+          },
+          {
+            "title": "Stable Diffusion",
+            "description": "开源AI绘画",
+            "icon": "fa-paintbrush",
+            "path": "https://stability.ai"
+          },
+          {
+            "title": "智谱清言",
+            "description": "智谱AI助手",
+            "icon": "fa-message-dots",
+            "path": "https://chatglm.cn"
+          },
+          {
+            "title": "Claude",
+            "description": "Anthropic AI助手",
+            "icon": "fa-message",
+            "path": "https://claude.ai"
+          },
+          {
+            "title": "Gemini",
+            "description": "Google AI助手",
+            "icon": "fa-circle-nodes",
+            "path": "https://gemini.google.com"
+          },
+          {
+            "title": "Copilot",
+            "description": "GitHub AI编程助手",
+            "icon": "fa-code",
+            "path": "https://github.com/features/copilot"
+          }
+        ]
+      }
+    ]
+  },
+  "en": {
+    "categories": [
+      {
+        "id": "common",
+        "name": "Common",
+        "items": [
+          {
+            "title": "Bookmarks",
+            "description": "Get the latest website address",
+            "icon": "fa-bookmark",
+            "path": "/collect"
+          },
+          {
+            "title": "AI Cloud Search",
+            "description": "AI Cloud Drive Search (Beta)",
+            "icon": "fa-paintbrush",
+            "path": "/ai-search"
+          },
+          {
+            "title": "Casual Games",
+            "description": "Casual Games",
+            "icon": "fa-gamepad",
+            "path": "/games"
+          },
+          {
+            "title": "FM Radio",
+            "description": "FM Radio",
+            "icon": "fa-headphones",
+            "path": "/fm"
+          },
+          {
+            "title": "Music Poster",
+            "description": "Transform your favorite music into visual art",
+            "icon": "fa-music",
+            "path": "/beat-prints"
+          },
+          {
+            "title": "Daily Movie Picks",
+            "description": "Discover amazing films",
+            "icon": "fa-film",
+            "path": "/movie/daily"
+          },
+          {
+            "title": "Local Music Player",
+            "description": "Enjoy local music",
+            "icon": "fa-music",
+            "path": "/music/player"
+          },
+          {
+            "title": "New Year Countdown",
+            "description": "Countdown to welcome new year",
+            "icon": "fa-calendar-days",
+            "path": "/spring-festival"
+          }
+        ]
+      },
+      {
+        "id": "movie",
+        "name": "Movies & TV",
+        "items": [
+          {
+            "title": "Daily Movie Picks",
+            "description": "Discover amazing films",
+            "icon": "fa-film",
+            "path": "/movie/daily"
+          },
+          {
+            "title": "iQIYI",
+            "description": "iQIYI video platform",
+            "icon": "fa-play",
+            "path": "https://www.iqiyi.com"
+          },
+          {
+            "title": "Tencent Video",
+            "description": "Tencent video platform",
+            "icon": "fa-tv",
+            "path": "https://v.qq.com"
+          },
+          {
+            "title": "Youku",
+            "description": "Youku video platform",
+            "icon": "fa-video",
+            "path": "https://www.youku.com"
+          },
+          {
+            "title": "MangoTV",
+            "description": "MangoTV video platform",
+            "icon": "fa-display",
+            "path": "https://www.mgtv.com"
+          },
+          {
+            "title": "Bilibili",
+            "description": "Bilibili video platform",
+            "icon": "fa-circle-play",
+            "path": "https://www.bilibili.com"
+          }
+        ]
+      },
+      {
+        "id": "music",
+        "name": "Music",
+        "items": [
+          {
+            "title": "Local Music Player",
+            "description": "Enjoy local music",
+            "icon": "fa-music",
+            "path": "/music/player"
+          },
+          {
+            "title": "NetEase Cloud Music",
+            "description": "Online music platform",
+            "icon": "fa-music",
+            "path": "https://music.163.com"
+          },
+          {
+            "title": "QQ Music",
+            "description": "Online music platform",
+            "icon": "fa-headphones",
+            "path": "https://y.qq.com"
+          },
+          {
+            "title": "Kugou Music",
+            "description": "Online music platform",
+            "icon": "fa-compact-disc",
+            "path": "https://www.kugou.com"
+          },
+          {
+            "title": "Migu Music",
+            "description": "Online music platform",
+            "icon": "fa-music",
+            "path": "https://music.migu.cn"
+          }
+        ]
+      },
+      {
+        "id": "tools",
+        "name": "AI Tools",
+        "items": [
+          {
+            "title": "DeepSeek",
+            "description": "Leading AI in China",
+            "icon": "fa-robot",
+            "path": "https://chat.deepseek.com"
+          },
+          {
+            "title": "ChatGPT",
+            "description": "OpenAI dialogue model",
+            "icon": "fa-robot",
+            "path": "https://chat.openai.com"
+          },
+          {
+            "title": "Tongyi Qianwen",
+            "description": "Alibaba AI assistant",
+            "icon": "fa-comment-dots",
+            "path": "https://tongyi.aliyun.com"
+          },
+          {
+            "title": "Doubao",
+            "description": "ByteDance AI assistant",
+            "icon": "fa-message",
+            "path": "https://www.doubao.com"
+          },
+          {
+            "title": "Kimi",
+            "description": "Moonshot AI assistant",
+            "icon": "fa-robot",
+            "path": "https://kimi.moonshot.cn"
+          },
+          {
+            "title": "ERNIE Bot",
+            "description": "Baidu AI assistant",
+            "icon": "fa-comment",
+            "path": "https://yiyan.baidu.com"
+          },
+          {
+            "title": "Spark Desk",
+            "description": "iFLYTEK AI assistant",
+            "icon": "fa-fire",
+            "path": "https://xinghuo.xfyun.cn"
+          },
+          {
+            "title": "Midjourney",
+            "description": "AI image generation",
+            "icon": "fa-image",
+            "path": "https://www.midjourney.com"
+          },
+          {
+            "title": "Stable Diffusion",
+            "description": "Open-source AI art",
+            "icon": "fa-paintbrush",
+            "path": "https://stability.ai"
+          },
+          {
+            "title": "ChatGLM",
+            "description": "Zhipu AI assistant",
+            "icon": "fa-message-dots",
+            "path": "https://chatglm.cn"
+          },
+          {
+            "title": "Claude",
+            "description": "Anthropic AI assistant",
+            "icon": "fa-message",
+            "path": "https://claude.ai"
+          },
+          {
+            "title": "Gemini",
+            "description": "Google AI assistant",
+            "icon": "fa-circle-nodes",
+            "path": "https://gemini.google.com"
+          },
+          {
+            "title": "Copilot",
+            "description": "GitHub AI coding assistant",
+            "icon": "fa-code",
+            "path": "https://github.com/features/copilot"
+          }
+        ]
+      }
+    ]
+  }
+} 
