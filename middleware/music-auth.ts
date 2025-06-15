@@ -1,7 +1,5 @@
 import { simpleDecode } from '~/utils/index.js'
-import { MUSIC_PAGE_PASSWORD } from '~/server/utils/constants'
-
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware(async (to, from) => {
     // Only check password for music page
     if (!to.path.startsWith('/music')) {
         return
@@ -12,16 +10,30 @@ export default defineNuxtRouteMiddleware((to, from) => {
         return
     }
 
-    const musicAuth = useCookie('music-auth')
+    try {
+        // Get current password and enabled status from database
+        const response = await $fetch('/api/music/password')
+        const { password: currentPassword, enabled } = (response as any).data || {}
 
-    // If no auth cookie, redirect to password page
-    if (!musicAuth.value) {
+        // If music verification is disabled, skip authentication
+        if (!enabled) {
+            return
+        }
+
+        const musicAuth = useCookie('music-auth')
+
+        // If no auth cookie, redirect to password page
+        if (!musicAuth.value) {
+            return navigateTo('/music/auth')
+        }
+
+        // Verify password
+        const decoded = simpleDecode(musicAuth.value)
+        if (!decoded || decoded !== (currentPassword || 'aipan.me2025')) {
+            return navigateTo('/music/auth')
+        }
+    } catch (error) {
+        console.error('Failed to verify music password:', error)
         return navigateTo('/music/auth')
     }
-
-    // Verify password
-    const decoded = simpleDecode(musicAuth.value)
-    if (!decoded || decoded !== MUSIC_PAGE_PASSWORD) {
-        return navigateTo('/music/auth')
-    }
-}) 
+})
