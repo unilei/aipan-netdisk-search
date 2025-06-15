@@ -115,6 +115,19 @@
             配置视频源
           </el-button>
         </div>
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">音乐验证码</h2>
+            <el-icon class="text-2xl text-orange-500">
+              <i class="fas fa-music"></i>
+            </el-icon>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">获取当前音乐页面验证码</p>
+          <el-button type="primary" @click="getMusicPassword" class="w-full" :loading="musicPasswordLoading">
+            <i class="fas fa-key mr-1"></i>
+            获取验证码
+          </el-button>
+        </div>
       </div>
 
       <!-- 最近活动 -->
@@ -162,6 +175,7 @@ definePageMeta({
 
 const stats = ref(null)
 const activities = ref([])
+const musicPasswordLoading = ref(false)
 
 // 获取统计数据
 const fetchStats = async () => {
@@ -215,6 +229,44 @@ const getActivityIconClass = (type) => {
     'download': 'text-purple-500'
   }
   return classMap[type] || 'text-gray-500'
+}
+
+// 获取音乐验证码
+const getMusicPassword = async () => {
+  musicPasswordLoading.value = true
+  try {
+    const res = await $fetch('/api/music/password')
+    if (res.code === 200) {
+      const { password, enabled } = res.data
+      if (enabled) {
+        ElMessageBox.alert(
+          `当前音乐验证码为：${password}`,
+          '音乐验证码',
+          {
+            confirmButtonText: '复制验证码',
+            type: 'info',
+            showClose: false
+          }
+        ).then(() => {
+          // 复制到剪贴板
+          navigator.clipboard.writeText(password).then(() => {
+            ElMessage.success('验证码已复制到剪贴板')
+          }).catch(() => {
+            ElMessage.warning('复制失败，请手动复制')
+          })
+        })
+      } else {
+        ElMessage.info('音乐验证功能已关闭')
+      }
+    } else {
+      ElMessage.error('获取验证码失败')
+    }
+  } catch (error) {
+    console.error('获取音乐验证码失败:', error)
+    ElMessage.error('获取验证码失败')
+  } finally {
+    musicPasswordLoading.value = false
+  }
 }
 
 // 处理登出
