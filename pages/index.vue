@@ -13,22 +13,10 @@ const searchKeyword = ref("");
 const router = useRouter();
 const { locale, locales, setLocale, t } = useI18n();
 
-// 广播消息
-const broadcastMessage = ref("");
-
-// 获取语言设置
-const availableLocales = computed(() => {
-  return (locales.value).filter(i => i.code !== locale.value);
-});
-
-// 切换语言
-const switchLanguage = (localeCode) => {
-  setLocale(localeCode);
-};
-
-onMounted(() => {
-  // 设置广播消息
-  broadcastMessage.value = t('broadcast.message');
+// 清理函数，防止内存泄漏
+onUnmounted(() => {
+  if (stopLocaleWatcher) stopLocaleWatcher();
+  if (stopRouteWatcher) stopRouteWatcher();
 });
 
 // SEO配置
@@ -67,8 +55,7 @@ useHead({
   link: [{ rel: "canonical", href: "https://aipan.me" }],
 });
 
-// 用于检查是否已从Redis服务器加载数据
-const doubanLoadedFromRedis = ref(false);
+
 
 // 使用activeCategoryCookie作为唯一存储方式
 const activeCategoryCookie = useCookie("activeCategory", {
@@ -76,7 +63,7 @@ const activeCategoryCookie = useCookie("activeCategory", {
 });
 
 const debouncedSearch = useDebounceFn((keyword) => {
-  if (!keyword) return;
+  if (!keyword || !keyword.trim()) return;
   if (badWords.includes(keyword)) {
     return alert(t('sensitive_word_alert'));
   }
@@ -92,29 +79,41 @@ const search = (keyword) => {
 
 const doubanData = ref([]);
 
-const goDouban = (movie) => {
+// 添加防抖处理，避免重复点击
+const goDouban = useDebounceFn((movie) => {
+  if (!movie || !movie.title) {
+    console.warn('Invalid movie data:', movie);
+    return;
+  }
   router.push({
     path: "/search",
     query: { keyword: encodeURIComponent(movie.title) },
   });
-};
+}, 300);
 
 // 从i18n导航配置中获取当前语言的导航
 const navigationConfig = computed(() => {
   // 如果当前语言在配置中不存在，则使用中文作为默认配置
   const currentLang = locale.value;
-  return i18nNavigationConfig[currentLang] || i18nNavigationConfig.zh;
+  const config = i18nNavigationConfig[currentLang] || i18nNavigationConfig.zh;
+  if (!config) {
+    console.warn('Navigation config not found for language:', currentLang);
+    return { categories: [] };
+  }
+  return config;
 });
 
 // 获取分类
-const categories = computed(() => navigationConfig.value.categories);
+const categories = computed(() => {
+  return navigationConfig.value?.categories || [];
+});
 
 const activeCategory = ref("");
 
 // 确保在页面加载之前初始化活跃分类
 onBeforeMount(() => {
   if (categories.value && categories.value.length > 0) {
-    activeCategory.value = activeCategoryCookie.value || categories.value[0].id;
+    activeCategory.value = activeCategoryCookie.value || categories.value[0]?.id || '';
   }
 });
 
@@ -124,33 +123,42 @@ watch(activeCategory, (newValue) => {
 });
 
 // 监听语言变化，确保在导航配置变化时更新活跃分类
-watch(locale, () => {
-  if (categories.value.length > 0) {
+const stopLocaleWatcher = watch(locale, () => {
+  if (categories.value && categories.value.length > 0) {
     // 检查当前活跃分类在新语言中是否存在
     const categoryExists = categories.value.some(c => c.id === activeCategory.value);
     if (!categoryExists) {
       // 如果不存在，使用第一个分类
-      activeCategory.value = categories.value[0].id;
+      activeCategory.value = categories.value[0]?.id || '';
     }
   }
 });
 
 onMounted(async () => {
-  // 加载豆瓣数据
-  await doubanStore.getDoubanData();
-  doubanData.value = doubanStore.doubanData;
-  doubanLoadedFromRedis.value = true;
+  try {
+    // 加载豆瓣数据
+    await doubanStore.getDoubanData();
+    doubanData.value = doubanStore.doubanData;
+  } catch (error) {
+    console.error('Failed to load douban data:', error);
+    // 设置默认空数据，避免页面崩溃
+    doubanData.value = [];
+  }
 
   // 在页面加载完成后，将滚动位置重置到顶部
   window.scrollTo(0, 0);
 });
 
-// 监听路由变化
-watch(
+// 监听路由变化（使用节流优化性能）
+const throttledScrollToTop = useDebounceFn(() => {
+  window.scrollTo(0, 0);
+}, 100);
+
+const stopRouteWatcher = watch(
   () => router.currentRoute.value,
   () => {
     // 当路由发生变化时，将滚动位置重置到顶部
-    window.scrollTo(0, 0);
+    throttledScrollToTop();
   }
 );
 </script>
@@ -252,59 +260,7 @@ watch(
   }
 }
 
-/* 滚动广播动画 */
-.broadcast-container {
-  position: relative;
-}
 
-.broadcast-content {
-  animation: scroll-broadcast 20s linear infinite;
-  white-space: nowrap;
-  padding-left: 100%;
-}
-
-/* 上下滚动动画 */
-.broadcast-content-vertical {
-  animation: scroll-broadcast-vertical 6s linear infinite;
-  white-space: nowrap;
-}
-
-@keyframes scroll-broadcast {
-  0% {
-    transform: translateX(0);
-  }
-
-  100% {
-    transform: translateX(-200%);
-  }
-}
-
-@keyframes scroll-broadcast-vertical {
-
-  0%,
-  10% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  45%,
-  55% {
-    transform: translateY(-100%);
-    opacity: 1;
-  }
-
-  90%,
-  100% {
-    transform: translateY(-200%);
-    opacity: 1;
-  }
-}
-
-/* 让广播内容在鼠标悬停时暂停 */
-.broadcast-container:hover .broadcast-content,
-.broadcast-container:hover .broadcast-content-vertical {
-  animation-play-state: paused;
-}
 
 :deep(.el-input__wrapper.is-focus) {
   --el-input-focus-border-color: #3b82f6;
@@ -379,7 +335,8 @@ watch(
 }
 
 /* 当输入框获得焦点时，停止按钮动画 */
-.el-input__wrapper.is-focus+.search-btn {
+.el-input__wrapper.is-focus~.search-btn,
+input:focus+.search-btn {
   animation: none;
 }
 
