@@ -359,17 +359,39 @@ class SmartCache {
 
   setupAutoSave() {
     if (!process.client) return;
-    const saveInterval = setInterval(() => this.save(), 60000);
-    window.addEventListener("beforeunload", () => {
+    this.saveInterval = setInterval(() => this.save(), 60000);
+    this.beforeUnloadHandler = () => {
       this.save();
-      clearInterval(saveInterval);
-    });
+      this.cleanup();
+    };
+    window.addEventListener("beforeunload", this.beforeUnloadHandler);
   }
 
   setupCleanupInterval() {
     if (!process.client) return;
-    const cleanupInterval = setInterval(() => this.cleanup(), 300000);
-    window.addEventListener("beforeunload", () => clearInterval(cleanupInterval));
+    this.cleanupInterval = setInterval(() => this.cleanup(), 300000);
+  }
+
+  // 清理所有定时器和事件监听器
+  destroy() {
+    if (!process.client) return;
+
+    if (this.saveInterval) {
+      clearInterval(this.saveInterval);
+      this.saveInterval = null;
+    }
+
+    if (this.cleanupInterval) {
+      clearInterval(this.cleanupInterval);
+      this.cleanupInterval = null;
+    }
+
+    if (this.beforeUnloadHandler) {
+      window.removeEventListener("beforeunload", this.beforeUnloadHandler);
+      this.beforeUnloadHandler = null;
+    }
+
+    this.cache.clear();
   }
 
   isStale(cacheItem, type = 'default') {
@@ -547,14 +569,30 @@ const queue = [];
 let running = 0;
 
 const fetchWithRetry = async (url, options, maxRetries = 3) => {
+  // 为 indexI API 设置更长的超时时间，因为响应较慢
+  const timeout = url.includes('/api/sources/indexI') ? 60000 : 30000; // indexI API 60秒，其他 30秒
+
+  const defaultOptions = {
+    timeout,
+    retry: maxRetries,
+    retryDelay: 1000,
+    ...options
+  };
+
   try {
-    return await $fetch(url, {
-      ...options,
-      retry: maxRetries,
-      retryDelay: 1000
-    });
+    return await $fetch(url, defaultOptions);
   } catch (error) {
-    console.error("Request failed:", error);
+    // 如果是AbortError，直接抛出不记录错误
+    if (error.name === 'AbortError') {
+      throw error;
+    }
+
+    console.error("Request failed:", {
+      url,
+      error: error.message || error,
+      status: error.status || 'unknown',
+      timestamp: new Date().toISOString()
+    });
     throw error;
   }
 };
@@ -639,7 +677,10 @@ const queueState = reactive({
   errorCount: 0
 });
 
-// 简化队列处理
+// 队列处理定时器
+let queueTimer = null;
+
+// 简化队列处理 - 避免递归调用
 const processQueue = async () => {
   if (queueState.isProcessing || queueState.tasks.length === 0 || queueState.successCount >= 5) {
     return;
@@ -660,14 +701,33 @@ const processQueue = async () => {
 
     queueState.tasks.shift();
   } catch (error) {
-    console.error("Queue processing error:", error);
+    console.error("Queue processing error:", {
+      error: error.message || error,
+      taskCount: queueState.tasks.length,
+      successCount: queueState.successCount,
+      errorCount: queueState.errorCount,
+      timestamp: new Date().toISOString()
+    });
     queueState.errorCount++;
   } finally {
     queueState.isProcessing = false;
+
+    // 使用定时器避免递归调用栈溢出
     if (queueState.tasks.length > 0 && queueState.successCount < 5) {
-      processQueue();
+      queueTimer = setTimeout(() => {
+        processQueue();
+      }, 100);
     }
   }
+};
+
+// 停止队列处理
+const stopQueueProcessing = () => {
+  if (queueTimer) {
+    clearTimeout(queueTimer);
+    queueTimer = null;
+  }
+  queueState.isProcessing = false;
 };
 
 // 简化 saveToQuarkAsync 函数
@@ -690,6 +750,9 @@ const saveToQuarkAsync = async (link, name) => {
         Cookiequark: quarkConfig.value.quarkCookie,
         "Content-Type": "application/json",
       },
+      timeout: 30000, // 30秒超时
+      retry: 2,
+      retryDelay: 1000
     });
 
     if (saveRes.code === 401 || saveRes.code === 403) {
@@ -709,6 +772,9 @@ const saveToQuarkAsync = async (link, name) => {
           typeId: quarkConfig.value.typeId,
           userId: quarkConfig.value.userId,
         },
+        timeout: 30000, // 30秒超时
+        retry: 2,
+        retryDelay: 1000
       });
       showSuccess(`${name} 转存成功`);
       return true;
@@ -717,16 +783,27 @@ const saveToQuarkAsync = async (link, name) => {
     showError(`${name} 转存失败`);
     return false;
   } catch (err) {
-    console.error("保存夸克文件失败:", err);
+    console.error("保存夸克文件失败:", {
+      error: err.message || err,
+      status: err.status || 'unknown',
+      name,
+      link,
+      timestamp: new Date().toISOString()
+    });
+
     if (err.status === 401 || err.status === 403) {
       clearConfigCache();
       showError("认证失败，请重新配置夸克网盘");
     } else {
-      showError(err.message || `${name} 转存失败`);
+      showError(`${name} 转存失败: ${err.message || '网络错误'}`);
     }
     return false;
   }
 };
+
+// 请求去重管理
+let currentSearchController = null;
+let currentVodSearches = new Map();
 
 // 处理搜索函数
 const handleSearch = async () => {
@@ -735,14 +812,28 @@ const handleSearch = async () => {
     return;
   }
 
+  // 取消之前的搜索请求
+  if (currentSearchController) {
+    currentSearchController.abort();
+  }
+
+  currentSearchController = new AbortController();
+
   // 记录搜索
   try {
     await $fetch("/api/search/record", {
       method: "POST",
       body: { keyword: keyword.value },
+      signal: currentSearchController.signal
     });
   } catch (error) {
-    console.error("记录搜索失败:", error);
+    if (error.name !== 'AbortError') {
+      console.error("记录搜索失败:", {
+        error: error.message || error,
+        keyword: keyword.value,
+        timestamp: new Date().toISOString()
+      });
+    }
   }
 
   // 更新搜索状态
@@ -837,7 +928,12 @@ const handleSingleSearch = async (item) => {
         }
       }
     } catch (err) {
-      console.error(`搜索失败 ${item.api}:`, err);
+      console.error(`搜索失败 ${item.api}:`, {
+        error: err.message || err,
+        api: item.api,
+        keyword: keyword.value,
+        timestamp: new Date().toISOString()
+      });
     } finally {
       loadingProgress.value.completed++;
       if (loadingProgress.value.completed >= loadingProgress.value.total) {
@@ -851,10 +947,18 @@ const handleSingleSearch = async (item) => {
   runQueue();
 };
 
-// VOD搜索处理
+// 处理单个VOD搜索
 const handleSingleVodSearch = async (vodApi) => {
   const encodedKeyword = encodeURIComponent(keyword.value.trim());
-  const cacheKey = `vod-${vodApi.api}-${encodedKeyword}`;
+  const cacheKey = `vod-${vodApi.api}-${vodApi.type || 'default'}-${encodedKeyword}`;
+
+  // 取消之前的VOD搜索请求
+  if (currentVodSearches.has(vodApi.api)) {
+    currentVodSearches.get(vodApi.api).abort();
+  }
+
+  const controller = new AbortController();
+  currentVodSearches.set(vodApi.api, controller);
   loadingStatus.value.set(vodApi.api, true);
 
   try {
@@ -875,19 +979,44 @@ const handleSingleVodSearch = async (vodApi) => {
         ac: "detail",
         wd: keyword.value,
       },
+      signal: controller.signal
     });
 
-    if (res.code !== 500 && res.list && res.list.length) {
-      const processedData = res.list.map(item =>
-        Object.assign({ playUrl: vodApi.playUrl, sourceName: vodApi.name }, item)
-      );
-      await smartCache.setWithStrategy(cacheKey, processedData, "vod");
-      vodData.value = [...vodData.value, ...processedData];
+    // 改进的响应验证和错误处理
+    if (res && typeof res === 'object') {
+      if (res.code === 200 && res.list && Array.isArray(res.list) && res.list.length > 0) {
+        // 验证每个item的基本结构
+        const validItems = res.list.filter(item =>
+          item && typeof item === 'object' && (item.vod_name || item.title)
+        );
+
+        if (validItems.length > 0) {
+          const processedData = validItems.map(item =>
+            Object.assign({ playUrl: vodApi.playUrl, sourceName: vodApi.name }, item)
+          );
+          await smartCache.setWithStrategy(cacheKey, processedData, "vod");
+          vodData.value = [...vodData.value, ...processedData];
+        }
+      } else if (res.code !== 200) {
+        console.warn(`VOD API返回错误状态: ${vodApi.api}, code: ${res.code}, message: ${res.msg || '未知错误'}`);
+      }
+    } else {
+      console.warn(`VOD API返回无效响应: ${vodApi.api}`);
     }
   } catch (err) {
-    console.error(`VOD获取失败: ${vodApi.api}`, err);
+    if (err.name !== 'AbortError') {
+      console.error(`VOD获取失败: ${vodApi.api}`, {
+        error: err.message || err,
+        vodApi: vodApi.name,
+        keyword: keyword.value,
+        timestamp: new Date().toISOString()
+      });
+      // 在生产环境中可以添加用户友好的错误提示
+      // 例如: showError(`${vodApi.name} 搜索失败，请稍后重试`)
+    }
   } finally {
     loadingStatus.value.set(vodApi.api, false);
+    currentVodSearches.delete(vodApi.api);
   }
 };
 
@@ -901,22 +1030,90 @@ const searchByVod = async () => {
   searchPerformed.value = true;
   vodData.value = [];
 
-  vodConfigSources.value.forEach(vodApi => {
-    loadingStatus.value.set(vodApi.api, false);
-    handleSingleVodSearch(vodApi);
+  // 清理之前的加载状态
+  loadingStatus.value.clear();
+
+  // 使用 Promise.allSettled 处理并发请求，避免竞态条件
+  const searchPromises = vodConfigSources.value.map(vodApi => {
+    loadingStatus.value.set(vodApi.api, true);
+    return handleSingleVodSearch(vodApi);
   });
+
+  try {
+    await Promise.allSettled(searchPromises);
+  } catch (error) {
+    console.error('VOD搜索过程中发生错误:', error);
+  }
+};
+
+// 数据验证函数
+const validateVodSource = (source) => {
+  return source &&
+    typeof source === 'object' &&
+    typeof source.api === 'string' &&
+    typeof source.name === 'string' &&
+    source.api.trim() !== '' &&
+    source.name.trim() !== '';
+};
+
+// 验证URL安全性
+const isValidUrl = (url) => {
+  try {
+    const urlObj = new URL(url);
+    // 只允许http和https协议
+    return ['http:', 'https:'].includes(urlObj.protocol);
+  } catch {
+    return false;
+  }
 };
 
 // 更新VOD源
 const updateVodSources = (sources) => {
-  vodConfigSources.value = sources;
+  if (sources && Array.isArray(sources)) {
+    // 验证和过滤数据
+    const validSources = sources.filter(source => {
+      const isValid = validateVodSource(source);
+      if (!isValid) {
+        console.warn('发现无效的VOD源配置:', source);
+      }
+      return isValid;
+    });
+
+    vodConfigSources.value = validSources;
+  } else {
+    console.warn('VOD源数据格式无效或为空');
+    vodConfigSources.value = [];
+  }
 };
 
 const search = (e) => {
-  if (badWords.includes(e)) {
+  // 输入验证和清理
+  if (!e || typeof e !== 'string') {
+    console.warn('搜索关键词无效');
+    return;
+  }
+
+  const cleanKeyword = e.trim();
+  if (cleanKeyword.length === 0) {
+    console.warn('搜索关键词不能为空');
+    return;
+  }
+
+  // 长度限制
+  if (cleanKeyword.length > 100) {
+    alert('搜索关键词过长，请输入100个字符以内的内容');
+    return;
+  }
+
+  // 敏感词检查
+  if (badWords.includes(cleanKeyword)) {
     return alert("请勿输入敏感词");
   }
-  keyword.value = e;
+
+  // XSS防护 - 移除潜在的脚本标签
+  const sanitizedKeyword = cleanKeyword.replace(/<script[^>]*>.*?<\/script>/gi, '');
+
+  keyword.value = sanitizedKeyword;
   skeletonLoading.value = false;
   sources.value = [];
   handleSearch();
@@ -960,21 +1157,91 @@ const categories = computed(() => [
 const iframeLoaded = ref(false);
 
 const switchCategory = (e) => {
+  // 防止重复切换到相同分类
+  if (category.value === e) {
+    return;
+  }
+
+  // 清理之前的定时器
+  if (iframeErrorTimer) {
+    clearTimeout(iframeErrorTimer);
+    iframeErrorTimer = null;
+  }
+
+  // 更新状态
   category.value = e;
   iframeLoaded.value = false;
+  sources.value = [];
+  vodData.value = [];
+  searchPerformed.value = false;
+
+  // 重置加载状态
+  loadingStatus.value.clear();
+
   if (e === "clouddrive") {
-    sources.value = [];
     handleSearch();
   } else if (e === "onlineVod") {
-    vodData.value = [];
     searchByVod();
   }
+
+  // 确保UI状态同步
+  nextTick(() => {
+    // 可以在这里添加额外的UI同步逻辑
+  });
 };
 
+// 处理iframe错误
+let iframeErrorTimer = null;
 const handleIframeError = () => {
   console.error("Iframe loading error");
   iframeLoaded.value = false;
+
+  // 清理之前的定时器
+  if (iframeErrorTimer) {
+    clearTimeout(iframeErrorTimer);
+  }
+
+  iframeErrorTimer = setTimeout(() => {
+    iframeLoaded.value = false;
+    iframeErrorTimer = null;
+  }, 3000);
 };
+
+// 组件卸载时清理资源
+onUnmounted(() => {
+  // 取消所有进行中的请求
+  if (currentSearchController) {
+    currentSearchController.abort();
+    currentSearchController = null;
+  }
+
+  // 取消所有VOD搜索请求
+  currentVodSearches.forEach(controller => {
+    controller.abort();
+  });
+  currentVodSearches.clear();
+
+  // 清理定时器
+  if (iframeErrorTimer) {
+    clearTimeout(iframeErrorTimer);
+    iframeErrorTimer = null;
+  }
+
+  // 停止队列处理并清理定时器
+  stopQueueProcessing();
+
+  // 清理SmartCache资源
+  if (smartCache && typeof smartCache.destroy === 'function') {
+    smartCache.destroy();
+  }
+
+  // 清理加载状态
+  loadingStatus.value.clear();
+
+  // 清理数据
+  vodData.value = [];
+  sources.value = [];
+});
 </script>
 
 <style scoped>
