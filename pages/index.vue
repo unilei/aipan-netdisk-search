@@ -50,7 +50,7 @@ useHead({
       property: "og:description",
       content: t('meta.description'),
     },
-    { property: "og:image", content: `/api/og-image` },
+    { property: "og:image", content: `/api/og-image?t=${Date.now()}` },
     // Twitter
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: t('meta.title') },
@@ -58,7 +58,7 @@ useHead({
       name: "twitter:description",
       content: t('meta.description'),
     },
-    { name: "twitter:image", content: `/api/og-image` },
+    { name: "twitter:image", content: `/api/og-image?t=${Date.now()}` },
     // 其他重要的meta标签
     { name: "robots", content: "index,follow" },
     { name: "author", content: "AIPAN.ME" },
@@ -118,30 +118,6 @@ onBeforeMount(() => {
   }
 });
 
-// 确保服务器端和客户端一致的初始化
-const initCategory = () => {
-  if (process.client && categories.value && categories.value.length > 0) {
-    activeCategory.value = activeCategoryCookie.value || categories.value[0].id;
-  }
-};
-
-// 确保在客户端再次初始化
-onMounted(async () => {
-  // 确保只在客户端执行
-  if (process.client) {
-    // 初始化分类
-    initCategory();
-
-    // 加载豆瓣数据
-    await doubanStore.getDoubanData();
-    doubanData.value = doubanStore.doubanData;
-    doubanLoadedFromRedis.value = true;
-
-    // 在页面加载完成后，将滚动位置重置到顶部
-    window.scrollTo(0, 0);
-  }
-});
-
 // 监听activeCategory变化，只保存到cookie
 watch(activeCategory, (newValue) => {
   activeCategoryCookie.value = newValue;
@@ -159,14 +135,22 @@ watch(locale, () => {
   }
 });
 
+onMounted(async () => {
+  // 加载豆瓣数据
+  await doubanStore.getDoubanData();
+  doubanData.value = doubanStore.doubanData;
+  doubanLoadedFromRedis.value = true;
+
+  // 在页面加载完成后，将滚动位置重置到顶部
+  window.scrollTo(0, 0);
+});
+
 // 监听路由变化
 watch(
   () => router.currentRoute.value,
   () => {
     // 当路由发生变化时，将滚动位置重置到顶部
-    if (process.client) {
-      window.scrollTo(0, 0);
-    }
+    window.scrollTo(0, 0);
   }
 );
 </script>
@@ -205,9 +189,9 @@ watch(
         </div>
       </div>
 
-      <div class="max-w-[1240px] mx-auto mt-4 px-4">
-        <!-- 导航分类标签 -->
-        <client-only>
+      <ClientOnly>
+        <div class="max-w-[1240px] mx-auto mt-4 px-4">
+          <!-- 导航分类标签 -->
           <div class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
             <button v-for="category in categories" :key="category.id"
               class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 whitespace-nowrap" :class="[
@@ -239,14 +223,8 @@ watch(
               </template>
             </template>
           </div>
-          <template #fallback>
-            <div class="flex items-center justify-center py-8">
-              <div class="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          </template>
-        </client-only>
-      </div>
-
+        </div>
+      </ClientOnly>
       <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
       <!-- Enhanced Backtop -->
       <el-backtop :right="24" :bottom="24"
