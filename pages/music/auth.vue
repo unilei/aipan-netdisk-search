@@ -20,9 +20,18 @@
                     {{ error }}
                 </div>
 
-                <button @click="handleSubmit"
-                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-offset-gray-800">
-                    验证
+                <button @click="handleSubmit" :disabled="loading"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 dark:bg-gray-700 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span v-if="loading" class="mr-2">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                    </span>
+                    {{ loading ? '验证中...' : '验证' }}
                 </button>
             </div>
         </div>
@@ -30,28 +39,63 @@
 </template>
 
 <script setup>
-import { MUSIC_PAGE_PASSWORD } from '~/server/utils/constants'
 import { simpleEncode } from "~/utils/index.js"
 
 const password = ref('')
 const error = ref('')
+const loading = ref(false)
 
-const handleSubmit = () => {
+// Check if music verification is enabled on page load
+onMounted(async () => {
+    try {
+        const response = await $fetch('/api/music/password')
+        const { enabled } = response.data || {}
+
+        // If music verification is disabled, redirect directly to music page
+        if (!enabled) {
+            navigateTo('/music')
+        }
+    } catch (error) {
+        console.error('Failed to check music verification status:', error)
+    }
+})
+
+const handleSubmit = async () => {
     if (!password.value) {
         error.value = '请输入密码'
         return
     }
 
-    if (password.value !== MUSIC_PAGE_PASSWORD) {
-        error.value = '密码错误'
-        return
+    loading.value = true
+    error.value = ''
+
+    try {
+        // Get current password and enabled status from database
+        const response = await $fetch('/api/music/password')
+        const { password: currentPassword, enabled } = response.data || {}
+
+        // If music verification is disabled, redirect directly to music page
+        if (!enabled) {
+            navigateTo('/music')
+            return
+        }
+
+        if (password.value !== (currentPassword || 'aipan.me2025')) {
+            error.value = '密码错误'
+            return
+        }
+
+        // Set encoded password in cookie
+        const musicAuth = useCookie('music-auth')
+        musicAuth.value = simpleEncode(password.value)
+
+        // Redirect to music page
+        navigateTo('/music')
+    } catch (error) {
+        console.error('验证失败:', error)
+        error.value = '验证失败，请重试'
+    } finally {
+        loading.value = false
     }
-
-    // Set encoded password in cookie
-    const musicAuth = useCookie('music-auth')
-    musicAuth.value = simpleEncode(password.value)
-
-    // Redirect to music page
-    navigateTo('/music')
 }
 </script>

@@ -11,7 +11,51 @@
                 </div>
             </div>
 
-            <!-- 配置表单 -->
+            <!-- 音乐验证码配置 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-lg font-semibold">音乐验证码配置</h2>
+                        <el-tag v-if="musicForm.enabled" type="success" size="small">已启用</el-tag>
+                        <el-tag v-else type="info" size="small">已禁用</el-tag>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <el-switch v-model="musicForm.enabled" active-text="启用验证" inactive-text="关闭验证" class="ml-2"
+                            @change="handleMusicEnabledChange" />
+                    </div>
+                </div>
+
+                <el-form ref="musicFormRef" :model="musicForm" :rules="musicRules" label-width="120px"
+                    :disabled="!musicForm.enabled">
+                    <el-form-item label="访问密码" prop="password">
+                        <el-input v-model="musicForm.password" placeholder="请输入音乐页面访问密码" :disabled="!musicForm.enabled"
+                            show-password>
+                            <template #append>
+                                <el-button @click="resetMusicPassword">
+                                    重置
+                                </el-button>
+                            </template>
+                        </el-input>
+                        <div class="mt-1 text-xs text-gray-500">
+                            默认密码：aipan.me2025
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item>
+                        <div class="flex items-center gap-4">
+                            <el-button type="primary" @click="handleMusicSubmit" :loading="musicLoading"
+                                :disabled="!musicForm.enabled">
+                                保存配置
+                            </el-button>
+                            <el-button @click="resetMusicForm" :disabled="!musicForm.enabled">
+                                重置表单
+                            </el-button>
+                        </div>
+                    </el-form-item>
+                </el-form>
+            </div>
+
+            <!-- 夸克网盘配置 -->
             <div class="bg-white rounded-lg p-6 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2">
@@ -80,8 +124,14 @@ definePageMeta({
 });
 
 const formRef = ref(null);
-const loading = ref(false);
-const resourceTypes = ref([]);
+const loading = ref(false)
+const musicLoading = ref(false)
+const resourceTypes = ref([])
+
+const musicForm = reactive({
+    enabled: true,
+    password: 'aipan.me2025'
+});
 
 const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
 
@@ -91,6 +141,13 @@ const form = reactive({
     typeId: '',
     enabled: false
 });
+
+const musicRules = {
+    password: [
+        { required: true, message: '请输入访问密码', trigger: 'blur' },
+        { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+    ]
+};
 
 const rules = {
     apiUrl: [
@@ -233,9 +290,109 @@ const handleSubmit = async () => {
     }
 };
 
+// 音乐验证码相关方法
+const musicFormRef = ref(null);
+
+const handleMusicEnabledChange = (value) => {
+    if (!value) {
+        ElMessageBox.confirm(
+            '关闭音乐验证将允许所有用户访问音乐页面，是否继续？',
+            '警告',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }
+        ).then(() => {
+            handleMusicSubmit();
+        }).catch(() => {
+            musicForm.enabled = true;
+        });
+    } else {
+        // 启用验证时也需要调用API更新字段
+        handleMusicSubmit();
+    }
+};
+
+const resetMusicPassword = () => {
+    musicForm.password = 'aipan.me2025';
+    // 调用API保存到数据库
+    handleMusicSubmit();
+};
+
+const resetMusicForm = () => {
+    ElMessageBox.confirm(
+        '确定要重置音乐验证码配置吗？',
+        '提示',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }
+    ).then(() => {
+        musicFormRef.value?.resetFields();
+        musicForm.password = 'aipan.me2025';
+        // 调用API保存到数据库
+        handleMusicSubmit();
+    });
+};
+
+const handleMusicSubmit = async () => {
+    if (!musicFormRef.value) return;
+
+    try {
+        if (musicForm.enabled) {
+            const valid = await musicFormRef.value.validate();
+            if (!valid) return;
+        }
+
+        musicLoading.value = true;
+
+        const res = await $fetch('/api/admin/settings/music', {
+            method: 'POST',
+            body: {
+                enabled: musicForm.enabled,
+                password: musicForm.password
+            },
+            headers: {
+                Authorization: `Bearer ${useCookie('token').value}`
+            }
+        });
+
+        if (res.code === 200) {
+            ElMessage.success('音乐验证码配置保存成功');
+        } else {
+            ElMessage.error(res.msg || '保存失败');
+        }
+    } catch (error) {
+        console.error('保存音乐验证码配置失败:', error);
+        ElMessage.error('保存配置失败');
+    } finally {
+        musicLoading.value = false;
+    }
+};
+
+const getMusicConfig = async () => {
+    try {
+        const res = await $fetch('/api/admin/settings/music', {
+            headers: {
+                Authorization: `Bearer ${useCookie('token').value}`
+            }
+        });
+        if (res.code === 200) {
+            musicForm.enabled = res.data.enabled ?? true;
+            musicForm.password = res.data.password || 'aipan.me2025';
+        }
+    } catch (error) {
+        console.error('获取音乐验证码配置失败:', error);
+        ElMessage.error('获取音乐验证码配置失败');
+    }
+};
+
 onMounted(() => {
     getResourceTypes();
     getConfig();
+    getMusicConfig();
 });
 </script>
 
