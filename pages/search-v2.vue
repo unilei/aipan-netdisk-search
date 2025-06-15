@@ -472,7 +472,11 @@ const queue = [];
 let running = 0;
 
 // 增加超时时间，添加更多错误处理
-const fetchWithTimeout = async (url, options, timeout = 30000) => {
+const fetchWithTimeout = async (url, options, timeout) => {
+  // 为 indexI API 设置更长的超时时间，因为响应较慢
+  if (!timeout) {
+    timeout = url.includes('/api/sources/indexI') ? 60000 : 30000; // indexI API 60秒，其他 30秒
+  }
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
