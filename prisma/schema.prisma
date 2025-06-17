@@ -7,7 +7,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
+  previewFeatures = ["queryCompiler", "driverAdapters"]
   output          = "../generated/prisma"
 }
 
@@ -45,10 +45,15 @@ model User {
   messages     ChatMessage[] // 用户发送的消息
   chatRooms    ChatRoomUser[] // 用户加入的聊天室
   createdRooms ChatRoom[] // 用户创建的聊天室
+
+  @@index([role])
+  @@index([status])
+  @@index([createdAt])
+  @@index([isVerified])
 }
 
 model ResourceType {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String  @unique
   description String?
   isUserType  Boolean @default(false)
@@ -60,6 +65,11 @@ model ResourceType {
   userResources UserResource[] // 一个资源类型可以对应多个用户资源
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+
+  @@index([creatorId])
+  @@index([isUserType])
+  @@index([isEnabled])
+  @@index([createdAt])
 }
 
 model Resource {
@@ -73,6 +83,11 @@ model Resource {
 
   creator User         @relation(fields: [creatorId], references: [id])
   type    ResourceType @relation(fields: [typeId], references: [id])
+
+  @@index([creatorId])
+  @@index([typeId])
+  @@index([createdAt])
+  @@index([name])
 }
 
 model Post {
@@ -88,6 +103,10 @@ model Post {
   comments   Comment[]
 
   creator User @relation(fields: [creatorId], references: [id])
+
+  @@index([creatorId])
+  @@index([createdAt])
+  @@index([title])
 }
 
 model PostCategory {
@@ -175,6 +194,12 @@ model BlogPost {
   updatedAt       DateTime @updatedAt
 
   categories BlogPostToCategory[] // 使用中间表实现多对多关系
+
+  @@index([authorId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([title])
+  @@index([tags])
 }
 
 // 新增的用户资源模型
@@ -193,6 +218,13 @@ model UserResource {
 
   creator User         @relation(fields: [creatorId], references: [id])
   type    ResourceType @relation(fields: [typeId], references: [id])
+
+  @@index([creatorId])
+  @@index([typeId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([name])
+  @@index([format])
 }
 
 // 修改 SystemSettings 模型
@@ -249,6 +281,9 @@ model ForumCategory {
   updatedAt   DateTime @updatedAt
 
   topics ForumTopic[]
+
+  @@index([order])
+  @@index([createdAt])
 }
 
 // 论坛主题模型
