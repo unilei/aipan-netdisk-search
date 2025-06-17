@@ -160,34 +160,6 @@
             </div>
           </div>
         </transition>
-
-        <!-- Soupian iframe -->
-        <transition name="fade" mode="out-in">
-          <div v-if="category === 'soupian'" class="h-full w-full py-4">
-            <div
-              class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg shadow-sm hover:shadow-lg hover:bg-white/70 dark:hover:bg-gray-800/70 p-5 ring-1 ring-black/5 dark:ring-white/5 transition-all duration-300">
-              <div class="relative w-full h-[calc(100vh-240px)]">
-                <div v-if="!iframeLoaded"
-                  class="absolute inset-0 flex items-center justify-center bg-white/90 dark:bg-gray-800/90 rounded-lg backdrop-blur-sm">
-                  <div class="flex flex-col items-center gap-3">
-                    <div class="relative w-12 h-12">
-                      <div class="absolute inset-0 border-4 border-purple-500/30 rounded-full"></div>
-                      <div
-                        class="absolute inset-0 border-4 border-purple-500 border-t-transparent rounded-full animate-spin">
-                      </div>
-                    </div>
-                    <span class="text-sm text-purple-600 dark:text-purple-400 font-medium">加载中...</span>
-                  </div>
-                </div>
-                <iframe id="soupian" :src="'https://soupian.pro/frame?movie=' +
-                  encodeURIComponent(keyword)
-                  "
-                  class="w-full h-full rounded-lg border-0 bg-white/90 dark:bg-gray-900/90 transition-colors duration-300"
-                  loading="lazy" @load="iframeLoaded = true" @error="handleIframeError"></iframe>
-              </div>
-            </div>
-          </div>
-        </transition>
       </div>
 
       <!-- Loading State -->
@@ -201,21 +173,6 @@
           <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">
             正在搜索中...
           </h3>
-
-          <div
-            class="flex items-center justify-center mt-2 bg-white/40 dark:bg-gray-800/40 px-4 py-2 rounded-full backdrop-blur-sm shadow-sm">
-            <i class="fas fa-info-circle text-purple-500 dark:text-purple-400 mr-2"></i>
-            <p class="text-xs text-gray-600 dark:text-gray-300">
-              <span v-if="category === 'clouddrive'">
-                正在搜索
-                <span class="font-medium text-purple-600 dark:text-purple-400">{{ loadingProgress.completed }}/{{
-                  loadingProgress.total
-                  }}</span>
-                个网盘
-              </span>
-              <span v-else> 正在查询最佳影视资源 </span>
-            </p>
-          </div>
         </div>
       </div>
 
@@ -1146,12 +1103,6 @@ const categories = computed(() => [
       },
     ]
     : []),
-  // {
-  //   value: "soupian",
-  //   label: "搜片",
-  //   icon: "fas fa-video",
-  //   description: "专业影视搜索引擎",
-  // },
 ]);
 
 const iframeLoaded = ref(false);
