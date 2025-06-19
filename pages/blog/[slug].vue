@@ -330,7 +330,17 @@ const copyLink = async () => {
       copySuccess.value = false;
     }, 2000);
   } catch (err) {
-    console.error("Failed to copy:", err);
+    // 降级方案
+    const textArea = document.createElement('textarea');
+    textArea.value = window.location.href;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    copySuccess.value = true;
+    setTimeout(() => {
+      copySuccess.value = false;
+    }, 2000);
   }
 };
 
@@ -385,7 +395,7 @@ onMounted(() => {
       if (lang && hljs.getLanguage(lang)) {
         try {
           return hljs.highlight(code, { language: lang }).value;
-        } catch (__) {}
+        } catch (__) { }
       }
       return hljs.highlightAuto(code).value;
     },
@@ -408,41 +418,88 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300"
-  >
+    class="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
     <ClientOnly>
       <!-- 顶部导航栏 -->
       <nav
-        class="bg-white/80 dark:bg-gray-800/80 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10 backdrop-blur-sm"
-      >
-        <div class="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex items-center justify-between py-4">
-            <NuxtLink
-              to="/blog"
-              class="flex items-center gap-1 text-gray-600 text-xs dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400 transition-colors duration-200"
-            >
-              <i class="fas fa-arrow-left"></i>
-              返回
-            </NuxtLink>
-            <button
-              @click="showToc = !showToc"
-              class="md:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-blue-500 dark:hover:text-blue-400"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </button>
+        class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between items-center h-16">
+            <!-- 左侧：返回按钮和标题 -->
+            <div class="flex items-center space-x-4">
+              <NuxtLink to="/blog"
+                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-transparent hover:border-blue-200 dark:hover:border-blue-800">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                返回博客
+              </NuxtLink>
+              <div class="hidden sm:block h-6 w-px bg-gray-300 dark:bg-gray-600"></div>
+              <h1 class="hidden sm:block text-lg font-semibold text-gray-900 dark:text-white truncate max-w-md">
+                {{ blog?.title || '加载中...' }}
+              </h1>
+            </div>
+
+            <!-- 右侧：操作按钮 -->
+            <div class="flex items-center space-x-2">
+              <!-- 目录按钮（移动端） -->
+              <button @click="showToc = !showToc"
+                class="lg:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-200 dark:hover:border-blue-800">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+              </button>
+
+              <!-- 分享按钮 -->
+              <div class="relative">
+                <button @click="showShareMenu = !showShareMenu"
+                  class="p-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-200 dark:hover:border-blue-800">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                  </svg>
+                </button>
+
+                <!-- 分享菜单 -->
+                <Transition name="share-menu">
+                  <div v-show="showShareMenu"
+                    class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 backdrop-blur-sm">
+                    <button @click="copyLink"
+                      class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center transition-colors duration-200">
+                      <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      {{ copySuccess ? '已复制!' : '复制链接' }}
+                    </button>
+                    <button @click="shareToSocial('twitter')"
+                      class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center transition-colors duration-200">
+                      <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                          d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
+                      </svg>
+                      分享到 Twitter
+                    </button>
+                    <button @click="shareToSocial('facebook')"
+                      class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center transition-colors duration-200">
+                      <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                          d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                      </svg>
+                      分享到 Facebook
+                    </button>
+                    <button @click="shareToSocial('weibo')"
+                      class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 flex items-center transition-colors duration-200">
+                      <svg class="w-4 h-4 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                          d="M9.31 8.17c-2.77-.3-5.21 1.04-5.45 2.99-.24 1.95 1.74 3.84 4.51 4.14 2.77.3 5.21-1.04 5.45-2.99.24-1.95-1.74-3.84-4.51-4.14zm11.17-1.4c-.5-.12-1.01-.18-1.53-.18-1.4 0-2.75.35-3.9 1.01-.23.13-.31.42-.18.65.13.23.42.31.65.18.93-.54 2.02-.83 3.15-.83.42 0 .83.05 1.24.14.23.05.46-.09.51-.32.05-.23-.09-.46-.32-.51z" />
+                      </svg>
+                      分享到微博
+                    </button>
+                  </div>
+                </Transition>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
@@ -455,174 +512,122 @@ onUnmounted(() => {
             <!-- 文章内容 -->
             <article>
               <!-- 骨架屏 -->
-              <div
-                v-if="loading"
-                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden transition-all duration-300"
-              >
-                <div
-                  class="px-6 py-8 border-b border-gray-100 dark:border-gray-700 animate-pulse"
-                >
-                  <div
-                    class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"
-                  ></div>
-                  <div
-                    class="flex items-center text-sm text-gray-500 dark:text-gray-400"
-                  >
-                    <div
-                      class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"
-                    ></div>
+              <div v-if="loading"
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden transition-all duration-300">
+                <div class="px-6 py-8 border-b border-gray-100 dark:border-gray-700 animate-pulse">
+                  <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                  <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
                     <div class="mx-2">·</div>
                     <div class="flex gap-2">
-                      <div
-                        class="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-full"
-                      ></div>
-                      <div
-                        class="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-full"
-                      ></div>
+                      <div class="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+                      <div class="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                     </div>
                   </div>
                 </div>
                 <div class="px-6 py-8 space-y-4">
-                  <div
-                    class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"
-                  ></div>
-                  <div
-                    class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"
-                  ></div>
-                  <div
-                    class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"
-                  ></div>
-                  <div
-                    class="h-32 bg-gray-200 dark:bg-gray-700 rounded w-full mt-6"
-                  ></div>
+                  <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                  <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                  <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
+                  <div class="h-32 bg-gray-200 dark:bg-gray-700 rounded w-full mt-6"></div>
                 </div>
               </div>
 
               <!-- 实际内容 -->
-              <div
-                v-else
-                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden transition-all duration-300"
-              >
+              <div v-else
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <!-- 文章头部信息 -->
                 <header
-                  class="px-6 py-4 border-b border-gray-100 dark:border-gray-700"
-                >
-                  <h1
-                    class="text-2xl font-bold text-gray-900 dark:text-white mb-4 leading-tight"
-                  >
+                  class="px-8 py-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-gray-800 dark:to-gray-700">
+                  <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                     {{ blog?.title }}
                   </h1>
-                  <div
-                    class="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400"
-                  >
-                    <time class="flex items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 mr-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      {{ formatDate(blog?.createdAt) }}
-                    </time>
-                    <div class="flex items-center">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 mr-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      {{ readingTime }} 分钟阅读
+                  <div class="flex flex-wrap items-center gap-6 text-sm">
+                    <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                      <div
+                        class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600 dark:text-blue-400"
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <time>{{ formatDate(blog?.createdAt) }}</time>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                      <span
-                        v-for="category in blog?.categories"
-                        :key="category.id"
-                        class="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-medium"
-                      >
-                        {{ category.category.name }}
-                      </span>
+                    <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                      <div
+                        class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-600 dark:text-green-400"
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <span>{{ readingTime }} 分钟阅读</span>
+                    </div>
+                    <div v-if="blog?.categories?.length" class="flex items-center gap-2">
+                      <div
+                        class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-600 dark:text-purple-400"
+                          fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                      </div>
+                      <div class="flex flex-wrap gap-2">
+                        <span v-for="category in blog.categories" :key="category.id"
+                          class="px-3 py-1 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs border border-gray-200 dark:border-gray-600">
+                          {{ category.category.name }}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </header>
 
                 <!-- 文章内容 -->
-                <div class="px-6 py-4">
-                  <div
-                    class="markdown-body prose prose-lg dark:prose-invert max-w-none"
-                    v-html="parsedContent"
-                  ></div>
+                <div class="px-8 py-6">
+                  <div class="markdown-body prose prose-lg dark:prose-invert max-w-none" v-html="parsedContent"></div>
                 </div>
 
                 <!-- 文章底部 -->
-                <footer
-                  class="px-6 py-8 border-t border-gray-100 dark:border-gray-700"
-                >
-                  <div class="flex justify-between items-center">
-                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                <footer class="px-8 py-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                  <div class="flex justify-between items-center flex-wrap gap-4">
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                      <i class="fas fa-heart text-red-500 mr-2"></i>
                       感谢阅读
                     </div>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                      <!-- 复制链接按钮 -->
+                      <button @click="copyLink"
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        {{ copySuccess ? '已复制' : '复制链接' }}
+                      </button>
                       <!-- 分享按钮 -->
                       <div class="relative">
-                        <button
-                          @click="showShareMenu = !showShareMenu"
-                          class="text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-3 w-3"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"
-                            />
+                        <button @click="showShareMenu = !showShareMenu"
+                          class="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
                           </svg>
                         </button>
 
                         <!-- 分享菜单 -->
-                        <div
-                          v-show="showShareMenu"
-                          class="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50"
-                        >
+                        <div v-show="showShareMenu"
+                          class="absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50">
                           <!-- 复制链接 -->
-                          <button
-                            @click="copyLink"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-                              />
+                          <button @click="copyLink"
+                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                              stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                             </svg>
                             <span>{{
                               copySuccess ? "已复制!" : "复制链接"
@@ -630,69 +635,41 @@ onUnmounted(() => {
                           </button>
 
                           <!-- Twitter -->
-                          <button
-                            @click="shareToSocial('twitter')"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
-                          >
-                            <svg
-                              class="h-4 w-4"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                            >
+                          <button @click="shareToSocial('twitter')"
+                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                               <path
-                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
-                              />
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                             </svg>
                             <span>分享到 Twitter</span>
                           </button>
 
                           <!-- Facebook -->
-                          <button
-                            @click="shareToSocial('facebook')"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
-                          >
-                            <svg
-                              class="h-4 w-4"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                            >
+                          <button @click="shareToSocial('facebook')"
+                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                               <path
-                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-                              />
+                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                             </svg>
                             <span>分享到 Facebook</span>
                           </button>
 
                           <!-- LinkedIn -->
-                          <button
-                            @click="shareToSocial('linkedin')"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
-                          >
-                            <svg
-                              class="h-4 w-4"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                            >
+                          <button @click="shareToSocial('linkedin')"
+                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                               <path
-                                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
-                              />
+                                d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                             </svg>
                             <span>分享到 LinkedIn</span>
                           </button>
 
                           <!-- 微博 -->
-                          <button
-                            @click="shareToSocial('weibo')"
-                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
-                          >
-                            <svg
-                              class="h-4 w-4"
-                              viewBox="0 0 24 24"
-                              fill="currentColor"
-                            >
+                          <button @click="shareToSocial('weibo')"
+                            class="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                               <path
-                                d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.737 5.439l-.002.004zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.096-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.18.601l.014-.028zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.57-.18-.405-.615.375-.977.42-1.804 0-2.404-.781-1.112-2.915-1.053-5.364-.03 0 0-.766.331-.571-.271.376-1.217.315-2.224-.27-2.809-1.338-1.337-4.869.045-7.888 3.08C1.309 10.87 0 13.273 0 15.348c0 3.981 5.099 6.395 10.086 6.395 6.536 0 10.888-3.801 10.888-6.82 0-1.822-1.547-2.854-2.915-3.284v.01zm1.908-5.092c-.766-.856-1.908-1.187-2.96-.962-.436.09-.706.511-.616.932.09.42.511.691.932.602.511-.105 1.067.044 1.442.465.376.421.466.977.316 1.473-.136.406.089.856.51.992.405.119.857-.105.992-.512.33-1.021.12-2.178-.646-3.035l.03.045zm2.418-2.195c-1.576-1.757-3.905-2.419-6.054-1.968-.496.104-.812.587-.706 1.081.104.496.586.813 1.082.707 1.532-.331 3.185.15 4.296 1.383.98 1.081 1.363 2.554 1.156 3.906-.09.586.181 1.172.767 1.337.586.165 1.156-.18 1.322-.767.391-1.772-.181-3.742-1.398-5.24-.465-.467-.465-.467-.465-.467v.028z"
-                              />
+                                d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.737 5.439l-.002.004zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.096-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.18.601l.014-.028zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.57-.18-.405-.615.375-.977.42-1.804 0-2.404-.781-1.112-2.915-1.053-5.364-.03 0 0-.766.331-.571-.271.376-1.217.315-2.224-.27-2.809-1.338-1.337-4.869.045-7.888 3.08C1.309 10.87 0 13.273 0 15.348c0 3.981 5.099 6.395 10.086 6.395 6.536 0 10.888-3.801 10.888-6.82 0-1.822-1.547-2.854-2.915-3.284v.01zm1.908-5.092c-.766-.856-1.908-1.187-2.96-.962-.436.09-.706.511-.616.932.09.42.511.691.932.602.511-.105 1.067.044 1.442.465.376.421.466.977.316 1.473-.136.406.089.856.51.992.405.119.857-.105.992-.512.33-1.021.12-2.178-.646-3.035l.03.045zm2.418-2.195c-1.576-1.757-3.905-2.419-6.054-1.968-.496.104-.812.587-.706 1.081.104.496.586.813 1.082.707 1.532-.331 3.185.15 4.296 1.383.98 1.081 1.363 2.554 1.156 3.906-.09.586.181 1.172.767 1.337.586.165 1.156-.18 1.322-.767.391-1.772-.181-3.742-1.398-5.24-.465-.467-.465-.467-.465-.467v.028z" />
                             </svg>
                             <span>分享到微博</span>
                           </button>
@@ -706,13 +683,9 @@ onUnmounted(() => {
 
             <!-- 评论区域 -->
             <div class="mt-8">
-              <div
-                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden"
-              >
+              <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
                 <div class="p-6 border-b border-gray-100 dark:border-gray-700">
-                  <h2
-                    class="text-sm font-bold text-gray-900 dark:text-white flex items-center"
-                  >
+                  <h2 class="text-sm font-bold text-gray-900 dark:text-white flex items-center">
                     <i class="fas fa-comments mr-3 text-blue-500"></i>
                     评论讨论
                   </h2>
@@ -727,44 +700,26 @@ onUnmounted(() => {
           <!-- 侧边栏 - 目录 -->
           <aside class="hidden lg:block lg:col-span-3">
             <div class="sticky top-24">
-              <nav
-                v-if="headings.length > 0"
-                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
-              >
-                <h2
-                  class="text-lg font-semibold text-gray-900 dark:text-white mb-4"
-                >
-                  目录
-                </h2>
-                <ul class="space-y-2">
-                  <li
-                    v-for="heading in headings"
-                    :key="heading.id"
-                    :class="[
-                      'group relative',
-                      heading.level === 'h3' ? 'pl-4' : '',
+              <nav v-if="headings.length > 0"
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-sm">
+                <div class="flex items-center mb-6">
+                  <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
+                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    目录
+                  </h2>
+                </div>
+                <ul class="space-y-1">
+                  <li v-for="heading in headings" :key="heading.id" :class="[
+                    'group relative transition-all duration-200',
+                    heading.level === 'h3' ? 'pl-4' : '',
+                  ]">
+                    <a href="#" @click.prevent="scrollToHeading(heading.id)" :class="[
+                      'block py-2 px-3 text-sm rounded-lg transition-all duration-200 border-l-2 border-transparent hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700',
                       activeHeading === heading.id
-                        ? 'bg-blue-50 dark:bg-blue-900/20 rounded'
-                        : '',
-                    ]"
-                  >
-                    <div
-                      v-if="
-                        heading.level === 'h2' && activeHeading === heading.id
-                      "
-                      class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r"
-                    ></div>
-                    <a
-                      href="#"
-                      @click.prevent="scrollToHeading(heading.id)"
-                      :class="[
-                        'block py-2 px-2 text-sm transition-colors duration-200 rounded',
-                        activeHeading === heading.id
-                          ? 'text-blue-600 dark:text-blue-400'
-                          : 'text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400',
-                        heading.level === 'h3' ? 'text-[13px]' : '',
-                      ]"
-                    >
+                        ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-blue-500 dark:border-blue-400 font-medium'
+                        : 'text-gray-600 dark:text-gray-400',
+                      heading.level === 'h3' ? 'text-[13px]' : '',
+                    ]">
                       {{ heading.text }}
                     </a>
                   </li>
@@ -775,73 +730,43 @@ onUnmounted(() => {
 
           <!-- 移动端目录抽屉 -->
           <div v-show="showToc" class="fixed inset-0 z-50 lg:hidden">
-            <div
-              class="absolute inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
-              @click="showToc = false"
-            ></div>
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" @click="showToc = false">
+            </div>
             <div class="fixed inset-y-0 right-0 pl-10 max-w-full flex">
               <div class="relative w-screen max-w-md">
                 <div
-                  class="h-full flex flex-col bg-white dark:bg-gray-800 shadow-xl"
-                >
+                  class="h-full flex flex-col bg-white dark:bg-gray-800 shadow-2xl border-l border-gray-200 dark:border-gray-700">
                   <div class="flex-1 overflow-y-auto">
                     <div class="p-6">
-                      <div class="flex items-center justify-between mb-6">
-                        <h2
-                          class="text-lg font-semibold text-gray-900 dark:text-white"
-                        >
-                          目录
-                        </h2>
-                        <button
-                          @click="showToc = false"
-                          class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                          <svg
-                            class="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M6 18L18 6M6 6l12 12"
-                            />
+                      <div
+                        class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center">
+                          <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
+                          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            目录
+                          </h2>
+                        </div>
+                        <button @click="showToc = false"
+                          class="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200">
+                          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12" />
                           </svg>
                         </button>
                       </div>
                       <nav v-if="headings.length > 0">
-                        <ul class="space-y-2">
-                          <li
-                            v-for="heading in headings"
-                            :key="heading.id"
-                            :class="[
-                              'group relative',
-                              heading.level === 'h3' ? 'pl-4' : '',
+                        <ul class="space-y-1">
+                          <li v-for="heading in headings" :key="heading.id" :class="[
+                            'group relative transition-all duration-200',
+                            heading.level === 'h3' ? 'pl-4' : '',
+                          ]">
+                            <a href="#" @click.prevent="scrollToHeading(heading.id)" :class="[
+                              'block py-2 px-3 text-sm rounded-lg transition-all duration-200 border-l-2 border-transparent hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-700',
                               activeHeading === heading.id
-                                ? 'bg-blue-50 dark:bg-blue-900/20 rounded'
-                                : '',
-                            ]"
-                          >
-                            <div
-                              v-if="
-                                heading.level === 'h2' &&
-                                activeHeading === heading.id
-                              "
-                              class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-r"
-                            ></div>
-                            <a
-                              href="#"
-                              @click.prevent="scrollToHeading(heading.id)"
-                              :class="[
-                                'block py-2 px-2 text-sm transition-colors duration-200 rounded',
-                                activeHeading === heading.id
-                                  ? 'text-blue-600 dark:text-blue-400'
-                                  : 'text-gray-600 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400',
-                                heading.level === 'h3' ? 'text-[13px]' : '',
-                              ]"
-                            >
+                                ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-blue-500 dark:border-blue-400 font-medium'
+                                : 'text-gray-600 dark:text-gray-400',
+                              heading.level === 'h3' ? 'text-[13px]' : '',
+                            ]">
                               {{ heading.text }}
                             </a>
                           </li>

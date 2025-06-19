@@ -184,58 +184,115 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="min-h-[calc(100vh-140px)] bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div
+        class="min-h-[calc(100vh-140px)] bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-all duration-500">
         <!-- 顶部横幅 -->
-        <div class="relative h-[120px] overflow-hidden">
+        <div class="relative h-[200px] overflow-hidden">
             <!-- 背景图 -->
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500">
-                <div class="absolute inset-0 bg-black/20"></div>
-                <!-- 装饰图形 -->
-                <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
+                <div class="absolute inset-0 bg-black/30"></div>
+                <!-- 动态装饰图形 -->
+                <div class="absolute inset-0 opacity-20">
+                    <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl animate-float"></div>
                     <div
-                        class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_500px_at_50%_200px,rgba(255,255,255,0.1),transparent)]">
+                        class="absolute top-20 right-20 w-24 h-24 bg-white/10 rounded-full blur-lg animate-float-delayed">
+                    </div>
+                    <div
+                        class="absolute bottom-10 left-1/3 w-20 h-20 bg-white/10 rounded-full blur-md animate-float-slow">
+                    </div>
+                    <div
+                        class="absolute inset-0 bg-[radial-gradient(circle_600px_at_50%_300px,rgba(255,255,255,0.1),transparent)]">
+                    </div>
+                </div>
+                <!-- 网格背景 -->
+                <div class="absolute inset-0 opacity-5">
+                    <div class="w-full h-full"
+                        style="background-image: radial-gradient(circle, white 1px, transparent 1px); background-size: 30px 30px;">
                     </div>
                 </div>
             </div>
             <!-- 内容 -->
             <div class="relative h-full max-w-7xl mx-auto px-4 flex flex-col justify-center items-center text-white">
-                <h1 class="text-4xl md:text-2xl font-bold mb-4">博客天地</h1>
-                <p class="text-xs sm:text-sm opacity-90 text-center max-w-2xl">
-                    分享技术见解，记录生活点滴
-                </p>
+                <div class="text-center space-y-6 animate-fade-in-up">
+                    <h1
+                        class="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent drop-shadow-lg">
+                        博客天地
+                    </h1>
+                    <p class="text-sm md:text-base opacity-90 max-w-3xl leading-relaxed">
+                        分享技术见解，记录生活点滴，探索无限可能
+                    </p>
+                    <div class="flex items-center justify-center space-x-4 text-sm opacity-80">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span>持续更新</span>
+                        </div>
+                        <div class="w-1 h-4 bg-white/30"></div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                            <span>{{ totalCount }} 篇文章</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- 主要内容区 -->
         <div class="max-w-[1240px] mx-auto px-4 py-12">
             <!-- 分类导航 -->
-            <div class="mb-8 flex items-center justify-center flex-wrap gap-3">
-                <button class="px-6 py-2 rounded-full text-xs font-medium transition-all duration-300" :class="[
-                    categoryId === undefined
-                        ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white hover:shadow-md hover:shadow-blue-500/20'
-                ]" @click="handleSelectCategory(undefined)">
-                    全部文章
-                </button>
-                <button v-for="category in categoriesData" :key="category.id"
-                    class="px-6 py-2 rounded-full text-xs font-medium transition-all duration-300" :class="[
-                        categoryId === category.id
-                            ? 'bg-blue-500 text-white shadow-md shadow-blue-500/20'
-                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white hover:shadow-md hover:shadow-blue-500/20'
-                    ]" @click="handleSelectCategory(category.id)">
-                    {{ category.name }}
-                </button>
+            <div class="mb-12">
+                <div class="text-center mb-6">
+                    <h2 class="text-lg font-bold text-gray-800 dark:text-white mb-2">文章分类</h2>
+                    <div class="w-20 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
+                </div>
+                <div class="flex items-center justify-center flex-wrap gap-4">
+                    <button
+                        class="group relative px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105"
+                        :class="[
+                            categoryId === undefined
+                                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25'
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 hover:text-white hover:shadow-lg hover:shadow-blue-500/25 border border-gray-200 dark:border-gray-700'
+                        ]" @click="handleSelectCategory(undefined)">
+                        <span class="relative z-10">全部文章</span>
+                        <div v-if="categoryId === undefined"
+                            class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
+                    </button>
+                    <button v-for="category in categoriesData" :key="category.id"
+                        class="group relative px-8 py-3 rounded-full text-sm font-medium transition-all duration-300 transform hover:scale-105"
+                        :class="[
+                            categoryId === category.id
+                                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-500/25'
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 hover:text-white hover:shadow-lg hover:shadow-blue-500/25 border border-gray-200 dark:border-gray-700'
+                        ]" @click="handleSelectCategory(category.id)">
+                        <span class="relative z-10">{{ category.name }}</span>
+                        <div v-if="categoryId === category.id"
+                            class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
+                    </button>
+                </div>
             </div>
 
             <!-- 文章列表 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 <!-- 骨架屏 -->
                 <template v-if="loading">
-                    <div v-for="i in 6" :key="i"
-                        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden animate-pulse">
-                        <div class="h-32 bg-gray-200 dark:bg-gray-700"></div>
-                        <div class="p-6">
-                            <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                    <div v-for="i in 8" :key="i"
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden animate-pulse border border-gray-100 dark:border-gray-700">
+                        <div
+                            class="h-48 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 relative">
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-gray-300/50 to-transparent dark:from-gray-600/50">
+                            </div>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="flex gap-2">
+                                <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+                                <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                                <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                            </div>
                             <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                         </div>
                     </div>
@@ -243,51 +300,105 @@ onMounted(async () => {
 
                 <!-- 文章卡片 -->
                 <template v-else>
+                    <div v-if="postsData.length === 0" class="col-span-full">
+                        <div class="text-center py-20">
+                            <div
+                                class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center">
+                                <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                    </path>
+                                </svg>
+                            </div>
+                            <h3 class="text-base font-semibold text-gray-600 dark:text-gray-400 mb-2">暂无文章</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-500">该分类下还没有发布文章</p>
+                        </div>
+                    </div>
                     <nuxt-link v-for="(item, index) in postsData" :key="index" :to="'/blog/' + item.slug"
-                        class="group bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                        class="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 dark:border-gray-700 hover:border-blue-200 dark:hover:border-blue-800 transform hover:-translate-y-2 hover:scale-[1.02]">
                         <!-- 文章封面图 -->
-                        <div class="relative h-32 overflow-hidden bg-gray-100 dark:bg-gray-700">
+                        <div
+                            class="relative h-48 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600">
                             <img :src="item.cover"
-                                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                class="w-full h-full object-cover transition-all duration-500 group-hover:scale-110 group-hover:rotate-1"
                                 :alt="item.title" loading="lazy" @error="handleImageError(item)" />
                             <!-- 添加图片来源信息 -->
                             <div v-if="item.unsplashCredit"
-                                class="absolute bottom-0 right-0 p-1 text-xs text-white/80 bg-black/50">
+                                class="absolute bottom-2 right-2 px-2 py-1 text-xs text-white/90 bg-black/60 rounded-md backdrop-blur-sm">
                                 Photo by
                                 <a :href="item.unsplashCredit.link" target="_blank" rel="noopener noreferrer"
-                                    class="hover:text-white">
+                                    class="hover:text-blue-300 transition-colors">
                                     {{ item.unsplashCredit.name }}
                                 </a>
                             </div>
+                            <!-- 渐变遮罩 -->
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500">
+                            </div>
+                            <!-- 阅读按钮 -->
+                            <div
+                                class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
+                                <div
+                                    class="bg-white/20 backdrop-blur-md rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                        </path>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                         <!-- 文章信息 -->
-                        <div class="p-6">
-                            <div class="flex gap-2 mb-3">
+                        <div class="p-6 space-y-4">
+                            <div class="flex flex-wrap gap-2">
                                 <span v-for="(category, idx) in item.categories" :key="idx"
-                                    class="px-2.5 py-1 text-xs rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                                    class="px-3 py-1 text-xs font-medium rounded-full bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800">
                                     {{ category.category.name }}
                                 </span>
                             </div>
-                            <h2
-                                class="text-xs sm:text-sm font-bold text-gray-800 dark:text-white group-hover:text-blue-500 transition-colors duration-300 line-clamp-2 mb-2">
-                                {{ item.title }}
-                            </h2>
-                            <time class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                                {{ formatDate(item.createdAt) }}
-                            </time>
+                            <div class="space-y-3">
+                                <h2
+                                    class="text-sm font-bold text-gray-800 dark:text-white group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-500 group-hover:to-purple-500 group-hover:bg-clip-text transition-all duration-300 line-clamp-2 leading-tight">
+                                    {{ item.title }}
+                                </h2>
+                                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                    <time class="flex items-center space-x-1">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                            </path>
+                                        </svg>
+                                        <span>{{ formatDate(item.createdAt) }}</span>
+                                    </time>
+                                    <div
+                                        class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <span class="text-xs">阅读更多</span>
+                                        <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </nuxt-link>
                 </template>
             </div>
 
             <!-- 分页 -->
-            <div v-if="!loading && totalCount > 0" class="mt-12 flex justify-center">
-                <el-pagination v-model:current-page="page" v-model:page-size="pageSize" :page-sizes="[12, 24, 36]"
-                    :background="true" layout="prev, pager, next" :total="totalCount" @size-change="handleSizeChange"
-                    @current-change="handleCurrentChange" class="pagination-custom" />
+            <div v-if="!loading && totalCount > 0" class="mt-16 flex justify-center">
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
+                    <el-pagination v-model:current-page="page" v-model:page-size="pageSize" :page-sizes="[12, 24, 36]"
+                        :background="true" layout="prev, pager, next, sizes, jumper" :total="totalCount"
+                        @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                        class="pagination-custom" />
+                </div>
             </div>
         </div>
     </div>
@@ -296,17 +407,108 @@ onMounted(async () => {
 <style scoped>
 /* 自定义分页样式 */
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
-    background-color: rgb(59 130 246);
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+    border-color: rgb(59 130 246);
 }
 
 :deep(.el-pagination.is-background .el-pager li) {
     background-color: transparent;
     color: inherit;
+    border: 1px solid rgb(229 231 235);
+    margin: 0 2px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+:deep(.el-pagination.is-background .el-pager li:hover:not(.is-active)) {
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+    color: white;
+    transform: translateY(-1px);
+}
+
+:deep(.el-pagination .btn-prev),
+:deep(.el-pagination .btn-next) {
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+:deep(.el-pagination .btn-prev:hover),
+:deep(.el-pagination .btn-next:hover) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* 动画效果 */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+}
+
+@keyframes float-delayed {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-15px) rotate(-3deg);
+    }
+}
+
+@keyframes float-slow {
+
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(2deg);
+    }
+}
+
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float-delayed 8s ease-in-out infinite;
+}
+
+.animate-float-slow {
+    animation: float-slow 10s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 1s ease-out;
 }
 
 /* 文章卡片阴影过渡 */
 .group {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 文章标题多行省略 */
@@ -319,7 +521,7 @@ onMounted(async () => {
 
 /* 优化图片加载过渡 */
 img {
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: all 0.5s ease;
     opacity: 0;
 }
 
@@ -327,16 +529,11 @@ img.loaded {
     opacity: 1;
 }
 
-/* 优化卡片悬浮效果 */
-.group:hover {
-    transform: translateY(-2px);
-}
-
 /* 添加图片加载动画 */
 @keyframes imageLoad {
     from {
         opacity: 0;
-        transform: scale(1.05);
+        transform: scale(1.1);
     }
 
     to {
@@ -346,6 +543,50 @@ img.loaded {
 }
 
 .group img {
-    animation: imageLoad 0.3s ease forwards;
+    animation: imageLoad 0.6s ease forwards;
+}
+
+/* 渐变文字效果 */
+.bg-clip-text {
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgb(243 244 246);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgb(59 130 246), rgb(147 51 234));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgb(37 99 235), rgb(126 34 206));
+}
+
+/* 暗色模式滚动条 */
+.dark ::-webkit-scrollbar-track {
+    background: rgb(31 41 55);
 }
 </style>
