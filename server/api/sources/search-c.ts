@@ -42,11 +42,21 @@ export default defineEventHandler(async (event) => {
 
         const body: Body = await readBody(event);
 
+        // Select random proxy URL
+        const proxyUrls = [
+            'https://pansearch-proxy-api-production.ahagwybwqs.workers.dev/api/pansearch/search',
+            'https://pansearch-proxy-api-production.hwyybsb.workers.dev/api/pansearch/search',
+            'https://pansearch-proxy-api-production.xuliulei666.workers.dev/api/pansearch/search',
+            'https://pansearch-proxy-api-production.pansearch-proxy.workers.dev/api/pansearch/search'
+        ];
+        const randomUrl = proxyUrls[Math.floor(Math.random() * proxyUrls.length)];
+        console.log(`🎯 Selected proxy URL for c_search: ${randomUrl}`);
+
         // Fetch with retry
-        const result = await fetchWithRetry('https://netdisk.aipan.me/api/search/c_search', {
+        const result = await fetchWithRetry(randomUrl, {
             method: 'GET',
             query: {
-                ...body
+                keyword: body.name
             }
         });
 
