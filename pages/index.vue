@@ -166,15 +166,15 @@ const stopRouteWatcher = watch(
 <template>
   <div>
     <div class="custom-bg py-[60px] min-h-[calc(100vh-130px)] transition-colors duration-300">
-      <div class="flex flex-col items-center justify-center gap-4 md:mt-[60px] mt-[30px] animate-fadeIn">
-        <div class="flex items-center justify-center gap-2 md:gap-4 hover:scale-105 transition-transform duration-300">
-          <img class="w-16 h-16 md:w-24 md:h-24 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
-          <div class="text-center">
+      <div class="flex flex-col items-center justify-center gap-4 md:mt-[80px] mt-[30px]">
+        <div class="flex items-center justify-center gap-2">
+          <img class="w-16 h-16 md:w-22 md:h-22 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
+          <div>
             <h1
-              class="text-3xl md:text-4xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+              class="text-2xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
               AIPAN.ME
             </h1>
-            <p class="text-gray-600 text-xs md:text-sm dark:text-gray-400 mt-1 md:mt-2">
+            <p class="text-gray-600 text-left text-xs dark:text-gray-400">
               {{ $t('subtitle') }}
             </p>
           </div>
