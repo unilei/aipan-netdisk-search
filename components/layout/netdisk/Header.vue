@@ -180,7 +180,7 @@ onBeforeUnmount(() => {
           <!-- 语言切换按钮 (仅桌面显示) -->
           <div class="hidden md:flex items-center mr-2">
             <button v-for="loc in availableLocales" :key="loc.code"
-              class="px-2 py-1 text-xs rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+              class="px-2 py-1 text-xs rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
               @click="switchLanguage(loc.code)">
               {{ $t(`language.${loc.code}`) }}
             </button>
