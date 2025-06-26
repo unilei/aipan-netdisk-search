@@ -52,7 +52,36 @@ useHead({
     { name: "author", content: "AIPAN.ME" },
     { name: "viewport", content: "width=device-width, initial-scale=1" },
   ],
-  link: [{ rel: "canonical", href: "https://aipan.me" }],
+  link: [{ rel: "canonical", href: "https://www.aipan.me" }],
+  script: [
+    {
+      type: 'application/ld+json',
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "爱盼",
+        "alternateName": "AIPAN.ME",
+        "url": "https://www.aipan.me",
+        "description": "爱盼是一个开源免费的资源搜索平台，提供网盘资源搜索、音乐下载、TV直播、TVBox接口地址以及博客发布等多项功能",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://www.aipan.me/search?keyword={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "AIPAN.ME",
+          "url": "https://www.aipan.me"
+        },
+        "sameAs": [
+          "https://github.com/aipan-me"
+        ]
+      })
+    }
+  ]
 });
 
 
