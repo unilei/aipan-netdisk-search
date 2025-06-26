@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma";
+import type { PrismaClient } from '@prisma/client';
 
 export default defineEventHandler(async (event) => {
     const { id } = getRouterParams(event);
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'Title, content, creatorId, categoryIds, and tags are required'
         })
     }
-    
+
     const currentPost = await prisma.blogPost.findUnique({
         where: {
             id: Number(id),
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
 
     try {
         // Use a transaction to ensure both operations (delete and update) succeed or fail together
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx: PrismaClient) => {
             // If the post was previously published (has an associated Post record), delete that record
             if (currentPost.status === 'published' && currentPost.postId) {
                 await tx.post.delete({
@@ -67,7 +68,7 @@ export default defineEventHandler(async (event) => {
                     }
                 }
             });
-            
+
             return updatedPost;
         });
 

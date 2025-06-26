@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
             })
 
             // 获取这些主题下的所有回复ID
-            const topicIds = topics.map(t => t.id)
+            const topicIds = topics.map((t: { id: number }) => t.id)
 
             // 删除所有这些主题下的回复
             await prisma.forumPost.deleteMany({
