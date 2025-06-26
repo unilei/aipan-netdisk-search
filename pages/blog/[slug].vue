@@ -98,7 +98,7 @@ useHead({
     },
     {
       property: "og:url",
-      content: computed(() => `https://aipan.me/blog/${route.params.slug}`),
+      content: computed(() => `https://www.aipan.me/blog/${route.params.slug}`),
     },
     // Twitter
     { name: "twitter:card", content: "summary_large_image" },
@@ -160,7 +160,7 @@ useHead({
   link: [
     {
       rel: "canonical",
-      href: computed(() => `https://aipan.me/blog/${route.params.slug}`),
+      href: computed(() => `https://www.aipan.me/blog/${route.params.slug}`),
     },
   ],
   // 添加结构化数据
@@ -184,14 +184,14 @@ useHead({
             name: "AIPAN.ME",
             logo: {
               "@type": "ImageObject",
-              url: "https://aipan.me/logo.png",
+              url: "https://www.aipan.me/logo.png",
             },
           },
           datePublished: blog.value.createdAt,
           dateModified: blog.value.updatedAt || blog.value.createdAt,
           mainEntityOfPage: {
             "@type": "WebPage",
-            "@id": `https://aipan.me/blog/${route.params.slug}`,
+            "@id": `https://www.aipan.me/blog/${route.params.slug}`,
           },
         });
       }),
@@ -631,7 +631,7 @@ onUnmounted(() => {
                             </svg>
                             <span>{{
                               copySuccess ? "已复制!" : "复制链接"
-                            }}</span>
+                              }}</span>
                           </button>
 
                           <!-- Twitter -->

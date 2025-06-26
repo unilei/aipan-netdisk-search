@@ -186,7 +186,7 @@ useHead({
         { name: 'author', content: 'AIPAN.ME' },
     ],
     link: [
-        { rel: 'canonical', href: 'https://aipan.me/spring-festival' }
+        { rel: 'canonical', href: 'https://www.aipan.me/spring-festival' }
     ]
 })
 

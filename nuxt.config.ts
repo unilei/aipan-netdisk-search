@@ -30,14 +30,20 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: '爱盼：资源随心，娱乐无限',
+      htmlAttrs: {
+        lang: 'zh-CN'
+      },
       link: [
         {
           rel: 'stylesheet',
           href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
         },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'canonical', href: 'https://www.aipan.me' },
       ],
       meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
           name: 'keywords',
           content:
@@ -48,23 +54,34 @@ export default defineNuxtConfig({
           content:
             '爱盼是一个开源免费的资源搜索平台，提供网盘资源搜索、音乐下载、TV直播、TVBox接口地址以及博客发布等多项功能，打造丰富的影视音聚合体验，供学习与探索使用，不支持商业用途。',
         },
+        { name: 'author', content: 'AIPAN.ME' },
+        { name: 'publisher', content: 'AIPAN.ME' },
+        { name: 'robots', content: 'index, follow' },
         { name: 'format-detection', content: 'telephone=no' },
+        { name: 'theme-color', content: '#3b82f6' },
+        // Open Graph
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: '爱盼' },
         { property: 'og:title', content: '爱盼：资源随心，音乐下载与影视聚合平台' },
         {
           property: 'og:description',
           content:
             '爱盼是一个开源免费的资源搜索平台，提供网盘、音乐、影视等多种资源，一站式服务，供学习使用。',
         },
-        { property: 'og:image', content: 'https://aipan.me/logo.png' },
-        { property: 'og:url', content: 'https://aipan.me' },
+        { property: 'og:image', content: 'https://www.aipan.me/logo.png' },
+        { property: 'og:image:width', content: '1200' },
+        { property: 'og:image:height', content: '630' },
+        { property: 'og:url', content: 'https://www.aipan.me' },
+        { property: 'og:locale', content: 'zh_CN' },
+        // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:site', content: '@aipan_me' },
         { name: 'twitter:title', content: '爱盼：资源随心，音乐下载与影视聚合平台' },
         {
           name: 'twitter:description',
           content: '免费开源的资源搜索平台，涵盖音乐、网盘、影视等内容，学习探索好去处！',
         },
-        { name: 'twitter:image', content: 'https://aipan.me/logo.png' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'twitter:image', content: 'https://www.aipan.me/logo.png' },
         // 统一 referrer 策略
         { name: 'referrer', content: 'strict-origin-when-cross-origin' },
       ],
