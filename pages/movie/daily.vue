@@ -68,7 +68,7 @@ onMounted(() => {
             },
         ],
         link: [
-            { rel: 'canonical', href: 'https://aipan.me/movie/daily' }
+            { rel: 'canonical', href: 'https://www.aipan.me/movie/daily' }
         ]
     })
 })
@@ -214,10 +214,10 @@ definePageMeta({
                                     class="flex items-center p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors duration-300">
                                     <i :class="`fas fa-${field} w-6 text-blue-500 dark:text-blue-400`"></i>
                                     <span class="font-medium min-w-20 text-gray-700 dark:text-gray-300">{{ key
-                                        }}：</span>
+                                    }}：</span>
                                     <span class="ml-2 text-gray-600 dark:text-gray-400">{{
                                         key === '上映日期' ? formatDate(movieInfo?.[key]) : movieInfo?.[key]
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
                         </div>
