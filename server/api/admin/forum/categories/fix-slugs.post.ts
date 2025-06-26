@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
         const categories = await prisma.forumCategory.findMany()
 
         // 使用一个对象来记录已经存在的slug，确保唯一性
-        const existingSlugs = {}
+        const existingSlugs: Record<string, number> = {}
 
         // 创建slugger实例
         const slugger = new GithubSlugger()

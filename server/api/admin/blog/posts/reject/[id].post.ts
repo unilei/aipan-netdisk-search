@@ -1,10 +1,11 @@
 import prisma from '~/lib/prisma';
+import type { PrismaClient } from '@prisma/client';
 
 export default defineEventHandler(async (event) => {
   const blogPostId = parseInt(event.context.params?.id as string);
   const body = await readBody(event);
   const reason = body.reason || '未提供拒绝原因';
-  
+
   if (!blogPostId) {
     return {
       code: 400,
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     // 使用事务确保数据一致性
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: PrismaClient) => {
       // 1. 获取博客文章
       const blogPost = await tx.blogPost.findUnique({
         where: { id: blogPostId },
@@ -34,7 +35,7 @@ export default defineEventHandler(async (event) => {
       // 2. 更新博客文章状态为已拒绝
       const updatedPost = await tx.blogPost.update({
         where: { id: blogPostId },
-        data: { 
+        data: {
           status: 'rejected',
           rejectionReason: reason
         }

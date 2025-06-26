@@ -77,7 +77,7 @@ export default defineEventHandler(async (event) => {
       select: { userId: true }
     })
 
-    const memberIds = roomMembers.map(member => member.userId)
+    const memberIds = roomMembers.map((member: { userId: number }) => member.userId)
 
     // 构建查询条件
     const whereCondition: any = {
@@ -125,11 +125,11 @@ export default defineEventHandler(async (event) => {
 
   } catch (error) {
     console.error('获取可邀请用户失败:', error)
-    
+
     if (error instanceof H3Error) {
       throw error
     }
-    
+
     if (error instanceof jwt.JsonWebTokenError) {
       throw createError({
         statusCode: 401,
