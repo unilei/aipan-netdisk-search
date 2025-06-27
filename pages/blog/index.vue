@@ -1,17 +1,22 @@
 <script setup>
 import moment from 'moment';
 
-// SEO配置
+// SEO优化
+useSeoMeta({
+    title: 'AIPAN博客 - 技术分享与生活感悟平台 | 编程技术·开发经验·生活随笔',
+    description: 'AIPAN博客是一个优质的内容分享平台，汇聚技术文章、编程教程、开发经验、生活感悟等多样化内容。用户可以在这里发布博客文章，分享知识和见解，与社区成员交流学习。',
+    keywords: 'AIPAN博客,技术博客,编程教程,开发经验,技术分享,生活感悟,博客平台,内容创作,知识分享',
+    ogTitle: 'AIPAN博客 - 技术分享与生活感悟平台',
+    ogDescription: 'AIPAN博客汇聚技术文章、编程教程、开发经验、生活感悟等优质内容，与社区成员交流学习。',
+    twitterTitle: 'AIPAN博客 - 技术分享与生活感悟平台',
+    twitterDescription: '优质内容分享平台！技术文章、编程教程、开发经验、生活感悟，与社区交流学习！'
+});
+
 useHead({
-    title: 'AIPAN.ME 博客 - 分享技术、生活和见解',
     meta: [
         {
-            name: 'description',
-            content: '爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。'
-        },
-        {
             name: 'keywords',
-            content: '博客,AIPAN.ME,技术博客,编程,生活感悟'
+            content: 'AIPAN博客,技术博客,编程教程,开发经验,技术分享,生活感悟'
         },
         // Open Graph / Facebook
         { property: 'og:type', content: 'website' },
