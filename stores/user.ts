@@ -9,6 +9,7 @@ export interface UserState {
         email?: string;
         role?: string;
         avatarStyle?: string;
+        points?: number;
     } | null;
 }
 
@@ -21,6 +22,7 @@ interface UserResponse {
         email: string;
         role: string;
         avatarStyle?: string;
+        points?: number;
     };
     error?: unknown;
 }

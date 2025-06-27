@@ -20,6 +20,8 @@ export default defineEventHandler(async (event: H3Event) => {
             event.node.req.url?.startsWith("/api/user/forum") ||
             event.node.req.url?.startsWith("/api/notifications") ||
             event.node.req.url?.startsWith("/api/chat") ||
+            event.node.req.url?.startsWith("/api/user/checkin") ||
+            event.node.req.url?.startsWith("/api/user/points") ||
             (event.node.req.url?.startsWith("/api/user/protected") ?? false)
         );
 

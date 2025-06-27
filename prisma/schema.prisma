@@ -26,6 +26,7 @@ model User {
   status      String   @default("active") // Possible values: "active", "disabled"
   avatarStyle String   @default("avataaars") // 头像风格
   salt        String? // 用于密码哈希的盐
+  points      Int      @default(0) // 用户积分
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   isVerified  Boolean  @default(false)
@@ -46,14 +47,19 @@ model User {
   chatRooms    ChatRoomUser[] // 用户加入的聊天室
   createdRooms ChatRoom[] // 用户创建的聊天室
 
+  // Check-in related
+  checkIns      CheckIn[] // 用户的签到记录
+  pointsHistory PointsHistory[] // 用户的积分历史
+
   @@index([role])
   @@index([status])
   @@index([createdAt])
   @@index([isVerified])
+  @@index([points])
 }
 
 model ResourceType {
-  id          Int      @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   name        String  @unique
   description String?
   isUserType  Boolean @default(false)
@@ -407,4 +413,38 @@ model ChatMessage {
   @@index([roomId])
   @@index([createdAt])
   @@index([replyToId])
+}
+
+// 用户签到记录模型
+model CheckIn {
+  id              Int      @id @default(autoincrement())
+  userId          Int // 用户ID
+  checkInDate     DateTime @db.Date // 签到日期
+  points          Int // 本次签到获得的积分
+  consecutiveDays Int // 连续签到天数
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, checkInDate]) // 确保用户每天只能签到一次
+  @@index([userId])
+  @@index([checkInDate])
+  @@index([consecutiveDays])
+}
+
+// 用户积分历史记录模型
+model PointsHistory {
+  id          Int      @id @default(autoincrement())
+  userId      Int // 用户ID
+  points      Int // 积分变化数量（正数为获得，负数为消费）
+  type        String // 积分类型：'checkin'（签到）, 'bonus'（奖励）, 'consume'（消费）
+  description String?  @db.Text // 积分变化描述
+  relatedId   Int? // 关联记录ID（如签到记录ID）
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
 }
