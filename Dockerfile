@@ -22,7 +22,9 @@ RUN apk add --no-cache \
   pixman-dev \
   pangomm-dev \
   libjpeg-turbo-dev \
-  freetype-dev
+  freetype-dev \
+  fontconfig-dev \
+  ttf-dejavu
 
 # 复制 package.json  
 COPY package.json ./
@@ -59,6 +61,18 @@ RUN rm -rf node_modules && \
 # 生产阶段
 FROM node:20.19.2-alpine
 LABEL authors="Lei"
+
+# 安装 Canvas 运行时依赖
+RUN apk add --no-cache \
+  cairo \
+  jpeg \
+  pango \
+  giflib \
+  pixman \
+  libjpeg-turbo \
+  freetype \
+  fontconfig \
+  ttf-dejavu
 
 WORKDIR /app
 
