@@ -177,6 +177,17 @@ export default defineNuxtConfig({
     experimental: {
       wasm: true,
     },
+    // 确保 API 路由正确处理
+    routeRules: {
+      '/api/**': {
+        headers: { 'Cache-Control': 'max-age=300' },
+        prerender: false
+      },
+      '/api/og-image': {
+        headers: { 'Cache-Control': 'max-age=86400' },
+        prerender: false
+      }
+    }
   },
   runtimeConfig: {
     // 兼容两种格式的环境变量，优先使用 NUXT_ 前缀的变量

@@ -3,6 +3,11 @@ import { createCanvas } from 'canvas'
 
 export default defineEventHandler(async (event) => {
   try {
+    // 检查 canvas 是否可用
+    if (!createCanvas) {
+      throw new Error('Canvas is not available')
+    }
+
     // Create canvas
     const width = 1200
     const height = 630
@@ -97,9 +102,27 @@ export default defineEventHandler(async (event) => {
     return buffer
   } catch (error) {
     console.error('Failed to generate OG image:', error)
-    throw createError({
-      statusCode: 500,
-      message: 'Failed to generate OG image'
-    })
+
+    // 返回一个简单的 SVG 作为后备方案
+    const fallbackSvg = `
+      <svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grad)"/>
+        <text x="600" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">AIPAN.ME</text>
+        <text x="600" y="340" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.9)">AI网盘搜索 · 智能助手 · 多功能平台</text>
+        <text x="600" y="380" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">网盘搜索 · AI助手 · 音乐播放 · 游戏娱乐</text>
+        <text x="600" y="410" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">博客论坛 · 聊天社区 · 影视直播</text>
+      </svg>
+    `
+
+    event.node.res.setHeader('Content-Type', 'image/svg+xml')
+    event.node.res.setHeader('Cache-Control', 'public, max-age=3600')
+
+    return fallbackSvg
   }
 })

@@ -38,7 +38,7 @@ useHead({
       property: "og:description",
       content: t('meta.description'),
     },
-    { property: "og:image", content: `/api/og-image?t=${Date.now()}` },
+    { property: "og:image", content: import.meta.client ? '/og-image-fallback.svg' : `/api/og-image?t=${Date.now()}` },
     // Twitter
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: t('meta.title') },
@@ -46,7 +46,7 @@ useHead({
       name: "twitter:description",
       content: t('meta.description'),
     },
-    { name: "twitter:image", content: `/api/og-image?t=${Date.now()}` },
+    { name: "twitter:image", content: import.meta.client ? '/og-image-fallback.svg' : `/api/og-image?t=${Date.now()}` },
     // 其他重要的meta标签
     { name: "robots", content: "index,follow" },
     { name: "author", content: "AIPAN.ME" },
