@@ -123,6 +123,16 @@ export type ChatRoomUser = $Result.DefaultSelection<Prisma.$ChatRoomUserPayload>
  * 
  */
 export type ChatMessage = $Result.DefaultSelection<Prisma.$ChatMessagePayload>
+/**
+ * Model CheckIn
+ * 
+ */
+export type CheckIn = $Result.DefaultSelection<Prisma.$CheckInPayload>
+/**
+ * Model PointsHistory
+ * 
+ */
+export type PointsHistory = $Result.DefaultSelection<Prisma.$PointsHistoryPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -468,6 +478,26 @@ export class PrismaClient<
     * ```
     */
   get chatMessage(): Prisma.ChatMessageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.checkIn`: Exposes CRUD operations for the **CheckIn** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CheckIns
+    * const checkIns = await prisma.checkIn.findMany()
+    * ```
+    */
+  get checkIn(): Prisma.CheckInDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.pointsHistory`: Exposes CRUD operations for the **PointsHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more PointsHistories
+    * const pointsHistories = await prisma.pointsHistory.findMany()
+    * ```
+    */
+  get pointsHistory(): Prisma.PointsHistoryDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -929,7 +959,9 @@ export namespace Prisma {
     Notification: 'Notification',
     ChatRoom: 'ChatRoom',
     ChatRoomUser: 'ChatRoomUser',
-    ChatMessage: 'ChatMessage'
+    ChatMessage: 'ChatMessage',
+    CheckIn: 'CheckIn',
+    PointsHistory: 'PointsHistory'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -948,7 +980,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "userVodConfig" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage"
+      modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "userVodConfig" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2580,6 +2612,154 @@ export namespace Prisma {
           }
         }
       }
+      CheckIn: {
+        payload: Prisma.$CheckInPayload<ExtArgs>
+        fields: Prisma.CheckInFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CheckInFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CheckInFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>
+          }
+          findFirst: {
+            args: Prisma.CheckInFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CheckInFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>
+          }
+          findMany: {
+            args: Prisma.CheckInFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>[]
+          }
+          create: {
+            args: Prisma.CheckInCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>
+          }
+          createMany: {
+            args: Prisma.CheckInCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CheckInCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>[]
+          }
+          delete: {
+            args: Prisma.CheckInDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>
+          }
+          update: {
+            args: Prisma.CheckInUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>
+          }
+          deleteMany: {
+            args: Prisma.CheckInDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CheckInUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CheckInUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>[]
+          }
+          upsert: {
+            args: Prisma.CheckInUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CheckInPayload>
+          }
+          aggregate: {
+            args: Prisma.CheckInAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCheckIn>
+          }
+          groupBy: {
+            args: Prisma.CheckInGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CheckInGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CheckInCountArgs<ExtArgs>
+            result: $Utils.Optional<CheckInCountAggregateOutputType> | number
+          }
+        }
+      }
+      PointsHistory: {
+        payload: Prisma.$PointsHistoryPayload<ExtArgs>
+        fields: Prisma.PointsHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.PointsHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.PointsHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.PointsHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.PointsHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.PointsHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.PointsHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.PointsHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.PointsHistoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>[]
+          }
+          delete: {
+            args: Prisma.PointsHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>
+          }
+          update: {
+            args: Prisma.PointsHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.PointsHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.PointsHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.PointsHistoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.PointsHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$PointsHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.PointsHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregatePointsHistory>
+          }
+          groupBy: {
+            args: Prisma.PointsHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<PointsHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.PointsHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<PointsHistoryCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2690,6 +2870,8 @@ export namespace Prisma {
     chatRoom?: ChatRoomOmit
     chatRoomUser?: ChatRoomUserOmit
     chatMessage?: ChatMessageOmit
+    checkIn?: CheckInOmit
+    pointsHistory?: PointsHistoryOmit
   }
 
   /* Types for Logging */
@@ -2797,6 +2979,8 @@ export namespace Prisma {
     messages: number
     chatRooms: number
     createdRooms: number
+    checkIns: number
+    pointsHistory: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2813,6 +2997,8 @@ export namespace Prisma {
     messages?: boolean | UserCountOutputTypeCountMessagesArgs
     chatRooms?: boolean | UserCountOutputTypeCountChatRoomsArgs
     createdRooms?: boolean | UserCountOutputTypeCountCreatedRoomsArgs
+    checkIns?: boolean | UserCountOutputTypeCountCheckInsArgs
+    pointsHistory?: boolean | UserCountOutputTypeCountPointsHistoryArgs
   }
 
   // Custom InputTypes
@@ -2915,6 +3101,20 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountCreatedRoomsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ChatRoomWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCheckInsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckInWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountPointsHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PointsHistoryWhereInput
   }
 
 
@@ -3304,10 +3504,12 @@ export namespace Prisma {
 
   export type UserAvgAggregateOutputType = {
     id: number | null
+    points: number | null
   }
 
   export type UserSumAggregateOutputType = {
     id: number | null
+    points: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -3319,6 +3521,7 @@ export namespace Prisma {
     status: string | null
     avatarStyle: string | null
     salt: string | null
+    points: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isVerified: boolean | null
@@ -3333,6 +3536,7 @@ export namespace Prisma {
     status: string | null
     avatarStyle: string | null
     salt: string | null
+    points: number | null
     createdAt: Date | null
     updatedAt: Date | null
     isVerified: boolean | null
@@ -3347,6 +3551,7 @@ export namespace Prisma {
     status: number
     avatarStyle: number
     salt: number
+    points: number
     createdAt: number
     updatedAt: number
     isVerified: number
@@ -3356,10 +3561,12 @@ export namespace Prisma {
 
   export type UserAvgAggregateInputType = {
     id?: true
+    points?: true
   }
 
   export type UserSumAggregateInputType = {
     id?: true
+    points?: true
   }
 
   export type UserMinAggregateInputType = {
@@ -3371,6 +3578,7 @@ export namespace Prisma {
     status?: true
     avatarStyle?: true
     salt?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
     isVerified?: true
@@ -3385,6 +3593,7 @@ export namespace Prisma {
     status?: true
     avatarStyle?: true
     salt?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
     isVerified?: true
@@ -3399,6 +3608,7 @@ export namespace Prisma {
     status?: true
     avatarStyle?: true
     salt?: true
+    points?: true
     createdAt?: true
     updatedAt?: true
     isVerified?: true
@@ -3500,6 +3710,7 @@ export namespace Prisma {
     status: string
     avatarStyle: string
     salt: string | null
+    points: number
     createdAt: Date
     updatedAt: Date
     isVerified: boolean
@@ -3533,6 +3744,7 @@ export namespace Prisma {
     status?: boolean
     avatarStyle?: boolean
     salt?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isVerified?: boolean
@@ -3549,6 +3761,8 @@ export namespace Prisma {
     messages?: boolean | User$messagesArgs<ExtArgs>
     chatRooms?: boolean | User$chatRoomsArgs<ExtArgs>
     createdRooms?: boolean | User$createdRoomsArgs<ExtArgs>
+    checkIns?: boolean | User$checkInsArgs<ExtArgs>
+    pointsHistory?: boolean | User$pointsHistoryArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -3561,6 +3775,7 @@ export namespace Prisma {
     status?: boolean
     avatarStyle?: boolean
     salt?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isVerified?: boolean
@@ -3575,6 +3790,7 @@ export namespace Prisma {
     status?: boolean
     avatarStyle?: boolean
     salt?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isVerified?: boolean
@@ -3589,12 +3805,13 @@ export namespace Prisma {
     status?: boolean
     avatarStyle?: boolean
     salt?: boolean
+    points?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     isVerified?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "role" | "status" | "avatarStyle" | "salt" | "createdAt" | "updatedAt" | "isVerified", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "username" | "email" | "password" | "role" | "status" | "avatarStyle" | "salt" | "points" | "createdAt" | "updatedAt" | "isVerified", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     resources?: boolean | User$resourcesArgs<ExtArgs>
     resourceTypes?: boolean | User$resourceTypesArgs<ExtArgs>
@@ -3609,6 +3826,8 @@ export namespace Prisma {
     messages?: boolean | User$messagesArgs<ExtArgs>
     chatRooms?: boolean | User$chatRoomsArgs<ExtArgs>
     createdRooms?: boolean | User$createdRoomsArgs<ExtArgs>
+    checkIns?: boolean | User$checkInsArgs<ExtArgs>
+    pointsHistory?: boolean | User$pointsHistoryArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -3630,6 +3849,8 @@ export namespace Prisma {
       messages: Prisma.$ChatMessagePayload<ExtArgs>[]
       chatRooms: Prisma.$ChatRoomUserPayload<ExtArgs>[]
       createdRooms: Prisma.$ChatRoomPayload<ExtArgs>[]
+      checkIns: Prisma.$CheckInPayload<ExtArgs>[]
+      pointsHistory: Prisma.$PointsHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3640,6 +3861,7 @@ export namespace Prisma {
       status: string
       avatarStyle: string
       salt: string | null
+      points: number
       createdAt: Date
       updatedAt: Date
       isVerified: boolean
@@ -4050,6 +4272,8 @@ export namespace Prisma {
     messages<T extends User$messagesArgs<ExtArgs> = {}>(args?: Subset<T, User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     chatRooms<T extends User$chatRoomsArgs<ExtArgs> = {}>(args?: Subset<T, User$chatRoomsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatRoomUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     createdRooms<T extends User$createdRoomsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdRoomsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChatRoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    checkIns<T extends User$checkInsArgs<ExtArgs> = {}>(args?: Subset<T, User$checkInsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    pointsHistory<T extends User$pointsHistoryArgs<ExtArgs> = {}>(args?: Subset<T, User$pointsHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4087,6 +4311,7 @@ export namespace Prisma {
     readonly status: FieldRef<"User", 'String'>
     readonly avatarStyle: FieldRef<"User", 'String'>
     readonly salt: FieldRef<"User", 'String'>
+    readonly points: FieldRef<"User", 'Int'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly isVerified: FieldRef<"User", 'Boolean'>
@@ -4787,6 +5012,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ChatRoomScalarFieldEnum | ChatRoomScalarFieldEnum[]
+  }
+
+  /**
+   * User.checkIns
+   */
+  export type User$checkInsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    where?: CheckInWhereInput
+    orderBy?: CheckInOrderByWithRelationInput | CheckInOrderByWithRelationInput[]
+    cursor?: CheckInWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CheckInScalarFieldEnum | CheckInScalarFieldEnum[]
+  }
+
+  /**
+   * User.pointsHistory
+   */
+  export type User$pointsHistoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    where?: PointsHistoryWhereInput
+    orderBy?: PointsHistoryOrderByWithRelationInput | PointsHistoryOrderByWithRelationInput[]
+    cursor?: PointsHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PointsHistoryScalarFieldEnum | PointsHistoryScalarFieldEnum[]
   }
 
   /**
@@ -28808,6 +29081,2253 @@ export namespace Prisma {
 
 
   /**
+   * Model CheckIn
+   */
+
+  export type AggregateCheckIn = {
+    _count: CheckInCountAggregateOutputType | null
+    _avg: CheckInAvgAggregateOutputType | null
+    _sum: CheckInSumAggregateOutputType | null
+    _min: CheckInMinAggregateOutputType | null
+    _max: CheckInMaxAggregateOutputType | null
+  }
+
+  export type CheckInAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    points: number | null
+    consecutiveDays: number | null
+  }
+
+  export type CheckInSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    points: number | null
+    consecutiveDays: number | null
+  }
+
+  export type CheckInMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    checkInDate: Date | null
+    points: number | null
+    consecutiveDays: number | null
+    createdAt: Date | null
+  }
+
+  export type CheckInMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    checkInDate: Date | null
+    points: number | null
+    consecutiveDays: number | null
+    createdAt: Date | null
+  }
+
+  export type CheckInCountAggregateOutputType = {
+    id: number
+    userId: number
+    checkInDate: number
+    points: number
+    consecutiveDays: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type CheckInAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    points?: true
+    consecutiveDays?: true
+  }
+
+  export type CheckInSumAggregateInputType = {
+    id?: true
+    userId?: true
+    points?: true
+    consecutiveDays?: true
+  }
+
+  export type CheckInMinAggregateInputType = {
+    id?: true
+    userId?: true
+    checkInDate?: true
+    points?: true
+    consecutiveDays?: true
+    createdAt?: true
+  }
+
+  export type CheckInMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    checkInDate?: true
+    points?: true
+    consecutiveDays?: true
+    createdAt?: true
+  }
+
+  export type CheckInCountAggregateInputType = {
+    id?: true
+    userId?: true
+    checkInDate?: true
+    points?: true
+    consecutiveDays?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type CheckInAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CheckIn to aggregate.
+     */
+    where?: CheckInWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckIns to fetch.
+     */
+    orderBy?: CheckInOrderByWithRelationInput | CheckInOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CheckInWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckIns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckIns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CheckIns
+    **/
+    _count?: true | CheckInCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CheckInAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CheckInSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CheckInMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CheckInMaxAggregateInputType
+  }
+
+  export type GetCheckInAggregateType<T extends CheckInAggregateArgs> = {
+        [P in keyof T & keyof AggregateCheckIn]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCheckIn[P]>
+      : GetScalarType<T[P], AggregateCheckIn[P]>
+  }
+
+
+
+
+  export type CheckInGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckInWhereInput
+    orderBy?: CheckInOrderByWithAggregationInput | CheckInOrderByWithAggregationInput[]
+    by: CheckInScalarFieldEnum[] | CheckInScalarFieldEnum
+    having?: CheckInScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CheckInCountAggregateInputType | true
+    _avg?: CheckInAvgAggregateInputType
+    _sum?: CheckInSumAggregateInputType
+    _min?: CheckInMinAggregateInputType
+    _max?: CheckInMaxAggregateInputType
+  }
+
+  export type CheckInGroupByOutputType = {
+    id: number
+    userId: number
+    checkInDate: Date
+    points: number
+    consecutiveDays: number
+    createdAt: Date
+    _count: CheckInCountAggregateOutputType | null
+    _avg: CheckInAvgAggregateOutputType | null
+    _sum: CheckInSumAggregateOutputType | null
+    _min: CheckInMinAggregateOutputType | null
+    _max: CheckInMaxAggregateOutputType | null
+  }
+
+  type GetCheckInGroupByPayload<T extends CheckInGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CheckInGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CheckInGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CheckInGroupByOutputType[P]>
+            : GetScalarType<T[P], CheckInGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CheckInSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    checkInDate?: boolean
+    points?: boolean
+    consecutiveDays?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["checkIn"]>
+
+  export type CheckInSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    checkInDate?: boolean
+    points?: boolean
+    consecutiveDays?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["checkIn"]>
+
+  export type CheckInSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    checkInDate?: boolean
+    points?: boolean
+    consecutiveDays?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["checkIn"]>
+
+  export type CheckInSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    checkInDate?: boolean
+    points?: boolean
+    consecutiveDays?: boolean
+    createdAt?: boolean
+  }
+
+  export type CheckInOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "checkInDate" | "points" | "consecutiveDays" | "createdAt", ExtArgs["result"]["checkIn"]>
+  export type CheckInInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type CheckInIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type CheckInIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $CheckInPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CheckIn"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      checkInDate: Date
+      points: number
+      consecutiveDays: number
+      createdAt: Date
+    }, ExtArgs["result"]["checkIn"]>
+    composites: {}
+  }
+
+  type CheckInGetPayload<S extends boolean | null | undefined | CheckInDefaultArgs> = $Result.GetResult<Prisma.$CheckInPayload, S>
+
+  type CheckInCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CheckInFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CheckInCountAggregateInputType | true
+    }
+
+  export interface CheckInDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CheckIn'], meta: { name: 'CheckIn' } }
+    /**
+     * Find zero or one CheckIn that matches the filter.
+     * @param {CheckInFindUniqueArgs} args - Arguments to find a CheckIn
+     * @example
+     * // Get one CheckIn
+     * const checkIn = await prisma.checkIn.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CheckInFindUniqueArgs>(args: SelectSubset<T, CheckInFindUniqueArgs<ExtArgs>>): Prisma__CheckInClient<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CheckIn that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CheckInFindUniqueOrThrowArgs} args - Arguments to find a CheckIn
+     * @example
+     * // Get one CheckIn
+     * const checkIn = await prisma.checkIn.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CheckInFindUniqueOrThrowArgs>(args: SelectSubset<T, CheckInFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CheckInClient<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CheckIn that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckInFindFirstArgs} args - Arguments to find a CheckIn
+     * @example
+     * // Get one CheckIn
+     * const checkIn = await prisma.checkIn.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CheckInFindFirstArgs>(args?: SelectSubset<T, CheckInFindFirstArgs<ExtArgs>>): Prisma__CheckInClient<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CheckIn that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckInFindFirstOrThrowArgs} args - Arguments to find a CheckIn
+     * @example
+     * // Get one CheckIn
+     * const checkIn = await prisma.checkIn.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CheckInFindFirstOrThrowArgs>(args?: SelectSubset<T, CheckInFindFirstOrThrowArgs<ExtArgs>>): Prisma__CheckInClient<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CheckIns that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckInFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CheckIns
+     * const checkIns = await prisma.checkIn.findMany()
+     * 
+     * // Get first 10 CheckIns
+     * const checkIns = await prisma.checkIn.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const checkInWithIdOnly = await prisma.checkIn.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CheckInFindManyArgs>(args?: SelectSubset<T, CheckInFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CheckIn.
+     * @param {CheckInCreateArgs} args - Arguments to create a CheckIn.
+     * @example
+     * // Create one CheckIn
+     * const CheckIn = await prisma.checkIn.create({
+     *   data: {
+     *     // ... data to create a CheckIn
+     *   }
+     * })
+     * 
+     */
+    create<T extends CheckInCreateArgs>(args: SelectSubset<T, CheckInCreateArgs<ExtArgs>>): Prisma__CheckInClient<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CheckIns.
+     * @param {CheckInCreateManyArgs} args - Arguments to create many CheckIns.
+     * @example
+     * // Create many CheckIns
+     * const checkIn = await prisma.checkIn.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CheckInCreateManyArgs>(args?: SelectSubset<T, CheckInCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CheckIns and returns the data saved in the database.
+     * @param {CheckInCreateManyAndReturnArgs} args - Arguments to create many CheckIns.
+     * @example
+     * // Create many CheckIns
+     * const checkIn = await prisma.checkIn.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CheckIns and only return the `id`
+     * const checkInWithIdOnly = await prisma.checkIn.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CheckInCreateManyAndReturnArgs>(args?: SelectSubset<T, CheckInCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CheckIn.
+     * @param {CheckInDeleteArgs} args - Arguments to delete one CheckIn.
+     * @example
+     * // Delete one CheckIn
+     * const CheckIn = await prisma.checkIn.delete({
+     *   where: {
+     *     // ... filter to delete one CheckIn
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CheckInDeleteArgs>(args: SelectSubset<T, CheckInDeleteArgs<ExtArgs>>): Prisma__CheckInClient<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CheckIn.
+     * @param {CheckInUpdateArgs} args - Arguments to update one CheckIn.
+     * @example
+     * // Update one CheckIn
+     * const checkIn = await prisma.checkIn.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CheckInUpdateArgs>(args: SelectSubset<T, CheckInUpdateArgs<ExtArgs>>): Prisma__CheckInClient<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CheckIns.
+     * @param {CheckInDeleteManyArgs} args - Arguments to filter CheckIns to delete.
+     * @example
+     * // Delete a few CheckIns
+     * const { count } = await prisma.checkIn.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CheckInDeleteManyArgs>(args?: SelectSubset<T, CheckInDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CheckIns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckInUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CheckIns
+     * const checkIn = await prisma.checkIn.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CheckInUpdateManyArgs>(args: SelectSubset<T, CheckInUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CheckIns and returns the data updated in the database.
+     * @param {CheckInUpdateManyAndReturnArgs} args - Arguments to update many CheckIns.
+     * @example
+     * // Update many CheckIns
+     * const checkIn = await prisma.checkIn.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CheckIns and only return the `id`
+     * const checkInWithIdOnly = await prisma.checkIn.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CheckInUpdateManyAndReturnArgs>(args: SelectSubset<T, CheckInUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CheckIn.
+     * @param {CheckInUpsertArgs} args - Arguments to update or create a CheckIn.
+     * @example
+     * // Update or create a CheckIn
+     * const checkIn = await prisma.checkIn.upsert({
+     *   create: {
+     *     // ... data to create a CheckIn
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CheckIn we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CheckInUpsertArgs>(args: SelectSubset<T, CheckInUpsertArgs<ExtArgs>>): Prisma__CheckInClient<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CheckIns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckInCountArgs} args - Arguments to filter CheckIns to count.
+     * @example
+     * // Count the number of CheckIns
+     * const count = await prisma.checkIn.count({
+     *   where: {
+     *     // ... the filter for the CheckIns we want to count
+     *   }
+     * })
+    **/
+    count<T extends CheckInCountArgs>(
+      args?: Subset<T, CheckInCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CheckInCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CheckIn.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckInAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CheckInAggregateArgs>(args: Subset<T, CheckInAggregateArgs>): Prisma.PrismaPromise<GetCheckInAggregateType<T>>
+
+    /**
+     * Group by CheckIn.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CheckInGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CheckInGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CheckInGroupByArgs['orderBy'] }
+        : { orderBy?: CheckInGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CheckInGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCheckInGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CheckIn model
+   */
+  readonly fields: CheckInFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CheckIn.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CheckInClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CheckIn model
+   */
+  interface CheckInFieldRefs {
+    readonly id: FieldRef<"CheckIn", 'Int'>
+    readonly userId: FieldRef<"CheckIn", 'Int'>
+    readonly checkInDate: FieldRef<"CheckIn", 'DateTime'>
+    readonly points: FieldRef<"CheckIn", 'Int'>
+    readonly consecutiveDays: FieldRef<"CheckIn", 'Int'>
+    readonly createdAt: FieldRef<"CheckIn", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CheckIn findUnique
+   */
+  export type CheckInFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckIn to fetch.
+     */
+    where: CheckInWhereUniqueInput
+  }
+
+  /**
+   * CheckIn findUniqueOrThrow
+   */
+  export type CheckInFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckIn to fetch.
+     */
+    where: CheckInWhereUniqueInput
+  }
+
+  /**
+   * CheckIn findFirst
+   */
+  export type CheckInFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckIn to fetch.
+     */
+    where?: CheckInWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckIns to fetch.
+     */
+    orderBy?: CheckInOrderByWithRelationInput | CheckInOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CheckIns.
+     */
+    cursor?: CheckInWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckIns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckIns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckIns.
+     */
+    distinct?: CheckInScalarFieldEnum | CheckInScalarFieldEnum[]
+  }
+
+  /**
+   * CheckIn findFirstOrThrow
+   */
+  export type CheckInFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckIn to fetch.
+     */
+    where?: CheckInWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckIns to fetch.
+     */
+    orderBy?: CheckInOrderByWithRelationInput | CheckInOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CheckIns.
+     */
+    cursor?: CheckInWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckIns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckIns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CheckIns.
+     */
+    distinct?: CheckInScalarFieldEnum | CheckInScalarFieldEnum[]
+  }
+
+  /**
+   * CheckIn findMany
+   */
+  export type CheckInFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * Filter, which CheckIns to fetch.
+     */
+    where?: CheckInWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CheckIns to fetch.
+     */
+    orderBy?: CheckInOrderByWithRelationInput | CheckInOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CheckIns.
+     */
+    cursor?: CheckInWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CheckIns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CheckIns.
+     */
+    skip?: number
+    distinct?: CheckInScalarFieldEnum | CheckInScalarFieldEnum[]
+  }
+
+  /**
+   * CheckIn create
+   */
+  export type CheckInCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CheckIn.
+     */
+    data: XOR<CheckInCreateInput, CheckInUncheckedCreateInput>
+  }
+
+  /**
+   * CheckIn createMany
+   */
+  export type CheckInCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CheckIns.
+     */
+    data: CheckInCreateManyInput | CheckInCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CheckIn createManyAndReturn
+   */
+  export type CheckInCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * The data used to create many CheckIns.
+     */
+    data: CheckInCreateManyInput | CheckInCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CheckIn update
+   */
+  export type CheckInUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CheckIn.
+     */
+    data: XOR<CheckInUpdateInput, CheckInUncheckedUpdateInput>
+    /**
+     * Choose, which CheckIn to update.
+     */
+    where: CheckInWhereUniqueInput
+  }
+
+  /**
+   * CheckIn updateMany
+   */
+  export type CheckInUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CheckIns.
+     */
+    data: XOR<CheckInUpdateManyMutationInput, CheckInUncheckedUpdateManyInput>
+    /**
+     * Filter which CheckIns to update
+     */
+    where?: CheckInWhereInput
+    /**
+     * Limit how many CheckIns to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CheckIn updateManyAndReturn
+   */
+  export type CheckInUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * The data used to update CheckIns.
+     */
+    data: XOR<CheckInUpdateManyMutationInput, CheckInUncheckedUpdateManyInput>
+    /**
+     * Filter which CheckIns to update
+     */
+    where?: CheckInWhereInput
+    /**
+     * Limit how many CheckIns to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CheckIn upsert
+   */
+  export type CheckInUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CheckIn to update in case it exists.
+     */
+    where: CheckInWhereUniqueInput
+    /**
+     * In case the CheckIn found by the `where` argument doesn't exist, create a new CheckIn with this data.
+     */
+    create: XOR<CheckInCreateInput, CheckInUncheckedCreateInput>
+    /**
+     * In case the CheckIn was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CheckInUpdateInput, CheckInUncheckedUpdateInput>
+  }
+
+  /**
+   * CheckIn delete
+   */
+  export type CheckInDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    /**
+     * Filter which CheckIn to delete.
+     */
+    where: CheckInWhereUniqueInput
+  }
+
+  /**
+   * CheckIn deleteMany
+   */
+  export type CheckInDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CheckIns to delete
+     */
+    where?: CheckInWhereInput
+    /**
+     * Limit how many CheckIns to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CheckIn without action
+   */
+  export type CheckInDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model PointsHistory
+   */
+
+  export type AggregatePointsHistory = {
+    _count: PointsHistoryCountAggregateOutputType | null
+    _avg: PointsHistoryAvgAggregateOutputType | null
+    _sum: PointsHistorySumAggregateOutputType | null
+    _min: PointsHistoryMinAggregateOutputType | null
+    _max: PointsHistoryMaxAggregateOutputType | null
+  }
+
+  export type PointsHistoryAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    points: number | null
+    relatedId: number | null
+  }
+
+  export type PointsHistorySumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    points: number | null
+    relatedId: number | null
+  }
+
+  export type PointsHistoryMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    points: number | null
+    type: string | null
+    description: string | null
+    relatedId: number | null
+    createdAt: Date | null
+  }
+
+  export type PointsHistoryMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    points: number | null
+    type: string | null
+    description: string | null
+    relatedId: number | null
+    createdAt: Date | null
+  }
+
+  export type PointsHistoryCountAggregateOutputType = {
+    id: number
+    userId: number
+    points: number
+    type: number
+    description: number
+    relatedId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type PointsHistoryAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    points?: true
+    relatedId?: true
+  }
+
+  export type PointsHistorySumAggregateInputType = {
+    id?: true
+    userId?: true
+    points?: true
+    relatedId?: true
+  }
+
+  export type PointsHistoryMinAggregateInputType = {
+    id?: true
+    userId?: true
+    points?: true
+    type?: true
+    description?: true
+    relatedId?: true
+    createdAt?: true
+  }
+
+  export type PointsHistoryMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    points?: true
+    type?: true
+    description?: true
+    relatedId?: true
+    createdAt?: true
+  }
+
+  export type PointsHistoryCountAggregateInputType = {
+    id?: true
+    userId?: true
+    points?: true
+    type?: true
+    description?: true
+    relatedId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type PointsHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PointsHistory to aggregate.
+     */
+    where?: PointsHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PointsHistories to fetch.
+     */
+    orderBy?: PointsHistoryOrderByWithRelationInput | PointsHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: PointsHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PointsHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PointsHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned PointsHistories
+    **/
+    _count?: true | PointsHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: PointsHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PointsHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: PointsHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: PointsHistoryMaxAggregateInputType
+  }
+
+  export type GetPointsHistoryAggregateType<T extends PointsHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregatePointsHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregatePointsHistory[P]>
+      : GetScalarType<T[P], AggregatePointsHistory[P]>
+  }
+
+
+
+
+  export type PointsHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PointsHistoryWhereInput
+    orderBy?: PointsHistoryOrderByWithAggregationInput | PointsHistoryOrderByWithAggregationInput[]
+    by: PointsHistoryScalarFieldEnum[] | PointsHistoryScalarFieldEnum
+    having?: PointsHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: PointsHistoryCountAggregateInputType | true
+    _avg?: PointsHistoryAvgAggregateInputType
+    _sum?: PointsHistorySumAggregateInputType
+    _min?: PointsHistoryMinAggregateInputType
+    _max?: PointsHistoryMaxAggregateInputType
+  }
+
+  export type PointsHistoryGroupByOutputType = {
+    id: number
+    userId: number
+    points: number
+    type: string
+    description: string | null
+    relatedId: number | null
+    createdAt: Date
+    _count: PointsHistoryCountAggregateOutputType | null
+    _avg: PointsHistoryAvgAggregateOutputType | null
+    _sum: PointsHistorySumAggregateOutputType | null
+    _min: PointsHistoryMinAggregateOutputType | null
+    _max: PointsHistoryMaxAggregateOutputType | null
+  }
+
+  type GetPointsHistoryGroupByPayload<T extends PointsHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<PointsHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof PointsHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], PointsHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], PointsHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type PointsHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    points?: boolean
+    type?: boolean
+    description?: boolean
+    relatedId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pointsHistory"]>
+
+  export type PointsHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    points?: boolean
+    type?: boolean
+    description?: boolean
+    relatedId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pointsHistory"]>
+
+  export type PointsHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    points?: boolean
+    type?: boolean
+    description?: boolean
+    relatedId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["pointsHistory"]>
+
+  export type PointsHistorySelectScalar = {
+    id?: boolean
+    userId?: boolean
+    points?: boolean
+    type?: boolean
+    description?: boolean
+    relatedId?: boolean
+    createdAt?: boolean
+  }
+
+  export type PointsHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "points" | "type" | "description" | "relatedId" | "createdAt", ExtArgs["result"]["pointsHistory"]>
+  export type PointsHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PointsHistoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type PointsHistoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $PointsHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "PointsHistory"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      points: number
+      type: string
+      description: string | null
+      relatedId: number | null
+      createdAt: Date
+    }, ExtArgs["result"]["pointsHistory"]>
+    composites: {}
+  }
+
+  type PointsHistoryGetPayload<S extends boolean | null | undefined | PointsHistoryDefaultArgs> = $Result.GetResult<Prisma.$PointsHistoryPayload, S>
+
+  type PointsHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<PointsHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: PointsHistoryCountAggregateInputType | true
+    }
+
+  export interface PointsHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['PointsHistory'], meta: { name: 'PointsHistory' } }
+    /**
+     * Find zero or one PointsHistory that matches the filter.
+     * @param {PointsHistoryFindUniqueArgs} args - Arguments to find a PointsHistory
+     * @example
+     * // Get one PointsHistory
+     * const pointsHistory = await prisma.pointsHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends PointsHistoryFindUniqueArgs>(args: SelectSubset<T, PointsHistoryFindUniqueArgs<ExtArgs>>): Prisma__PointsHistoryClient<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one PointsHistory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {PointsHistoryFindUniqueOrThrowArgs} args - Arguments to find a PointsHistory
+     * @example
+     * // Get one PointsHistory
+     * const pointsHistory = await prisma.pointsHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends PointsHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, PointsHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PointsHistoryClient<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PointsHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PointsHistoryFindFirstArgs} args - Arguments to find a PointsHistory
+     * @example
+     * // Get one PointsHistory
+     * const pointsHistory = await prisma.pointsHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends PointsHistoryFindFirstArgs>(args?: SelectSubset<T, PointsHistoryFindFirstArgs<ExtArgs>>): Prisma__PointsHistoryClient<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first PointsHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PointsHistoryFindFirstOrThrowArgs} args - Arguments to find a PointsHistory
+     * @example
+     * // Get one PointsHistory
+     * const pointsHistory = await prisma.pointsHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends PointsHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, PointsHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__PointsHistoryClient<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more PointsHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PointsHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all PointsHistories
+     * const pointsHistories = await prisma.pointsHistory.findMany()
+     * 
+     * // Get first 10 PointsHistories
+     * const pointsHistories = await prisma.pointsHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const pointsHistoryWithIdOnly = await prisma.pointsHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends PointsHistoryFindManyArgs>(args?: SelectSubset<T, PointsHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a PointsHistory.
+     * @param {PointsHistoryCreateArgs} args - Arguments to create a PointsHistory.
+     * @example
+     * // Create one PointsHistory
+     * const PointsHistory = await prisma.pointsHistory.create({
+     *   data: {
+     *     // ... data to create a PointsHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends PointsHistoryCreateArgs>(args: SelectSubset<T, PointsHistoryCreateArgs<ExtArgs>>): Prisma__PointsHistoryClient<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many PointsHistories.
+     * @param {PointsHistoryCreateManyArgs} args - Arguments to create many PointsHistories.
+     * @example
+     * // Create many PointsHistories
+     * const pointsHistory = await prisma.pointsHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends PointsHistoryCreateManyArgs>(args?: SelectSubset<T, PointsHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many PointsHistories and returns the data saved in the database.
+     * @param {PointsHistoryCreateManyAndReturnArgs} args - Arguments to create many PointsHistories.
+     * @example
+     * // Create many PointsHistories
+     * const pointsHistory = await prisma.pointsHistory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many PointsHistories and only return the `id`
+     * const pointsHistoryWithIdOnly = await prisma.pointsHistory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends PointsHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, PointsHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a PointsHistory.
+     * @param {PointsHistoryDeleteArgs} args - Arguments to delete one PointsHistory.
+     * @example
+     * // Delete one PointsHistory
+     * const PointsHistory = await prisma.pointsHistory.delete({
+     *   where: {
+     *     // ... filter to delete one PointsHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends PointsHistoryDeleteArgs>(args: SelectSubset<T, PointsHistoryDeleteArgs<ExtArgs>>): Prisma__PointsHistoryClient<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one PointsHistory.
+     * @param {PointsHistoryUpdateArgs} args - Arguments to update one PointsHistory.
+     * @example
+     * // Update one PointsHistory
+     * const pointsHistory = await prisma.pointsHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends PointsHistoryUpdateArgs>(args: SelectSubset<T, PointsHistoryUpdateArgs<ExtArgs>>): Prisma__PointsHistoryClient<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more PointsHistories.
+     * @param {PointsHistoryDeleteManyArgs} args - Arguments to filter PointsHistories to delete.
+     * @example
+     * // Delete a few PointsHistories
+     * const { count } = await prisma.pointsHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends PointsHistoryDeleteManyArgs>(args?: SelectSubset<T, PointsHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PointsHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PointsHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many PointsHistories
+     * const pointsHistory = await prisma.pointsHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends PointsHistoryUpdateManyArgs>(args: SelectSubset<T, PointsHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more PointsHistories and returns the data updated in the database.
+     * @param {PointsHistoryUpdateManyAndReturnArgs} args - Arguments to update many PointsHistories.
+     * @example
+     * // Update many PointsHistories
+     * const pointsHistory = await prisma.pointsHistory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more PointsHistories and only return the `id`
+     * const pointsHistoryWithIdOnly = await prisma.pointsHistory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends PointsHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, PointsHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one PointsHistory.
+     * @param {PointsHistoryUpsertArgs} args - Arguments to update or create a PointsHistory.
+     * @example
+     * // Update or create a PointsHistory
+     * const pointsHistory = await prisma.pointsHistory.upsert({
+     *   create: {
+     *     // ... data to create a PointsHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the PointsHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends PointsHistoryUpsertArgs>(args: SelectSubset<T, PointsHistoryUpsertArgs<ExtArgs>>): Prisma__PointsHistoryClient<$Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of PointsHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PointsHistoryCountArgs} args - Arguments to filter PointsHistories to count.
+     * @example
+     * // Count the number of PointsHistories
+     * const count = await prisma.pointsHistory.count({
+     *   where: {
+     *     // ... the filter for the PointsHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends PointsHistoryCountArgs>(
+      args?: Subset<T, PointsHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], PointsHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a PointsHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PointsHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends PointsHistoryAggregateArgs>(args: Subset<T, PointsHistoryAggregateArgs>): Prisma.PrismaPromise<GetPointsHistoryAggregateType<T>>
+
+    /**
+     * Group by PointsHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PointsHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends PointsHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: PointsHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: PointsHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, PointsHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPointsHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the PointsHistory model
+   */
+  readonly fields: PointsHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for PointsHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__PointsHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the PointsHistory model
+   */
+  interface PointsHistoryFieldRefs {
+    readonly id: FieldRef<"PointsHistory", 'Int'>
+    readonly userId: FieldRef<"PointsHistory", 'Int'>
+    readonly points: FieldRef<"PointsHistory", 'Int'>
+    readonly type: FieldRef<"PointsHistory", 'String'>
+    readonly description: FieldRef<"PointsHistory", 'String'>
+    readonly relatedId: FieldRef<"PointsHistory", 'Int'>
+    readonly createdAt: FieldRef<"PointsHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * PointsHistory findUnique
+   */
+  export type PointsHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PointsHistory to fetch.
+     */
+    where: PointsHistoryWhereUniqueInput
+  }
+
+  /**
+   * PointsHistory findUniqueOrThrow
+   */
+  export type PointsHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PointsHistory to fetch.
+     */
+    where: PointsHistoryWhereUniqueInput
+  }
+
+  /**
+   * PointsHistory findFirst
+   */
+  export type PointsHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PointsHistory to fetch.
+     */
+    where?: PointsHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PointsHistories to fetch.
+     */
+    orderBy?: PointsHistoryOrderByWithRelationInput | PointsHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PointsHistories.
+     */
+    cursor?: PointsHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PointsHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PointsHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PointsHistories.
+     */
+    distinct?: PointsHistoryScalarFieldEnum | PointsHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * PointsHistory findFirstOrThrow
+   */
+  export type PointsHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PointsHistory to fetch.
+     */
+    where?: PointsHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PointsHistories to fetch.
+     */
+    orderBy?: PointsHistoryOrderByWithRelationInput | PointsHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for PointsHistories.
+     */
+    cursor?: PointsHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PointsHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PointsHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of PointsHistories.
+     */
+    distinct?: PointsHistoryScalarFieldEnum | PointsHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * PointsHistory findMany
+   */
+  export type PointsHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which PointsHistories to fetch.
+     */
+    where?: PointsHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of PointsHistories to fetch.
+     */
+    orderBy?: PointsHistoryOrderByWithRelationInput | PointsHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing PointsHistories.
+     */
+    cursor?: PointsHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` PointsHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` PointsHistories.
+     */
+    skip?: number
+    distinct?: PointsHistoryScalarFieldEnum | PointsHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * PointsHistory create
+   */
+  export type PointsHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a PointsHistory.
+     */
+    data: XOR<PointsHistoryCreateInput, PointsHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * PointsHistory createMany
+   */
+  export type PointsHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many PointsHistories.
+     */
+    data: PointsHistoryCreateManyInput | PointsHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * PointsHistory createManyAndReturn
+   */
+  export type PointsHistoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many PointsHistories.
+     */
+    data: PointsHistoryCreateManyInput | PointsHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PointsHistory update
+   */
+  export type PointsHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a PointsHistory.
+     */
+    data: XOR<PointsHistoryUpdateInput, PointsHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which PointsHistory to update.
+     */
+    where: PointsHistoryWhereUniqueInput
+  }
+
+  /**
+   * PointsHistory updateMany
+   */
+  export type PointsHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update PointsHistories.
+     */
+    data: XOR<PointsHistoryUpdateManyMutationInput, PointsHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which PointsHistories to update
+     */
+    where?: PointsHistoryWhereInput
+    /**
+     * Limit how many PointsHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * PointsHistory updateManyAndReturn
+   */
+  export type PointsHistoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to update PointsHistories.
+     */
+    data: XOR<PointsHistoryUpdateManyMutationInput, PointsHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which PointsHistories to update
+     */
+    where?: PointsHistoryWhereInput
+    /**
+     * Limit how many PointsHistories to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * PointsHistory upsert
+   */
+  export type PointsHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the PointsHistory to update in case it exists.
+     */
+    where: PointsHistoryWhereUniqueInput
+    /**
+     * In case the PointsHistory found by the `where` argument doesn't exist, create a new PointsHistory with this data.
+     */
+    create: XOR<PointsHistoryCreateInput, PointsHistoryUncheckedCreateInput>
+    /**
+     * In case the PointsHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<PointsHistoryUpdateInput, PointsHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * PointsHistory delete
+   */
+  export type PointsHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+    /**
+     * Filter which PointsHistory to delete.
+     */
+    where: PointsHistoryWhereUniqueInput
+  }
+
+  /**
+   * PointsHistory deleteMany
+   */
+  export type PointsHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which PointsHistories to delete
+     */
+    where?: PointsHistoryWhereInput
+    /**
+     * Limit how many PointsHistories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * PointsHistory without action
+   */
+  export type PointsHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PointsHistory
+     */
+    select?: PointsHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PointsHistory
+     */
+    omit?: PointsHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PointsHistoryInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -28830,6 +31350,7 @@ export namespace Prisma {
     status: 'status',
     avatarStyle: 'avatarStyle',
     salt: 'salt',
+    points: 'points',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     isVerified: 'isVerified'
@@ -29113,6 +31634,31 @@ export namespace Prisma {
   export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
 
 
+  export const CheckInScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    checkInDate: 'checkInDate',
+    points: 'points',
+    consecutiveDays: 'consecutiveDays',
+    createdAt: 'createdAt'
+  };
+
+  export type CheckInScalarFieldEnum = (typeof CheckInScalarFieldEnum)[keyof typeof CheckInScalarFieldEnum]
+
+
+  export const PointsHistoryScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    points: 'points',
+    type: 'type',
+    description: 'description',
+    relatedId: 'relatedId',
+    createdAt: 'createdAt'
+  };
+
+  export type PointsHistoryScalarFieldEnum = (typeof PointsHistoryScalarFieldEnum)[keyof typeof PointsHistoryScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -29250,6 +31796,7 @@ export namespace Prisma {
     status?: StringFilter<"User"> | string
     avatarStyle?: StringFilter<"User"> | string
     salt?: StringNullableFilter<"User"> | string | null
+    points?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isVerified?: BoolFilter<"User"> | boolean
@@ -29266,6 +31813,8 @@ export namespace Prisma {
     messages?: ChatMessageListRelationFilter
     chatRooms?: ChatRoomUserListRelationFilter
     createdRooms?: ChatRoomListRelationFilter
+    checkIns?: CheckInListRelationFilter
+    pointsHistory?: PointsHistoryListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -29277,6 +31826,7 @@ export namespace Prisma {
     status?: SortOrder
     avatarStyle?: SortOrder
     salt?: SortOrderInput | SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isVerified?: SortOrder
@@ -29293,6 +31843,8 @@ export namespace Prisma {
     messages?: ChatMessageOrderByRelationAggregateInput
     chatRooms?: ChatRoomUserOrderByRelationAggregateInput
     createdRooms?: ChatRoomOrderByRelationAggregateInput
+    checkIns?: CheckInOrderByRelationAggregateInput
+    pointsHistory?: PointsHistoryOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -29307,6 +31859,7 @@ export namespace Prisma {
     status?: StringFilter<"User"> | string
     avatarStyle?: StringFilter<"User"> | string
     salt?: StringNullableFilter<"User"> | string | null
+    points?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     isVerified?: BoolFilter<"User"> | boolean
@@ -29323,6 +31876,8 @@ export namespace Prisma {
     messages?: ChatMessageListRelationFilter
     chatRooms?: ChatRoomUserListRelationFilter
     createdRooms?: ChatRoomListRelationFilter
+    checkIns?: CheckInListRelationFilter
+    pointsHistory?: PointsHistoryListRelationFilter
   }, "id" | "username" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -29334,6 +31889,7 @@ export namespace Prisma {
     status?: SortOrder
     avatarStyle?: SortOrder
     salt?: SortOrderInput | SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isVerified?: SortOrder
@@ -29356,6 +31912,7 @@ export namespace Prisma {
     status?: StringWithAggregatesFilter<"User"> | string
     avatarStyle?: StringWithAggregatesFilter<"User"> | string
     salt?: StringNullableWithAggregatesFilter<"User"> | string | null
+    points?: IntWithAggregatesFilter<"User"> | number
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     isVerified?: BoolWithAggregatesFilter<"User"> | boolean
@@ -30841,6 +33398,136 @@ export namespace Prisma {
     fileUrl?: StringNullableWithAggregatesFilter<"ChatMessage"> | string | null
   }
 
+  export type CheckInWhereInput = {
+    AND?: CheckInWhereInput | CheckInWhereInput[]
+    OR?: CheckInWhereInput[]
+    NOT?: CheckInWhereInput | CheckInWhereInput[]
+    id?: IntFilter<"CheckIn"> | number
+    userId?: IntFilter<"CheckIn"> | number
+    checkInDate?: DateTimeFilter<"CheckIn"> | Date | string
+    points?: IntFilter<"CheckIn"> | number
+    consecutiveDays?: IntFilter<"CheckIn"> | number
+    createdAt?: DateTimeFilter<"CheckIn"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type CheckInOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    checkInDate?: SortOrder
+    points?: SortOrder
+    consecutiveDays?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type CheckInWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    userId_checkInDate?: CheckInUserIdCheckInDateCompoundUniqueInput
+    AND?: CheckInWhereInput | CheckInWhereInput[]
+    OR?: CheckInWhereInput[]
+    NOT?: CheckInWhereInput | CheckInWhereInput[]
+    userId?: IntFilter<"CheckIn"> | number
+    checkInDate?: DateTimeFilter<"CheckIn"> | Date | string
+    points?: IntFilter<"CheckIn"> | number
+    consecutiveDays?: IntFilter<"CheckIn"> | number
+    createdAt?: DateTimeFilter<"CheckIn"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_checkInDate">
+
+  export type CheckInOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    checkInDate?: SortOrder
+    points?: SortOrder
+    consecutiveDays?: SortOrder
+    createdAt?: SortOrder
+    _count?: CheckInCountOrderByAggregateInput
+    _avg?: CheckInAvgOrderByAggregateInput
+    _max?: CheckInMaxOrderByAggregateInput
+    _min?: CheckInMinOrderByAggregateInput
+    _sum?: CheckInSumOrderByAggregateInput
+  }
+
+  export type CheckInScalarWhereWithAggregatesInput = {
+    AND?: CheckInScalarWhereWithAggregatesInput | CheckInScalarWhereWithAggregatesInput[]
+    OR?: CheckInScalarWhereWithAggregatesInput[]
+    NOT?: CheckInScalarWhereWithAggregatesInput | CheckInScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"CheckIn"> | number
+    userId?: IntWithAggregatesFilter<"CheckIn"> | number
+    checkInDate?: DateTimeWithAggregatesFilter<"CheckIn"> | Date | string
+    points?: IntWithAggregatesFilter<"CheckIn"> | number
+    consecutiveDays?: IntWithAggregatesFilter<"CheckIn"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"CheckIn"> | Date | string
+  }
+
+  export type PointsHistoryWhereInput = {
+    AND?: PointsHistoryWhereInput | PointsHistoryWhereInput[]
+    OR?: PointsHistoryWhereInput[]
+    NOT?: PointsHistoryWhereInput | PointsHistoryWhereInput[]
+    id?: IntFilter<"PointsHistory"> | number
+    userId?: IntFilter<"PointsHistory"> | number
+    points?: IntFilter<"PointsHistory"> | number
+    type?: StringFilter<"PointsHistory"> | string
+    description?: StringNullableFilter<"PointsHistory"> | string | null
+    relatedId?: IntNullableFilter<"PointsHistory"> | number | null
+    createdAt?: DateTimeFilter<"PointsHistory"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type PointsHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    type?: SortOrder
+    description?: SortOrderInput | SortOrder
+    relatedId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type PointsHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: PointsHistoryWhereInput | PointsHistoryWhereInput[]
+    OR?: PointsHistoryWhereInput[]
+    NOT?: PointsHistoryWhereInput | PointsHistoryWhereInput[]
+    userId?: IntFilter<"PointsHistory"> | number
+    points?: IntFilter<"PointsHistory"> | number
+    type?: StringFilter<"PointsHistory"> | string
+    description?: StringNullableFilter<"PointsHistory"> | string | null
+    relatedId?: IntNullableFilter<"PointsHistory"> | number | null
+    createdAt?: DateTimeFilter<"PointsHistory"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type PointsHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    type?: SortOrder
+    description?: SortOrderInput | SortOrder
+    relatedId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: PointsHistoryCountOrderByAggregateInput
+    _avg?: PointsHistoryAvgOrderByAggregateInput
+    _max?: PointsHistoryMaxOrderByAggregateInput
+    _min?: PointsHistoryMinOrderByAggregateInput
+    _sum?: PointsHistorySumOrderByAggregateInput
+  }
+
+  export type PointsHistoryScalarWhereWithAggregatesInput = {
+    AND?: PointsHistoryScalarWhereWithAggregatesInput | PointsHistoryScalarWhereWithAggregatesInput[]
+    OR?: PointsHistoryScalarWhereWithAggregatesInput[]
+    NOT?: PointsHistoryScalarWhereWithAggregatesInput | PointsHistoryScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"PointsHistory"> | number
+    userId?: IntWithAggregatesFilter<"PointsHistory"> | number
+    points?: IntWithAggregatesFilter<"PointsHistory"> | number
+    type?: StringWithAggregatesFilter<"PointsHistory"> | string
+    description?: StringNullableWithAggregatesFilter<"PointsHistory"> | string | null
+    relatedId?: IntNullableWithAggregatesFilter<"PointsHistory"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"PointsHistory"> | Date | string
+  }
+
   export type UserCreateInput = {
     username: string
     email: string
@@ -30849,6 +33536,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -30865,6 +33553,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -30876,6 +33566,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -30892,6 +33583,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -30902,6 +33595,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -30918,6 +33612,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -30929,6 +33625,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -30945,6 +33642,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -30956,6 +33655,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -30969,6 +33669,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -30983,6 +33684,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -32449,6 +35151,131 @@ export namespace Prisma {
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type CheckInCreateInput = {
+    checkInDate: Date | string
+    points: number
+    consecutiveDays: number
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutCheckInsInput
+  }
+
+  export type CheckInUncheckedCreateInput = {
+    id?: number
+    userId: number
+    checkInDate: Date | string
+    points: number
+    consecutiveDays: number
+    createdAt?: Date | string
+  }
+
+  export type CheckInUpdateInput = {
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    points?: IntFieldUpdateOperationsInput | number
+    consecutiveDays?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
+  }
+
+  export type CheckInUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    points?: IntFieldUpdateOperationsInput | number
+    consecutiveDays?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CheckInCreateManyInput = {
+    id?: number
+    userId: number
+    checkInDate: Date | string
+    points: number
+    consecutiveDays: number
+    createdAt?: Date | string
+  }
+
+  export type CheckInUpdateManyMutationInput = {
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    points?: IntFieldUpdateOperationsInput | number
+    consecutiveDays?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CheckInUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    points?: IntFieldUpdateOperationsInput | number
+    consecutiveDays?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PointsHistoryCreateInput = {
+    points: number
+    type: string
+    description?: string | null
+    relatedId?: number | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutPointsHistoryInput
+  }
+
+  export type PointsHistoryUncheckedCreateInput = {
+    id?: number
+    userId: number
+    points: number
+    type: string
+    description?: string | null
+    relatedId?: number | null
+    createdAt?: Date | string
+  }
+
+  export type PointsHistoryUpdateInput = {
+    points?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutPointsHistoryNestedInput
+  }
+
+  export type PointsHistoryUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PointsHistoryCreateManyInput = {
+    id?: number
+    userId: number
+    points: number
+    type: string
+    description?: string | null
+    relatedId?: number | null
+    createdAt?: Date | string
+  }
+
+  export type PointsHistoryUpdateManyMutationInput = {
+    points?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PointsHistoryUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -32584,6 +35411,18 @@ export namespace Prisma {
     none?: ChatRoomWhereInput
   }
 
+  export type CheckInListRelationFilter = {
+    every?: CheckInWhereInput
+    some?: CheckInWhereInput
+    none?: CheckInWhereInput
+  }
+
+  export type PointsHistoryListRelationFilter = {
+    every?: PointsHistoryWhereInput
+    some?: PointsHistoryWhereInput
+    none?: PointsHistoryWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -32641,6 +35480,14 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type CheckInOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PointsHistoryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     username?: SortOrder
@@ -32650,6 +35497,7 @@ export namespace Prisma {
     status?: SortOrder
     avatarStyle?: SortOrder
     salt?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isVerified?: SortOrder
@@ -32657,6 +35505,7 @@ export namespace Prisma {
 
   export type UserAvgOrderByAggregateInput = {
     id?: SortOrder
+    points?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -32668,6 +35517,7 @@ export namespace Prisma {
     status?: SortOrder
     avatarStyle?: SortOrder
     salt?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isVerified?: SortOrder
@@ -32682,6 +35532,7 @@ export namespace Prisma {
     status?: SortOrder
     avatarStyle?: SortOrder
     salt?: SortOrder
+    points?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     isVerified?: SortOrder
@@ -32689,6 +35540,7 @@ export namespace Prisma {
 
   export type UserSumOrderByAggregateInput = {
     id?: SortOrder
+    points?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -33816,6 +36668,96 @@ export namespace Prisma {
     replyToId?: SortOrder
   }
 
+  export type CheckInUserIdCheckInDateCompoundUniqueInput = {
+    userId: number
+    checkInDate: Date | string
+  }
+
+  export type CheckInCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    checkInDate?: SortOrder
+    points?: SortOrder
+    consecutiveDays?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CheckInAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    consecutiveDays?: SortOrder
+  }
+
+  export type CheckInMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    checkInDate?: SortOrder
+    points?: SortOrder
+    consecutiveDays?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CheckInMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    checkInDate?: SortOrder
+    points?: SortOrder
+    consecutiveDays?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CheckInSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    consecutiveDays?: SortOrder
+  }
+
+  export type PointsHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    relatedId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PointsHistoryAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    relatedId?: SortOrder
+  }
+
+  export type PointsHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    relatedId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PointsHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    type?: SortOrder
+    description?: SortOrder
+    relatedId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type PointsHistorySumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    points?: SortOrder
+    relatedId?: SortOrder
+  }
+
   export type ResourceCreateNestedManyWithoutCreatorInput = {
     create?: XOR<ResourceCreateWithoutCreatorInput, ResourceUncheckedCreateWithoutCreatorInput> | ResourceCreateWithoutCreatorInput[] | ResourceUncheckedCreateWithoutCreatorInput[]
     connectOrCreate?: ResourceCreateOrConnectWithoutCreatorInput | ResourceCreateOrConnectWithoutCreatorInput[]
@@ -33905,6 +36847,20 @@ export namespace Prisma {
     connectOrCreate?: ChatRoomCreateOrConnectWithoutCreatorInput | ChatRoomCreateOrConnectWithoutCreatorInput[]
     createMany?: ChatRoomCreateManyCreatorInputEnvelope
     connect?: ChatRoomWhereUniqueInput | ChatRoomWhereUniqueInput[]
+  }
+
+  export type CheckInCreateNestedManyWithoutUserInput = {
+    create?: XOR<CheckInCreateWithoutUserInput, CheckInUncheckedCreateWithoutUserInput> | CheckInCreateWithoutUserInput[] | CheckInUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutUserInput | CheckInCreateOrConnectWithoutUserInput[]
+    createMany?: CheckInCreateManyUserInputEnvelope
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+  }
+
+  export type PointsHistoryCreateNestedManyWithoutUserInput = {
+    create?: XOR<PointsHistoryCreateWithoutUserInput, PointsHistoryUncheckedCreateWithoutUserInput> | PointsHistoryCreateWithoutUserInput[] | PointsHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PointsHistoryCreateOrConnectWithoutUserInput | PointsHistoryCreateOrConnectWithoutUserInput[]
+    createMany?: PointsHistoryCreateManyUserInputEnvelope
+    connect?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
   }
 
   export type ResourceUncheckedCreateNestedManyWithoutCreatorInput = {
@@ -33998,12 +36954,34 @@ export namespace Prisma {
     connect?: ChatRoomWhereUniqueInput | ChatRoomWhereUniqueInput[]
   }
 
+  export type CheckInUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<CheckInCreateWithoutUserInput, CheckInUncheckedCreateWithoutUserInput> | CheckInCreateWithoutUserInput[] | CheckInUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutUserInput | CheckInCreateOrConnectWithoutUserInput[]
+    createMany?: CheckInCreateManyUserInputEnvelope
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+  }
+
+  export type PointsHistoryUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<PointsHistoryCreateWithoutUserInput, PointsHistoryUncheckedCreateWithoutUserInput> | PointsHistoryCreateWithoutUserInput[] | PointsHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PointsHistoryCreateOrConnectWithoutUserInput | PointsHistoryCreateOrConnectWithoutUserInput[]
+    createMany?: PointsHistoryCreateManyUserInputEnvelope
+    connect?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
 
   export type NullableStringFieldUpdateOperationsInput = {
     set?: string | null
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -34196,12 +37174,32 @@ export namespace Prisma {
     deleteMany?: ChatRoomScalarWhereInput | ChatRoomScalarWhereInput[]
   }
 
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
+  export type CheckInUpdateManyWithoutUserNestedInput = {
+    create?: XOR<CheckInCreateWithoutUserInput, CheckInUncheckedCreateWithoutUserInput> | CheckInCreateWithoutUserInput[] | CheckInUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutUserInput | CheckInCreateOrConnectWithoutUserInput[]
+    upsert?: CheckInUpsertWithWhereUniqueWithoutUserInput | CheckInUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: CheckInCreateManyUserInputEnvelope
+    set?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    disconnect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    delete?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    update?: CheckInUpdateWithWhereUniqueWithoutUserInput | CheckInUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: CheckInUpdateManyWithWhereWithoutUserInput | CheckInUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: CheckInScalarWhereInput | CheckInScalarWhereInput[]
+  }
+
+  export type PointsHistoryUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PointsHistoryCreateWithoutUserInput, PointsHistoryUncheckedCreateWithoutUserInput> | PointsHistoryCreateWithoutUserInput[] | PointsHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PointsHistoryCreateOrConnectWithoutUserInput | PointsHistoryCreateOrConnectWithoutUserInput[]
+    upsert?: PointsHistoryUpsertWithWhereUniqueWithoutUserInput | PointsHistoryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PointsHistoryCreateManyUserInputEnvelope
+    set?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+    disconnect?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+    delete?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+    connect?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+    update?: PointsHistoryUpdateWithWhereUniqueWithoutUserInput | PointsHistoryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PointsHistoryUpdateManyWithWhereWithoutUserInput | PointsHistoryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PointsHistoryScalarWhereInput | PointsHistoryScalarWhereInput[]
   }
 
   export type ResourceUncheckedUpdateManyWithoutCreatorNestedInput = {
@@ -34384,6 +37382,34 @@ export namespace Prisma {
     update?: ChatRoomUpdateWithWhereUniqueWithoutCreatorInput | ChatRoomUpdateWithWhereUniqueWithoutCreatorInput[]
     updateMany?: ChatRoomUpdateManyWithWhereWithoutCreatorInput | ChatRoomUpdateManyWithWhereWithoutCreatorInput[]
     deleteMany?: ChatRoomScalarWhereInput | ChatRoomScalarWhereInput[]
+  }
+
+  export type CheckInUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<CheckInCreateWithoutUserInput, CheckInUncheckedCreateWithoutUserInput> | CheckInCreateWithoutUserInput[] | CheckInUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutUserInput | CheckInCreateOrConnectWithoutUserInput[]
+    upsert?: CheckInUpsertWithWhereUniqueWithoutUserInput | CheckInUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: CheckInCreateManyUserInputEnvelope
+    set?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    disconnect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    delete?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    update?: CheckInUpdateWithWhereUniqueWithoutUserInput | CheckInUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: CheckInUpdateManyWithWhereWithoutUserInput | CheckInUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: CheckInScalarWhereInput | CheckInScalarWhereInput[]
+  }
+
+  export type PointsHistoryUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<PointsHistoryCreateWithoutUserInput, PointsHistoryUncheckedCreateWithoutUserInput> | PointsHistoryCreateWithoutUserInput[] | PointsHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: PointsHistoryCreateOrConnectWithoutUserInput | PointsHistoryCreateOrConnectWithoutUserInput[]
+    upsert?: PointsHistoryUpsertWithWhereUniqueWithoutUserInput | PointsHistoryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: PointsHistoryCreateManyUserInputEnvelope
+    set?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+    disconnect?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+    delete?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+    connect?: PointsHistoryWhereUniqueInput | PointsHistoryWhereUniqueInput[]
+    update?: PointsHistoryUpdateWithWhereUniqueWithoutUserInput | PointsHistoryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: PointsHistoryUpdateManyWithWhereWithoutUserInput | PointsHistoryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: PointsHistoryScalarWhereInput | PointsHistoryScalarWhereInput[]
   }
 
   export type ResourceCreateNestedManyWithoutTypeInput = {
@@ -35375,6 +38401,34 @@ export namespace Prisma {
     deleteMany?: ChatMessageScalarWhereInput | ChatMessageScalarWhereInput[]
   }
 
+  export type UserCreateNestedOneWithoutCheckInsInput = {
+    create?: XOR<UserCreateWithoutCheckInsInput, UserUncheckedCreateWithoutCheckInsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCheckInsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutCheckInsNestedInput = {
+    create?: XOR<UserCreateWithoutCheckInsInput, UserUncheckedCreateWithoutCheckInsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCheckInsInput
+    upsert?: UserUpsertWithoutCheckInsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCheckInsInput, UserUpdateWithoutCheckInsInput>, UserUncheckedUpdateWithoutCheckInsInput>
+  }
+
+  export type UserCreateNestedOneWithoutPointsHistoryInput = {
+    create?: XOR<UserCreateWithoutPointsHistoryInput, UserUncheckedCreateWithoutPointsHistoryInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPointsHistoryInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutPointsHistoryNestedInput = {
+    create?: XOR<UserCreateWithoutPointsHistoryInput, UserUncheckedCreateWithoutPointsHistoryInput>
+    connectOrCreate?: UserCreateOrConnectWithoutPointsHistoryInput
+    upsert?: UserUpsertWithoutPointsHistoryInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPointsHistoryInput, UserUpdateWithoutPointsHistoryInput>, UserUncheckedUpdateWithoutPointsHistoryInput>
+  }
+
   export type NestedIntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -35978,6 +39032,58 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CheckInCreateWithoutUserInput = {
+    checkInDate: Date | string
+    points: number
+    consecutiveDays: number
+    createdAt?: Date | string
+  }
+
+  export type CheckInUncheckedCreateWithoutUserInput = {
+    id?: number
+    checkInDate: Date | string
+    points: number
+    consecutiveDays: number
+    createdAt?: Date | string
+  }
+
+  export type CheckInCreateOrConnectWithoutUserInput = {
+    where: CheckInWhereUniqueInput
+    create: XOR<CheckInCreateWithoutUserInput, CheckInUncheckedCreateWithoutUserInput>
+  }
+
+  export type CheckInCreateManyUserInputEnvelope = {
+    data: CheckInCreateManyUserInput | CheckInCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type PointsHistoryCreateWithoutUserInput = {
+    points: number
+    type: string
+    description?: string | null
+    relatedId?: number | null
+    createdAt?: Date | string
+  }
+
+  export type PointsHistoryUncheckedCreateWithoutUserInput = {
+    id?: number
+    points: number
+    type: string
+    description?: string | null
+    relatedId?: number | null
+    createdAt?: Date | string
+  }
+
+  export type PointsHistoryCreateOrConnectWithoutUserInput = {
+    where: PointsHistoryWhereUniqueInput
+    create: XOR<PointsHistoryCreateWithoutUserInput, PointsHistoryUncheckedCreateWithoutUserInput>
+  }
+
+  export type PointsHistoryCreateManyUserInputEnvelope = {
+    data: PointsHistoryCreateManyUserInput | PointsHistoryCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type ResourceUpsertWithWhereUniqueWithoutCreatorInput = {
     where: ResourceWhereUniqueInput
     update: XOR<ResourceUpdateWithoutCreatorInput, ResourceUncheckedUpdateWithoutCreatorInput>
@@ -36371,6 +39477,63 @@ export namespace Prisma {
     avatar?: StringNullableFilter<"ChatRoom"> | string | null
   }
 
+  export type CheckInUpsertWithWhereUniqueWithoutUserInput = {
+    where: CheckInWhereUniqueInput
+    update: XOR<CheckInUpdateWithoutUserInput, CheckInUncheckedUpdateWithoutUserInput>
+    create: XOR<CheckInCreateWithoutUserInput, CheckInUncheckedCreateWithoutUserInput>
+  }
+
+  export type CheckInUpdateWithWhereUniqueWithoutUserInput = {
+    where: CheckInWhereUniqueInput
+    data: XOR<CheckInUpdateWithoutUserInput, CheckInUncheckedUpdateWithoutUserInput>
+  }
+
+  export type CheckInUpdateManyWithWhereWithoutUserInput = {
+    where: CheckInScalarWhereInput
+    data: XOR<CheckInUpdateManyMutationInput, CheckInUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type CheckInScalarWhereInput = {
+    AND?: CheckInScalarWhereInput | CheckInScalarWhereInput[]
+    OR?: CheckInScalarWhereInput[]
+    NOT?: CheckInScalarWhereInput | CheckInScalarWhereInput[]
+    id?: IntFilter<"CheckIn"> | number
+    userId?: IntFilter<"CheckIn"> | number
+    checkInDate?: DateTimeFilter<"CheckIn"> | Date | string
+    points?: IntFilter<"CheckIn"> | number
+    consecutiveDays?: IntFilter<"CheckIn"> | number
+    createdAt?: DateTimeFilter<"CheckIn"> | Date | string
+  }
+
+  export type PointsHistoryUpsertWithWhereUniqueWithoutUserInput = {
+    where: PointsHistoryWhereUniqueInput
+    update: XOR<PointsHistoryUpdateWithoutUserInput, PointsHistoryUncheckedUpdateWithoutUserInput>
+    create: XOR<PointsHistoryCreateWithoutUserInput, PointsHistoryUncheckedCreateWithoutUserInput>
+  }
+
+  export type PointsHistoryUpdateWithWhereUniqueWithoutUserInput = {
+    where: PointsHistoryWhereUniqueInput
+    data: XOR<PointsHistoryUpdateWithoutUserInput, PointsHistoryUncheckedUpdateWithoutUserInput>
+  }
+
+  export type PointsHistoryUpdateManyWithWhereWithoutUserInput = {
+    where: PointsHistoryScalarWhereInput
+    data: XOR<PointsHistoryUpdateManyMutationInput, PointsHistoryUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type PointsHistoryScalarWhereInput = {
+    AND?: PointsHistoryScalarWhereInput | PointsHistoryScalarWhereInput[]
+    OR?: PointsHistoryScalarWhereInput[]
+    NOT?: PointsHistoryScalarWhereInput | PointsHistoryScalarWhereInput[]
+    id?: IntFilter<"PointsHistory"> | number
+    userId?: IntFilter<"PointsHistory"> | number
+    points?: IntFilter<"PointsHistory"> | number
+    type?: StringFilter<"PointsHistory"> | string
+    description?: StringNullableFilter<"PointsHistory"> | string | null
+    relatedId?: IntNullableFilter<"PointsHistory"> | number | null
+    createdAt?: DateTimeFilter<"PointsHistory"> | Date | string
+  }
+
   export type ResourceCreateWithoutTypeInput = {
     name: string
     links: string
@@ -36406,6 +39569,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -36421,6 +39585,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutResourceTypesInput = {
@@ -36432,6 +39598,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -36447,6 +39614,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutResourceTypesInput = {
@@ -36524,6 +39693,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -36539,6 +39709,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResourceTypesInput = {
@@ -36550,6 +39722,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -36565,6 +39738,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserResourceUpsertWithWhereUniqueWithoutTypeInput = {
@@ -36591,6 +39766,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -36606,6 +39782,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutResourcesInput = {
@@ -36617,6 +39795,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -36632,6 +39811,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutResourcesInput = {
@@ -36686,6 +39867,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -36701,6 +39883,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutResourcesInput = {
@@ -36712,6 +39896,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -36727,6 +39912,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceTypeUpsertWithoutResourcesInput = {
@@ -36828,6 +40015,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -36843,6 +40031,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPostsInput = {
@@ -36854,6 +40044,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -36869,6 +40060,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPostsInput = {
@@ -36953,6 +40146,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -36968,6 +40162,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPostsInput = {
@@ -36979,6 +40175,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -36994,6 +40191,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PostToCategoryCreateWithoutCategoryInput = {
@@ -37130,6 +40329,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -37145,6 +40345,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAlistInput = {
@@ -37156,6 +40358,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -37171,6 +40374,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAlistInput = {
@@ -37197,6 +40402,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -37212,6 +40418,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAlistInput = {
@@ -37223,6 +40431,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -37238,6 +40447,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type PostCreateWithoutCommentsInput = {
@@ -37581,6 +40792,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -37596,6 +40808,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBlogPostsInput = {
@@ -37607,6 +40821,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -37622,6 +40837,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBlogPostsInput = {
@@ -37666,6 +40883,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -37681,6 +40899,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBlogPostsInput = {
@@ -37692,6 +40912,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -37707,6 +40928,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BlogPostToCategoryUpsertWithWhereUniqueWithoutPostInput = {
@@ -37733,6 +40956,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -37748,6 +40972,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserResourcesInput = {
@@ -37759,6 +40985,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -37774,6 +41001,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserResourcesInput = {
@@ -37828,6 +41057,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -37843,6 +41073,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserResourcesInput = {
@@ -37854,6 +41086,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -37869,6 +41102,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceTypeUpsertWithoutUserResourcesInput = {
@@ -37913,6 +41148,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -37928,6 +41164,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVodConfigsInput = {
@@ -37939,6 +41177,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -37954,6 +41193,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVodConfigsInput = {
@@ -37980,6 +41221,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -37995,6 +41237,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVodConfigsInput = {
@@ -38006,6 +41250,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38021,6 +41266,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ForumTopicCreateWithoutCategoryInput = {
@@ -38088,6 +41335,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38103,6 +41351,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutForumTopicsInput = {
@@ -38114,6 +41364,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38129,6 +41380,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutForumTopicsInput = {
@@ -38212,6 +41465,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38227,6 +41481,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutForumTopicsInput = {
@@ -38238,6 +41494,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38253,6 +41510,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ForumCategoryUpsertWithoutTopicsInput = {
@@ -38311,6 +41570,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38326,6 +41586,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutForumPostsInput = {
@@ -38337,6 +41599,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38352,6 +41615,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutForumPostsInput = {
@@ -38471,6 +41736,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38486,6 +41752,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutForumPostsInput = {
@@ -38497,6 +41765,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38512,6 +41781,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ForumTopicUpsertWithoutPostsInput = {
@@ -38612,6 +41883,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38627,6 +41899,8 @@ export namespace Prisma {
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -38638,6 +41912,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38653,6 +41928,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -38679,6 +41956,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38694,6 +41972,8 @@ export namespace Prisma {
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -38705,6 +41985,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38720,6 +42001,8 @@ export namespace Prisma {
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutCreatedRoomsInput = {
@@ -38730,6 +42013,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38745,6 +42029,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCreatedRoomsInput = {
@@ -38756,6 +42042,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38771,6 +42058,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCreatedRoomsInput = {
@@ -38852,6 +42141,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38867,6 +42157,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedRoomsInput = {
@@ -38878,6 +42170,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -38893,6 +42186,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ChatRoomUserUpsertWithWhereUniqueWithoutRoomInput = {
@@ -38935,6 +42230,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38950,6 +42246,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     messages?: ChatMessageCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatRoomsInput = {
@@ -38961,6 +42259,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -38976,6 +42275,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatRoomsInput = {
@@ -39032,6 +42333,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -39047,6 +42349,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     messages?: ChatMessageUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatRoomsInput = {
@@ -39058,6 +42362,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -39073,6 +42378,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ChatRoomUpsertWithoutUsersInput = {
@@ -39119,6 +42426,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -39134,6 +42442,8 @@ export namespace Prisma {
     notifications?: NotificationCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMessagesInput = {
@@ -39145,6 +42455,7 @@ export namespace Prisma {
     status?: string
     avatarStyle?: string
     salt?: string | null
+    points?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     isVerified?: boolean
@@ -39160,6 +42471,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
     createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMessagesInput = {
@@ -39277,6 +42590,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -39292,6 +42606,8 @@ export namespace Prisma {
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -39303,6 +42619,7 @@ export namespace Prisma {
     status?: StringFieldUpdateOperationsInput | string
     avatarStyle?: StringFieldUpdateOperationsInput | string
     salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isVerified?: BoolFieldUpdateOperationsInput | boolean
@@ -39318,6 +42635,8 @@ export namespace Prisma {
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
     createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ChatRoomUpsertWithoutMessagesInput = {
@@ -39404,6 +42723,266 @@ export namespace Prisma {
   export type ChatMessageUpdateManyWithWhereWithoutReplyToInput = {
     where: ChatMessageScalarWhereInput
     data: XOR<ChatMessageUpdateManyMutationInput, ChatMessageUncheckedUpdateManyWithoutReplyToInput>
+  }
+
+  export type UserCreateWithoutCheckInsInput = {
+    username: string
+    email: string
+    password: string
+    role?: string
+    status?: string
+    avatarStyle?: string
+    salt?: string | null
+    points?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isVerified?: boolean
+    resources?: ResourceCreateNestedManyWithoutCreatorInput
+    resourceTypes?: ResourceTypeCreateNestedManyWithoutCreatorInput
+    posts?: PostCreateNestedManyWithoutCreatorInput
+    alist?: AlistCreateNestedManyWithoutCreatorInput
+    blogPosts?: BlogPostCreateNestedManyWithoutAuthorInput
+    userResources?: UserResourceCreateNestedManyWithoutCreatorInput
+    vodConfigs?: UserVodConfigCreateNestedManyWithoutUserInput
+    forumTopics?: ForumTopicCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    messages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
+    createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    pointsHistory?: PointsHistoryCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCheckInsInput = {
+    id?: number
+    username: string
+    email: string
+    password: string
+    role?: string
+    status?: string
+    avatarStyle?: string
+    salt?: string | null
+    points?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isVerified?: boolean
+    resources?: ResourceUncheckedCreateNestedManyWithoutCreatorInput
+    resourceTypes?: ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
+    posts?: PostUncheckedCreateNestedManyWithoutCreatorInput
+    alist?: AlistUncheckedCreateNestedManyWithoutCreatorInput
+    blogPosts?: BlogPostUncheckedCreateNestedManyWithoutAuthorInput
+    userResources?: UserResourceUncheckedCreateNestedManyWithoutCreatorInput
+    vodConfigs?: UserVodConfigUncheckedCreateNestedManyWithoutUserInput
+    forumTopics?: ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
+    createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    pointsHistory?: PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCheckInsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCheckInsInput, UserUncheckedCreateWithoutCheckInsInput>
+  }
+
+  export type UserUpsertWithoutCheckInsInput = {
+    update: XOR<UserUpdateWithoutCheckInsInput, UserUncheckedUpdateWithoutCheckInsInput>
+    create: XOR<UserCreateWithoutCheckInsInput, UserUncheckedCreateWithoutCheckInsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCheckInsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCheckInsInput, UserUncheckedUpdateWithoutCheckInsInput>
+  }
+
+  export type UserUpdateWithoutCheckInsInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    avatarStyle?: StringFieldUpdateOperationsInput | string
+    salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    resources?: ResourceUpdateManyWithoutCreatorNestedInput
+    resourceTypes?: ResourceTypeUpdateManyWithoutCreatorNestedInput
+    posts?: PostUpdateManyWithoutCreatorNestedInput
+    alist?: AlistUpdateManyWithoutCreatorNestedInput
+    blogPosts?: BlogPostUpdateManyWithoutAuthorNestedInput
+    userResources?: UserResourceUpdateManyWithoutCreatorNestedInput
+    vodConfigs?: UserVodConfigUpdateManyWithoutUserNestedInput
+    forumTopics?: ForumTopicUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    messages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
+    createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    pointsHistory?: PointsHistoryUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCheckInsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    avatarStyle?: StringFieldUpdateOperationsInput | string
+    salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    resources?: ResourceUncheckedUpdateManyWithoutCreatorNestedInput
+    resourceTypes?: ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
+    posts?: PostUncheckedUpdateManyWithoutCreatorNestedInput
+    alist?: AlistUncheckedUpdateManyWithoutCreatorNestedInput
+    blogPosts?: BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
+    userResources?: UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
+    vodConfigs?: UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
+    forumTopics?: ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
+    createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    pointsHistory?: PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutPointsHistoryInput = {
+    username: string
+    email: string
+    password: string
+    role?: string
+    status?: string
+    avatarStyle?: string
+    salt?: string | null
+    points?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isVerified?: boolean
+    resources?: ResourceCreateNestedManyWithoutCreatorInput
+    resourceTypes?: ResourceTypeCreateNestedManyWithoutCreatorInput
+    posts?: PostCreateNestedManyWithoutCreatorInput
+    alist?: AlistCreateNestedManyWithoutCreatorInput
+    blogPosts?: BlogPostCreateNestedManyWithoutAuthorInput
+    userResources?: UserResourceCreateNestedManyWithoutCreatorInput
+    vodConfigs?: UserVodConfigCreateNestedManyWithoutUserInput
+    forumTopics?: ForumTopicCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    messages?: ChatMessageCreateNestedManyWithoutUserInput
+    chatRooms?: ChatRoomUserCreateNestedManyWithoutUserInput
+    createdRooms?: ChatRoomCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutPointsHistoryInput = {
+    id?: number
+    username: string
+    email: string
+    password: string
+    role?: string
+    status?: string
+    avatarStyle?: string
+    salt?: string | null
+    points?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    isVerified?: boolean
+    resources?: ResourceUncheckedCreateNestedManyWithoutCreatorInput
+    resourceTypes?: ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
+    posts?: PostUncheckedCreateNestedManyWithoutCreatorInput
+    alist?: AlistUncheckedCreateNestedManyWithoutCreatorInput
+    blogPosts?: BlogPostUncheckedCreateNestedManyWithoutAuthorInput
+    userResources?: UserResourceUncheckedCreateNestedManyWithoutCreatorInput
+    vodConfigs?: UserVodConfigUncheckedCreateNestedManyWithoutUserInput
+    forumTopics?: ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
+    forumPosts?: ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    messages?: ChatMessageUncheckedCreateNestedManyWithoutUserInput
+    chatRooms?: ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
+    createdRooms?: ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutPointsHistoryInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutPointsHistoryInput, UserUncheckedCreateWithoutPointsHistoryInput>
+  }
+
+  export type UserUpsertWithoutPointsHistoryInput = {
+    update: XOR<UserUpdateWithoutPointsHistoryInput, UserUncheckedUpdateWithoutPointsHistoryInput>
+    create: XOR<UserCreateWithoutPointsHistoryInput, UserUncheckedCreateWithoutPointsHistoryInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutPointsHistoryInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutPointsHistoryInput, UserUncheckedUpdateWithoutPointsHistoryInput>
+  }
+
+  export type UserUpdateWithoutPointsHistoryInput = {
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    avatarStyle?: StringFieldUpdateOperationsInput | string
+    salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    resources?: ResourceUpdateManyWithoutCreatorNestedInput
+    resourceTypes?: ResourceTypeUpdateManyWithoutCreatorNestedInput
+    posts?: PostUpdateManyWithoutCreatorNestedInput
+    alist?: AlistUpdateManyWithoutCreatorNestedInput
+    blogPosts?: BlogPostUpdateManyWithoutAuthorNestedInput
+    userResources?: UserResourceUpdateManyWithoutCreatorNestedInput
+    vodConfigs?: UserVodConfigUpdateManyWithoutUserNestedInput
+    forumTopics?: ForumTopicUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    messages?: ChatMessageUpdateManyWithoutUserNestedInput
+    chatRooms?: ChatRoomUserUpdateManyWithoutUserNestedInput
+    createdRooms?: ChatRoomUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutPointsHistoryInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    username?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: StringFieldUpdateOperationsInput | string
+    status?: StringFieldUpdateOperationsInput | string
+    avatarStyle?: StringFieldUpdateOperationsInput | string
+    salt?: NullableStringFieldUpdateOperationsInput | string | null
+    points?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    isVerified?: BoolFieldUpdateOperationsInput | boolean
+    resources?: ResourceUncheckedUpdateManyWithoutCreatorNestedInput
+    resourceTypes?: ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
+    posts?: PostUncheckedUpdateManyWithoutCreatorNestedInput
+    alist?: AlistUncheckedUpdateManyWithoutCreatorNestedInput
+    blogPosts?: BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
+    userResources?: UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
+    vodConfigs?: UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
+    forumTopics?: ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
+    forumPosts?: ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    messages?: ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+    chatRooms?: ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
+    createdRooms?: ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ResourceCreateManyCreatorInput = {
@@ -39537,6 +43116,23 @@ export namespace Prisma {
     updatedAt?: Date | string
     isPublic?: boolean
     avatar?: string | null
+  }
+
+  export type CheckInCreateManyUserInput = {
+    id?: number
+    checkInDate: Date | string
+    points: number
+    consecutiveDays: number
+    createdAt?: Date | string
+  }
+
+  export type PointsHistoryCreateManyUserInput = {
+    id?: number
+    points: number
+    type: string
+    description?: string | null
+    relatedId?: number | null
+    createdAt?: Date | string
   }
 
   export type ResourceUpdateWithoutCreatorInput = {
@@ -39944,6 +43540,55 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     isPublic?: BoolFieldUpdateOperationsInput | boolean
     avatar?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CheckInUpdateWithoutUserInput = {
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    points?: IntFieldUpdateOperationsInput | number
+    consecutiveDays?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CheckInUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    points?: IntFieldUpdateOperationsInput | number
+    consecutiveDays?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CheckInUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    checkInDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    points?: IntFieldUpdateOperationsInput | number
+    consecutiveDays?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PointsHistoryUpdateWithoutUserInput = {
+    points?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PointsHistoryUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PointsHistoryUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    points?: IntFieldUpdateOperationsInput | number
+    type?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    relatedId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ResourceCreateManyTypeInput = {
