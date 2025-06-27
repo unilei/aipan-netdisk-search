@@ -29,7 +29,7 @@ export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
-      title: '爱盼：资源随心，娱乐无限',
+      title: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定',
       htmlAttrs: {
         lang: 'zh-CN'
       },
@@ -47,12 +47,12 @@ export default defineNuxtConfig({
         {
           name: 'keywords',
           content:
-            '爱盼, 开源, 免费资源搜索, 网盘搜索, 音乐下载, TVBox数据接口, 电视直播, 博客发布, 影视资源, 教学工具, 非商业用途',
+            'AIPAN,爱盼,数字生活伙伴,网盘搜索,资源搜索,在线音乐,博客平台,论坛社区,休闲游戏,电视直播,FM电台,影视资源,音乐播放器,TVBox,百度网盘,阿里云盘,夸克网盘,一站搞定',
         },
         {
           name: 'description',
           content:
-            '爱盼是一个开源免费的资源搜索平台，提供网盘资源搜索、音乐下载、TV直播、TVBox接口地址以及博客发布等多项功能，打造丰富的影视音聚合体验，供学习与探索使用，不支持商业用途。',
+            'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体。支持百度网盘、阿里云盘、夸克网盘搜索，海量影视音乐资源随心享用。一个网站，满足你的所有数字娱乐需求！',
         },
         { name: 'author', content: 'AIPAN.ME' },
         { name: 'publisher', content: 'AIPAN.ME' },
@@ -62,11 +62,11 @@ export default defineNuxtConfig({
         // Open Graph
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: '爱盼' },
-        { property: 'og:title', content: '爱盼：资源随心，音乐下载与影视聚合平台' },
+        { property: 'og:title', content: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定' },
         {
           property: 'og:description',
           content:
-            '爱盼是一个开源免费的资源搜索平台，提供网盘、音乐、影视等多种资源，一站式服务，供学习使用。',
+            'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体，一个网站满足所有数字娱乐需求。',
         },
         { property: 'og:image', content: 'https://www.aipan.me/logo.png' },
         { property: 'og:image:width', content: '1200' },
@@ -76,10 +76,10 @@ export default defineNuxtConfig({
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:site', content: '@aipan_me' },
-        { name: 'twitter:title', content: '爱盼：资源随心，音乐下载与影视聚合平台' },
+        { name: 'twitter:title', content: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定' },
         {
           name: 'twitter:description',
-          content: '免费开源的资源搜索平台，涵盖音乐、网盘、影视等内容，学习探索好去处！',
+          content: '你的数字生活伙伴！资源搜索、音乐播放、社区交流、休闲游戏、电视直播，一个网站满足所有需求！',
         },
         { name: 'twitter:image', content: 'https://www.aipan.me/logo.png' },
         // 统一 referrer 策略
@@ -198,10 +198,10 @@ export default defineNuxtConfig({
     exclude: ['/admin/**'],
   },
   site: {
-    name: '爱盼 - 资源随心，娱乐无限',
+    name: 'AIPAN.ME - 你的数字生活伙伴',
     url: 'https://www.aipan.me',
     description:
-      '爱盼 - 资源随心，娱乐无限， 一个开源免费的网盘资源搜索程序，仅供学习使用，不支持商业用途。',
+      'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体，一个网站满足所有数字娱乐需求。',
   },
   compatibilityDate: '2024-09-12',
 })

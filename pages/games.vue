@@ -10,12 +10,21 @@ import TetrisGame from '~/components/games/TetrisGame.vue';
 import MinesweeperGame from '~/components/games/MinesweeperGame.vue';
 import ConnectFourGame from '~/components/games/ConnectFourGame.vue';
 
+// SEO优化
+useSeoMeta({
+  title: 'AIPAN游戏 - 免费在线休闲小游戏平台 | 贪吃蛇·俄罗斯方块·2048',
+  description: 'AIPAN游戏提供丰富的免费在线休闲小游戏，包含贪吃蛇、俄罗斯方块、2048、井字棋、拼图游戏、打地鼠、打砖块、扫雷、四子棋等经典游戏。无需下载，即开即玩，适合休闲娱乐。',
+  keywords: '在线游戏,休闲游戏,小游戏,贪吃蛇,俄罗斯方块,2048游戏,井字棋,拼图游戏,打地鼠,扫雷,AIPAN游戏,免费游戏',
+  ogTitle: 'AIPAN游戏 - 免费在线休闲小游戏平台',
+  ogDescription: 'AIPAN游戏提供丰富的免费在线休闲小游戏，贪吃蛇、俄罗斯方块、2048等经典游戏，无需下载即开即玩。',
+  twitterTitle: 'AIPAN游戏 - 免费在线休闲小游戏平台',
+  twitterDescription: '免费在线休闲小游戏！贪吃蛇、俄罗斯方块、2048等经典游戏，无需下载即开即玩！'
+});
+
 useHead({
-  title: '休闲游戏',
   meta: [
     { charset: 'utf-8' },
     { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-    { hid: 'description', name: 'description', content: '休闲游戏' },
     { name: 'format-detection', content: 'telephone=no' }
   ],
   link: [
@@ -42,8 +51,8 @@ const connectFourGameRef = ref(null);
 // 切换游戏
 const setActiveGame = (game) => {
   activeGame.value = game;
-  
-  switch(game) {
+
+  switch (game) {
     case 'snake':
       gameTitle.value = '贪吃蛇';
       gameDescription.value = '使用方向键控制蛇吃食物，不要撞到墙壁或自己';
@@ -85,7 +94,7 @@ const setActiveGame = (game) => {
 
 // 重启当前游戏
 const restartCurrentGame = () => {
-  switch(activeGame.value) {
+  switch (activeGame.value) {
     case 'snake':
       snakeGameRef.value?.restartGame();
       break;
@@ -147,111 +156,84 @@ onMounted(() => {
 
       <!-- 游戏选择 -->
       <div class="game-selection flex flex-wrap justify-center gap-3 mb-8">
-        <button 
-          @click="setActiveGame('snake')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'snake' 
-              ? 'bg-green-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('snake')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === 'snake'
+            ? 'bg-green-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-snake mr-2"></i>
           贪吃蛇
         </button>
-        <button 
-          @click="setActiveGame('tictactoe')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'tictactoe' 
-              ? 'bg-purple-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('tictactoe')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === 'tictactoe'
+            ? 'bg-purple-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-hashtag mr-2"></i>
           井字棋
         </button>
-        <button 
-          @click="setActiveGame('puzzle')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'puzzle' 
-              ? 'bg-amber-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('puzzle')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === 'puzzle'
+            ? 'bg-amber-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-puzzle-piece mr-2"></i>
           数字拼图
         </button>
-        <button 
-          @click="setActiveGame('whackamole')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'whackamole' 
-              ? 'bg-red-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('whackamole')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === 'whackamole'
+            ? 'bg-red-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-hammer mr-2"></i>
           打地鼠
         </button>
-        <button 
-          @click="setActiveGame('2048')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === '2048' 
-              ? 'bg-yellow-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('2048')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === '2048'
+            ? 'bg-yellow-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-cubes mr-2"></i>
           2048
         </button>
-        <button 
-          @click="setActiveGame('breakout')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'breakout' 
-              ? 'bg-blue-500 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('breakout')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === 'breakout'
+            ? 'bg-blue-500 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-volleyball mr-2"></i>
           打砖块
         </button>
-        <button 
-          @click="setActiveGame('tetris')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'tetris' 
-              ? 'bg-purple-600 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('tetris')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === 'tetris'
+            ? 'bg-purple-600 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-shapes mr-2"></i>
           俄罗斯方块
         </button>
-        <button 
-          @click="setActiveGame('minesweeper')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'minesweeper' 
-              ? 'bg-red-600 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('minesweeper')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === 'minesweeper'
+            ? 'bg-red-600 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-bomb mr-2"></i>
           扫雷
         </button>
-        <button 
-          @click="setActiveGame('connectfour')" 
-          :class="[
-            'px-4 py-2 rounded-lg font-medium transition-all',
-            activeGame === 'connectfour' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
-          ]"
-        >
+        <button @click="setActiveGame('connectfour')" :class="[
+          'px-4 py-2 rounded-lg font-medium transition-all',
+          activeGame === 'connectfour'
+            ? 'bg-blue-600 text-white'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'
+        ]">
           <i class="fa-solid fa-circle-dot mr-2"></i>
           四子连线
         </button>
@@ -266,76 +248,40 @@ onMounted(() => {
       <!-- 游戏容器 -->
       <div class="game-container bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
         <!-- 贪吃蛇游戏 -->
-        <SnakeGame 
-          v-if="activeGame === 'snake'" 
-          ref="snakeGameRef"
-          :active="activeGame === 'snake'"
-          @game-over="onGameOver"
-        />
+        <SnakeGame v-if="activeGame === 'snake'" ref="snakeGameRef" :active="activeGame === 'snake'"
+          @game-over="onGameOver" />
 
         <!-- 井字棋游戏 -->
-        <TicTacToeGame 
-          v-if="activeGame === 'tictactoe'" 
-          ref="ticTacToeGameRef"
-          :active="activeGame === 'tictactoe'"
-          @game-end="onGameOver"
-        />
+        <TicTacToeGame v-if="activeGame === 'tictactoe'" ref="ticTacToeGameRef" :active="activeGame === 'tictactoe'"
+          @game-end="onGameOver" />
 
         <!-- 数字拼图游戏 -->
-        <PuzzleGame 
-          v-if="activeGame === 'puzzle'" 
-          ref="puzzleGameRef"
-          :active="activeGame === 'puzzle'"
-          @game-completed="onGameCompleted"
-        />
+        <PuzzleGame v-if="activeGame === 'puzzle'" ref="puzzleGameRef" :active="activeGame === 'puzzle'"
+          @game-completed="onGameCompleted" />
 
         <!-- 打地鼠游戏 -->
-        <WhackAMoleGame 
-          v-if="activeGame === 'whackamole'" 
-          ref="whackAMoleGameRef"
-          :active="activeGame === 'whackamole'"
-          @game-over="onGameOver"
-        />
-        
+        <WhackAMoleGame v-if="activeGame === 'whackamole'" ref="whackAMoleGameRef" :active="activeGame === 'whackamole'"
+          @game-over="onGameOver" />
+
         <!-- 2048游戏 -->
-        <Game2048 
-          v-if="activeGame === '2048'" 
-          ref="game2048Ref"
-          :active="activeGame === '2048'"
-          @game-over="onGameOver"
-        />
-        
+        <Game2048 v-if="activeGame === '2048'" ref="game2048Ref" :active="activeGame === '2048'"
+          @game-over="onGameOver" />
+
         <!-- 打砖块游戏 -->
-        <BreakoutGame 
-          v-if="activeGame === 'breakout'" 
-          ref="breakoutGameRef"
-          :active="activeGame === 'breakout'"
-          @game-over="onGameOver"
-        />
-        
+        <BreakoutGame v-if="activeGame === 'breakout'" ref="breakoutGameRef" :active="activeGame === 'breakout'"
+          @game-over="onGameOver" />
+
         <!-- 俄罗斯方块游戏 -->
-        <TetrisGame 
-          v-if="activeGame === 'tetris'" 
-          ref="tetrisGameRef"
-          :active="activeGame === 'tetris'"
-          @game-over="onGameOver"
-        />
-        
+        <TetrisGame v-if="activeGame === 'tetris'" ref="tetrisGameRef" :active="activeGame === 'tetris'"
+          @game-over="onGameOver" />
+
         <!-- 扫雷游戏 -->
-        <MinesweeperGame
-          v-if="activeGame === 'minesweeper'" 
-          ref="minesweeperGameRef"
-          :active="activeGame === 'minesweeper'"
-          @game-over="onGameOver"
-        />
-        
+        <MinesweeperGame v-if="activeGame === 'minesweeper'" ref="minesweeperGameRef"
+          :active="activeGame === 'minesweeper'" @game-over="onGameOver" />
+
         <!-- 四子连线游戏 -->
-        <ConnectFourGame
-          v-if="activeGame === 'connectfour'" 
-          ref="connectFourGameRef"
-          :active="activeGame === 'connectfour'"
-          @game-over="onGameOver"
-        />
+        <ConnectFourGame v-if="activeGame === 'connectfour'" ref="connectFourGameRef"
+          :active="activeGame === 'connectfour'" @game-over="onGameOver" />
       </div>
     </div>
   </div>
@@ -356,7 +302,7 @@ onMounted(() => {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .game-selection button {
     margin-bottom: 0.5rem;
     width: 100%;
