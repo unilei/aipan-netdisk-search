@@ -147,7 +147,7 @@ const goDouban = (movie) => {
 
     <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8 gap-4 mt-[10px]">
       <div v-for="(movie, index) in item.data" :key="index"
-        class="group cursor-pointer bg-white dark:bg-gray-700 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+        class="group cursor-default md:cursor-pointer bg-white dark:bg-gray-700 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 md:hover:-translate-y-1"
         @click="goDouban(movie)">
         <div class="relative overflow-hidden bg-gray-100 dark:bg-gray-600">
           <div v-if="!imageLoadStatus[`${item.name}-${index}`]"
@@ -160,7 +160,7 @@ const goDouban = (movie) => {
           </div>
 
           <img :ref="(el) => setImageRef(el, `${item.name}-${index}`, movie.cover)" :src="placeHolderImage"
-            class="w-full aspect-[270/405] object-cover transition-all duration-300 group-hover:scale-105" :class="{
+            class="w-full aspect-[270/405] object-cover transition-all duration-300 md:group-hover:scale-[1.8]" :class="{
               'opacity-0': !imageLoadStatus[`${item.name}-${index}`],
               'opacity-100 blur-0':
                 imageLoadStatus[`${item.name}-${index}`] === 'loaded',
