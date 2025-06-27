@@ -1,21 +1,21 @@
 <script setup>
+// SEO优化
+useSeoMeta({
+  title: 'AIPAN电视 - 免费在线电视直播平台 | 央视卫视港台国际频道',
+  description: 'AIPAN电视提供免费的在线电视直播服务，包含央视、卫视、港台、国际、体育等各类频道。支持高清直播，稳定流畅，涵盖新闻、娱乐、体育、影视等丰富内容。',
+  keywords: '在线电视,电视直播,免费直播,央视直播,卫视直播,港台电视,国际频道,体育直播,AIPAN电视,网络电视',
+  ogTitle: 'AIPAN电视 - 免费在线电视直播平台',
+  ogDescription: 'AIPAN电视提供免费的在线电视直播服务，包含央视、卫视、港台、国际、体育等各类频道。',
+  twitterTitle: 'AIPAN电视 - 免费在线电视直播平台',
+  twitterDescription: '免费在线电视直播！央视卫视港台国际频道，高清稳定，内容丰富！'
+});
+
 useHead({
-  title: "爱盼 - 电视直播与 Alist 数据源聚合播放",
   meta: [
     { charset: "utf-8" },
     {
       name: "viewport",
       content: "width=device-width, initial-scale=1, shrink-to-fit=no",
-    },
-    {
-      name: "keywords",
-      content: "爱盼, 电视直播, Alist 数据源, 聚合播放, 在线电视",
-    },
-    {
-      hid: "description",
-      name: "description",
-      content:
-        "爱盼提供最新的电视直播和 Alist 数据源聚合播放，轻松享受精彩内容！",
     },
     { name: "author", content: "爱盼团队" },
     { name: "robots", content: "index, follow" },
@@ -612,7 +612,7 @@ onBeforeUnmount(() => {
                     "></i>
                   <span class="hidden sm:inline">{{
                     !videoMuted ? "静音" : "取消静音"
-                    }}</span>
+                  }}</span>
                 </span>
               </button>
               <button class="control-btn" @click="handleSwitchVideoStatus">
@@ -620,7 +620,7 @@ onBeforeUnmount(() => {
                   <i :class="!isPlaying ? 'fas fa-play' : 'fas fa-pause'"></i>
                   <span class="hidden sm:inline">{{
                     !isPlaying ? "播放" : "暂停"
-                    }}</span>
+                  }}</span>
                 </span>
               </button>
             </div>

@@ -163,7 +163,7 @@
                     <i class="fas fa-file-alt mr-1 text-xs"></i>
                     <span class="text-xs">{{
                       category._count?.topics || 0
-                      }}</span>
+                    }}</span>
                   </div>
                 </div>
               </div>
@@ -288,6 +288,17 @@
 <script setup>
 import { formatDistanceToNow } from "date-fns";
 import { zhCN } from "date-fns/locale";
+
+// SEO优化
+useSeoMeta({
+  title: 'AIPAN论坛 - 用户交流社区 | 分享讨论技术话题',
+  description: 'AIPAN论坛是一个活跃的用户交流社区，用户可以在这里分享想法、提问、参与讨论。涵盖技术交流、资源分享、使用心得等多个话题分类，连接社区中的每一个人。',
+  keywords: '论坛社区,用户交流,技术讨论,资源分享,问答社区,AIPAN论坛,在线讨论,社区互动',
+  ogTitle: 'AIPAN论坛 - 用户交流社区',
+  ogDescription: 'AIPAN论坛是活跃的用户交流社区，分享想法、提问、参与讨论，连接社区中的每一个人。',
+  twitterTitle: 'AIPAN论坛 - 用户交流社区',
+  twitterDescription: '活跃的用户交流社区！分享想法、提问、参与讨论，连接社区中的每一个人。'
+});
 
 definePageMeta({
   layout: "default",

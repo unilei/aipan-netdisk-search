@@ -3,6 +3,17 @@ definePageMeta({
   layout: "custom",
   middleware: ["music-auth"]
 });
+
+// SEO优化
+useSeoMeta({
+  title: 'AIPAN音乐 - 免费在线音乐搜索播放平台 | 高品质音乐下载',
+  description: 'AIPAN音乐提供免费的在线音乐搜索、播放和下载服务。支持无损音质，海量歌曲库，包含华语、欧美、日韩等各类音乐。在线播放器支持歌单管理、歌词显示等功能。',
+  keywords: '在线音乐,音乐搜索,音乐播放器,免费音乐,无损音乐,音乐下载,在线播放,歌单管理,AIPAN音乐',
+  ogTitle: 'AIPAN音乐 - 免费在线音乐搜索播放平台',
+  ogDescription: 'AIPAN音乐提供免费的在线音乐搜索、播放和下载服务，支持无损音质，海量歌曲库。',
+  twitterTitle: 'AIPAN音乐 - 免费在线音乐搜索播放平台',
+  twitterDescription: '免费在线音乐搜索播放，支持无损音质，海量歌曲库，在线播放器功能丰富！'
+});
 const keyword = ref("周杰伦");
 const page = ref(1);
 const quality = ref("lossless");
