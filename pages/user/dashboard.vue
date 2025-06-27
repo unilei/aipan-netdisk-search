@@ -38,7 +38,19 @@
       </div>
 
       <!-- 数据统计 -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">当前积分</p>
+              <p class="text-2xl font-bold text-yellow-600 dark:text-yellow-400 mt-1">{{ userStore.user?.points || 0 }}
+              </p>
+            </div>
+            <el-icon class="text-3xl text-yellow-500">
+              <Star />
+            </el-icon>
+          </div>
+        </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
@@ -65,6 +77,19 @@
 
       <!-- 快捷操作 -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">每日签到</h2>
+            <el-icon class="text-2xl text-yellow-500">
+              <Star />
+            </el-icon>
+          </div>
+          <p class="text-gray-500 dark:text-gray-400 mb-4">签到获得积分奖励</p>
+          <el-button type="warning" @click="() => navigateTo('/user/checkin')" class="w-full">
+            <i class="fas fa-calendar-check mr-1"></i>
+            签到中心
+          </el-button>
+        </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">我的资源</h2>

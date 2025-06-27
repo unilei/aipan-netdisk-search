@@ -129,6 +129,7 @@ exports.Prisma.UserScalarFieldEnum = {
   status: 'status',
   avatarStyle: 'avatarStyle',
   salt: 'salt',
+  points: 'points',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   isVerified: 'isVerified'
@@ -346,6 +347,25 @@ exports.Prisma.ChatMessageScalarFieldEnum = {
   fileUrl: 'fileUrl'
 };
 
+exports.Prisma.CheckInScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  checkInDate: 'checkInDate',
+  points: 'points',
+  consecutiveDays: 'consecutiveDays',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.PointsHistoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  points: 'points',
+  type: 'type',
+  description: 'description',
+  relatedId: 'relatedId',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -394,7 +414,9 @@ exports.Prisma.ModelName = {
   Notification: 'Notification',
   ChatRoom: 'ChatRoom',
   ChatRoomUser: 'ChatRoomUser',
-  ChatMessage: 'ChatMessage'
+  ChatMessage: 'ChatMessage',
+  CheckIn: 'CheckIn',
+  PointsHistory: 'PointsHistory'
 };
 
 /**

@@ -219,6 +219,12 @@ onBeforeUnmount(() => {
                       <i class="fa-solid fa-user mr-2 text-green-500"></i>
                       {{ $t('header.user.dashboard') }}
                     </nuxt-link>
+                    <nuxt-link to="/user/checkin"
+                      class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      @click="dropdownVisible = false">
+                      <i class="fa-solid fa-calendar-check mr-2 text-yellow-500"></i>
+                      签到中心
+                    </nuxt-link>
                     <nuxt-link to="/user/profile"
                       class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                       @click="dropdownVisible = false">
