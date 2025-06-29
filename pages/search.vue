@@ -51,6 +51,7 @@ const {
   resetVodState
 } = useSearchState();
 
+const { smartCache } = useSmartCache();
 const { handleSearch, searchByVod, cleanup } = useSearchLogic();
 const { getQuarkConfig } = useQuarkConfig();
 const { stopQueueProcessing } = useSearchQueue();
@@ -86,6 +87,11 @@ const search = async () => {
 
 // 初始化
 onMounted(async () => {
+  // 初始化缓存系统
+  if (import.meta.client && smartCache) {
+    smartCache.init();
+  }
+
   await getQuarkConfig();
   await loadSources();
 
@@ -98,6 +104,11 @@ onMounted(async () => {
 onUnmounted(() => {
   stopQueueProcessing();
   cleanup();
+
+  // 清理缓存系统
+  if (smartCache && typeof smartCache.destroy === 'function') {
+    smartCache.destroy();
+  }
 });
 
 // 监听路由变化
