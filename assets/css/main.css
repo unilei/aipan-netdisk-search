@@ -2,6 +2,55 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Element Plus 组件 z-index 设置 */
+:root {
+  --el-z-index-message: 3002;
+  --el-z-index-message-box: 3002;
+  --el-z-index-notification: 3002;
+  --el-z-index-loading: 3002;
+  --el-z-index-overlay: 3002;
+  --el-z-index-popover: 3002;
+  --el-z-index-popper: 3002;
+  --el-z-index-tooltip: 3002;
+}
+
+/* 确保所有 Element Plus 提示类组件都使用正确的 z-index */
+.el-message {
+  z-index: 3002 !important;
+}
+
+.el-message-box__wrapper {
+  z-index: 3002 !important;
+}
+
+.el-notification {
+  z-index: 3002 !important;
+}
+
+.el-loading-mask {
+  z-index: 3002 !important;
+}
+
+.el-overlay {
+  z-index: 3002 !important;
+}
+
+.el-popover {
+  z-index: 3002 !important;
+}
+
+.el-tooltip__popper {
+  z-index: 3002 !important;
+}
+
+.el-drawer__wrapper {
+  z-index: 3002 !important;
+}
+
+.el-dialog__wrapper {
+  z-index: 3002 !important;
+}
+
 @layer components {
   .pagination-custom {
     --el-pagination-bg-color: transparent;
