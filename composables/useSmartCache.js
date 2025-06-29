@@ -13,18 +13,18 @@ export const useSmartCache = () => {
       this.useRedis = useRedis;
       this.ttlConfig = {
         search: 5 * 60 * 1000, // 搜索结果缓存5分钟
-        vod: 15 * 60 * 1000,   // VOD结果缓存15分钟
+        vod: 15 * 60 * 1000, // VOD结果缓存15分钟
         config: 24 * 60 * 60 * 1000, // 配置信息缓存24小时
-        default: 60 * 60 * 1000 // 默认1小时
+        default: 60 * 60 * 1000, // 默认1小时
       };
 
-      if (process.client) {
+      if (import.meta.client) {
         this.init();
       }
     }
 
     init() {
-      if (!process.client) return;
+      if (!import.meta.client) return;
       try {
         this.load();
         this.setupAutoSave();
@@ -35,7 +35,7 @@ export const useSmartCache = () => {
     }
 
     load() {
-      if (!process.client) return;
+      if (!import.meta.client) return;
       try {
         const savedData = localStorage.getItem(this.namespace);
         if (savedData) {
@@ -58,17 +58,23 @@ export const useSmartCache = () => {
     }
 
     save() {
-      if (!process.client) return;
+      if (!import.meta.client) return;
       try {
-        const data = { cache: Array.from(this.cache.entries()), timestamp: Date.now() };
+        const data = {
+          cache: Array.from(this.cache.entries()),
+          timestamp: Date.now(),
+        };
         localStorage.setItem(this.namespace, JSON.stringify(data));
       } catch (error) {
         this.cleanup(true);
         try {
-          localStorage.setItem(this.namespace, JSON.stringify({
-            cache: Array.from(this.cache.entries()),
-            timestamp: Date.now()
-          }));
+          localStorage.setItem(
+            this.namespace,
+            JSON.stringify({
+              cache: Array.from(this.cache.entries()),
+              timestamp: Date.now(),
+            })
+          );
         } catch (error) {
           console.error("Failed to save cache:", error);
         }
@@ -76,7 +82,7 @@ export const useSmartCache = () => {
     }
 
     setupAutoSave() {
-      if (!process.client) return;
+      if (!import.meta.client) return;
       this.saveInterval = setInterval(() => this.save(), 60000);
       this.beforeUnloadHandler = () => {
         this.save();
@@ -86,13 +92,13 @@ export const useSmartCache = () => {
     }
 
     setupCleanupInterval() {
-      if (!process.client) return;
+      if (!import.meta.client) return;
       this.cleanupInterval = setInterval(() => this.cleanup(), 300000);
     }
 
     // 清理所有定时器和事件监听器
     destroy() {
-      if (!process.client) return;
+      if (!import.meta.client) return;
 
       if (this.saveInterval) {
         clearInterval(this.saveInterval);
@@ -112,19 +118,20 @@ export const useSmartCache = () => {
       this.cache.clear();
     }
 
-    isStale(cacheItem, type = 'default') {
+    isStale(cacheItem, type = "default") {
       if (!cacheItem) return true;
       const ttl = this.ttlConfig[type] || this.ttlConfig.default;
       return Date.now() > cacheItem.timestamp + ttl;
     }
 
-    getTTL(type = 'default', value = null) {
+    getTTL(type = "default", value = null) {
       return this.ttlConfig[type] || this.ttlConfig.default;
     }
 
     getCacheType(key) {
       if (key.startsWith("vod-")) return "vod";
-      else if (key.includes("config") || key.includes("setting")) return "config";
+      else if (key.includes("config") || key.includes("setting"))
+        return "config";
       return "search";
     }
 
@@ -158,7 +165,7 @@ export const useSmartCache = () => {
     }
 
     cleanup(force = false) {
-      if (!process.client) return;
+      if (!import.meta.client) return;
 
       const now = Date.now();
       const keysToDelete = [];
@@ -170,7 +177,7 @@ export const useSmartCache = () => {
         }
       }
 
-      keysToDelete.forEach(key => this.cache.delete(key));
+      keysToDelete.forEach((key) => this.cache.delete(key));
 
       // 如果缓存过大，删除最旧的条目
       if (this.cache.size > this.maxSize) {
@@ -194,11 +201,11 @@ export const useSmartCache = () => {
       return null;
     }
 
-    async setWithStrategy(key, data, type = 'default') {
+    async setWithStrategy(key, data, type = "default") {
       const cacheItem = {
         data,
         timestamp: Date.now(),
-        type
+        type,
       };
 
       this.cache.set(key, cacheItem);
@@ -212,6 +219,6 @@ export const useSmartCache = () => {
   const smartCache = new SmartCache();
 
   return {
-    smartCache
+    smartCache,
   };
 };
