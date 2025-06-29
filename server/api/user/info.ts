@@ -3,6 +3,12 @@ import { verifyToken } from "~/server/model/user";
 
 export default defineEventHandler(async (event) => {
     try {
+        // 设置防止缓存的响应头
+        setHeader(event, 'Cache-Control', 'no-cache, no-store, must-revalidate, private');
+        setHeader(event, 'Pragma', 'no-cache');
+        setHeader(event, 'Expires', '0');
+        setHeader(event, 'Last-Modified', new Date().toUTCString());
+
         const authHeader = event.node.req.headers["authorization"];
         if (!authHeader) {
             throw createError({ statusCode: 401, statusMessage: "Unauthorized" });
@@ -45,4 +51,4 @@ export default defineEventHandler(async (event) => {
             error
         };
     }
-}); 
+});
