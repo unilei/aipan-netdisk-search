@@ -246,11 +246,6 @@ onBeforeUnmount(() => {
                 <nuxt-link to="/user/profile"
                   class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   @click="dropdownVisible = false">
-                  <i class="fa-solid fa-user mr-2 text-green-500"></i> {{ $t('header.user.dashboard') }}
-                </nuxt-link>
-                <nuxt-link to="/user/profile"
-                  class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  @click="dropdownVisible = false">
                   <i class="fa-solid fa-gear mr-2 text-purple-500"></i> {{ $t('header.user.profile') }}
                 </nuxt-link>
                 <div
