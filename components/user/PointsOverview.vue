@@ -1,102 +1,113 @@
 <template>
-  <div class="points-overview">
-    <el-card class="points-card" shadow="hover">
-      <template #header>
-        <div class="card-header">
-          <h3 class="title">
-            <el-icon>
-              <Coin />
-            </el-icon>
-            积分概览
-          </h3>
-          <el-button link @click="$emit('view-history')" class="view-history-btn">
-            查看详情
-            <el-icon>
-              <ArrowRight />
-            </el-icon>
-          </el-button>
-        </div>
-      </template>
+  <div
+    class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <!-- 卡片头部 -->
+    <div
+      class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center">
+        <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 m-0">
+          <i class="fa-solid fa-coins text-green-600 dark:text-green-400"></i>
+          积分概览
+        </h3>
+        <button @click="$emit('view-history')"
+          class="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200 text-sm font-medium">
+          查看详情
+          <i class="fa-solid fa-arrow-right text-xs"></i>
+        </button>
+      </div>
+    </div>
 
-      <div class="points-content">
-        <!-- 当前积分 -->
-        <div class="current-points">
-          <div class="points-number">{{ pointsData.currentPoints }}</div>
-          <div class="points-label">当前积分</div>
-        </div>
+    <div class="p-6">
+      <!-- 当前积分 -->
+      <div class="text-center mb-6 p-6 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl text-white">
+        <div class="text-4xl font-bold mb-2">{{ pointsData.currentPoints }}</div>
+        <div class="text-lg opacity-90">当前积分</div>
+      </div>
 
-        <!-- 积分统计 -->
-        <div class="points-stats">
-          <div class="stat-row">
-            <div class="stat-item">
-              <div class="stat-value">{{ pointsData.stats?.dailyEarned || 0 }}</div>
-              <div class="stat-label">今日获得</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">{{ pointsData.stats?.monthlyEarned || 0 }}</div>
-              <div class="stat-label">本月获得</div>
-            </div>
+      <!-- 积分统计 -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div
+          class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border border-blue-200 dark:border-blue-700/50">
+          <div class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-1">{{ pointsData.stats?.dailyEarned || 0 }}
           </div>
-          <div class="stat-row">
-            <div class="stat-item">
-              <div class="stat-value">{{ pointsData.stats?.totalEarned || 0 }}</div>
-              <div class="stat-label">累计获得</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value">{{ pointsData.stats?.totalSpent || 0 }}</div>
-              <div class="stat-label">累计消费</div>
-            </div>
-          </div>
+          <div class="text-sm text-blue-600/80 dark:text-blue-400/80">今日获得</div>
         </div>
-
-        <!-- 积分来源分布 -->
-        <div v-if="pointsData.stats?.pointsByType?.length" class="points-sources">
-          <h4>积分来源</h4>
-          <div class="source-list">
-            <div v-for="source in pointsData.stats.pointsByType" :key="source.type" class="source-item">
-              <div class="source-info">
-                <span class="source-name">{{ getTypeName(source.type) }}</span>
-                <span class="source-count">({{ source._count._all }}次)</span>
-              </div>
-              <div class="source-points">+{{ source._sum.points || 0 }}</div>
-            </div>
-          </div>
+        <div
+          class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-200 dark:border-green-700/50">
+          <div class="text-xl font-bold text-green-600 dark:text-green-400 mb-1">{{ pointsData.stats?.monthlyEarned || 0
+            }}</div>
+          <div class="text-sm text-green-600/80 dark:text-green-400/80">本月获得</div>
         </div>
+        <div
+          class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg border border-purple-200 dark:border-purple-700/50">
+          <div class="text-xl font-bold text-purple-600 dark:text-purple-400 mb-1">{{ pointsData.stats?.totalEarned || 0
+            }}</div>
+          <div class="text-sm text-purple-600/80 dark:text-purple-400/80">累计获得</div>
+        </div>
+        <div
+          class="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg border border-orange-200 dark:border-orange-700/50">
+          <div class="text-xl font-bold text-orange-600 dark:text-orange-400 mb-1">{{ pointsData.stats?.totalSpent || 0
+            }}</div>
+          <div class="text-sm text-orange-600/80 dark:text-orange-400/80">累计消费</div>
+        </div>
+      </div>
 
-        <!-- 最近积分记录 -->
-        <div v-if="pointsData.recentHistory?.length" class="recent-history">
-          <h4>最近记录</h4>
-          <div class="history-list">
-            <div v-for="record in pointsData.recentHistory.slice(0, 3)" :key="record.id" class="history-item">
-              <div class="history-info">
-                <div class="history-desc">{{ record.description || getTypeName(record.type) }}</div>
-                <div class="history-time">{{ formatTime(record.createdAt) }}</div>
-              </div>
-              <div class="history-points" :class="{ 'positive': record.points > 0, 'negative': record.points < 0 }">
-                {{ record.points > 0 ? '+' : '' }}{{ record.points }}
-              </div>
+      <!-- 积分来源分布 -->
+      <div v-if="pointsData.stats?.pointsByType?.length" class="mb-6">
+        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 m-0">积分来源</h4>
+        <div class="space-y-3">
+          <div v-for="source in pointsData.stats.pointsByType" :key="source.type"
+            class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div class="flex-1">
+              <span class="font-medium text-gray-900 dark:text-gray-100">{{ getTypeName(source.type) }}</span>
+              <span class="text-gray-500 dark:text-gray-400 text-xs ml-2">({{ source._count._all }}次)</span>
             </div>
+            <div class="text-green-600 dark:text-green-400 font-bold">+{{ source._sum.points || 0 }}</div>
           </div>
         </div>
+      </div>
 
-        <!-- 积分趋势图 -->
-        <div v-if="pointsData.stats?.weeklyTrend?.length" class="points-trend">
-          <h4>7天趋势</h4>
-          <div class="trend-chart">
-            <div v-for="(day, index) in pointsData.stats.weeklyTrend" :key="day.date" class="trend-bar">
-              <div class="bar" :style="{ height: getTrendBarHeight(day.points) }"></div>
-              <div class="bar-label">{{ formatTrendDate(day.date, index) }}</div>
+      <!-- 最近积分记录 -->
+      <div v-if="pointsData.recentHistory?.length" class="mb-6">
+        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 m-0">最近记录</h4>
+        <div class="space-y-2">
+          <div v-for="record in pointsData.recentHistory.slice(0, 3)" :key="record.id"
+            class="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <div class="flex-1">
+              <div class="font-medium text-gray-900 dark:text-gray-100 mb-1">{{ record.description ||
+                getTypeName(record.type) }}</div>
+              <div class="text-gray-500 dark:text-gray-400 text-xs">{{ formatTime(record.createdAt) }}</div>
+            </div>
+            <div class="font-bold ml-4" :class="{
+              'text-green-600 dark:text-green-400': record.points > 0,
+              'text-red-600 dark:text-red-400': record.points < 0
+            }">
+              {{ record.points > 0 ? '+' : '' }}{{ record.points }}
             </div>
           </div>
         </div>
       </div>
-    </el-card>
+
+      <!-- 积分趋势图 -->
+      <div v-if="pointsData.stats?.weeklyTrend?.length">
+        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 m-0">7天趋势</h4>
+        <div class="flex items-end justify-between h-20 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+          <div v-for="(day, index) in pointsData.stats.weeklyTrend" :key="day.date"
+            class="flex flex-col items-center flex-1 h-full">
+            <div class="w-5 bg-gradient-to-t from-blue-600 to-green-500 rounded-t-sm mb-2 min-h-[2px]"
+              :style="{ height: getTrendBarHeight(day.points) }"></div>
+            <div class="text-xs text-gray-500 dark:text-gray-400 text-center">{{ formatTrendDate(day.date, index) }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { Coin, ArrowRight } from '@element-plus/icons-vue'
+import { ref, onMounted } from 'vue'
+
 
 // 定义事件
 defineEmits(['view-history'])
@@ -187,202 +198,3 @@ defineExpose({
   refresh: fetchPointsData
 })
 </script>
-
-<style scoped>
-.points-overview {
-  max-width: 600px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  color: #303133;
-}
-
-.view-history-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0;
-}
-
-.current-points {
-  text-align: center;
-  margin-bottom: 24px;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 12px;
-  color: white;
-}
-
-.points-number {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-.points-label {
-  font-size: 16px;
-  opacity: 0.9;
-}
-
-.points-stats {
-  margin-bottom: 24px;
-}
-
-.stat-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.stat-row:last-child {
-  margin-bottom: 0;
-}
-
-.stat-item {
-  flex: 1;
-  text-align: center;
-  padding: 16px;
-  background: #F8F9FA;
-  border-radius: 8px;
-  margin: 0 8px;
-}
-
-.stat-item:first-child {
-  margin-left: 0;
-}
-
-.stat-item:last-child {
-  margin-right: 0;
-}
-
-.stat-value {
-  font-size: 20px;
-  font-weight: bold;
-  color: #409EFF;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #909399;
-}
-
-.points-sources,
-.recent-history {
-  margin-bottom: 24px;
-}
-
-.points-sources h4,
-.recent-history h4,
-.points-trend h4 {
-  margin: 0 0 12px 0;
-  color: #303133;
-  font-size: 16px;
-}
-
-.source-list,
-.history-list {
-  space-y: 8px;
-}
-
-.source-item,
-.history-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background: #F8F9FA;
-  border-radius: 6px;
-  margin-bottom: 8px;
-}
-
-.source-info,
-.history-info {
-  flex: 1;
-}
-
-.source-name {
-  font-weight: 500;
-  color: #303133;
-}
-
-.source-count {
-  color: #909399;
-  font-size: 12px;
-  margin-left: 4px;
-}
-
-.source-points {
-  color: #67C23A;
-  font-weight: bold;
-}
-
-.history-desc {
-  color: #303133;
-  margin-bottom: 4px;
-}
-
-.history-time {
-  color: #909399;
-  font-size: 12px;
-}
-
-.history-points {
-  font-weight: bold;
-}
-
-.history-points.positive {
-  color: #67C23A;
-}
-
-.history-points.negative {
-  color: #F56C6C;
-}
-
-.points-trend {
-  margin-bottom: 0;
-}
-
-.trend-chart {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  height: 80px;
-  padding: 0 8px;
-  background: #F8F9FA;
-  border-radius: 8px;
-}
-
-.trend-bar {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  padding: 8px 4px;
-}
-
-.bar {
-  width: 20px;
-  background: linear-gradient(to top, #409EFF, #67C23A);
-  border-radius: 2px 2px 0 0;
-  margin-bottom: 8px;
-  min-height: 2px;
-}
-
-.bar-label {
-  font-size: 10px;
-  color: #909399;
-  text-align: center;
-}
-</style>

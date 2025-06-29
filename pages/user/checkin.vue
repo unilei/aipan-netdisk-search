@@ -1,153 +1,189 @@
 <template>
-  <div class="checkin-page">
-    <div class="container">
-      <div class="page-header">
-        <h1>签到中心</h1>
-        <p>每日签到获得积分，连续签到有额外奖励</p>
+  <div class="min-h-[calc(100vh-60px)] bg-gray-50 dark:bg-gray-900 py-6 md:py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- 页面标题 -->
+      <div class="text-center mb-8 md:mb-12">
+        <h1
+          class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+          签到中心
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          每日签到获得积分，连续签到有额外奖励
+        </p>
       </div>
 
-      <div class="checkin-layout">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
         <!-- 左侧：签到卡片和积分概览 -->
-        <div class="left-section">
-          <UserCheckInCard class="checkin-card-section" />
-          <UserPointsOverview ref="pointsOverviewRef" class="points-overview-section"
-            @view-history="activeTab = 'points-history'" />
+        <div class="space-y-6">
+          <UserCheckInCard />
+          <UserPointsOverview ref="pointsOverviewRef" @view-history="activeTab = 'points-history'" />
         </div>
 
         <!-- 右侧：历史记录 -->
-        <div class="right-section">
-          <el-card class="history-card" shadow="hover">
-            <template #header>
-              <el-tabs v-model="activeTab" class="history-tabs">
-                <el-tab-pane label="签到历史" name="checkin-history">
-                  <template #label>
-                    <span class="tab-label">
-                      <el-icon>
-                        <Calendar />
-                      </el-icon>
-                      签到历史
-                    </span>
-                  </template>
-                </el-tab-pane>
-                <el-tab-pane label="积分记录" name="points-history">
-                  <template #label>
-                    <span class="tab-label">
-                      <el-icon>
-                        <Coin />
-                      </el-icon>
-                      积分记录
-                    </span>
-                  </template>
-                </el-tab-pane>
-              </el-tabs>
-            </template>
-
-            <!-- 签到历史 -->
-            <div v-if="activeTab === 'checkin-history'" class="checkin-history">
-              <!-- 月份选择器 -->
-              <div class="month-selector">
-                <el-date-picker v-model="selectedMonth" type="month" placeholder="选择月份" format="YYYY年MM月"
-                  value-format="YYYY-MM" @change="fetchCheckInHistory" />
-              </div>
-
-              <!-- 月度统计 -->
-              <div v-if="checkInHistory.monthStats" class="month-stats">
-                <div class="stats-grid">
-                  <div class="stat-card">
-                    <div class="stat-number">{{ checkInHistory.monthStats.checkInCount }}</div>
-                    <div class="stat-label">签到天数</div>
-                  </div>
-                  <div class="stat-card">
-                    <div class="stat-number">{{ checkInHistory.monthStats.totalPoints }}</div>
-                    <div class="stat-label">获得积分</div>
-                  </div>
-                  <div class="stat-card">
-                    <div class="stat-number">{{ checkInHistory.monthStats.maxConsecutiveDays }}</div>
-                    <div class="stat-label">最长连续</div>
-                  </div>
-                  <div class="stat-card">
-                    <div class="stat-number">{{ checkInHistory.monthStats.checkInRate }}%</div>
-                    <div class="stat-label">签到率</div>
-                  </div>
+        <div
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <!-- 标签页头部 -->
+          <div class="border-b border-gray-200 dark:border-gray-700">
+            <nav class="flex space-x-8 px-6" aria-label="Tabs">
+              <button @click="activeTab = 'checkin-history'" :class="[
+                'py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200',
+                activeTab === 'checkin-history'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
+              ]">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-calendar-days"></i>
+                  <span>签到历史</span>
                 </div>
-              </div>
-
-              <!-- 签到记录列表 -->
-              <div class="checkin-list">
-                <div v-if="checkInHistory.checkIns?.length === 0" class="empty-state">
-                  <el-empty description="本月暂无签到记录" />
+              </button>
+              <button @click="activeTab = 'points-history'" :class="[
+                'py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200',
+                activeTab === 'points-history'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:border-gray-300'
+              ]">
+                <div class="flex items-center space-x-2">
+                  <i class="fa-solid fa-coins"></i>
+                  <span>积分记录</span>
                 </div>
-                <div v-else>
-                  <div v-for="checkIn in checkInHistory.checkIns" :key="checkIn.id" class="checkin-item">
-                    <div class="checkin-date">
-                      <div class="date-number">{{ formatDate(checkIn.checkInDate, 'DD') }}</div>
-                      <div class="date-text">{{ formatDate(checkIn.checkInDate, 'MM/DD') }}</div>
-                    </div>
-                    <div class="checkin-info">
-                      <div class="checkin-points">+{{ checkIn.points }} 积分</div>
-                      <div class="checkin-consecutive">连续 {{ checkIn.consecutiveDays }} 天</div>
-                    </div>
-                    <div class="checkin-status">
-                      <el-icon class="success-icon">
-                        <CircleCheck />
-                      </el-icon>
-                    </div>
+              </button>
+            </nav>
+          </div>
+
+          <!-- 签到历史内容 -->
+          <div v-if="activeTab === 'checkin-history'" class="p-6">
+            <!-- 月份选择器 -->
+            <div class="mb-6">
+              <el-date-picker v-model="selectedMonth" type="month" placeholder="选择月份" format="YYYY年MM月"
+                value-format="YYYY-MM" @change="fetchCheckInHistory" class="w-full sm:w-auto" />
+            </div>
+
+            <!-- 月度统计 -->
+            <div v-if="checkInHistory.monthStats" class="mb-8">
+              <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div
+                  class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 text-center border border-blue-200 dark:border-blue-700/50">
+                  <div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                    {{ checkInHistory.monthStats.checkInCount }}
                   </div>
+                  <div class="text-sm text-blue-600/80 dark:text-blue-400/80">签到天数</div>
                 </div>
-              </div>
-
-              <!-- 分页 -->
-              <div v-if="checkInHistory.pagination?.totalPages > 1" class="pagination">
-                <el-pagination v-model:current-page="checkInPage" :page-size="checkInHistory.pagination.limit"
-                  :total="checkInHistory.pagination.total" layout="prev, pager, next"
-                  @current-change="fetchCheckInHistory" />
+                <div
+                  class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4 text-center border border-green-200 dark:border-green-700/50">
+                  <div class="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
+                    {{ checkInHistory.monthStats.totalPoints }}
+                  </div>
+                  <div class="text-sm text-green-600/80 dark:text-green-400/80">获得积分</div>
+                </div>
+                <div
+                  class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-4 text-center border border-purple-200 dark:border-purple-700/50">
+                  <div class="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                    {{ checkInHistory.monthStats.maxConsecutiveDays }}
+                  </div>
+                  <div class="text-sm text-purple-600/80 dark:text-purple-400/80">最长连续</div>
+                </div>
+                <div
+                  class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4 text-center border border-orange-200 dark:border-orange-700/50">
+                  <div class="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">
+                    {{ checkInHistory.monthStats.checkInRate }}%
+                  </div>
+                  <div class="text-sm text-orange-600/80 dark:text-orange-400/80">签到率</div>
+                </div>
               </div>
             </div>
 
-            <!-- 积分记录 -->
-            <div v-if="activeTab === 'points-history'" class="points-history">
-              <!-- 筛选器 -->
-              <div class="history-filters">
-                <el-select v-model="pointsFilter.type" placeholder="积分类型" clearable @change="fetchPointsHistory">
-                  <el-option label="全部" value="" />
-                  <el-option label="每日签到" value="checkin" />
-                  <el-option label="连续签到奖励" value="bonus" />
-                  <el-option label="积分消费" value="consume" />
-                  <el-option label="管理员调整" value="admin" />
-                </el-select>
-
-                <el-date-picker v-model="pointsFilter.dateRange" type="daterange" range-separator="至"
-                  start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY/MM/DD" value-format="YYYY-MM-DD"
-                  @change="fetchPointsHistory" />
+            <!-- 签到记录列表 -->
+            <div class="space-y-3 max-h-96 overflow-y-auto">
+              <div v-if="checkInHistory.checkIns?.length === 0" class="text-center py-12">
+                <div class="text-gray-400 dark:text-gray-500 text-lg mb-2">📅</div>
+                <p class="text-gray-500 dark:text-gray-400">本月暂无签到记录</p>
               </div>
-
-              <!-- 积分记录列表 -->
-              <div class="points-list">
-                <div v-if="pointsHistory.history?.length === 0" class="empty-state">
-                  <el-empty description="暂无积分记录" />
-                </div>
-                <div v-else>
-                  <div v-for="record in pointsHistory.history" :key="record.id" class="points-item">
-                    <div class="points-info">
-                      <div class="points-desc">{{ record.description || getTypeName(record.type) }}</div>
-                      <div class="points-time">{{ formatDateTime(record.createdAt) }}</div>
+              <div v-else class="space-y-2">
+                <div v-for="checkIn in checkInHistory.checkIns" :key="checkIn.id"
+                  class="flex items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                  <div class="flex flex-col items-center mr-4 min-w-[60px]">
+                    <div class="text-xl font-bold text-blue-600 dark:text-blue-400">
+                      {{ formatDate(checkIn.checkInDate, 'DD') }}
                     </div>
-                    <div class="points-amount"
-                      :class="{ 'positive': record.points > 0, 'negative': record.points < 0 }">
-                      {{ record.points > 0 ? '+' : '' }}{{ record.points }}
+                    <div class="text-xs text-gray-500 dark:text-gray-400">
+                      {{ formatDate(checkIn.checkInDate, 'MM/DD') }}
                     </div>
+                  </div>
+                  <div class="flex-1">
+                    <div class="font-semibold text-green-600 dark:text-green-400 mb-1">
+                      +{{ checkIn.points }} 积分
+                    </div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                      连续 {{ checkIn.consecutiveDays }} 天
+                    </div>
+                  </div>
+                  <div class="ml-4">
+                    <i class="fa-solid fa-circle-check text-green-500 dark:text-green-400 text-xl"></i>
                   </div>
                 </div>
               </div>
+            </div>
 
-              <!-- 分页 -->
-              <div v-if="pointsHistory.pagination?.totalPages > 1" class="pagination">
-                <el-pagination v-model:current-page="pointsPage" :page-size="pointsHistory.pagination.limit"
-                  :total="pointsHistory.pagination.total" layout="prev, pager, next"
-                  @current-change="fetchPointsHistory" />
+            <!-- 分页 -->
+            <div v-if="checkInHistory.pagination?.totalPages > 1" class="mt-6 flex justify-center">
+              <el-pagination v-model:current-page="checkInPage" :page-size="checkInHistory.pagination.limit"
+                :total="checkInHistory.pagination.total" layout="prev, pager, next"
+                @current-change="fetchCheckInHistory" class="pagination-custom" />
+            </div>
+          </div>
+
+          <!-- 积分记录内容 -->
+          <div v-if="activeTab === 'points-history'" class="p-6">
+            <!-- 筛选器 -->
+            <div class="flex flex-col sm:flex-row gap-4 mb-6">
+              <el-select v-model="pointsFilter.type" placeholder="积分类型" clearable @change="fetchPointsHistory"
+                class="w-full sm:w-48">
+                <el-option label="全部" value="" />
+                <el-option label="每日签到" value="checkin" />
+                <el-option label="连续签到奖励" value="bonus" />
+                <el-option label="积分消费" value="consume" />
+                <el-option label="管理员调整" value="admin" />
+              </el-select>
+
+              <el-date-picker v-model="pointsFilter.dateRange" type="daterange" range-separator="至"
+                start-placeholder="开始日期" end-placeholder="结束日期" format="YYYY/MM/DD" value-format="YYYY-MM-DD"
+                @change="fetchPointsHistory" class="w-full sm:w-auto" />
+            </div>
+
+            <!-- 积分记录列表 -->
+            <div class="space-y-3 max-h-96 overflow-y-auto">
+              <div v-if="pointsHistory.history?.length === 0" class="text-center py-12">
+                <div class="text-gray-400 dark:text-gray-500 text-lg mb-2">💰</div>
+                <p class="text-gray-500 dark:text-gray-400">暂无积分记录</p>
+              </div>
+              <div v-else class="space-y-2">
+                <div v-for="record in pointsHistory.history" :key="record.id"
+                  class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                  <div class="flex-1">
+                    <div class="font-medium text-gray-900 dark:text-gray-100 mb-1">
+                      {{ record.description || getTypeName(record.type) }}
+                    </div>
+                    <div class="text-sm text-gray-500 dark:text-gray-400">
+                      {{ formatDateTime(record.createdAt) }}
+                    </div>
+                  </div>
+                  <div class="text-lg font-bold ml-4" :class="{
+                    'text-green-600 dark:text-green-400': record.points > 0,
+                    'text-red-600 dark:text-red-400': record.points < 0
+                  }">
+                    {{ record.points > 0 ? '+' : '' }}{{ record.points }}
+                  </div>
+                </div>
               </div>
             </div>
-          </el-card>
+
+            <!-- 分页 -->
+            <div v-if="pointsHistory.pagination?.totalPages > 1" class="mt-6 flex justify-center">
+              <el-pagination v-model:current-page="pointsPage" :page-size="pointsHistory.pagination.limit"
+                :total="pointsHistory.pagination.total" layout="prev, pager, next" @current-change="fetchPointsHistory"
+                class="pagination-custom" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -156,7 +192,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { Calendar, Coin, CircleCheck } from '@element-plus/icons-vue'
+
 import UserCheckInCard from '~/components/user/CheckInCard.vue'
 import UserPointsOverview from '~/components/user/PointsOverview.vue'
 
@@ -294,237 +330,3 @@ onMounted(() => {
   fetchCheckInHistory()
 })
 </script>
-
-<style scoped>
-.checkin-page {
-  min-height: 100vh;
-  background: #F5F7FA;
-  padding: 20px 0;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.page-header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.page-header h1 {
-  margin: 0 0 8px 0;
-  color: #303133;
-  font-size: 28px;
-}
-
-.page-header p {
-  margin: 0;
-  color: #909399;
-  font-size: 16px;
-}
-
-.checkin-layout {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  align-items: start;
-}
-
-.left-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.checkin-card-section,
-.points-overview-section {
-  width: 100%;
-}
-
-.right-section {
-  width: 100%;
-}
-
-.history-card {
-  min-height: 600px;
-}
-
-.history-tabs {
-  margin: -20px -20px 0 -20px;
-}
-
-.tab-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.month-selector {
-  margin-bottom: 20px;
-}
-
-.month-stats {
-  margin-bottom: 24px;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.stat-card {
-  text-align: center;
-  padding: 16px;
-  background: #F8F9FA;
-  border-radius: 8px;
-}
-
-.stat-number {
-  font-size: 24px;
-  font-weight: bold;
-  color: #409EFF;
-  margin-bottom: 4px;
-}
-
-.stat-label {
-  font-size: 14px;
-  color: #909399;
-}
-
-.checkin-list,
-.points-list {
-  max-height: 400px;
-  overflow-y: auto;
-}
-
-.checkin-item,
-.points-item {
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  border-bottom: 1px solid #EBEEF5;
-  transition: background-color 0.2s;
-}
-
-.checkin-item:hover,
-.points-item:hover {
-  background: #F8F9FA;
-}
-
-.checkin-item:last-child,
-.points-item:last-child {
-  border-bottom: none;
-}
-
-.checkin-date {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-right: 16px;
-  min-width: 60px;
-}
-
-.date-number {
-  font-size: 20px;
-  font-weight: bold;
-  color: #409EFF;
-}
-
-.date-text {
-  font-size: 12px;
-  color: #909399;
-}
-
-.checkin-info {
-  flex: 1;
-}
-
-.checkin-points {
-  font-weight: bold;
-  color: #67C23A;
-  margin-bottom: 4px;
-}
-
-.checkin-consecutive {
-  font-size: 14px;
-  color: #909399;
-}
-
-.checkin-status {
-  margin-left: 16px;
-}
-
-.success-icon {
-  color: #67C23A;
-  font-size: 20px;
-}
-
-.history-filters {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.points-info {
-  flex: 1;
-}
-
-.points-desc {
-  font-weight: 500;
-  color: #303133;
-  margin-bottom: 4px;
-}
-
-.points-time {
-  font-size: 12px;
-  color: #909399;
-}
-
-.points-amount {
-  font-size: 18px;
-  font-weight: bold;
-  margin-left: 16px;
-}
-
-.points-amount.positive {
-  color: #67C23A;
-}
-
-.points-amount.negative {
-  color: #F56C6C;
-}
-
-.pagination {
-  margin-top: 20px;
-  text-align: center;
-}
-
-.empty-state {
-  padding: 40px 0;
-  text-align: center;
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .checkin-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .history-filters {
-    flex-direction: column;
-  }
-
-  .checkin-item,
-  .points-item {
-    padding: 12px;
-  }
-}
-</style>
