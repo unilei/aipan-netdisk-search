@@ -55,16 +55,36 @@ export const useSearchLogic = () => {
     loadingProgress
   ) => {
     const encodedKeyword = encodeURIComponent(keyword.trim());
+    const cacheKey = `${item.api}-${encodedKeyword}`;
 
     const task = async () => {
       try {
-        // 从API获取数据
+        // 尝试从缓存获取
+        const cachedData = await smartCache.getWithStrategy(cacheKey);
+
+        if (cachedData) {
+          if (item.api === "/api/sources/aipan-search") {
+            sources.value.unshift(...cachedData);
+            if (cachedData.length === 0) {
+              window._needProcessQuarkLinks = true;
+            }
+          } else {
+            sources.value.push(...cachedData);
+          }
+          loadingProgress.value.completed++;
+          return;
+        }
+
+        // 缓存未命中，从API获取
         const res = await fetchWithRetry(item.api, {
           method: "POST",
           body: { name: keyword },
         });
 
         if (res.list && Array.isArray(res.list)) {
+          // 设置缓存
+          await smartCache.setWithStrategy(cacheKey, res.list, "search");
+
           if (item.api === "/api/sources/aipan-search") {
             sources.value.unshift(...res.list);
             if (res.list.length === 0) {
@@ -128,6 +148,11 @@ export const useSearchLogic = () => {
     vodData,
     loadingStatus
   ) => {
+    const encodedKeyword = encodeURIComponent(keyword.trim());
+    const cacheKey = `vod-${vodApi.api}-${
+      vodApi.type || "default"
+    }-${encodedKeyword}`;
+
     // 取消之前的VOD搜索请求
     if (currentVodSearches.has(vodApi.api)) {
       currentVodSearches.get(vodApi.api).abort();
@@ -138,6 +163,14 @@ export const useSearchLogic = () => {
     loadingStatus.value.set(vodApi.api, true);
 
     try {
+      // 尝试从缓存获取
+      const cachedData = await smartCache.getWithStrategy(cacheKey);
+      if (cachedData) {
+        vodData.value = [...vodData.value, ...cachedData];
+        loadingStatus.value.set(vodApi.api, false);
+        return;
+      }
+
       // 从API获取数据
       const res = await fetchWithRetry("/api/vod/search", {
         method: "get",
@@ -171,6 +204,8 @@ export const useSearchLogic = () => {
                 item
               )
             );
+            // 设置缓存
+            await smartCache.setWithStrategy(cacheKey, processedData, "vod");
             vodData.value = [...vodData.value, ...processedData];
           }
         } else if (res.code !== 200) {
