@@ -2,7 +2,6 @@
 import { onMounted } from 'vue';
 import { useUserStore } from '~/stores/user';
 
-const colorMode = useColorMode();
 const router = useRouter();
 const userStore = useUserStore();
 
@@ -83,13 +82,23 @@ const handleSubmit = async () => {
       return;
     }
 
-    // 使用user store保存用户信息
+    // 先清除旧的用户数据，再设置新的用户信息
+    userStore.clearUser();
+    await nextTick(); // 确保清除操作完成
     userStore.setUser(res.data.user, res.data.token);
+
     ElMessage.success(res.msg);
 
     // 根据用户角色跳转到不同的仪表盘
     const redirectPath = res.data.user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
-    navigateTo({ path: redirectPath });
+
+    // 先跳转，再在后台刷新用户信息
+    await navigateTo({ path: redirectPath });
+
+    // 在后台安全刷新用户信息以确保数据一致性（不影响跳转）
+    userStore.safeRefreshUser().catch(error => {
+      console.warn('Failed to refresh user info after login:', error);
+    });
   } catch (error) {
     ElMessage.error(`${formMode.value === 'login' ? '登录' : '注册'}失败`);
     console.error(error);
