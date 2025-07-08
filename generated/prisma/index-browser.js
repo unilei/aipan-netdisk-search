@@ -366,6 +366,30 @@ exports.Prisma.PointsHistoryScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.NavigationCategoryScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.NavigationItemScalarFieldEnum = {
+  id: 'id',
+  categoryId: 'categoryId',
+  title: 'title',
+  path: 'path',
+  icon: 'icon',
+  description: 'description',
+  sortOrder: 'sortOrder',
+  isActive: 'isActive',
+  target: 'target',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -416,7 +440,9 @@ exports.Prisma.ModelName = {
   ChatRoomUser: 'ChatRoomUser',
   ChatMessage: 'ChatMessage',
   CheckIn: 'CheckIn',
-  PointsHistory: 'PointsHistory'
+  PointsHistory: 'PointsHistory',
+  NavigationCategory: 'NavigationCategory',
+  NavigationItem: 'NavigationItem'
 };
 
 /**
