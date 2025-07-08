@@ -7,15 +7,17 @@
       <div class="p-6">
         <!-- 导航标题 -->
         <div class="mb-6">
-          <h2 class="text-lg font-semibold text-stone-800 dark:text-stone-100 mb-2 flex items-center group">
-            <div
-              class="w-8 h-8 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/30 transition-all duration-300 group-hover:scale-105">
-              <i class="fas fa-compass text-amber-800 dark:text-amber-100 text-sm"></i>
-            </div>
-            <span
-              class="bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">网站导航</span>
-          </h2>
-          <p class="text-stone-600 dark:text-stone-400 ml-11 text-xs leading-relaxed">探索精选网站，发现无限可能</p>
+          <nuxt-link to="/">
+            <h2 class="text-lg font-semibold text-stone-800 dark:text-stone-100 mb-2 flex items-center group">
+              <div
+                class="w-8 h-8 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/30 transition-all duration-300 group-hover:scale-105">
+                <i class="fas fa-compass text-amber-800 dark:text-amber-100 text-sm"></i>
+              </div>
+              <span
+                class="bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">爱盼导航</span>
+            </h2>
+          </nuxt-link>
+          <p class="text-stone-600 dark:text-stone-400 text-xs leading-relaxed">探索精选网站，发现无限可能</p>
         </div>
 
         <!-- 搜索框 -->
