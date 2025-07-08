@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
         const userId = event.context.user.userId
         const query = getQuery(event)
-        
+
         // 分页参数
         const page = parseInt(query.page as string) || 1
         const limit = parseInt(query.limit as string) || 20
@@ -140,7 +140,7 @@ async function getFilteredStats(userId: number, whereCondition: any) {
         totalEarned: totalEarned._sum.points || 0,
         totalSpent: Math.abs(totalSpent._sum.points || 0),
         recordCount: recordCount,
-        typeStats: typeStats.map(stat => ({
+        typeStats: typeStats.map((stat: any) => ({
             type: stat.type,
             points: stat._sum.points || 0,
             count: stat._count._all,

@@ -74,7 +74,7 @@ export default defineEventHandler(async (event) => {
         const totalPoints = points + bonusPoints
 
         // 使用事务确保数据一致性
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx: any) => {
             // 创建签到记录
             const checkIn = await tx.checkIn.create({
                 data: {

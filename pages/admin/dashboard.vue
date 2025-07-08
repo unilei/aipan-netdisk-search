@@ -271,6 +271,13 @@ const menuCards = [
         icon: 'Search',
         link: '/admin/search-stats',
         color: 'bg-cyan-500'
+    },
+    {
+        title: '导航管理',
+        description: '管理网站导航分类和导航项',
+        icon: 'Menu',
+        link: '/admin/navigation',
+        color: 'bg-emerald-500'
     }
 ]
 

@@ -133,6 +133,16 @@ export type CheckIn = $Result.DefaultSelection<Prisma.$CheckInPayload>
  * 
  */
 export type PointsHistory = $Result.DefaultSelection<Prisma.$PointsHistoryPayload>
+/**
+ * Model NavigationCategory
+ * 
+ */
+export type NavigationCategory = $Result.DefaultSelection<Prisma.$NavigationCategoryPayload>
+/**
+ * Model NavigationItem
+ * 
+ */
+export type NavigationItem = $Result.DefaultSelection<Prisma.$NavigationItemPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -498,6 +508,26 @@ export class PrismaClient<
     * ```
     */
   get pointsHistory(): Prisma.PointsHistoryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.navigationCategory`: Exposes CRUD operations for the **NavigationCategory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NavigationCategories
+    * const navigationCategories = await prisma.navigationCategory.findMany()
+    * ```
+    */
+  get navigationCategory(): Prisma.NavigationCategoryDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.navigationItem`: Exposes CRUD operations for the **NavigationItem** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more NavigationItems
+    * const navigationItems = await prisma.navigationItem.findMany()
+    * ```
+    */
+  get navigationItem(): Prisma.NavigationItemDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -961,7 +991,9 @@ export namespace Prisma {
     ChatRoomUser: 'ChatRoomUser',
     ChatMessage: 'ChatMessage',
     CheckIn: 'CheckIn',
-    PointsHistory: 'PointsHistory'
+    PointsHistory: 'PointsHistory',
+    NavigationCategory: 'NavigationCategory',
+    NavigationItem: 'NavigationItem'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -980,7 +1012,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "userVodConfig" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory"
+      modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "userVodConfig" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "navigationCategory" | "navigationItem"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2760,6 +2792,154 @@ export namespace Prisma {
           }
         }
       }
+      NavigationCategory: {
+        payload: Prisma.$NavigationCategoryPayload<ExtArgs>
+        fields: Prisma.NavigationCategoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NavigationCategoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NavigationCategoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>
+          }
+          findFirst: {
+            args: Prisma.NavigationCategoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NavigationCategoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>
+          }
+          findMany: {
+            args: Prisma.NavigationCategoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>[]
+          }
+          create: {
+            args: Prisma.NavigationCategoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>
+          }
+          createMany: {
+            args: Prisma.NavigationCategoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NavigationCategoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>[]
+          }
+          delete: {
+            args: Prisma.NavigationCategoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>
+          }
+          update: {
+            args: Prisma.NavigationCategoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.NavigationCategoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NavigationCategoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NavigationCategoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.NavigationCategoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationCategoryPayload>
+          }
+          aggregate: {
+            args: Prisma.NavigationCategoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNavigationCategory>
+          }
+          groupBy: {
+            args: Prisma.NavigationCategoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NavigationCategoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NavigationCategoryCountArgs<ExtArgs>
+            result: $Utils.Optional<NavigationCategoryCountAggregateOutputType> | number
+          }
+        }
+      }
+      NavigationItem: {
+        payload: Prisma.$NavigationItemPayload<ExtArgs>
+        fields: Prisma.NavigationItemFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.NavigationItemFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.NavigationItemFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>
+          }
+          findFirst: {
+            args: Prisma.NavigationItemFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.NavigationItemFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>
+          }
+          findMany: {
+            args: Prisma.NavigationItemFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>[]
+          }
+          create: {
+            args: Prisma.NavigationItemCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>
+          }
+          createMany: {
+            args: Prisma.NavigationItemCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.NavigationItemCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>[]
+          }
+          delete: {
+            args: Prisma.NavigationItemDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>
+          }
+          update: {
+            args: Prisma.NavigationItemUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>
+          }
+          deleteMany: {
+            args: Prisma.NavigationItemDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.NavigationItemUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.NavigationItemUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>[]
+          }
+          upsert: {
+            args: Prisma.NavigationItemUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$NavigationItemPayload>
+          }
+          aggregate: {
+            args: Prisma.NavigationItemAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateNavigationItem>
+          }
+          groupBy: {
+            args: Prisma.NavigationItemGroupByArgs<ExtArgs>
+            result: $Utils.Optional<NavigationItemGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.NavigationItemCountArgs<ExtArgs>
+            result: $Utils.Optional<NavigationItemCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2872,6 +3052,8 @@ export namespace Prisma {
     chatMessage?: ChatMessageOmit
     checkIn?: CheckInOmit
     pointsHistory?: PointsHistoryOmit
+    navigationCategory?: NavigationCategoryOmit
+    navigationItem?: NavigationItemOmit
   }
 
   /* Types for Logging */
@@ -3483,6 +3665,37 @@ export namespace Prisma {
    */
   export type ChatMessageCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ChatMessageWhereInput
+  }
+
+
+  /**
+   * Count Type NavigationCategoryCountOutputType
+   */
+
+  export type NavigationCategoryCountOutputType = {
+    items: number
+  }
+
+  export type NavigationCategoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    items?: boolean | NavigationCategoryCountOutputTypeCountItemsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * NavigationCategoryCountOutputType without action
+   */
+  export type NavigationCategoryCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategoryCountOutputType
+     */
+    select?: NavigationCategoryCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * NavigationCategoryCountOutputType without action
+   */
+  export type NavigationCategoryCountOutputTypeCountItemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NavigationItemWhereInput
   }
 
 
@@ -31328,6 +31541,2318 @@ export namespace Prisma {
 
 
   /**
+   * Model NavigationCategory
+   */
+
+  export type AggregateNavigationCategory = {
+    _count: NavigationCategoryCountAggregateOutputType | null
+    _avg: NavigationCategoryAvgAggregateOutputType | null
+    _sum: NavigationCategorySumAggregateOutputType | null
+    _min: NavigationCategoryMinAggregateOutputType | null
+    _max: NavigationCategoryMaxAggregateOutputType | null
+  }
+
+  export type NavigationCategoryAvgAggregateOutputType = {
+    id: number | null
+    sortOrder: number | null
+  }
+
+  export type NavigationCategorySumAggregateOutputType = {
+    id: number | null
+    sortOrder: number | null
+  }
+
+  export type NavigationCategoryMinAggregateOutputType = {
+    id: number | null
+    name: string | null
+    slug: string | null
+    sortOrder: number | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NavigationCategoryMaxAggregateOutputType = {
+    id: number | null
+    name: string | null
+    slug: string | null
+    sortOrder: number | null
+    isActive: boolean | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NavigationCategoryCountAggregateOutputType = {
+    id: number
+    name: number
+    slug: number
+    sortOrder: number
+    isActive: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NavigationCategoryAvgAggregateInputType = {
+    id?: true
+    sortOrder?: true
+  }
+
+  export type NavigationCategorySumAggregateInputType = {
+    id?: true
+    sortOrder?: true
+  }
+
+  export type NavigationCategoryMinAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    sortOrder?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NavigationCategoryMaxAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    sortOrder?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NavigationCategoryCountAggregateInputType = {
+    id?: true
+    name?: true
+    slug?: true
+    sortOrder?: true
+    isActive?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NavigationCategoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NavigationCategory to aggregate.
+     */
+    where?: NavigationCategoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavigationCategories to fetch.
+     */
+    orderBy?: NavigationCategoryOrderByWithRelationInput | NavigationCategoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NavigationCategoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavigationCategories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavigationCategories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NavigationCategories
+    **/
+    _count?: true | NavigationCategoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NavigationCategoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NavigationCategorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NavigationCategoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NavigationCategoryMaxAggregateInputType
+  }
+
+  export type GetNavigationCategoryAggregateType<T extends NavigationCategoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateNavigationCategory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNavigationCategory[P]>
+      : GetScalarType<T[P], AggregateNavigationCategory[P]>
+  }
+
+
+
+
+  export type NavigationCategoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NavigationCategoryWhereInput
+    orderBy?: NavigationCategoryOrderByWithAggregationInput | NavigationCategoryOrderByWithAggregationInput[]
+    by: NavigationCategoryScalarFieldEnum[] | NavigationCategoryScalarFieldEnum
+    having?: NavigationCategoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NavigationCategoryCountAggregateInputType | true
+    _avg?: NavigationCategoryAvgAggregateInputType
+    _sum?: NavigationCategorySumAggregateInputType
+    _min?: NavigationCategoryMinAggregateInputType
+    _max?: NavigationCategoryMaxAggregateInputType
+  }
+
+  export type NavigationCategoryGroupByOutputType = {
+    id: number
+    name: string
+    slug: string
+    sortOrder: number
+    isActive: boolean
+    createdAt: Date
+    updatedAt: Date
+    _count: NavigationCategoryCountAggregateOutputType | null
+    _avg: NavigationCategoryAvgAggregateOutputType | null
+    _sum: NavigationCategorySumAggregateOutputType | null
+    _min: NavigationCategoryMinAggregateOutputType | null
+    _max: NavigationCategoryMaxAggregateOutputType | null
+  }
+
+  type GetNavigationCategoryGroupByPayload<T extends NavigationCategoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NavigationCategoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NavigationCategoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NavigationCategoryGroupByOutputType[P]>
+            : GetScalarType<T[P], NavigationCategoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NavigationCategorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    sortOrder?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    items?: boolean | NavigationCategory$itemsArgs<ExtArgs>
+    _count?: boolean | NavigationCategoryCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["navigationCategory"]>
+
+  export type NavigationCategorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    sortOrder?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["navigationCategory"]>
+
+  export type NavigationCategorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    sortOrder?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["navigationCategory"]>
+
+  export type NavigationCategorySelectScalar = {
+    id?: boolean
+    name?: boolean
+    slug?: boolean
+    sortOrder?: boolean
+    isActive?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NavigationCategoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "slug" | "sortOrder" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["navigationCategory"]>
+  export type NavigationCategoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    items?: boolean | NavigationCategory$itemsArgs<ExtArgs>
+    _count?: boolean | NavigationCategoryCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type NavigationCategoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type NavigationCategoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $NavigationCategoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NavigationCategory"
+    objects: {
+      items: Prisma.$NavigationItemPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      name: string
+      slug: string
+      sortOrder: number
+      isActive: boolean
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["navigationCategory"]>
+    composites: {}
+  }
+
+  type NavigationCategoryGetPayload<S extends boolean | null | undefined | NavigationCategoryDefaultArgs> = $Result.GetResult<Prisma.$NavigationCategoryPayload, S>
+
+  type NavigationCategoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NavigationCategoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NavigationCategoryCountAggregateInputType | true
+    }
+
+  export interface NavigationCategoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NavigationCategory'], meta: { name: 'NavigationCategory' } }
+    /**
+     * Find zero or one NavigationCategory that matches the filter.
+     * @param {NavigationCategoryFindUniqueArgs} args - Arguments to find a NavigationCategory
+     * @example
+     * // Get one NavigationCategory
+     * const navigationCategory = await prisma.navigationCategory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NavigationCategoryFindUniqueArgs>(args: SelectSubset<T, NavigationCategoryFindUniqueArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NavigationCategory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NavigationCategoryFindUniqueOrThrowArgs} args - Arguments to find a NavigationCategory
+     * @example
+     * // Get one NavigationCategory
+     * const navigationCategory = await prisma.navigationCategory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NavigationCategoryFindUniqueOrThrowArgs>(args: SelectSubset<T, NavigationCategoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NavigationCategory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationCategoryFindFirstArgs} args - Arguments to find a NavigationCategory
+     * @example
+     * // Get one NavigationCategory
+     * const navigationCategory = await prisma.navigationCategory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NavigationCategoryFindFirstArgs>(args?: SelectSubset<T, NavigationCategoryFindFirstArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NavigationCategory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationCategoryFindFirstOrThrowArgs} args - Arguments to find a NavigationCategory
+     * @example
+     * // Get one NavigationCategory
+     * const navigationCategory = await prisma.navigationCategory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NavigationCategoryFindFirstOrThrowArgs>(args?: SelectSubset<T, NavigationCategoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NavigationCategories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationCategoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NavigationCategories
+     * const navigationCategories = await prisma.navigationCategory.findMany()
+     * 
+     * // Get first 10 NavigationCategories
+     * const navigationCategories = await prisma.navigationCategory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const navigationCategoryWithIdOnly = await prisma.navigationCategory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NavigationCategoryFindManyArgs>(args?: SelectSubset<T, NavigationCategoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NavigationCategory.
+     * @param {NavigationCategoryCreateArgs} args - Arguments to create a NavigationCategory.
+     * @example
+     * // Create one NavigationCategory
+     * const NavigationCategory = await prisma.navigationCategory.create({
+     *   data: {
+     *     // ... data to create a NavigationCategory
+     *   }
+     * })
+     * 
+     */
+    create<T extends NavigationCategoryCreateArgs>(args: SelectSubset<T, NavigationCategoryCreateArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NavigationCategories.
+     * @param {NavigationCategoryCreateManyArgs} args - Arguments to create many NavigationCategories.
+     * @example
+     * // Create many NavigationCategories
+     * const navigationCategory = await prisma.navigationCategory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NavigationCategoryCreateManyArgs>(args?: SelectSubset<T, NavigationCategoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NavigationCategories and returns the data saved in the database.
+     * @param {NavigationCategoryCreateManyAndReturnArgs} args - Arguments to create many NavigationCategories.
+     * @example
+     * // Create many NavigationCategories
+     * const navigationCategory = await prisma.navigationCategory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NavigationCategories and only return the `id`
+     * const navigationCategoryWithIdOnly = await prisma.navigationCategory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NavigationCategoryCreateManyAndReturnArgs>(args?: SelectSubset<T, NavigationCategoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NavigationCategory.
+     * @param {NavigationCategoryDeleteArgs} args - Arguments to delete one NavigationCategory.
+     * @example
+     * // Delete one NavigationCategory
+     * const NavigationCategory = await prisma.navigationCategory.delete({
+     *   where: {
+     *     // ... filter to delete one NavigationCategory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NavigationCategoryDeleteArgs>(args: SelectSubset<T, NavigationCategoryDeleteArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NavigationCategory.
+     * @param {NavigationCategoryUpdateArgs} args - Arguments to update one NavigationCategory.
+     * @example
+     * // Update one NavigationCategory
+     * const navigationCategory = await prisma.navigationCategory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NavigationCategoryUpdateArgs>(args: SelectSubset<T, NavigationCategoryUpdateArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NavigationCategories.
+     * @param {NavigationCategoryDeleteManyArgs} args - Arguments to filter NavigationCategories to delete.
+     * @example
+     * // Delete a few NavigationCategories
+     * const { count } = await prisma.navigationCategory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NavigationCategoryDeleteManyArgs>(args?: SelectSubset<T, NavigationCategoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NavigationCategories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationCategoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NavigationCategories
+     * const navigationCategory = await prisma.navigationCategory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NavigationCategoryUpdateManyArgs>(args: SelectSubset<T, NavigationCategoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NavigationCategories and returns the data updated in the database.
+     * @param {NavigationCategoryUpdateManyAndReturnArgs} args - Arguments to update many NavigationCategories.
+     * @example
+     * // Update many NavigationCategories
+     * const navigationCategory = await prisma.navigationCategory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NavigationCategories and only return the `id`
+     * const navigationCategoryWithIdOnly = await prisma.navigationCategory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NavigationCategoryUpdateManyAndReturnArgs>(args: SelectSubset<T, NavigationCategoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NavigationCategory.
+     * @param {NavigationCategoryUpsertArgs} args - Arguments to update or create a NavigationCategory.
+     * @example
+     * // Update or create a NavigationCategory
+     * const navigationCategory = await prisma.navigationCategory.upsert({
+     *   create: {
+     *     // ... data to create a NavigationCategory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NavigationCategory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NavigationCategoryUpsertArgs>(args: SelectSubset<T, NavigationCategoryUpsertArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NavigationCategories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationCategoryCountArgs} args - Arguments to filter NavigationCategories to count.
+     * @example
+     * // Count the number of NavigationCategories
+     * const count = await prisma.navigationCategory.count({
+     *   where: {
+     *     // ... the filter for the NavigationCategories we want to count
+     *   }
+     * })
+    **/
+    count<T extends NavigationCategoryCountArgs>(
+      args?: Subset<T, NavigationCategoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NavigationCategoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NavigationCategory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationCategoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NavigationCategoryAggregateArgs>(args: Subset<T, NavigationCategoryAggregateArgs>): Prisma.PrismaPromise<GetNavigationCategoryAggregateType<T>>
+
+    /**
+     * Group by NavigationCategory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationCategoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NavigationCategoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NavigationCategoryGroupByArgs['orderBy'] }
+        : { orderBy?: NavigationCategoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NavigationCategoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNavigationCategoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NavigationCategory model
+   */
+  readonly fields: NavigationCategoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NavigationCategory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NavigationCategoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    items<T extends NavigationCategory$itemsArgs<ExtArgs> = {}>(args?: Subset<T, NavigationCategory$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NavigationCategory model
+   */
+  interface NavigationCategoryFieldRefs {
+    readonly id: FieldRef<"NavigationCategory", 'Int'>
+    readonly name: FieldRef<"NavigationCategory", 'String'>
+    readonly slug: FieldRef<"NavigationCategory", 'String'>
+    readonly sortOrder: FieldRef<"NavigationCategory", 'Int'>
+    readonly isActive: FieldRef<"NavigationCategory", 'Boolean'>
+    readonly createdAt: FieldRef<"NavigationCategory", 'DateTime'>
+    readonly updatedAt: FieldRef<"NavigationCategory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NavigationCategory findUnique
+   */
+  export type NavigationCategoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationCategory to fetch.
+     */
+    where: NavigationCategoryWhereUniqueInput
+  }
+
+  /**
+   * NavigationCategory findUniqueOrThrow
+   */
+  export type NavigationCategoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationCategory to fetch.
+     */
+    where: NavigationCategoryWhereUniqueInput
+  }
+
+  /**
+   * NavigationCategory findFirst
+   */
+  export type NavigationCategoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationCategory to fetch.
+     */
+    where?: NavigationCategoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavigationCategories to fetch.
+     */
+    orderBy?: NavigationCategoryOrderByWithRelationInput | NavigationCategoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NavigationCategories.
+     */
+    cursor?: NavigationCategoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavigationCategories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavigationCategories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NavigationCategories.
+     */
+    distinct?: NavigationCategoryScalarFieldEnum | NavigationCategoryScalarFieldEnum[]
+  }
+
+  /**
+   * NavigationCategory findFirstOrThrow
+   */
+  export type NavigationCategoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationCategory to fetch.
+     */
+    where?: NavigationCategoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavigationCategories to fetch.
+     */
+    orderBy?: NavigationCategoryOrderByWithRelationInput | NavigationCategoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NavigationCategories.
+     */
+    cursor?: NavigationCategoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavigationCategories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavigationCategories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NavigationCategories.
+     */
+    distinct?: NavigationCategoryScalarFieldEnum | NavigationCategoryScalarFieldEnum[]
+  }
+
+  /**
+   * NavigationCategory findMany
+   */
+  export type NavigationCategoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationCategories to fetch.
+     */
+    where?: NavigationCategoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavigationCategories to fetch.
+     */
+    orderBy?: NavigationCategoryOrderByWithRelationInput | NavigationCategoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NavigationCategories.
+     */
+    cursor?: NavigationCategoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavigationCategories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavigationCategories.
+     */
+    skip?: number
+    distinct?: NavigationCategoryScalarFieldEnum | NavigationCategoryScalarFieldEnum[]
+  }
+
+  /**
+   * NavigationCategory create
+   */
+  export type NavigationCategoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NavigationCategory.
+     */
+    data: XOR<NavigationCategoryCreateInput, NavigationCategoryUncheckedCreateInput>
+  }
+
+  /**
+   * NavigationCategory createMany
+   */
+  export type NavigationCategoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NavigationCategories.
+     */
+    data: NavigationCategoryCreateManyInput | NavigationCategoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NavigationCategory createManyAndReturn
+   */
+  export type NavigationCategoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many NavigationCategories.
+     */
+    data: NavigationCategoryCreateManyInput | NavigationCategoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NavigationCategory update
+   */
+  export type NavigationCategoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NavigationCategory.
+     */
+    data: XOR<NavigationCategoryUpdateInput, NavigationCategoryUncheckedUpdateInput>
+    /**
+     * Choose, which NavigationCategory to update.
+     */
+    where: NavigationCategoryWhereUniqueInput
+  }
+
+  /**
+   * NavigationCategory updateMany
+   */
+  export type NavigationCategoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NavigationCategories.
+     */
+    data: XOR<NavigationCategoryUpdateManyMutationInput, NavigationCategoryUncheckedUpdateManyInput>
+    /**
+     * Filter which NavigationCategories to update
+     */
+    where?: NavigationCategoryWhereInput
+    /**
+     * Limit how many NavigationCategories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NavigationCategory updateManyAndReturn
+   */
+  export type NavigationCategoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * The data used to update NavigationCategories.
+     */
+    data: XOR<NavigationCategoryUpdateManyMutationInput, NavigationCategoryUncheckedUpdateManyInput>
+    /**
+     * Filter which NavigationCategories to update
+     */
+    where?: NavigationCategoryWhereInput
+    /**
+     * Limit how many NavigationCategories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NavigationCategory upsert
+   */
+  export type NavigationCategoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NavigationCategory to update in case it exists.
+     */
+    where: NavigationCategoryWhereUniqueInput
+    /**
+     * In case the NavigationCategory found by the `where` argument doesn't exist, create a new NavigationCategory with this data.
+     */
+    create: XOR<NavigationCategoryCreateInput, NavigationCategoryUncheckedCreateInput>
+    /**
+     * In case the NavigationCategory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NavigationCategoryUpdateInput, NavigationCategoryUncheckedUpdateInput>
+  }
+
+  /**
+   * NavigationCategory delete
+   */
+  export type NavigationCategoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+    /**
+     * Filter which NavigationCategory to delete.
+     */
+    where: NavigationCategoryWhereUniqueInput
+  }
+
+  /**
+   * NavigationCategory deleteMany
+   */
+  export type NavigationCategoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NavigationCategories to delete
+     */
+    where?: NavigationCategoryWhereInput
+    /**
+     * Limit how many NavigationCategories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NavigationCategory.items
+   */
+  export type NavigationCategory$itemsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    where?: NavigationItemWhereInput
+    orderBy?: NavigationItemOrderByWithRelationInput | NavigationItemOrderByWithRelationInput[]
+    cursor?: NavigationItemWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: NavigationItemScalarFieldEnum | NavigationItemScalarFieldEnum[]
+  }
+
+  /**
+   * NavigationCategory without action
+   */
+  export type NavigationCategoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationCategory
+     */
+    select?: NavigationCategorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationCategory
+     */
+    omit?: NavigationCategoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationCategoryInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model NavigationItem
+   */
+
+  export type AggregateNavigationItem = {
+    _count: NavigationItemCountAggregateOutputType | null
+    _avg: NavigationItemAvgAggregateOutputType | null
+    _sum: NavigationItemSumAggregateOutputType | null
+    _min: NavigationItemMinAggregateOutputType | null
+    _max: NavigationItemMaxAggregateOutputType | null
+  }
+
+  export type NavigationItemAvgAggregateOutputType = {
+    id: number | null
+    categoryId: number | null
+    sortOrder: number | null
+  }
+
+  export type NavigationItemSumAggregateOutputType = {
+    id: number | null
+    categoryId: number | null
+    sortOrder: number | null
+  }
+
+  export type NavigationItemMinAggregateOutputType = {
+    id: number | null
+    categoryId: number | null
+    title: string | null
+    path: string | null
+    icon: string | null
+    description: string | null
+    sortOrder: number | null
+    isActive: boolean | null
+    target: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NavigationItemMaxAggregateOutputType = {
+    id: number | null
+    categoryId: number | null
+    title: string | null
+    path: string | null
+    icon: string | null
+    description: string | null
+    sortOrder: number | null
+    isActive: boolean | null
+    target: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type NavigationItemCountAggregateOutputType = {
+    id: number
+    categoryId: number
+    title: number
+    path: number
+    icon: number
+    description: number
+    sortOrder: number
+    isActive: number
+    target: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type NavigationItemAvgAggregateInputType = {
+    id?: true
+    categoryId?: true
+    sortOrder?: true
+  }
+
+  export type NavigationItemSumAggregateInputType = {
+    id?: true
+    categoryId?: true
+    sortOrder?: true
+  }
+
+  export type NavigationItemMinAggregateInputType = {
+    id?: true
+    categoryId?: true
+    title?: true
+    path?: true
+    icon?: true
+    description?: true
+    sortOrder?: true
+    isActive?: true
+    target?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NavigationItemMaxAggregateInputType = {
+    id?: true
+    categoryId?: true
+    title?: true
+    path?: true
+    icon?: true
+    description?: true
+    sortOrder?: true
+    isActive?: true
+    target?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type NavigationItemCountAggregateInputType = {
+    id?: true
+    categoryId?: true
+    title?: true
+    path?: true
+    icon?: true
+    description?: true
+    sortOrder?: true
+    isActive?: true
+    target?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type NavigationItemAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NavigationItem to aggregate.
+     */
+    where?: NavigationItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavigationItems to fetch.
+     */
+    orderBy?: NavigationItemOrderByWithRelationInput | NavigationItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: NavigationItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavigationItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavigationItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned NavigationItems
+    **/
+    _count?: true | NavigationItemCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: NavigationItemAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: NavigationItemSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: NavigationItemMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: NavigationItemMaxAggregateInputType
+  }
+
+  export type GetNavigationItemAggregateType<T extends NavigationItemAggregateArgs> = {
+        [P in keyof T & keyof AggregateNavigationItem]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateNavigationItem[P]>
+      : GetScalarType<T[P], AggregateNavigationItem[P]>
+  }
+
+
+
+
+  export type NavigationItemGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: NavigationItemWhereInput
+    orderBy?: NavigationItemOrderByWithAggregationInput | NavigationItemOrderByWithAggregationInput[]
+    by: NavigationItemScalarFieldEnum[] | NavigationItemScalarFieldEnum
+    having?: NavigationItemScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: NavigationItemCountAggregateInputType | true
+    _avg?: NavigationItemAvgAggregateInputType
+    _sum?: NavigationItemSumAggregateInputType
+    _min?: NavigationItemMinAggregateInputType
+    _max?: NavigationItemMaxAggregateInputType
+  }
+
+  export type NavigationItemGroupByOutputType = {
+    id: number
+    categoryId: number
+    title: string
+    path: string
+    icon: string
+    description: string | null
+    sortOrder: number
+    isActive: boolean
+    target: string
+    createdAt: Date
+    updatedAt: Date
+    _count: NavigationItemCountAggregateOutputType | null
+    _avg: NavigationItemAvgAggregateOutputType | null
+    _sum: NavigationItemSumAggregateOutputType | null
+    _min: NavigationItemMinAggregateOutputType | null
+    _max: NavigationItemMaxAggregateOutputType | null
+  }
+
+  type GetNavigationItemGroupByPayload<T extends NavigationItemGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<NavigationItemGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof NavigationItemGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], NavigationItemGroupByOutputType[P]>
+            : GetScalarType<T[P], NavigationItemGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type NavigationItemSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    categoryId?: boolean
+    title?: boolean
+    path?: boolean
+    icon?: boolean
+    description?: boolean
+    sortOrder?: boolean
+    isActive?: boolean
+    target?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    category?: boolean | NavigationCategoryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["navigationItem"]>
+
+  export type NavigationItemSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    categoryId?: boolean
+    title?: boolean
+    path?: boolean
+    icon?: boolean
+    description?: boolean
+    sortOrder?: boolean
+    isActive?: boolean
+    target?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    category?: boolean | NavigationCategoryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["navigationItem"]>
+
+  export type NavigationItemSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    categoryId?: boolean
+    title?: boolean
+    path?: boolean
+    icon?: boolean
+    description?: boolean
+    sortOrder?: boolean
+    isActive?: boolean
+    target?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    category?: boolean | NavigationCategoryDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["navigationItem"]>
+
+  export type NavigationItemSelectScalar = {
+    id?: boolean
+    categoryId?: boolean
+    title?: boolean
+    path?: boolean
+    icon?: boolean
+    description?: boolean
+    sortOrder?: boolean
+    isActive?: boolean
+    target?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type NavigationItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "categoryId" | "title" | "path" | "icon" | "description" | "sortOrder" | "isActive" | "target" | "createdAt" | "updatedAt", ExtArgs["result"]["navigationItem"]>
+  export type NavigationItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | NavigationCategoryDefaultArgs<ExtArgs>
+  }
+  export type NavigationItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | NavigationCategoryDefaultArgs<ExtArgs>
+  }
+  export type NavigationItemIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    category?: boolean | NavigationCategoryDefaultArgs<ExtArgs>
+  }
+
+  export type $NavigationItemPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "NavigationItem"
+    objects: {
+      category: Prisma.$NavigationCategoryPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      categoryId: number
+      title: string
+      path: string
+      icon: string
+      description: string | null
+      sortOrder: number
+      isActive: boolean
+      target: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["navigationItem"]>
+    composites: {}
+  }
+
+  type NavigationItemGetPayload<S extends boolean | null | undefined | NavigationItemDefaultArgs> = $Result.GetResult<Prisma.$NavigationItemPayload, S>
+
+  type NavigationItemCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<NavigationItemFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: NavigationItemCountAggregateInputType | true
+    }
+
+  export interface NavigationItemDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['NavigationItem'], meta: { name: 'NavigationItem' } }
+    /**
+     * Find zero or one NavigationItem that matches the filter.
+     * @param {NavigationItemFindUniqueArgs} args - Arguments to find a NavigationItem
+     * @example
+     * // Get one NavigationItem
+     * const navigationItem = await prisma.navigationItem.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends NavigationItemFindUniqueArgs>(args: SelectSubset<T, NavigationItemFindUniqueArgs<ExtArgs>>): Prisma__NavigationItemClient<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one NavigationItem that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {NavigationItemFindUniqueOrThrowArgs} args - Arguments to find a NavigationItem
+     * @example
+     * // Get one NavigationItem
+     * const navigationItem = await prisma.navigationItem.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends NavigationItemFindUniqueOrThrowArgs>(args: SelectSubset<T, NavigationItemFindUniqueOrThrowArgs<ExtArgs>>): Prisma__NavigationItemClient<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NavigationItem that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationItemFindFirstArgs} args - Arguments to find a NavigationItem
+     * @example
+     * // Get one NavigationItem
+     * const navigationItem = await prisma.navigationItem.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends NavigationItemFindFirstArgs>(args?: SelectSubset<T, NavigationItemFindFirstArgs<ExtArgs>>): Prisma__NavigationItemClient<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first NavigationItem that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationItemFindFirstOrThrowArgs} args - Arguments to find a NavigationItem
+     * @example
+     * // Get one NavigationItem
+     * const navigationItem = await prisma.navigationItem.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends NavigationItemFindFirstOrThrowArgs>(args?: SelectSubset<T, NavigationItemFindFirstOrThrowArgs<ExtArgs>>): Prisma__NavigationItemClient<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more NavigationItems that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationItemFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all NavigationItems
+     * const navigationItems = await prisma.navigationItem.findMany()
+     * 
+     * // Get first 10 NavigationItems
+     * const navigationItems = await prisma.navigationItem.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const navigationItemWithIdOnly = await prisma.navigationItem.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends NavigationItemFindManyArgs>(args?: SelectSubset<T, NavigationItemFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a NavigationItem.
+     * @param {NavigationItemCreateArgs} args - Arguments to create a NavigationItem.
+     * @example
+     * // Create one NavigationItem
+     * const NavigationItem = await prisma.navigationItem.create({
+     *   data: {
+     *     // ... data to create a NavigationItem
+     *   }
+     * })
+     * 
+     */
+    create<T extends NavigationItemCreateArgs>(args: SelectSubset<T, NavigationItemCreateArgs<ExtArgs>>): Prisma__NavigationItemClient<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many NavigationItems.
+     * @param {NavigationItemCreateManyArgs} args - Arguments to create many NavigationItems.
+     * @example
+     * // Create many NavigationItems
+     * const navigationItem = await prisma.navigationItem.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends NavigationItemCreateManyArgs>(args?: SelectSubset<T, NavigationItemCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many NavigationItems and returns the data saved in the database.
+     * @param {NavigationItemCreateManyAndReturnArgs} args - Arguments to create many NavigationItems.
+     * @example
+     * // Create many NavigationItems
+     * const navigationItem = await prisma.navigationItem.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many NavigationItems and only return the `id`
+     * const navigationItemWithIdOnly = await prisma.navigationItem.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends NavigationItemCreateManyAndReturnArgs>(args?: SelectSubset<T, NavigationItemCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a NavigationItem.
+     * @param {NavigationItemDeleteArgs} args - Arguments to delete one NavigationItem.
+     * @example
+     * // Delete one NavigationItem
+     * const NavigationItem = await prisma.navigationItem.delete({
+     *   where: {
+     *     // ... filter to delete one NavigationItem
+     *   }
+     * })
+     * 
+     */
+    delete<T extends NavigationItemDeleteArgs>(args: SelectSubset<T, NavigationItemDeleteArgs<ExtArgs>>): Prisma__NavigationItemClient<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one NavigationItem.
+     * @param {NavigationItemUpdateArgs} args - Arguments to update one NavigationItem.
+     * @example
+     * // Update one NavigationItem
+     * const navigationItem = await prisma.navigationItem.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends NavigationItemUpdateArgs>(args: SelectSubset<T, NavigationItemUpdateArgs<ExtArgs>>): Prisma__NavigationItemClient<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more NavigationItems.
+     * @param {NavigationItemDeleteManyArgs} args - Arguments to filter NavigationItems to delete.
+     * @example
+     * // Delete a few NavigationItems
+     * const { count } = await prisma.navigationItem.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends NavigationItemDeleteManyArgs>(args?: SelectSubset<T, NavigationItemDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NavigationItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationItemUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many NavigationItems
+     * const navigationItem = await prisma.navigationItem.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends NavigationItemUpdateManyArgs>(args: SelectSubset<T, NavigationItemUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more NavigationItems and returns the data updated in the database.
+     * @param {NavigationItemUpdateManyAndReturnArgs} args - Arguments to update many NavigationItems.
+     * @example
+     * // Update many NavigationItems
+     * const navigationItem = await prisma.navigationItem.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more NavigationItems and only return the `id`
+     * const navigationItemWithIdOnly = await prisma.navigationItem.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends NavigationItemUpdateManyAndReturnArgs>(args: SelectSubset<T, NavigationItemUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one NavigationItem.
+     * @param {NavigationItemUpsertArgs} args - Arguments to update or create a NavigationItem.
+     * @example
+     * // Update or create a NavigationItem
+     * const navigationItem = await prisma.navigationItem.upsert({
+     *   create: {
+     *     // ... data to create a NavigationItem
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the NavigationItem we want to update
+     *   }
+     * })
+     */
+    upsert<T extends NavigationItemUpsertArgs>(args: SelectSubset<T, NavigationItemUpsertArgs<ExtArgs>>): Prisma__NavigationItemClient<$Result.GetResult<Prisma.$NavigationItemPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of NavigationItems.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationItemCountArgs} args - Arguments to filter NavigationItems to count.
+     * @example
+     * // Count the number of NavigationItems
+     * const count = await prisma.navigationItem.count({
+     *   where: {
+     *     // ... the filter for the NavigationItems we want to count
+     *   }
+     * })
+    **/
+    count<T extends NavigationItemCountArgs>(
+      args?: Subset<T, NavigationItemCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], NavigationItemCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a NavigationItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationItemAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends NavigationItemAggregateArgs>(args: Subset<T, NavigationItemAggregateArgs>): Prisma.PrismaPromise<GetNavigationItemAggregateType<T>>
+
+    /**
+     * Group by NavigationItem.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {NavigationItemGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends NavigationItemGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: NavigationItemGroupByArgs['orderBy'] }
+        : { orderBy?: NavigationItemGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, NavigationItemGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetNavigationItemGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the NavigationItem model
+   */
+  readonly fields: NavigationItemFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for NavigationItem.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__NavigationItemClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    category<T extends NavigationCategoryDefaultArgs<ExtArgs> = {}>(args?: Subset<T, NavigationCategoryDefaultArgs<ExtArgs>>): Prisma__NavigationCategoryClient<$Result.GetResult<Prisma.$NavigationCategoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the NavigationItem model
+   */
+  interface NavigationItemFieldRefs {
+    readonly id: FieldRef<"NavigationItem", 'Int'>
+    readonly categoryId: FieldRef<"NavigationItem", 'Int'>
+    readonly title: FieldRef<"NavigationItem", 'String'>
+    readonly path: FieldRef<"NavigationItem", 'String'>
+    readonly icon: FieldRef<"NavigationItem", 'String'>
+    readonly description: FieldRef<"NavigationItem", 'String'>
+    readonly sortOrder: FieldRef<"NavigationItem", 'Int'>
+    readonly isActive: FieldRef<"NavigationItem", 'Boolean'>
+    readonly target: FieldRef<"NavigationItem", 'String'>
+    readonly createdAt: FieldRef<"NavigationItem", 'DateTime'>
+    readonly updatedAt: FieldRef<"NavigationItem", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * NavigationItem findUnique
+   */
+  export type NavigationItemFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationItem to fetch.
+     */
+    where: NavigationItemWhereUniqueInput
+  }
+
+  /**
+   * NavigationItem findUniqueOrThrow
+   */
+  export type NavigationItemFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationItem to fetch.
+     */
+    where: NavigationItemWhereUniqueInput
+  }
+
+  /**
+   * NavigationItem findFirst
+   */
+  export type NavigationItemFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationItem to fetch.
+     */
+    where?: NavigationItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavigationItems to fetch.
+     */
+    orderBy?: NavigationItemOrderByWithRelationInput | NavigationItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NavigationItems.
+     */
+    cursor?: NavigationItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavigationItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavigationItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NavigationItems.
+     */
+    distinct?: NavigationItemScalarFieldEnum | NavigationItemScalarFieldEnum[]
+  }
+
+  /**
+   * NavigationItem findFirstOrThrow
+   */
+  export type NavigationItemFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationItem to fetch.
+     */
+    where?: NavigationItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavigationItems to fetch.
+     */
+    orderBy?: NavigationItemOrderByWithRelationInput | NavigationItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for NavigationItems.
+     */
+    cursor?: NavigationItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavigationItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavigationItems.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of NavigationItems.
+     */
+    distinct?: NavigationItemScalarFieldEnum | NavigationItemScalarFieldEnum[]
+  }
+
+  /**
+   * NavigationItem findMany
+   */
+  export type NavigationItemFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * Filter, which NavigationItems to fetch.
+     */
+    where?: NavigationItemWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of NavigationItems to fetch.
+     */
+    orderBy?: NavigationItemOrderByWithRelationInput | NavigationItemOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing NavigationItems.
+     */
+    cursor?: NavigationItemWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` NavigationItems from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` NavigationItems.
+     */
+    skip?: number
+    distinct?: NavigationItemScalarFieldEnum | NavigationItemScalarFieldEnum[]
+  }
+
+  /**
+   * NavigationItem create
+   */
+  export type NavigationItemCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * The data needed to create a NavigationItem.
+     */
+    data: XOR<NavigationItemCreateInput, NavigationItemUncheckedCreateInput>
+  }
+
+  /**
+   * NavigationItem createMany
+   */
+  export type NavigationItemCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many NavigationItems.
+     */
+    data: NavigationItemCreateManyInput | NavigationItemCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * NavigationItem createManyAndReturn
+   */
+  export type NavigationItemCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * The data used to create many NavigationItems.
+     */
+    data: NavigationItemCreateManyInput | NavigationItemCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NavigationItem update
+   */
+  export type NavigationItemUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * The data needed to update a NavigationItem.
+     */
+    data: XOR<NavigationItemUpdateInput, NavigationItemUncheckedUpdateInput>
+    /**
+     * Choose, which NavigationItem to update.
+     */
+    where: NavigationItemWhereUniqueInput
+  }
+
+  /**
+   * NavigationItem updateMany
+   */
+  export type NavigationItemUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update NavigationItems.
+     */
+    data: XOR<NavigationItemUpdateManyMutationInput, NavigationItemUncheckedUpdateManyInput>
+    /**
+     * Filter which NavigationItems to update
+     */
+    where?: NavigationItemWhereInput
+    /**
+     * Limit how many NavigationItems to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * NavigationItem updateManyAndReturn
+   */
+  export type NavigationItemUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * The data used to update NavigationItems.
+     */
+    data: XOR<NavigationItemUpdateManyMutationInput, NavigationItemUncheckedUpdateManyInput>
+    /**
+     * Filter which NavigationItems to update
+     */
+    where?: NavigationItemWhereInput
+    /**
+     * Limit how many NavigationItems to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * NavigationItem upsert
+   */
+  export type NavigationItemUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * The filter to search for the NavigationItem to update in case it exists.
+     */
+    where: NavigationItemWhereUniqueInput
+    /**
+     * In case the NavigationItem found by the `where` argument doesn't exist, create a new NavigationItem with this data.
+     */
+    create: XOR<NavigationItemCreateInput, NavigationItemUncheckedCreateInput>
+    /**
+     * In case the NavigationItem was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<NavigationItemUpdateInput, NavigationItemUncheckedUpdateInput>
+  }
+
+  /**
+   * NavigationItem delete
+   */
+  export type NavigationItemDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+    /**
+     * Filter which NavigationItem to delete.
+     */
+    where: NavigationItemWhereUniqueInput
+  }
+
+  /**
+   * NavigationItem deleteMany
+   */
+  export type NavigationItemDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which NavigationItems to delete
+     */
+    where?: NavigationItemWhereInput
+    /**
+     * Limit how many NavigationItems to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * NavigationItem without action
+   */
+  export type NavigationItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the NavigationItem
+     */
+    select?: NavigationItemSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the NavigationItem
+     */
+    omit?: NavigationItemOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: NavigationItemInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -31657,6 +34182,36 @@ export namespace Prisma {
   };
 
   export type PointsHistoryScalarFieldEnum = (typeof PointsHistoryScalarFieldEnum)[keyof typeof PointsHistoryScalarFieldEnum]
+
+
+  export const NavigationCategoryScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    slug: 'slug',
+    sortOrder: 'sortOrder',
+    isActive: 'isActive',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NavigationCategoryScalarFieldEnum = (typeof NavigationCategoryScalarFieldEnum)[keyof typeof NavigationCategoryScalarFieldEnum]
+
+
+  export const NavigationItemScalarFieldEnum: {
+    id: 'id',
+    categoryId: 'categoryId',
+    title: 'title',
+    path: 'path',
+    icon: 'icon',
+    description: 'description',
+    sortOrder: 'sortOrder',
+    isActive: 'isActive',
+    target: 'target',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type NavigationItemScalarFieldEnum = (typeof NavigationItemScalarFieldEnum)[keyof typeof NavigationItemScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -33528,6 +36083,160 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"PointsHistory"> | Date | string
   }
 
+  export type NavigationCategoryWhereInput = {
+    AND?: NavigationCategoryWhereInput | NavigationCategoryWhereInput[]
+    OR?: NavigationCategoryWhereInput[]
+    NOT?: NavigationCategoryWhereInput | NavigationCategoryWhereInput[]
+    id?: IntFilter<"NavigationCategory"> | number
+    name?: StringFilter<"NavigationCategory"> | string
+    slug?: StringFilter<"NavigationCategory"> | string
+    sortOrder?: IntFilter<"NavigationCategory"> | number
+    isActive?: BoolFilter<"NavigationCategory"> | boolean
+    createdAt?: DateTimeFilter<"NavigationCategory"> | Date | string
+    updatedAt?: DateTimeFilter<"NavigationCategory"> | Date | string
+    items?: NavigationItemListRelationFilter
+  }
+
+  export type NavigationCategoryOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    items?: NavigationItemOrderByRelationAggregateInput
+  }
+
+  export type NavigationCategoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    name?: string
+    slug?: string
+    AND?: NavigationCategoryWhereInput | NavigationCategoryWhereInput[]
+    OR?: NavigationCategoryWhereInput[]
+    NOT?: NavigationCategoryWhereInput | NavigationCategoryWhereInput[]
+    sortOrder?: IntFilter<"NavigationCategory"> | number
+    isActive?: BoolFilter<"NavigationCategory"> | boolean
+    createdAt?: DateTimeFilter<"NavigationCategory"> | Date | string
+    updatedAt?: DateTimeFilter<"NavigationCategory"> | Date | string
+    items?: NavigationItemListRelationFilter
+  }, "id" | "name" | "slug">
+
+  export type NavigationCategoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NavigationCategoryCountOrderByAggregateInput
+    _avg?: NavigationCategoryAvgOrderByAggregateInput
+    _max?: NavigationCategoryMaxOrderByAggregateInput
+    _min?: NavigationCategoryMinOrderByAggregateInput
+    _sum?: NavigationCategorySumOrderByAggregateInput
+  }
+
+  export type NavigationCategoryScalarWhereWithAggregatesInput = {
+    AND?: NavigationCategoryScalarWhereWithAggregatesInput | NavigationCategoryScalarWhereWithAggregatesInput[]
+    OR?: NavigationCategoryScalarWhereWithAggregatesInput[]
+    NOT?: NavigationCategoryScalarWhereWithAggregatesInput | NavigationCategoryScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"NavigationCategory"> | number
+    name?: StringWithAggregatesFilter<"NavigationCategory"> | string
+    slug?: StringWithAggregatesFilter<"NavigationCategory"> | string
+    sortOrder?: IntWithAggregatesFilter<"NavigationCategory"> | number
+    isActive?: BoolWithAggregatesFilter<"NavigationCategory"> | boolean
+    createdAt?: DateTimeWithAggregatesFilter<"NavigationCategory"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NavigationCategory"> | Date | string
+  }
+
+  export type NavigationItemWhereInput = {
+    AND?: NavigationItemWhereInput | NavigationItemWhereInput[]
+    OR?: NavigationItemWhereInput[]
+    NOT?: NavigationItemWhereInput | NavigationItemWhereInput[]
+    id?: IntFilter<"NavigationItem"> | number
+    categoryId?: IntFilter<"NavigationItem"> | number
+    title?: StringFilter<"NavigationItem"> | string
+    path?: StringFilter<"NavigationItem"> | string
+    icon?: StringFilter<"NavigationItem"> | string
+    description?: StringNullableFilter<"NavigationItem"> | string | null
+    sortOrder?: IntFilter<"NavigationItem"> | number
+    isActive?: BoolFilter<"NavigationItem"> | boolean
+    target?: StringFilter<"NavigationItem"> | string
+    createdAt?: DateTimeFilter<"NavigationItem"> | Date | string
+    updatedAt?: DateTimeFilter<"NavigationItem"> | Date | string
+    category?: XOR<NavigationCategoryScalarRelationFilter, NavigationCategoryWhereInput>
+  }
+
+  export type NavigationItemOrderByWithRelationInput = {
+    id?: SortOrder
+    categoryId?: SortOrder
+    title?: SortOrder
+    path?: SortOrder
+    icon?: SortOrder
+    description?: SortOrderInput | SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    target?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    category?: NavigationCategoryOrderByWithRelationInput
+  }
+
+  export type NavigationItemWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: NavigationItemWhereInput | NavigationItemWhereInput[]
+    OR?: NavigationItemWhereInput[]
+    NOT?: NavigationItemWhereInput | NavigationItemWhereInput[]
+    categoryId?: IntFilter<"NavigationItem"> | number
+    title?: StringFilter<"NavigationItem"> | string
+    path?: StringFilter<"NavigationItem"> | string
+    icon?: StringFilter<"NavigationItem"> | string
+    description?: StringNullableFilter<"NavigationItem"> | string | null
+    sortOrder?: IntFilter<"NavigationItem"> | number
+    isActive?: BoolFilter<"NavigationItem"> | boolean
+    target?: StringFilter<"NavigationItem"> | string
+    createdAt?: DateTimeFilter<"NavigationItem"> | Date | string
+    updatedAt?: DateTimeFilter<"NavigationItem"> | Date | string
+    category?: XOR<NavigationCategoryScalarRelationFilter, NavigationCategoryWhereInput>
+  }, "id">
+
+  export type NavigationItemOrderByWithAggregationInput = {
+    id?: SortOrder
+    categoryId?: SortOrder
+    title?: SortOrder
+    path?: SortOrder
+    icon?: SortOrder
+    description?: SortOrderInput | SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    target?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: NavigationItemCountOrderByAggregateInput
+    _avg?: NavigationItemAvgOrderByAggregateInput
+    _max?: NavigationItemMaxOrderByAggregateInput
+    _min?: NavigationItemMinOrderByAggregateInput
+    _sum?: NavigationItemSumOrderByAggregateInput
+  }
+
+  export type NavigationItemScalarWhereWithAggregatesInput = {
+    AND?: NavigationItemScalarWhereWithAggregatesInput | NavigationItemScalarWhereWithAggregatesInput[]
+    OR?: NavigationItemScalarWhereWithAggregatesInput[]
+    NOT?: NavigationItemScalarWhereWithAggregatesInput | NavigationItemScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"NavigationItem"> | number
+    categoryId?: IntWithAggregatesFilter<"NavigationItem"> | number
+    title?: StringWithAggregatesFilter<"NavigationItem"> | string
+    path?: StringWithAggregatesFilter<"NavigationItem"> | string
+    icon?: StringWithAggregatesFilter<"NavigationItem"> | string
+    description?: StringNullableWithAggregatesFilter<"NavigationItem"> | string | null
+    sortOrder?: IntWithAggregatesFilter<"NavigationItem"> | number
+    isActive?: BoolWithAggregatesFilter<"NavigationItem"> | boolean
+    target?: StringWithAggregatesFilter<"NavigationItem"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"NavigationItem"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"NavigationItem"> | Date | string
+  }
+
   export type UserCreateInput = {
     username: string
     email: string
@@ -35276,6 +37985,171 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type NavigationCategoryCreateInput = {
+    name: string
+    slug: string
+    sortOrder?: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: NavigationItemCreateNestedManyWithoutCategoryInput
+  }
+
+  export type NavigationCategoryUncheckedCreateInput = {
+    id?: number
+    name: string
+    slug: string
+    sortOrder?: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    items?: NavigationItemUncheckedCreateNestedManyWithoutCategoryInput
+  }
+
+  export type NavigationCategoryUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: NavigationItemUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type NavigationCategoryUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    items?: NavigationItemUncheckedUpdateManyWithoutCategoryNestedInput
+  }
+
+  export type NavigationCategoryCreateManyInput = {
+    id?: number
+    name: string
+    slug: string
+    sortOrder?: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NavigationCategoryUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NavigationCategoryUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NavigationItemCreateInput = {
+    title: string
+    path: string
+    icon: string
+    description?: string | null
+    sortOrder?: number
+    isActive?: boolean
+    target?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    category: NavigationCategoryCreateNestedOneWithoutItemsInput
+  }
+
+  export type NavigationItemUncheckedCreateInput = {
+    id?: number
+    categoryId: number
+    title: string
+    path: string
+    icon: string
+    description?: string | null
+    sortOrder?: number
+    isActive?: boolean
+    target?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NavigationItemUpdateInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    target?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    category?: NavigationCategoryUpdateOneRequiredWithoutItemsNestedInput
+  }
+
+  export type NavigationItemUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    categoryId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    target?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NavigationItemCreateManyInput = {
+    id?: number
+    categoryId: number
+    title: string
+    path: string
+    icon: string
+    description?: string | null
+    sortOrder?: number
+    isActive?: boolean
+    target?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NavigationItemUpdateManyMutationInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    target?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NavigationItemUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    categoryId?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    target?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -36756,6 +39630,115 @@ export namespace Prisma {
     userId?: SortOrder
     points?: SortOrder
     relatedId?: SortOrder
+  }
+
+  export type NavigationItemListRelationFilter = {
+    every?: NavigationItemWhereInput
+    some?: NavigationItemWhereInput
+    none?: NavigationItemWhereInput
+  }
+
+  export type NavigationItemOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type NavigationCategoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NavigationCategoryAvgOrderByAggregateInput = {
+    id?: SortOrder
+    sortOrder?: SortOrder
+  }
+
+  export type NavigationCategoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NavigationCategoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    slug?: SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NavigationCategorySumOrderByAggregateInput = {
+    id?: SortOrder
+    sortOrder?: SortOrder
+  }
+
+  export type NavigationCategoryScalarRelationFilter = {
+    is?: NavigationCategoryWhereInput
+    isNot?: NavigationCategoryWhereInput
+  }
+
+  export type NavigationItemCountOrderByAggregateInput = {
+    id?: SortOrder
+    categoryId?: SortOrder
+    title?: SortOrder
+    path?: SortOrder
+    icon?: SortOrder
+    description?: SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    target?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NavigationItemAvgOrderByAggregateInput = {
+    id?: SortOrder
+    categoryId?: SortOrder
+    sortOrder?: SortOrder
+  }
+
+  export type NavigationItemMaxOrderByAggregateInput = {
+    id?: SortOrder
+    categoryId?: SortOrder
+    title?: SortOrder
+    path?: SortOrder
+    icon?: SortOrder
+    description?: SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    target?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NavigationItemMinOrderByAggregateInput = {
+    id?: SortOrder
+    categoryId?: SortOrder
+    title?: SortOrder
+    path?: SortOrder
+    icon?: SortOrder
+    description?: SortOrder
+    sortOrder?: SortOrder
+    isActive?: SortOrder
+    target?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type NavigationItemSumOrderByAggregateInput = {
+    id?: SortOrder
+    categoryId?: SortOrder
+    sortOrder?: SortOrder
   }
 
   export type ResourceCreateNestedManyWithoutCreatorInput = {
@@ -38427,6 +41410,62 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutPointsHistoryInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPointsHistoryInput, UserUpdateWithoutPointsHistoryInput>, UserUncheckedUpdateWithoutPointsHistoryInput>
+  }
+
+  export type NavigationItemCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<NavigationItemCreateWithoutCategoryInput, NavigationItemUncheckedCreateWithoutCategoryInput> | NavigationItemCreateWithoutCategoryInput[] | NavigationItemUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: NavigationItemCreateOrConnectWithoutCategoryInput | NavigationItemCreateOrConnectWithoutCategoryInput[]
+    createMany?: NavigationItemCreateManyCategoryInputEnvelope
+    connect?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+  }
+
+  export type NavigationItemUncheckedCreateNestedManyWithoutCategoryInput = {
+    create?: XOR<NavigationItemCreateWithoutCategoryInput, NavigationItemUncheckedCreateWithoutCategoryInput> | NavigationItemCreateWithoutCategoryInput[] | NavigationItemUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: NavigationItemCreateOrConnectWithoutCategoryInput | NavigationItemCreateOrConnectWithoutCategoryInput[]
+    createMany?: NavigationItemCreateManyCategoryInputEnvelope
+    connect?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+  }
+
+  export type NavigationItemUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<NavigationItemCreateWithoutCategoryInput, NavigationItemUncheckedCreateWithoutCategoryInput> | NavigationItemCreateWithoutCategoryInput[] | NavigationItemUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: NavigationItemCreateOrConnectWithoutCategoryInput | NavigationItemCreateOrConnectWithoutCategoryInput[]
+    upsert?: NavigationItemUpsertWithWhereUniqueWithoutCategoryInput | NavigationItemUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: NavigationItemCreateManyCategoryInputEnvelope
+    set?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+    disconnect?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+    delete?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+    connect?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+    update?: NavigationItemUpdateWithWhereUniqueWithoutCategoryInput | NavigationItemUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: NavigationItemUpdateManyWithWhereWithoutCategoryInput | NavigationItemUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: NavigationItemScalarWhereInput | NavigationItemScalarWhereInput[]
+  }
+
+  export type NavigationItemUncheckedUpdateManyWithoutCategoryNestedInput = {
+    create?: XOR<NavigationItemCreateWithoutCategoryInput, NavigationItemUncheckedCreateWithoutCategoryInput> | NavigationItemCreateWithoutCategoryInput[] | NavigationItemUncheckedCreateWithoutCategoryInput[]
+    connectOrCreate?: NavigationItemCreateOrConnectWithoutCategoryInput | NavigationItemCreateOrConnectWithoutCategoryInput[]
+    upsert?: NavigationItemUpsertWithWhereUniqueWithoutCategoryInput | NavigationItemUpsertWithWhereUniqueWithoutCategoryInput[]
+    createMany?: NavigationItemCreateManyCategoryInputEnvelope
+    set?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+    disconnect?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+    delete?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+    connect?: NavigationItemWhereUniqueInput | NavigationItemWhereUniqueInput[]
+    update?: NavigationItemUpdateWithWhereUniqueWithoutCategoryInput | NavigationItemUpdateWithWhereUniqueWithoutCategoryInput[]
+    updateMany?: NavigationItemUpdateManyWithWhereWithoutCategoryInput | NavigationItemUpdateManyWithWhereWithoutCategoryInput[]
+    deleteMany?: NavigationItemScalarWhereInput | NavigationItemScalarWhereInput[]
+  }
+
+  export type NavigationCategoryCreateNestedOneWithoutItemsInput = {
+    create?: XOR<NavigationCategoryCreateWithoutItemsInput, NavigationCategoryUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: NavigationCategoryCreateOrConnectWithoutItemsInput
+    connect?: NavigationCategoryWhereUniqueInput
+  }
+
+  export type NavigationCategoryUpdateOneRequiredWithoutItemsNestedInput = {
+    create?: XOR<NavigationCategoryCreateWithoutItemsInput, NavigationCategoryUncheckedCreateWithoutItemsInput>
+    connectOrCreate?: NavigationCategoryCreateOrConnectWithoutItemsInput
+    upsert?: NavigationCategoryUpsertWithoutItemsInput
+    connect?: NavigationCategoryWhereUniqueInput
+    update?: XOR<XOR<NavigationCategoryUpdateToOneWithWhereWithoutItemsInput, NavigationCategoryUpdateWithoutItemsInput>, NavigationCategoryUncheckedUpdateWithoutItemsInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -42985,6 +46024,128 @@ export namespace Prisma {
     checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
   }
 
+  export type NavigationItemCreateWithoutCategoryInput = {
+    title: string
+    path: string
+    icon: string
+    description?: string | null
+    sortOrder?: number
+    isActive?: boolean
+    target?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NavigationItemUncheckedCreateWithoutCategoryInput = {
+    id?: number
+    title: string
+    path: string
+    icon: string
+    description?: string | null
+    sortOrder?: number
+    isActive?: boolean
+    target?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NavigationItemCreateOrConnectWithoutCategoryInput = {
+    where: NavigationItemWhereUniqueInput
+    create: XOR<NavigationItemCreateWithoutCategoryInput, NavigationItemUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type NavigationItemCreateManyCategoryInputEnvelope = {
+    data: NavigationItemCreateManyCategoryInput | NavigationItemCreateManyCategoryInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type NavigationItemUpsertWithWhereUniqueWithoutCategoryInput = {
+    where: NavigationItemWhereUniqueInput
+    update: XOR<NavigationItemUpdateWithoutCategoryInput, NavigationItemUncheckedUpdateWithoutCategoryInput>
+    create: XOR<NavigationItemCreateWithoutCategoryInput, NavigationItemUncheckedCreateWithoutCategoryInput>
+  }
+
+  export type NavigationItemUpdateWithWhereUniqueWithoutCategoryInput = {
+    where: NavigationItemWhereUniqueInput
+    data: XOR<NavigationItemUpdateWithoutCategoryInput, NavigationItemUncheckedUpdateWithoutCategoryInput>
+  }
+
+  export type NavigationItemUpdateManyWithWhereWithoutCategoryInput = {
+    where: NavigationItemScalarWhereInput
+    data: XOR<NavigationItemUpdateManyMutationInput, NavigationItemUncheckedUpdateManyWithoutCategoryInput>
+  }
+
+  export type NavigationItemScalarWhereInput = {
+    AND?: NavigationItemScalarWhereInput | NavigationItemScalarWhereInput[]
+    OR?: NavigationItemScalarWhereInput[]
+    NOT?: NavigationItemScalarWhereInput | NavigationItemScalarWhereInput[]
+    id?: IntFilter<"NavigationItem"> | number
+    categoryId?: IntFilter<"NavigationItem"> | number
+    title?: StringFilter<"NavigationItem"> | string
+    path?: StringFilter<"NavigationItem"> | string
+    icon?: StringFilter<"NavigationItem"> | string
+    description?: StringNullableFilter<"NavigationItem"> | string | null
+    sortOrder?: IntFilter<"NavigationItem"> | number
+    isActive?: BoolFilter<"NavigationItem"> | boolean
+    target?: StringFilter<"NavigationItem"> | string
+    createdAt?: DateTimeFilter<"NavigationItem"> | Date | string
+    updatedAt?: DateTimeFilter<"NavigationItem"> | Date | string
+  }
+
+  export type NavigationCategoryCreateWithoutItemsInput = {
+    name: string
+    slug: string
+    sortOrder?: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NavigationCategoryUncheckedCreateWithoutItemsInput = {
+    id?: number
+    name: string
+    slug: string
+    sortOrder?: number
+    isActive?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NavigationCategoryCreateOrConnectWithoutItemsInput = {
+    where: NavigationCategoryWhereUniqueInput
+    create: XOR<NavigationCategoryCreateWithoutItemsInput, NavigationCategoryUncheckedCreateWithoutItemsInput>
+  }
+
+  export type NavigationCategoryUpsertWithoutItemsInput = {
+    update: XOR<NavigationCategoryUpdateWithoutItemsInput, NavigationCategoryUncheckedUpdateWithoutItemsInput>
+    create: XOR<NavigationCategoryCreateWithoutItemsInput, NavigationCategoryUncheckedCreateWithoutItemsInput>
+    where?: NavigationCategoryWhereInput
+  }
+
+  export type NavigationCategoryUpdateToOneWithWhereWithoutItemsInput = {
+    where?: NavigationCategoryWhereInput
+    data: XOR<NavigationCategoryUpdateWithoutItemsInput, NavigationCategoryUncheckedUpdateWithoutItemsInput>
+  }
+
+  export type NavigationCategoryUpdateWithoutItemsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NavigationCategoryUncheckedUpdateWithoutItemsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ResourceCreateManyCreatorInput = {
     id?: number
     name: string
@@ -44110,6 +47271,57 @@ export namespace Prisma {
     isRead?: BoolFieldUpdateOperationsInput | boolean
     type?: StringFieldUpdateOperationsInput | string
     fileUrl?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type NavigationItemCreateManyCategoryInput = {
+    id?: number
+    title: string
+    path: string
+    icon: string
+    description?: string | null
+    sortOrder?: number
+    isActive?: boolean
+    target?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type NavigationItemUpdateWithoutCategoryInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    target?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NavigationItemUncheckedUpdateWithoutCategoryInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    target?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type NavigationItemUncheckedUpdateManyWithoutCategoryInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    path?: StringFieldUpdateOperationsInput | string
+    icon?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sortOrder?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    target?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
         }
 
         // 使用事务确保数据一致性
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx: any) => {
             // 更新用户积分
             const updatedUser = await tx.user.update({
                 where: { id: userId },
