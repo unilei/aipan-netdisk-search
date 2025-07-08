@@ -93,7 +93,13 @@
           "description": "B站视频平台",
           "icon": "fa-circle-play",
           "path": "https://www.bilibili.com"
-        }  
+        },
+        {
+          "title": "短剧大全",
+          "description": "免费观看热门短剧",
+          "icon": "fa-video",
+          "path": "/drama"
+        }
       ]
     },
     {
