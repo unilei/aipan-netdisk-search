@@ -179,10 +179,23 @@ export default defineNuxtConfig({
     },
     // 确保 API 路由正确处理
     routeRules: {
+      // 管理员API - 完全禁用缓存
+      '/api/admin/**': {
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+        prerender: false
+      },
+      // 管理员页面 - 完全禁用缓存
+      '/admin/**': {
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+        prerender: false,
+        index: false
+      },
+      // 一般API - 短期缓存
       '/api/**': {
         headers: { 'Cache-Control': 'max-age=300' },
         prerender: false
       },
+      // OG图片API - 长期缓存
       '/api/og-image': {
         headers: { 'Cache-Control': 'max-age=86400' },
         prerender: false

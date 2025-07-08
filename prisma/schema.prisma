@@ -448,3 +448,42 @@ model PointsHistory {
   @@index([type])
   @@index([createdAt])
 }
+
+// 导航分类模型
+model NavigationCategory {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // 分类名称
+  slug      String   @unique // 分类标识符
+  sortOrder Int      @default(0) // 排序
+  isActive  Boolean  @default(true) // 是否启用
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items NavigationItem[] // 分类下的导航项
+
+  @@index([sortOrder])
+  @@index([isActive])
+  @@index([createdAt])
+}
+
+// 导航项模型
+model NavigationItem {
+  id          Int      @id @default(autoincrement())
+  categoryId  Int // 关联分类ID
+  title       String // 导航项标题
+  path        String // 路径
+  icon        String // 图标类名
+  description String? // 描述（可选）
+  sortOrder   Int      @default(0) // 排序
+  isActive    Boolean  @default(true) // 是否启用
+  target      String   @default("_self") // 打开方式（_self, _blank）
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category NavigationCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@index([sortOrder])
+  @@index([isActive])
+  @@index([createdAt])
+}

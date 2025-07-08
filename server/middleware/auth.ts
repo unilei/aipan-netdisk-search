@@ -59,6 +59,13 @@ export default defineEventHandler(async (event: H3Event) => {
             });
         }
 
+        // 为管理员API设置no-cache头，确保数据实时性
+        if (isAdminRoute) {
+            setHeader(event, 'Cache-Control', 'no-cache, no-store, must-revalidate');
+            setHeader(event, 'Pragma', 'no-cache');
+            setHeader(event, 'Expires', '0');
+        }
+
         // 把用户信息添加到上下文中，供后续的 API 处理器使用
         event.context.user = user;
     } catch (error: any) {

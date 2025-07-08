@@ -120,27 +120,28 @@ const goDouban = useDebounceFn((movie) => {
   });
 }, 300);
 
-// 从i18n导航配置中获取当前语言的导航
-const navigationConfig = computed(() => {
-  // 如果当前语言在配置中不存在，则使用中文作为默认配置
-  const currentLang = locale.value;
-  const config = i18nNavigationConfig[currentLang] || i18nNavigationConfig.zh;
-  if (!config) {
-    console.warn('Navigation config not found for language:', currentLang);
-    return { categories: [] };
-  }
-  return config;
-});
+// 导航数据
+const categories = ref([]);
 
-// 获取分类
-const categories = computed(() => {
-  return navigationConfig.value?.categories || [];
-});
+// 加载导航数据
+const loadNavigationData = async () => {
+  try {
+    const { data } = await $fetch('/api/navigation');
+    categories.value = data || [];
+  } catch (error) {
+    console.error('Failed to load navigation data:', error);
+    // 如果API失败，回退到静态配置
+    const currentLang = locale.value;
+    const config = i18nNavigationConfig[currentLang] || i18nNavigationConfig.zh;
+    categories.value = config?.categories || [];
+  }
+};
 
 const activeCategory = ref("");
 
 // 确保在页面加载之前初始化活跃分类
-onBeforeMount(() => {
+onBeforeMount(async () => {
+  await loadNavigationData();
   if (categories.value && categories.value.length > 0) {
     activeCategory.value = activeCategoryCookie.value || categories.value[0]?.id || '';
   }
@@ -151,8 +152,9 @@ watch(activeCategory, (newValue) => {
   activeCategoryCookie.value = newValue;
 });
 
-// 监听语言变化，确保在导航配置变化时更新活跃分类
-const stopLocaleWatcher = watch(locale, () => {
+// 监听语言变化，重新加载导航数据
+const stopLocaleWatcher = watch(locale, async () => {
+  await loadNavigationData();
   if (categories.value && categories.value.length > 0) {
     // 检查当前活跃分类在新语言中是否存在
     const categoryExists = categories.value.some(c => c.id === activeCategory.value);
