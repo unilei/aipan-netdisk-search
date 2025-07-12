@@ -17,34 +17,38 @@ interface DramaListResponse {
   }>
 }
 
+// VOD源类型定义
+interface VodSource {
+  key: string;
+  name: string;
+  api: string;
+  playUrl: string;
+  type: 'json' | 'xml';
+}
+
 export default defineEventHandler(async (event) => {
   try {
-    const query = getQuery(event)
-    const {
-      page = 1,
-      limit = 20,
-      keyword = '',
-      type_id = 1
-    } = query
+    const body = await readBody(event)
 
     // 构建API请求参数
     const apiParams: any = {
       ac: 'detail',
-      pg: page,
-      t: type_id
+      pg: body.page,
+      t: body.type_id
     }
 
     // 如果有关键词，添加搜索参数
-    if (keyword) {
-      apiParams.wd = keyword
+    if (body.keyword) {
+      apiParams.wd = body.keyword
     }
 
-    // 调用短剧API
-    const response = await $fetch<DramaListResponse>('https://ww.tyyszy5.com/api.php/provide/vod/', {
+    // 调用影视API
+    const response = await $fetch<DramaListResponse>(body.source.api, {
       method: 'GET',
       query: apiParams,
       timeout: 15000
     })
+
 
     // 检查API响应
     if (!response) {
@@ -66,13 +70,13 @@ export default defineEventHandler(async (event) => {
     }
 
     // 格式化数据
-    const formattedList = (parsedResponse as any).list?.map((item: any) => ({
+    let formattedList = (parsedResponse as any).list?.map((item: any) => ({
       id: item.vod_id,
       name: item.vod_name,
       subName: item.vod_sub || '',
       pic: item.vod_pic || '',
       remarks: item.vod_remarks || '',
-      type: item.type_name || '短剧',
+      type: item.type_name || '影视',
       time: item.vod_time || '',
       playFrom: item.vod_play_from || '',
       actor: item.vod_actor || '',
@@ -82,17 +86,20 @@ export default defineEventHandler(async (event) => {
       score: item.vod_score || '0.0',
       total: item.vod_total || 0,
       blurb: item.vod_blurb || '',
-      tags: item.vod_class ? item.vod_class.split(',') : []
+      tags: item.vod_class ? item.vod_class.split(',').map((tag: string) => tag.trim()) : [],
+      vod_class: item.vod_class || ''
     })) || []
+
+
 
     return {
       code: 200,
       msg: 'success',
       data: {
         list: formattedList,
-        page: parseInt(page as string),
+        page: parseInt(body.page as string),
         pagecount: (parsedResponse as any).pagecount || 1,
-        limit: parseInt(limit as string),
+        limit: parseInt(body.limit as string),
         total: (parsedResponse as any).total || 0
       }
     }
