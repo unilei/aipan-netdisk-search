@@ -1,6 +1,5 @@
 export default defineNuxtConfig({
   devtools: { enabled: false },
-
   // 优化构建配置
   vite: {
     build: {
@@ -179,22 +178,6 @@ export default defineNuxtConfig({
     },
     // 确保 API 路由正确处理
     routeRules: {
-      // 管理员API - 完全禁用缓存
-      '/api/admin/**': {
-        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
-        prerender: false
-      },
-      // 管理员页面 - 完全禁用缓存
-      '/admin/**': {
-        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
-        prerender: false,
-        index: false
-      },
-      // 一般API - 短期缓存
-      '/api/**': {
-        headers: { 'Cache-Control': 'max-age=300' },
-        prerender: false
-      },
       // OG图片API - 长期缓存
       '/api/og-image': {
         headers: { 'Cache-Control': 'max-age=86400' },
@@ -227,5 +210,5 @@ export default defineNuxtConfig({
     description:
       'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体，一个网站满足所有数字娱乐需求。',
   },
-  compatibilityDate: '2024-09-12',
+  compatibilityDate: '2025-07-12',
 })
