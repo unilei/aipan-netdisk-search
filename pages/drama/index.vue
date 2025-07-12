@@ -1,5 +1,7 @@
 <script setup>
 import DramaCard from '~/components/drama/DramaCard.vue'
+import DramaSkeleton from '~/components/drama/DramaSkeleton.vue'
+import SidebarSkeleton from '~/components/drama/SidebarSkeleton.vue'
 import { useUserStore } from '~/stores/user'
 import { useVodSources } from '~/composables/useVodSources'
 
@@ -19,6 +21,7 @@ definePageMeta({
 // 响应式数据
 const dramaList = ref([])
 const loading = ref(false)
+const initialLoading = ref(true) // 初始化加载状态
 const searchKeyword = ref('')
 const currentPage = ref(1)
 const totalPages = ref(1)
@@ -74,7 +77,7 @@ const fetchCategories = async () => {
 }
 
 // 获取影视列表
-const fetchDramaList = async (page = 1, keyword = '', category = null, vodSource = null) => {
+const fetchDramaList = async (page = 1, keyword = '', category = null) => {
   loading.value = true
 
   try {
@@ -114,26 +117,27 @@ const fetchDramaList = async (page = 1, keyword = '', category = null, vodSource
     ElMessage.error('获取影视列表失败，请稍后重试')
   } finally {
     loading.value = false
+    initialLoading.value = false // 初始化完成
   }
 }
 
 // 搜索影视
 const searchDrama = () => {
   currentPage.value = 1
-  fetchDramaList(1, searchKeyword.value, selectedCategory.value, selectedVodSource.value)
+  fetchDramaList(1, searchKeyword.value, selectedCategory.value)
 }
 
 // 清除搜索
 const clearSearch = () => {
   searchKeyword.value = ''
   currentPage.value = 1
-  fetchDramaList(1, '', selectedCategory.value, selectedVodSource.value)
+  fetchDramaList(1, '', selectedCategory.value)
 }
 
 // 加载更多
 const loadMore = () => {
   if (currentPage.value < totalPages.value && !loading.value) {
-    fetchDramaList(currentPage.value + 1, searchKeyword.value, selectedCategory.value, selectedVodSource.value)
+    fetchDramaList(currentPage.value + 1, searchKeyword.value, selectedCategory.value)
   }
 }
 
@@ -169,7 +173,7 @@ const selectDrama = async (drama) => {
 const selectCategory = (categoryId) => {
   selectedCategory.value = categoryId
   currentPage.value = 1
-  fetchDramaList(1, searchKeyword.value, categoryId, selectedVodSource.value)
+  fetchDramaList(1, searchKeyword.value, categoryId)
 }
 
 // 切换分类展开状态
@@ -186,7 +190,7 @@ const switchVodSource = (sourceKey) => {
   switchSource(sourceKey)
   currentPage.value = 1
   // 重新获取数据
-  fetchDramaList(1, searchKeyword.value, selectedCategory.value, selectedVodSource.value)
+  fetchDramaList(1, searchKeyword.value, selectedCategory.value)
 }
 
 
@@ -207,8 +211,13 @@ onMounted(async () => {
     class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
     <!-- 左侧固定导航 -->
     <aside
-      class="fixed left-0 top-0 w-72 h-full bg-white/80 dark:bg-slate-700/90 backdrop-blur-xl border-r border-stone-200/50 dark:border-slate-600/50 overflow-y-auto z-40 shadow-2xl shadow-amber-500/5 dark:shadow-slate-900/20">
-      <div class="p-6">
+      class="fixed left-0 top-0 w-72 h-full bg-white/80 dark:bg-slate-700/90 backdrop-blur-xl border-r border-stone-200/50 dark:border-slate-600/50 overflow-y-auto z-40 shadow-2xl shadow-amber-500/5 dark:shadow-slate-900/20 hidden lg:block">
+
+      <!-- 侧边栏骨架屏 -->
+      <SidebarSkeleton v-if="initialLoading" />
+
+      <!-- 侧边栏内容 -->
+      <div v-else class="p-6">
         <!-- Logo区域 -->
         <div class="mb-8">
           <div class="flex items-center mb-4">
@@ -415,14 +424,29 @@ onMounted(async () => {
     </aside>
 
     <!-- 右侧内容区域 -->
-    <div class="flex-1 ml-72">
+    <div class="flex-1 lg:ml-72">
       <!-- 顶部信息栏 -->
       <div
-        class="bg-white/60 dark:bg-slate-700/60 backdrop-blur-xl border-b border-stone-200/50 dark:border-slate-600/50 px-6 py-6 sticky top-0 z-30">
-        <div class="flex items-center justify-between mb-4">
-          <div>
+        class="bg-white/60 dark:bg-slate-700/60 backdrop-blur-xl border-b border-stone-200/50 dark:border-slate-600/50 px-4 sm:px-6 py-4 sm:py-6 sticky top-0 z-30">
+
+        <!-- 初始化骨架屏 -->
+        <div v-if="initialLoading" class="animate-pulse">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
+            <div class="flex-1">
+              <div class="h-6 bg-stone-300 dark:bg-slate-600 rounded w-32 mb-2"></div>
+              <div class="h-4 bg-stone-200 dark:bg-slate-700 rounded w-48"></div>
+            </div>
+            <div class="w-full sm:w-auto">
+              <div class="h-20 bg-stone-200 dark:bg-slate-600 rounded-xl w-full sm:w-40"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 正常内容 -->
+        <div v-else class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
+          <div class="flex-1">
             <h1
-              class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2 bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
+              class="text-lg sm:text-xl font-bold text-stone-800 dark:text-stone-100 mb-2 bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
               {{selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : '壳儿'}}
             </h1>
             <p class="text-stone-600 dark:text-stone-400 text-xs leading-relaxed">
@@ -430,17 +454,17 @@ onMounted(async () => {
             </p>
           </div>
           <div
-            class="bg-gradient-to-br from-amber-100/80 to-orange-100/80 dark:from-slate-600/80 dark:to-slate-700/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-amber-200/50 dark:border-slate-500/50 shadow-lg shadow-amber-500/5">
+            class="bg-gradient-to-br from-amber-100/80 to-orange-100/80 dark:from-slate-600/80 dark:to-slate-700/80 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-amber-200/50 dark:border-slate-500/50 shadow-lg shadow-amber-500/5 w-full sm:w-auto">
             <div class="text-center">
               <p class="text-xs text-stone-500 dark:text-stone-400 font-medium mb-1">统计信息</p>
-              <div class="flex items-center space-x-3">
+              <div class="flex items-center justify-center space-x-3">
                 <div class="text-center">
-                  <p class="text-base font-bold text-stone-800 dark:text-stone-100">{{ total }}</p>
+                  <p class="text-sm sm:text-base font-bold text-stone-800 dark:text-stone-100">{{ total }}</p>
                   <p class="text-xs text-stone-500 dark:text-stone-400">影视</p>
                 </div>
                 <div class="w-px h-6 bg-stone-300 dark:bg-slate-500"></div>
                 <div class="text-center">
-                  <p class="text-base font-bold text-stone-800 dark:text-stone-100">{{ currentPage }}</p>
+                  <p class="text-sm sm:text-base font-bold text-stone-800 dark:text-stone-100">{{ currentPage }}</p>
                   <p class="text-xs text-stone-500 dark:text-stone-400">页码</p>
                 </div>
               </div>
@@ -450,88 +474,122 @@ onMounted(async () => {
 
         <!-- 移动端搜索和分类 -->
         <div class="lg:hidden">
-          <div class="mb-4">
-            <div class="relative">
-              <input v-model="searchKeyword" type="search" placeholder="搜索..." autocomplete="off"
-                class="w-full px-3 py-2 pl-10 pr-3 text-sm text-stone-700 dark:text-stone-200 bg-white dark:bg-slate-600 border border-stone-300 dark:border-slate-500 rounded-2xl focus:outline-none focus:border-amber-400 dark:focus:border-amber-500 placeholder-stone-500 dark:placeholder-stone-400 transition-colors"
-                @keyup.enter="searchDrama">
-              <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <i class="fas fa-search text-stone-400 dark:text-stone-500 text-sm"></i>
-              </div>
+          <!-- 移动端骨架屏 -->
+          <div v-if="initialLoading" class="animate-pulse">
+            <div class="mb-4">
+              <div class="h-10 bg-stone-200 dark:bg-slate-600 rounded-2xl"></div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <div v-for="i in 6" :key="i" class="h-8 w-16 bg-stone-200 dark:bg-slate-600 rounded-xl"></div>
             </div>
           </div>
 
-          <div class="flex flex-wrap gap-2">
-            <div v-if="categoriesLoading" class="flex flex-wrap gap-2">
-              <div v-for="i in 6" :key="i" class="px-3 py-2 bg-stone-200 dark:bg-slate-600 rounded-xl animate-pulse">
-                <div class="h-4 w-12 bg-stone-300 dark:bg-slate-500 rounded"></div>
+          <!-- 移动端正常内容 -->
+          <div v-else>
+            <div class="mb-4">
+              <div class="relative">
+                <input v-model="searchKeyword" type="search" placeholder="搜索..." autocomplete="off"
+                  class="w-full px-3 py-2 pl-10 pr-3 text-sm text-stone-700 dark:text-stone-200 bg-white dark:bg-slate-600 border border-stone-300 dark:border-slate-500 rounded-2xl focus:outline-none focus:border-amber-400 dark:focus:border-amber-500 placeholder-stone-500 dark:placeholder-stone-400 transition-colors"
+                  @keyup.enter="searchDrama">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                  <i class="fas fa-search text-stone-400 dark:text-stone-500 text-sm"></i>
+                </div>
+                <div v-if="searchKeyword" class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <button @click="clearSearch"
+                    class="w-5 h-5 bg-stone-200 dark:bg-slate-500 rounded-full flex items-center justify-center hover:bg-stone-300 dark:hover:bg-slate-400 transition-colors">
+                    <i class="fas fa-times text-xs text-stone-600 dark:text-stone-300"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
-            <button v-else v-for="category in categories" :key="category.id" @click="selectCategory(category.id)"
-              :class="[
-                'px-3 py-2 rounded-xl text-sm font-medium transition-colors focus:outline-none flex items-center gap-2',
-                selectedCategory === category.id
-                  ? 'bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-100'
-                  : 'bg-white dark:bg-slate-600 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-slate-500 border border-stone-300 dark:border-slate-500'
-              ]">
-              <i :class="category.icon" class="text-xs"></i>
-              <span>{{ category.name }}</span>
-              <span v-if="category.count > 0"
-                class="text-xs opacity-60 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">
-                {{ category.count }}
-              </span>
-            </button>
+            <div class="flex flex-wrap gap-2">
+              <div v-if="categoriesLoading" class="flex flex-wrap gap-2">
+                <div v-for="i in 6" :key="i" class="px-3 py-2 bg-stone-200 dark:bg-slate-600 rounded-xl animate-pulse">
+                  <div class="h-4 w-12 bg-stone-300 dark:bg-slate-500 rounded"></div>
+                </div>
+              </div>
+
+              <button v-else v-for="category in categories" :key="category.id" @click="selectCategory(category.id)"
+                :class="[
+                  'px-3 py-2 rounded-xl text-sm font-medium transition-colors focus:outline-none flex items-center gap-2',
+                  selectedCategory === category.id
+                    ? 'bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-100'
+                    : 'bg-white dark:bg-slate-600 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-slate-500 border border-stone-300 dark:border-slate-500'
+                ]">
+                <i :class="category.icon" class="text-xs"></i>
+                <span>{{ category.name }}</span>
+                <span v-if="category.count > 0"
+                  class="text-xs opacity-60 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">
+                  {{ category.count }}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
-      <!-- 加载状态 -->
-      <div v-if="loading" class="flex flex-col justify-center items-center py-20">
-        <div
-          class="animate-spin rounded-full h-8 w-8 border-2 border-stone-300 dark:border-slate-500 border-t-amber-500 dark:border-t-amber-400">
-        </div>
-        <p class="text-stone-600 dark:text-stone-400 text-sm mt-4 transition-colors">正在加载影视数据...</p>
       </div>
 
       <!-- 影视内容区域 -->
-      <div v-else
-        class="p-6 bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-yellow-50/50 dark:from-slate-800/50 dark:via-slate-800/30 dark:to-slate-900/50 min-h-screen">
+      <div
+        class="p-4 sm:p-6 bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-yellow-50/50 dark:from-slate-800/50 dark:via-slate-800/30 dark:to-slate-900/50 min-h-screen">
+
+        <!-- 初始化骨架屏 -->
+        <div v-if="initialLoading">
+          <DramaSkeleton :count="24" />
+        </div>
+
+        <!-- 加载状态 -->
+        <div v-else-if="loading && dramaList.length === 0" class="flex flex-col justify-center items-center py-20">
+          <div
+            class="animate-spin rounded-full h-8 w-8 border-2 border-stone-300 dark:border-slate-500 border-t-amber-500 dark:border-t-amber-400">
+          </div>
+          <p class="text-stone-600 dark:text-stone-400 text-sm mt-4 transition-colors">正在加载影视数据...</p>
+        </div>
+
         <!-- 影视网格 -->
-        <div v-if="dramaList.length > 0"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mb-8">
-          <article v-for="drama in dramaList" :key="drama.id" class="drama-card group">
-            <DramaCard :drama="drama" @select="selectDrama" />
-          </article>
+        <div v-else-if="dramaList.length > 0">
+          <div
+            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
+            <article v-for="drama in dramaList" :key="drama.id" class="drama-card group">
+              <DramaCard :drama="drama" @select="selectDrama" />
+            </article>
+          </div>
+
+          <!-- 加载更多时的骨架屏 -->
+          <div v-if="loading"
+            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
+            <DramaSkeleton :count="12" />
+          </div>
         </div>
 
         <!-- 加载更多按钮 -->
-        <div v-if="!loading && currentPage < totalPages" class="text-center py-8">
+        <div v-if="!initialLoading && !loading && currentPage < totalPages" class="text-center py-8">
           <button @click="loadMore"
-            class="px-8 py-4 bg-gradient-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 font-medium rounded-xl hover:from-amber-300 hover:to-orange-300 dark:hover:from-amber-600 dark:hover:to-orange-600 transition-all duration-300 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 flex items-center justify-center mx-auto">
+            class="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 font-medium rounded-xl hover:from-amber-300 hover:to-orange-300 dark:hover:from-amber-600 dark:hover:to-orange-600 transition-all duration-300 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 flex items-center justify-center mx-auto text-sm sm:text-base">
             <i class="fas fa-plus mr-2"></i>
             加载更多
           </button>
         </div>
 
         <!-- 没有更多数据 -->
-        <div v-if="!loading && dramaList.length > 0 && currentPage >= totalPages" class="text-center py-8">
-          <p class="text-stone-500 dark:text-stone-400">已加载全部内容</p>
+        <div v-if="!initialLoading && !loading && dramaList.length > 0 && currentPage >= totalPages"
+          class="text-center py-8">
+          <p class="text-stone-500 dark:text-stone-400 text-sm">已加载全部内容</p>
         </div>
 
         <!-- 空状态 -->
-        <div v-if="!loading && dramaList.length === 0" class="text-center py-20">
+        <div v-if="!initialLoading && !loading && dramaList.length === 0" class="text-center py-20">
           <div class="text-stone-400 dark:text-stone-500 mb-4">
-            <i class="fas fa-film text-4xl"></i>
+            <i class="fas fa-film text-3xl sm:text-4xl"></i>
           </div>
-          <h3 class="text-xl font-medium text-stone-800 dark:text-stone-100 mb-2 transition-colors">
+          <h3 class="text-lg sm:text-xl font-medium text-stone-800 dark:text-stone-100 mb-2 transition-colors">
             {{ searchKeyword ? '未找到相关影视' : '暂无影视数据' }}
           </h3>
-          <p class="text-stone-600 dark:text-stone-400 mb-6 transition-colors">
+          <p class="text-stone-600 dark:text-stone-400 mb-6 transition-colors text-sm sm:text-base">
             {{ searchKeyword ? '尝试使用不同的关键词搜索' : '请稍后再试或联系管理员' }}
           </p>
           <button v-if="searchKeyword || selectedCategory" @click="clearSearch"
-            class="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline font-medium transition-colors">
+            class="text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 underline font-medium transition-colors text-sm sm:text-base">
             清除筛选条件
           </button>
         </div>
@@ -570,12 +628,13 @@ onMounted(async () => {
   border: 0;
 }
 
-@media (max-width: 768px) {
+/* 响应式设计优化 */
+@media (max-width: 1024px) {
   aside {
     display: none;
   }
 
-  .flex-1.ml-72 {
+  .lg\\:ml-72 {
     margin-left: 0;
   }
 }
@@ -589,8 +648,40 @@ onMounted(async () => {
     -webkit-tap-highlight-color: transparent;
   }
 
-  .grid-cols-1.sm\\:grid-cols-2.md\\:grid-cols-3.lg\\:grid-cols-4.xl\\:grid-cols-5.\\32xl\\:grid-cols-6 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* 移动端网格优化 */
+  .grid {
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+
+  /* 超小屏幕优化 */
+  .grid {
+    gap: 0.5rem;
+  }
+
+  /* 减少内边距 */
+  .p-4 {
+    padding: 0.75rem;
+  }
+
+  /* 优化按钮大小 */
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .py-3 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}
+
+/* 平板设备优化 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
