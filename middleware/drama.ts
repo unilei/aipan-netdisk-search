@@ -21,14 +21,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
             }
         });
 
-        if (!response || response.code !== 200) {
-            console.error('Admin middleware error:', response?.msg || 'Unknown error');
+        if (response.code !== 200) {
             return navigateTo("/login");
         }
 
-        return navigateTo("/drama");
+        // 验证成功，允许继续访问页面
+        return;
+
     } catch (error: any) {
-        console.error('Admin middleware error:', error?.message || error);
+        console.error('Drama middleware error:', error?.message || error);
         return navigateTo("/login");
     }
 });
