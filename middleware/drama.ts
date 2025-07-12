@@ -26,7 +26,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
             return navigateTo("/login");
         }
 
-        return navigateTo("/drama");
+        if (!response.data || response.data.role !== 'admin') {
+            console.warn('Access denied: Admin privileges required');
+            return navigateTo("/user/dashboard");
+        }
     } catch (error: any) {
         console.error('Admin middleware error:', error?.message || error);
         return navigateTo("/login");
