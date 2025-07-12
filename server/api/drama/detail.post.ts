@@ -25,17 +25,28 @@ interface DramaDetailResponse {
   }>
 }
 
+// VOD源类型定义
+interface VodSource {
+  key: string;
+  name: string;
+  api: string;
+  playUrl: string;
+  type: 'json' | 'xml';
+}
+
 export default defineEventHandler(async (event) => {
   try {
-    const query = getQuery(event)
-    const { ids } = query
+
+    const body = await readBody(event)
+    let ids = body.ids
+    let source = body.source
 
     if (!ids) {
-      throw new Error('缺少短剧ID参数')
+      throw new Error('缺少影视ID参数')
     }
 
-    // 调用短剧详情API
-    const response = await $fetch<DramaDetailResponse>('https://ww.tyyszy5.com/api.php/provide/vod/', {
+    // 调用影视详情API
+    const response = await $fetch<DramaDetailResponse>(source.api, {
       method: 'GET',
       query: {
         ac: 'detail',
@@ -64,7 +75,7 @@ export default defineEventHandler(async (event) => {
     }
 
     if (!(parsedResponse as any).list || (parsedResponse as any).list.length === 0) {
-      throw new Error('未找到短剧详情')
+      throw new Error('未找到影视详情')
     }
 
     const drama = (parsedResponse as any).list[0]
@@ -111,14 +122,16 @@ export default defineEventHandler(async (event) => {
       playFrom: drama.vod_play_from || '',
       episodes: parsePlayUrls(drama.vod_play_url || ''),
       updateTime: drama.vod_time || '',
-      type: drama.type_name || '短剧',
+      type: drama.type_name || '影视',
       tags: drama.vod_class ? drama.vod_class.split(',') : []
     }
 
     return {
       code: 200,
       msg: 'success',
-      data: formattedDrama
+      data: {
+        ...formattedDrama
+      }
     }
 
   } catch (error) {

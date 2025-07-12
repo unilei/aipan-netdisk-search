@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useUserStore } from '~/stores/user'
 
 // VOD源类型定义
@@ -21,6 +21,7 @@ interface ApiResponse {
 export const useVodSources = () => {
     const userStore = useUserStore()
     const sources = ref<VodSource[]>([])
+    const selectedVodSource = ref<VodSource | null>(null)
     const isLoading = ref(false)
 
     /**
@@ -33,6 +34,68 @@ export const useVodSources = () => {
             return `vod_sources_user_${userStore.user.id}`
         }
         return 'vod_sources'
+    }
+
+    /**
+     * 获取选中VOD源的存储键
+     */
+    const getSelectedSourceStorageKey = () => {
+        if (userStore.loggedIn && userStore.user?.id) {
+            return `selected_vod_source_user_${userStore.user.id}`
+        }
+        return 'selected_vod_source'
+    }
+
+    /**
+     * 从localStorage加载选中的VOD源
+     */
+    const loadSelectedSourceFromLocalStorage = () => {
+        if (!process.client) {
+            return;
+        }
+
+        try {
+            const key = getSelectedSourceStorageKey()
+            const savedSelectedSource = localStorage.getItem(key)
+
+            if (savedSelectedSource) {
+                const parsedSource = JSON.parse(savedSelectedSource)
+                // 验证选中的源是否还在sources列表中
+                const foundSource = sources.value.find(s => s.key === parsedSource.key)
+                if (foundSource) {
+                    selectedVodSource.value = foundSource
+                } else if (sources.value.length > 0) {
+                    // 如果选中的源不存在，选择第一个可用源
+                    selectedVodSource.value = sources.value[0]
+                    saveSelectedSourceToLocalStorage(sources.value[0])
+                }
+            } else if (sources.value.length > 0) {
+                // 如果没有保存的选中源，选择第一个
+                selectedVodSource.value = sources.value[0]
+                saveSelectedSourceToLocalStorage(sources.value[0])
+            }
+        } catch (error) {
+            console.error('从localStorage加载选中VOD源失败:', error)
+            if (sources.value.length > 0) {
+                selectedVodSource.value = sources.value[0]
+            }
+        }
+    }
+
+    /**
+     * 保存选中的VOD源到localStorage
+     */
+    const saveSelectedSourceToLocalStorage = (source: VodSource) => {
+        if (!process.client) {
+            return;
+        }
+
+        try {
+            const key = getSelectedSourceStorageKey()
+            localStorage.setItem(key, JSON.stringify(source))
+        } catch (error) {
+            console.error('保存选中VOD源到localStorage失败:', error)
+        }
     }
 
     /**
@@ -62,6 +125,9 @@ export const useVodSources = () => {
             } else {
                 sources.value = []
             }
+
+            // 加载sources后，加载选中的源
+            loadSelectedSourceFromLocalStorage()
         } catch (error) {
             console.error('从localStorage加载VOD源配置失败:', error)
             sources.value = []
@@ -95,11 +161,58 @@ export const useVodSources = () => {
             }
 
             sources.value = newSources
+
+            // 更新sources后，检查selectedVodSource是否还有效
+            if (selectedVodSource.value) {
+                const foundSource = newSources.find(s => s.key === selectedVodSource.value?.key)
+                if (!foundSource && newSources.length > 0) {
+                    // 如果当前选中的源不在新列表中，选择第一个
+                    selectedVodSource.value = newSources[0]
+                    saveSelectedSourceToLocalStorage(newSources[0])
+                }
+            } else if (newSources.length > 0) {
+                // 如果没有选中源，选择第一个
+                selectedVodSource.value = newSources[0]
+                saveSelectedSourceToLocalStorage(newSources[0])
+            }
+
             return true
         } catch (error) {
             console.error('保存VOD源配置失败:', error)
             return false
         }
+    }
+
+    /**
+     * 切换选中的VOD源
+     */
+    const switchVodSource = (sourceKey: string) => {
+        const foundSource = sources.value.find(s => s.key === sourceKey)
+        if (foundSource) {
+            selectedVodSource.value = foundSource
+            saveSelectedSourceToLocalStorage(foundSource)
+            return true
+        }
+        return false
+    }
+
+    /**
+     * 获取当前选中的VOD源，确保始终有值
+     */
+    const getCurrentVodSource = () => {
+        if (selectedVodSource.value) {
+            return selectedVodSource.value
+        }
+
+        // 如果没有选中源但有可用源，选择第一个
+        if (sources.value.length > 0) {
+            selectedVodSource.value = sources.value[0]
+            saveSelectedSourceToLocalStorage(sources.value[0])
+            return sources.value[0]
+        }
+
+        // 如果没有任何源，返回null
+        return null
     }
 
     /**
@@ -120,6 +233,7 @@ export const useVodSources = () => {
 
                 if (res.code === 200 && res.data) {
                     sources.value = res.data
+                    loadSelectedSourceFromLocalStorage()
                     return
                 } else if (res.code === 404) {
                     // 用户没有配置，尝试从localStorage加载并保存到服务器
@@ -142,6 +256,14 @@ export const useVodSources = () => {
         }
     }
 
+    // 监听sources变化，确保selectedVodSource始终有值
+    watch(sources, (newSources) => {
+        if (newSources.length > 0 && !selectedVodSource.value) {
+            selectedVodSource.value = newSources[0]
+            saveSelectedSourceToLocalStorage(newSources[0])
+        }
+    }, { immediate: true })
+
     // 监听用户登录状态变化，重新加载源
     watch(() => userStore.loggedIn, (newValue, oldValue) => {
         if (newValue !== oldValue) {
@@ -149,14 +271,34 @@ export const useVodSources = () => {
         }
     })
 
+    // 创建一个computed属性，确保selectedVodSource始终有值
+    const currentVodSource = computed(() => {
+        if (selectedVodSource.value) {
+            return selectedVodSource.value
+        }
+
+        // 如果没有选中源但有可用源，自动选择第一个
+        if (sources.value.length > 0) {
+            const firstSource = sources.value[0]
+            selectedVodSource.value = firstSource
+            saveSelectedSourceToLocalStorage(firstSource)
+            return firstSource
+        }
+
+        return null
+    })
+
     // 初始加载
     loadSources()
 
     return {
         sources,
+        selectedVodSource: currentVodSource,
         isLoading,
         loadSources,
         saveSources,
+        switchVodSource,
+        getCurrentVodSource,
         getStorageKey
     }
 } 
