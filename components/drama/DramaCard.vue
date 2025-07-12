@@ -42,9 +42,9 @@ const formatTime = (timeStr) => {
         </div>
       </div>
 
-      <!-- 集数标签 -->
+      <!-- 类型标签 -->
       <div class="absolute top-2 right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
-        {{ drama.remarks || '短剧' }}
+        {{ drama.remarks || drama.type || '影视' }}
       </div>
 
       <!-- 评分标签 -->
