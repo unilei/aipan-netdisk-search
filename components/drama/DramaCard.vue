@@ -26,10 +26,10 @@ const formatTime = (timeStr) => {
 
 <template>
   <div
-    class="drama-card bg-white/80 dark:bg-slate-700/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden border border-stone-200/50 dark:border-slate-600/50"
+    class="drama-card relative bg-white/80 dark:bg-slate-700/80 backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group overflow-hidden border border-stone-200/50 dark:border-slate-600/50"
     @click="handleSelect">
     <!-- 封面图片 -->
-    <div class="relative aspect-[3/4] overflow-hidden">
+    <div class="relative aspect-[9/14] overflow-hidden">
       <img :src="drama.pic || '/placeholder-drama.jpg'" :alt="drama.name"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"
         @error="$event.target.src = '/placeholder-drama.jpg'" />
@@ -44,7 +44,7 @@ const formatTime = (timeStr) => {
 
       <!-- 类型标签 -->
       <div
-        class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-lg">
+        class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-gradient-to-r from-purple-400 to-purple-600 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-lg">
         {{ drama.remarks || drama.type || '影视' }}
       </div>
 
@@ -57,31 +57,18 @@ const formatTime = (timeStr) => {
     </div>
 
     <!-- 内容区域 -->
-    <div class="p-3 sm:p-4">
+    <div class="p-3 absolute bottom-0 left-0 right-0 bg-black/40 dark:bg-black/50 ">
       <!-- 标题 -->
       <h3
-        class="font-semibold text-stone-900 dark:text-stone-100 text-xs sm:text-sm mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors leading-tight">
+        class="font-semibold text-stone-200 dark:text-stone-100 text-xs sm:text-sm mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors leading-tight">
         {{ drama.name }}
       </h3>
-
-      <!-- 演员信息 -->
-      <div v-if="drama.actor" class="text-xs text-stone-600 dark:text-stone-400 mb-1 line-clamp-1">
-        <i class="fas fa-user mr-1 text-xs"></i>
-        {{ drama.actor }}
-      </div>
-
       <!-- 标签 -->
       <div v-if="drama.tags && drama.tags.length > 0" class="flex flex-wrap gap-1 mb-2">
         <span v-for="tag in drama.tags.slice(0, 2)" :key="tag"
           class="text-xs bg-stone-100 dark:bg-slate-600 text-stone-600 dark:text-stone-300 px-1.5 py-0.5 rounded">
           {{ tag }}
         </span>
-      </div>
-
-      <!-- 底部信息 -->
-      <div class="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400">
-        <span class="truncate">{{ drama.year || drama.type }}</span>
-        <span class="text-xs ml-2 flex-shrink-0">{{ formatTime(drama.time) }}</span>
       </div>
     </div>
   </div>

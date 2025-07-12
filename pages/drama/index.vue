@@ -15,7 +15,8 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'custom'
+  layout: 'custom',
+  middleware: ['drama']
 })
 
 // 响应式数据
@@ -27,6 +28,7 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const total = ref(0)
 const selectedCategory = ref(null)
+const isAutoLoading = ref(false) // 自动加载状态
 
 // 分类数据
 const categories = ref([])
@@ -46,10 +48,6 @@ const fetchCategories = async () => {
   try {
     const response = await $fetch('/api/drama/categories', {
       method: "post",
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      },
       body: {
         _t: Date.now(),
         source: selectedVodSource.value
@@ -64,13 +62,6 @@ const fetchCategories = async () => {
 
   } catch (error) {
     console.error('获取分类失败:', error)
-    categories.value = [
-      { id: null, name: '全部', icon: 'fas fa-th-large', count: 0 },
-      { id: 1, name: '电影', icon: 'fas fa-film', count: 0 },
-      { id: 2, name: '电视剧', icon: 'fas fa-tv', count: 0 },
-      { id: 3, name: '动漫', icon: 'fas fa-dragon', count: 0 },
-      { id: 4, name: '综艺', icon: 'fas fa-microphone', count: 0 }
-    ]
   } finally {
     categoriesLoading.value = false
   }
@@ -124,6 +115,7 @@ const fetchDramaList = async (page = 1, keyword = '', category = null) => {
 // 搜索影视
 const searchDrama = () => {
   currentPage.value = 1
+  isAutoLoading.value = false
   fetchDramaList(1, searchKeyword.value, selectedCategory.value)
 }
 
@@ -131,15 +123,56 @@ const searchDrama = () => {
 const clearSearch = () => {
   searchKeyword.value = ''
   currentPage.value = 1
+  isAutoLoading.value = false
   fetchDramaList(1, '', selectedCategory.value)
 }
 
-// 加载更多
-const loadMore = () => {
-  if (currentPage.value < totalPages.value && !loading.value) {
-    fetchDramaList(currentPage.value + 1, searchKeyword.value, selectedCategory.value)
+// 自动加载更多
+const loadMore = async () => {
+  if (currentPage.value < totalPages.value && !loading.value && !isAutoLoading.value) {
+    isAutoLoading.value = true
+    try {
+      await fetchDramaList(currentPage.value + 1, searchKeyword.value, selectedCategory.value)
+    } finally {
+      isAutoLoading.value = false
+    }
   }
 }
+
+// 滚动监听器
+const handleScroll = () => {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop
+  const windowHeight = window.innerHeight
+  const documentHeight = document.documentElement.scrollHeight
+
+  // 当滚动到距离底部200px时开始加载
+  if (scrollTop + windowHeight >= documentHeight - 200) {
+    loadMore()
+  }
+}
+
+// 节流函数
+const throttle = (func, delay) => {
+  let timeoutId
+  let lastExecTime = 0
+  return function (...args) {
+    const currentTime = Date.now()
+
+    if (currentTime - lastExecTime > delay) {
+      func.apply(this, args)
+      lastExecTime = currentTime
+    } else {
+      clearTimeout(timeoutId)
+      timeoutId = setTimeout(() => {
+        func.apply(this, args)
+        lastExecTime = Date.now()
+      }, delay - (currentTime - lastExecTime))
+    }
+  }
+}
+
+// 节流后的滚动处理函数
+const throttledHandleScroll = throttle(handleScroll, 200)
 
 // 选择影视播放
 const selectDrama = async (drama) => {
@@ -173,6 +206,7 @@ const selectDrama = async (drama) => {
 const selectCategory = (categoryId) => {
   selectedCategory.value = categoryId
   currentPage.value = 1
+  isAutoLoading.value = false
   fetchDramaList(1, searchKeyword.value, categoryId)
 }
 
@@ -189,11 +223,11 @@ const toggleCategory = (categoryId) => {
 const switchVodSource = (sourceKey) => {
   switchSource(sourceKey)
   currentPage.value = 1
+  isAutoLoading.value = false
+  fetchCategories()
   // 重新获取数据
   fetchDramaList(1, searchKeyword.value, selectedCategory.value)
 }
-
-
 
 // 初始化
 onMounted(async () => {
@@ -203,6 +237,14 @@ onMounted(async () => {
     await fetchCategories()
     await fetchDramaList()
   }
+
+  // 添加滚动监听器
+  window.addEventListener('scroll', throttledHandleScroll, { passive: true })
+})
+
+// 清理监听器
+onUnmounted(() => {
+  window.removeEventListener('scroll', throttledHandleScroll)
 })
 </script>
 
@@ -549,32 +591,40 @@ onMounted(async () => {
         <!-- 影视网格 -->
         <div v-else-if="dramaList.length > 0">
           <div
-            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
+            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-3 sm:gap-4 mb-8">
             <article v-for="drama in dramaList" :key="drama.id" class="drama-card group">
               <DramaCard :drama="drama" @select="selectDrama" />
             </article>
           </div>
+        </div>
 
-          <!-- 加载更多时的骨架屏 -->
-          <div v-if="loading"
-            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 mb-8">
-            <DramaSkeleton :count="12" />
+        <!-- 自动加载提示 -->
+        <div v-if="!initialLoading && dramaList.length > 0" class="text-center py-8">
+          <!-- 正在自动加载 -->
+          <div v-if="isAutoLoading || (loading && currentPage > 1)" class="flex flex-col items-center">
+            <div
+              class="animate-spin rounded-full h-6 w-6 border-2 border-stone-300 dark:border-slate-500 border-t-amber-500 dark:border-t-amber-400 mb-3">
+            </div>
+            <p class="text-stone-600 dark:text-stone-400 text-sm">正在加载更多内容...</p>
           </div>
-        </div>
 
-        <!-- 加载更多按钮 -->
-        <div v-if="!initialLoading && !loading && currentPage < totalPages" class="text-center py-8">
-          <button @click="loadMore"
-            class="px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 font-medium rounded-xl hover:from-amber-300 hover:to-orange-300 dark:hover:from-amber-600 dark:hover:to-orange-600 transition-all duration-300 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 flex items-center justify-center mx-auto text-sm sm:text-base">
-            <i class="fas fa-plus mr-2"></i>
-            加载更多
-          </button>
-        </div>
+          <!-- 还有更多内容 -->
+          <div v-else-if="currentPage < totalPages" class="flex flex-col items-center">
+            <div
+              class="w-8 h-1 bg-gradient-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 rounded-full mb-3">
+            </div>
+            <p class="text-stone-500 dark:text-stone-400 text-sm">继续滚动查看更多内容</p>
+          </div>
 
-        <!-- 没有更多数据 -->
-        <div v-if="!initialLoading && !loading && dramaList.length > 0 && currentPage >= totalPages"
-          class="text-center py-8">
-          <p class="text-stone-500 dark:text-stone-400 text-sm">已加载全部内容</p>
+          <!-- 没有更多数据 -->
+          <div v-else class="flex flex-col items-center">
+            <div
+              class="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-slate-600 dark:to-slate-700 rounded-full flex items-center justify-center mb-3">
+              <i class="fas fa-check text-amber-600 dark:text-amber-400 text-lg"></i>
+            </div>
+            <p class="text-stone-500 dark:text-stone-400 text-sm font-medium">已加载全部内容</p>
+            <p class="text-stone-400 dark:text-stone-500 text-xs mt-1">共 {{ total }} 部影视作品</p>
+          </div>
         </div>
 
         <!-- 空状态 -->
