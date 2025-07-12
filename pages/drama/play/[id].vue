@@ -15,7 +15,8 @@ useHead({
 })
 
 definePageMeta({
-  layout: 'custom'
+  layout: 'custom',
+  middleware: ['drama']
 })
 
 const { selectedVodSource } = useVodSources()
