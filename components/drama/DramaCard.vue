@@ -1,4 +1,7 @@
 <script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+import placeHolderImage from '~/assets/placeholder.webp'
+
 const props = defineProps({
   drama: {
     type: Object,
@@ -12,16 +15,118 @@ const handleSelect = () => {
   emit('select', props.drama)
 }
 
-// 格式化时间
-const formatTime = (timeStr) => {
-  if (!timeStr) return ''
-  try {
-    const date = new Date(timeStr)
-    return date.toLocaleDateString('zh-CN')
-  } catch {
-    return timeStr
+// Image proxy and lazy loading logic
+const imageLoadStatus = ref('loading')
+const loadedImages = ref(new Set())
+const imageCache = ref(new Map())
+const imageObserver = ref(null)
+const imageRef = ref(null)
+
+const getProxyImageUrl = (url) => {
+  if (!url) return placeHolderImage
+  const cacheKey = url
+  if (imageCache.value.has(cacheKey)) {
+    return imageCache.value.get(cacheKey)
+  }
+  const proxyUrl = `//wsrv.nl/?url=${encodeURIComponent(url)}`
+  imageCache.value.set(cacheKey, proxyUrl)
+  return proxyUrl
+}
+
+const preloadImage = (url) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = () => resolve(url)
+    img.onerror = reject
+    img.src = url
+  })
+}
+
+const handleImageLoad = () => {
+  imageLoadStatus.value = 'loaded'
+  loadedImages.value.add(props.drama.id || props.drama.name)
+}
+
+const handleImageError = (event) => {
+  imageLoadStatus.value = 'error'
+  if (!event.target.dataset.retried) {
+    event.target.dataset.retried = 'true'
+    const originalSrc = event.target.dataset.originalSrc
+    setTimeout(async () => {
+      try {
+        const proxyUrl = getProxyImageUrl(originalSrc)
+        await preloadImage(proxyUrl)
+        if (event.target) {
+          event.target.src = proxyUrl
+        }
+      } catch (error) {
+        console.error('Image reload failed:', error)
+        imageLoadStatus.value = 'error'
+      }
+    }, 1000)
   }
 }
+
+const setImageRef = (el) => {
+  if (el && imageObserver.value) {
+    imageRef.value = el
+    const dramaId = props.drama.id || props.drama.name
+    const originalSrc = props.drama.pic
+    
+    el.dataset.dramaId = dramaId
+    el.dataset.originalSrc = originalSrc
+
+    if (loadedImages.value.has(dramaId)) {
+      el.src = getProxyImageUrl(originalSrc)
+    } else {
+      el.src = placeHolderImage
+      imageObserver.value.observe(el)
+    }
+  }
+}
+
+onMounted(() => {
+  imageObserver.value = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(async (entry) => {
+        if (entry.isIntersecting) {
+          const dramaId = entry.target.dataset.dramaId
+          const originalSrc = entry.target.dataset.originalSrc
+
+          if (!loadedImages.value.has(dramaId)) {
+            try {
+              const proxyUrl = getProxyImageUrl(originalSrc)
+              await preloadImage(proxyUrl)
+              if (entry.target) {
+                entry.target.src = proxyUrl
+                imageLoadStatus.value = 'loaded'
+              }
+            } catch (error) {
+              console.error('Image load failed:', error)
+              handleImageError({ target: entry.target })
+            }
+          } else {
+            entry.target.src = getProxyImageUrl(originalSrc)
+          }
+          imageObserver.value.unobserve(entry.target)
+        }
+      })
+    },
+    {
+      rootMargin: '200px 0px',
+      threshold: 0.01,
+    }
+  )
+})
+
+onUnmounted(() => {
+  if (imageObserver.value) {
+    imageObserver.value.disconnect()
+  }
+  imageCache.value.clear()
+  loadedImages.value.clear()
+})
+
 </script>
 
 <template>
@@ -30,9 +135,34 @@ const formatTime = (timeStr) => {
     @click="handleSelect">
     <!-- 封面图片 -->
     <div class="relative aspect-[9/14] overflow-hidden">
-      <img :src="drama.pic || '/placeholder-drama.jpg'" :alt="drama.name"
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"
-        @error="$event.target.src = '/placeholder-drama.jpg'" />
+      <!-- 加载状态 -->
+      <div v-if="imageLoadStatus === 'loading'"
+        class="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+        <div class="flex items-center justify-center h-full">
+          <i class="fas fa-spinner fa-spin text-gray-400 text-2xl"></i>
+        </div>
+      </div>
+
+      <img :ref="setImageRef" :src="placeHolderImage" :alt="drama.name"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+        :class="{
+          'opacity-0': imageLoadStatus === 'loading',
+          'opacity-100': imageLoadStatus === 'loaded',
+          'blur-sm': imageLoadStatus === 'loading'
+        }"
+        loading="lazy" decoding="async"
+        @load="handleImageLoad"
+        @error="handleImageError"
+        referrerpolicy="no-referrer" />
+
+      <!-- 错误状态 -->
+      <div v-if="imageLoadStatus === 'error'"
+        class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+        <div class="text-center p-3">
+          <i class="fas fa-image text-gray-400 text-2xl mb-2"></i>
+          <p class="text-xs text-gray-500">图片加载失败</p>
+        </div>
+      </div>
 
       <!-- 播放按钮覆盖层 -->
       <div
