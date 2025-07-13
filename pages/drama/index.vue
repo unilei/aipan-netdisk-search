@@ -251,6 +251,11 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('scroll', throttledHandleScroll)
 })
+
+const goHome = () => {
+  navigateTo('/')
+}
+
 </script>
 
 <template>
@@ -288,7 +293,7 @@ onUnmounted(() => {
       <!-- 侧边栏内容 -->
       <div v-else class="p-6">
         <!-- Logo区域 -->
-        <div class="mb-8">
+        <div class="mb-8 cursor-pointer" @click="goHome">
           <div class="flex items-center mb-4">
             <div
               class="w-12 h-12 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-amber-500/20">
