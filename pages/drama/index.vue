@@ -30,6 +30,11 @@ const total = ref(0)
 const selectedCategory = ref(null)
 const isAutoLoading = ref(false) // 自动加载状态
 
+// 移动端UI状态
+const showMobileMenu = ref(false)
+const showMobileCategories = ref(false)
+const showAllCategories = ref(false)
+
 // 分类数据
 const categories = ref([])
 const categoriesLoading = ref(false)
@@ -251,9 +256,31 @@ onUnmounted(() => {
 <template>
   <div
     class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
+    <!-- 移动端顶部导航栏 -->
+    <div class="lg:hidden sticky top-0 z-50 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-b border-stone-200/50 dark:border-slate-600/50 px-4 py-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-8 h-8 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3">
+            <i class="fas fa-play text-amber-800 dark:text-amber-100 text-sm"></i>
+          </div>
+          <h1 class="text-lg font-bold text-stone-800 dark:text-stone-100">壳儿</h1>
+        </div>
+        <button @click="showMobileMenu = !showMobileMenu" class="p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-slate-700 transition-colors">
+          <i :class="showMobileMenu ? 'fas fa-times' : 'fas fa-bars'" class="text-stone-600 dark:text-stone-400"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 移动端侧边栏遮罩 -->
+    <div v-if="showMobileMenu" @click="showMobileMenu = false" class="lg:hidden fixed inset-0 bg-black/50 z-40 transition-opacity"></div>
+
     <!-- 左侧固定导航 -->
     <aside
-      class="fixed left-0 top-0 w-72 h-full bg-white/80 dark:bg-slate-700/90 backdrop-blur-xl border-r border-stone-200/50 dark:border-slate-600/50 overflow-y-auto z-40 shadow-2xl shadow-amber-500/5 dark:shadow-slate-900/20 hidden lg:block">
+      :class="[
+        'fixed left-0 top-0 w-80 h-full bg-white/95 dark:bg-slate-700/95 backdrop-blur-xl border-r border-stone-200/50 dark:border-slate-600/50 overflow-y-auto z-50 shadow-2xl transition-transform duration-300',
+        'lg:block lg:w-72 lg:z-40',
+        showMobileMenu ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      ]">
 
       <!-- 侧边栏骨架屏 -->
       <SidebarSkeleton v-if="initialLoading" />
@@ -469,7 +496,7 @@ onUnmounted(() => {
     <div class="flex-1 lg:ml-72">
       <!-- 顶部信息栏 -->
       <div
-        class="bg-white/60 dark:bg-slate-700/60 backdrop-blur-xl border-b border-stone-200/50 dark:border-slate-600/50 px-4 sm:px-6 py-4 sm:py-6 sticky top-0 z-30">
+        class="hidden lg:block bg-white/60 dark:bg-slate-700/60 backdrop-blur-xl border-b border-stone-200/50 dark:border-slate-600/50 px-4 sm:px-6 py-4 sm:py-6 sticky top-0 z-30">
 
         <!-- 初始化骨架屏 -->
         <div v-if="initialLoading" class="animate-pulse">
@@ -513,67 +540,12 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-
-        <!-- 移动端搜索和分类 -->
-        <div class="lg:hidden">
-          <!-- 移动端骨架屏 -->
-          <div v-if="initialLoading" class="animate-pulse">
-            <div class="mb-4">
-              <div class="h-10 bg-stone-200 dark:bg-slate-600 rounded-2xl"></div>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <div v-for="i in 6" :key="i" class="h-8 w-16 bg-stone-200 dark:bg-slate-600 rounded-xl"></div>
-            </div>
-          </div>
-
-          <!-- 移动端正常内容 -->
-          <div v-else>
-            <div class="mb-4">
-              <div class="relative">
-                <input v-model="searchKeyword" type="search" placeholder="搜索..." autocomplete="off"
-                  class="w-full px-3 py-2 pl-10 pr-3 text-sm text-stone-700 dark:text-stone-200 bg-white dark:bg-slate-600 border border-stone-300 dark:border-slate-500 rounded-2xl focus:outline-none focus:border-amber-400 dark:focus:border-amber-500 placeholder-stone-500 dark:placeholder-stone-400 transition-colors"
-                  @keyup.enter="searchDrama">
-                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <i class="fas fa-search text-stone-400 dark:text-stone-500 text-sm"></i>
-                </div>
-                <div v-if="searchKeyword" class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <button @click="clearSearch"
-                    class="w-5 h-5 bg-stone-200 dark:bg-slate-500 rounded-full flex items-center justify-center hover:bg-stone-300 dark:hover:bg-slate-400 transition-colors">
-                    <i class="fas fa-times text-xs text-stone-600 dark:text-stone-300"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="flex flex-wrap gap-2">
-              <div v-if="categoriesLoading" class="flex flex-wrap gap-2">
-                <div v-for="i in 6" :key="i" class="px-3 py-2 bg-stone-200 dark:bg-slate-600 rounded-xl animate-pulse">
-                  <div class="h-4 w-12 bg-stone-300 dark:bg-slate-500 rounded"></div>
-                </div>
-              </div>
-
-              <button v-else v-for="category in categories" :key="category.id" @click="selectCategory(category.id)"
-                :class="[
-                  'px-3 py-2 rounded-xl text-sm font-medium transition-colors focus:outline-none flex items-center gap-2',
-                  selectedCategory === category.id
-                    ? 'bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-100'
-                    : 'bg-white dark:bg-slate-600 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-slate-500 border border-stone-300 dark:border-slate-500'
-                ]">
-                <i :class="category.icon" class="text-xs"></i>
-                <span>{{ category.name }}</span>
-                <span v-if="category.count > 0"
-                  class="text-xs opacity-60 bg-black/10 dark:bg-white/10 px-1.5 py-0.5 rounded-full">
-                  {{ category.count }}
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
+ 
       </div>
 
       <!-- 影视内容区域 -->
       <div
-        class="p-4 sm:p-6 bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-yellow-50/50 dark:from-slate-800/50 dark:via-slate-800/30 dark:to-slate-900/50 min-h-screen">
+        class="p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-yellow-50/50 dark:from-slate-800/50 dark:via-slate-800/30 dark:to-slate-900/50 min-h-screen">
 
         <!-- 初始化骨架屏 -->
         <div v-if="initialLoading">
@@ -591,7 +563,7 @@ onUnmounted(() => {
         <!-- 影视网格 -->
         <div v-else-if="dramaList.length > 0">
           <div
-            class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-7 gap-3 sm:gap-4 mb-8">
+            class="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 3xl:grid-cols-7 gap-2 xs:gap-3 sm:gap-4 mb-6 sm:mb-8">
             <article v-for="drama in dramaList" :key="drama.id" class="drama-card group">
               <DramaCard :drama="drama" @select="selectDrama" />
             </article>
@@ -680,15 +652,12 @@ onUnmounted(() => {
 
 /* 响应式设计优化 */
 @media (max-width: 1024px) {
-  aside {
-    display: none;
-  }
-
   .lg\\:ml-72 {
     margin-left: 0;
   }
 }
 
+/* 移动端优化 */
 @media (max-width: 640px) {
   .drama-card:hover {
     transform: none;
@@ -696,42 +665,76 @@ onUnmounted(() => {
 
   .drama-card {
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   /* 移动端网格优化 */
   .grid {
-    gap: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-
-  /* 超小屏幕优化 */
-  .grid {
     gap: 0.5rem;
   }
 
-  /* 减少内边距 */
-  .p-4 {
-    padding: 0.75rem;
+  /* 移动端按钮优化 */
+  button {
+    min-height: 44px; /* iOS推荐的最小触摸目标 */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
-  /* 优化按钮大小 */
-  .px-6 {
-    padding-left: 1rem;
-    padding-right: 1rem;
+  /* 移动端输入框优化 */
+  input[type="search"] {
+    font-size: 16px; /* 防止iOS缩放 */
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 1rem;
+  }
+
+  /* 移动端文字优化 */
+  .text-xs {
+    font-size: 0.75rem;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+  }
+}
+
+/* 超小屏幕优化 (iPhone SE等) */
+@media (max-width: 375px) {
+  .grid {
+    gap: 0.375rem;
+  }
+
+  .p-3 {
+    padding: 0.5rem;
+  }
+
+  .px-4 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 
   .py-3 {
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
   }
+
+  /* 更紧凑的网格 */
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* 平板设备优化 */
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 641px) and (max-width: 1024px) {
   .grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+/* 大屏幕优化 */
+@media (min-width: 1920px) {
+  .grid {
+    gap: 1.5rem;
   }
 }
 
@@ -744,8 +747,24 @@ img {
   image-rendering: crisp-edges;
 }
 
-@media (prefers-reduced-motion: reduce) {
+/* 移动端触摸优化 */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:bg-stone-100:hover {
+    background-color: inherit;
+  }
+  
+  .hover\:shadow-md:hover {
+    box-shadow: inherit;
+  }
+  
+  /* 为触摸设备添加active状态 */
+  button:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+}
 
+@media (prefers-reduced-motion: reduce) {
   .drama-card,
   .transition-all {
     transition: none;
@@ -754,11 +773,16 @@ img {
   .animate-spin {
     animation: none;
   }
+  
+  button:active {
+    transform: none;
+  }
 }
 
 .overflow-y-auto {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .category-item {
@@ -767,5 +791,29 @@ img {
 
 .category-item:last-child {
   margin-bottom: 0;
+}
+
+/* 移动端侧边栏动画优化 */
+@media (max-width: 1024px) {
+  aside {
+    will-change: transform;
+  }
+}
+
+/* 防止移动端横向滚动 */
+body {
+  overflow-x: hidden;
+}
+
+/* 移动端安全区域适配 */
+@supports (padding: max(0px)) {
+  .lg\:hidden {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  
+  .sticky.top-0 {
+    top: env(safe-area-inset-top);
+  }
 }
 </style>

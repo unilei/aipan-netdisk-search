@@ -92,26 +92,26 @@ onMounted(() => {
 <template>
   <div class="min-h-screen bg-black">
     <!-- 加载状态 -->
-    <div v-if="loading" class="flex items-center justify-center min-h-screen">
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-16 w-16 border-2 border-stone-300 border-t-amber-500 mx-auto mb-4">
+    <div v-if="loading" class="flex items-center justify-center min-h-screen px-4">
+      <div class="text-center max-w-sm mx-auto">
+        <div class="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-2 border-stone-300 border-t-amber-500 mx-auto mb-4">
         </div>
-        <p class="text-white text-xl font-medium">正在加载影视详情...</p>
+        <p class="text-white text-lg sm:text-xl font-medium">正在加载影视详情...</p>
         <p class="text-stone-400 text-sm mt-2">请稍候</p>
       </div>
     </div>
 
     <!-- 错误状态 -->
-    <div v-else-if="error" class="flex items-center justify-center min-h-screen">
-      <div class="text-center">
-        <div class="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="fas fa-exclamation-triangle text-red-400 text-2xl"></i>
+    <div v-else-if="error" class="flex items-center justify-center min-h-screen px-4">
+      <div class="text-center max-w-sm mx-auto">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-exclamation-triangle text-red-400 text-xl sm:text-2xl"></i>
         </div>
-        <p class="text-white text-xl font-medium mb-4">{{ error }}</p>
+        <p class="text-white text-lg sm:text-xl font-medium mb-4 leading-relaxed">{{ error }}</p>
         <button @click="goBack"
-          class="px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-full hover:from-amber-600 hover:to-orange-600 transition-all duration-300 shadow-lg shadow-amber-500/20 focus:ring-4 focus:outline-none focus:ring-amber-300">
+          class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-full hover:from-amber-600 hover:to-orange-600 active:from-amber-700 active:to-orange-700 transition-all duration-300 shadow-lg shadow-amber-500/20 focus:ring-4 focus:outline-none focus:ring-amber-300 min-h-[44px] flex items-center justify-center">
           <i class="fas fa-arrow-left mr-2"></i>
-          返回影视列表
+          <span>返回影视列表</span>
         </button>
       </div>
     </div>
@@ -127,6 +127,8 @@ onMounted(() => {
   min-height: 100vh;
   min-height: 100dvh;
   /* 动态视口高度 */
+  position: relative;
+  overflow: hidden;
 }
 
 /* 移动端优化 */
@@ -135,6 +137,53 @@ onMounted(() => {
     min-height: 100vh;
     min-height: 100svh;
     /* 小视口高度 */
+  }
+  
+  /* 移动端触摸优化 */
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* 移动端文字选择优化 */
+  .text-center {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 480px) {
+  .max-w-sm {
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* 安全区域适配 */
+@supports (padding: max(0px)) {
+  .min-h-screen {
+    padding-left: max(env(safe-area-inset-left), 0px);
+    padding-right: max(env(safe-area-inset-right), 0px);
+    padding-top: max(env(safe-area-inset-top), 0px);
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
+  }
+}
+
+/* 高对比度和可访问性 */
+@media (prefers-reduced-motion: reduce) {
+  .animate-spin {
+    animation: none;
+  }
+  
+  .transition-all {
+    transition: none;
+  }
+}
+
+/* 深色模式优化 */
+@media (prefers-color-scheme: dark) {
+  .bg-black {
+    background-color: #000000;
   }
 }
 </style>
