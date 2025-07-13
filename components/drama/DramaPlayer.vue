@@ -532,15 +532,15 @@ onUnmounted(() => {
     @touchstart="handleTouchStart" @touchend="handleTouchEnd">
 
     <!-- 顶部导航栏 -->
-    <div class="bg-black/80 backdrop-blur-xl border-b border-gray-800 px-4 sm:px-6 py-3 sticky top-0 z-40">
+    <div class="bg-black/80 backdrop-blur-xl border-b border-gray-800 px-3 sm:px-6 py-2 sm:py-3 sticky top-0 z-40">
       <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
           <div
-            class="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/30">
-            <i class="fas fa-play text-white text-sm"></i>
+            class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/30 flex-shrink-0">
+            <i class="fas fa-play text-white text-xs sm:text-sm"></i>
           </div>
-          <div>
-            <h2 class="text-base sm:text-lg font-bold text-white">
+          <div class="min-w-0 flex-1">
+            <h2 class="text-sm sm:text-base lg:text-lg font-bold text-white truncate">
               {{ drama.name }}
             </h2>
             <p class="text-gray-400 text-xs sm:text-sm">
@@ -550,42 +550,42 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
           <!-- 收藏按钮 -->
           <button @click="toggleFavorite" :class="[
-            'w-9 h-9 rounded-lg transition-all duration-200 flex items-center justify-center',
+            'w-8 h-8 sm:w-9 sm:h-9 rounded-lg transition-all duration-200 flex items-center justify-center min-h-[44px] sm:min-h-0',
             isFavorited
-              ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-              : 'bg-gray-800 hover:bg-gray-700 text-gray-400'
+              ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 active:bg-red-500/40'
+              : 'bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-gray-400'
           ]">
-            <i :class="isFavorited ? 'fas fa-heart' : 'far fa-heart'" class="text-base"></i>
+            <i :class="isFavorited ? 'fas fa-heart' : 'far fa-heart'" class="text-sm sm:text-base"></i>
           </button>
 
-          <!-- VOD源配置按钮 -->
+          <!-- VOD源配置按钮 (隐藏在小屏幕) -->
           <button @click="openVodSettings"
-            class="w-9 h-9 bg-gray-800 hover:bg-blue-500/20 text-gray-400 hover:text-blue-400 rounded-lg transition-all duration-200 flex items-center justify-center"
+            class="hidden sm:flex w-9 h-9 bg-gray-800 hover:bg-blue-500/20 active:bg-blue-500/30 text-gray-400 hover:text-blue-400 rounded-lg transition-all duration-200 items-center justify-center"
             title="配置影视源">
             <i class="fas fa-video text-base"></i>
           </button>
 
           <!-- 设置按钮 -->
           <button @click="toggleSettings"
-            class="w-9 h-9 bg-gray-800 hover:bg-gray-700 text-gray-400 rounded-lg transition-all duration-200 flex items-center justify-center">
-            <i class="fas fa-cog text-base"></i>
+            class="w-8 h-8 sm:w-9 sm:h-9 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-gray-400 rounded-lg transition-all duration-200 flex items-center justify-center min-h-[44px] sm:min-h-0">
+            <i class="fas fa-cog text-sm sm:text-base"></i>
           </button>
 
           <!-- 剧集列表切换按钮 -->
           <button @click="toggleEpisodeList"
-            class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-all duration-200"
+            class="px-2 py-1.5 sm:px-3 bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-gray-300 rounded-lg text-xs sm:text-sm transition-all duration-200 min-h-[44px] sm:min-h-0 flex items-center"
             :class="showEpisodeList ? 'bg-amber-500/20 text-amber-400' : ''">
-            <i class="fas fa-list mr-1.5 text-xs"></i>
-            选集
+            <i class="fas fa-list mr-1 sm:mr-1.5 text-xs"></i>
+            <span class="hidden xs:inline">选集</span>
           </button>
 
           <!-- 关闭按钮 -->
           <button @click="closePlayer"
-            class="w-9 h-9 bg-gray-800 hover:bg-red-500/20 text-gray-400 hover:text-red-400 rounded-lg transition-all duration-200 flex items-center justify-center">
-            <i class="fas fa-times text-base"></i>
+            class="w-8 h-8 sm:w-9 sm:h-9 bg-gray-800 hover:bg-red-500/20 active:bg-red-500/30 text-gray-400 hover:text-red-400 rounded-lg transition-all duration-200 flex items-center justify-center min-h-[44px] sm:min-h-0">
+            <i class="fas fa-times text-sm sm:text-base"></i>
           </button>
         </div>
       </div>
@@ -624,21 +624,21 @@ onUnmounted(() => {
 
         <!-- 播放控制悬浮按钮 -->
         <div v-if="showControls && (currentEpisode > 0 || currentEpisode < drama.episodes.length - 1)"
-          class="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 bg-black/50 hover:bg-black/80 px-3 py-1.5 rounded-full backdrop-blur-xl border border-gray-800/50 transition-all duration-300 opacity-60 hover:opacity-100">
+          class="absolute bottom-4 sm:bottom-6 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 bg-black/60 hover:bg-black/80 px-3 py-2 rounded-full backdrop-blur-xl border border-gray-800/50 transition-all duration-300 opacity-70 hover:opacity-100">
           <!-- 上一集 -->
           <button v-if="currentEpisode > 0" @click="previousEpisode"
-            class="w-8 h-8 bg-gray-800/60 hover:bg-gray-700 text-gray-300 hover:text-white rounded-full transition-all duration-200 flex items-center justify-center">
+            class="w-9 h-9 sm:w-8 sm:h-8 bg-gray-800/60 hover:bg-gray-700 active:bg-gray-600 text-gray-300 hover:text-white rounded-full transition-all duration-200 flex items-center justify-center min-h-[44px] sm:min-h-0">
             <i class="fas fa-backward text-xs"></i>
           </button>
 
           <!-- 当前集数显示 -->
-          <span class="text-xs text-gray-400 px-2">
+          <span class="text-xs sm:text-xs text-gray-300 px-2 font-medium">
             {{ currentEpisode + 1 }} / {{ drama.episodes.length }}
           </span>
 
           <!-- 下一集 -->
           <button v-if="currentEpisode < drama.episodes.length - 1" @click="nextEpisode"
-            class="w-8 h-8 bg-gray-800/60 hover:bg-gray-700 text-gray-300 hover:text-white rounded-full transition-all duration-200 flex items-center justify-center">
+            class="w-9 h-9 sm:w-8 sm:h-8 bg-gray-800/60 hover:bg-gray-700 active:bg-gray-600 text-gray-300 hover:text-white rounded-full transition-all duration-200 flex items-center justify-center min-h-[44px] sm:min-h-0">
             <i class="fas fa-forward text-xs"></i>
           </button>
         </div>
@@ -672,7 +672,7 @@ onUnmounted(() => {
 
         <!-- 设置面板 -->
         <div v-if="showSettings"
-          class="absolute top-4 left-4 bg-black/90 text-white p-4 rounded-xl backdrop-blur-sm w-80 max-h-[80vh] overflow-y-auto">
+          class="absolute top-2 left-2 right-2 sm:top-4 sm:left-4 sm:right-auto bg-black/95 text-white p-3 sm:p-4 rounded-xl backdrop-blur-sm w-auto sm:w-80 max-h-[85vh] sm:max-h-[80vh] overflow-y-auto z-50">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold">播放设置</h3>
             <button @click="toggleSettings" class="text-stone-300 hover:text-white transition-colors">
@@ -841,10 +841,10 @@ onUnmounted(() => {
 
       <!-- 剧集列表侧边栏 -->
       <aside v-if="showEpisodeList" :class="[
-        'w-80 lg:w-96 bg-gray-900/95 backdrop-blur-xl border-l border-gray-800 transition-all duration-300 flex flex-col overflow-hidden',
-        'translate-x-0'
+        'w-full sm:w-80 lg:w-96 bg-gray-900/95 backdrop-blur-xl border-l border-gray-800 transition-all duration-300 flex flex-col overflow-hidden',
+        'translate-x-0 fixed sm:relative top-0 right-0 h-full z-40 sm:z-auto'
       ]">
-        <div class="flex-1 overflow-y-auto p-6">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6">
           <!-- 剧集列表标题 -->
           <div class="mb-4">
             <div class="flex items-center justify-between">
@@ -860,12 +860,12 @@ onUnmounted(() => {
           </div>
 
           <!-- 剧集网格 -->
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2">
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-2 sm:gap-2">
             <button v-for="(episode, index) in drama.episodes" :key="index" @click="selectEpisode(index)" :class="[
-              'episode-btn relative px-2 py-2.5 text-xs font-medium rounded-lg transition-all duration-200 overflow-hidden group min-w-0 h-16',
+              'episode-btn relative px-2 py-3 sm:py-2.5 text-xs font-medium rounded-lg transition-all duration-200 overflow-hidden group min-w-0 h-18 sm:h-16 min-h-[44px]',
               currentEpisode === index
                 ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md ring-1 ring-amber-500/50'
-                : 'bg-gray-800/50 hover:bg-gray-800 text-gray-400 hover:text-white border border-gray-700/50'
+                : 'bg-gray-800/50 hover:bg-gray-800 active:bg-gray-700 text-gray-400 hover:text-white border border-gray-700/50'
             ]">
               <!-- 播放中动画 -->
               <div v-if="currentEpisode === index"
@@ -874,13 +874,13 @@ onUnmounted(() => {
 
               <!-- 观看历史标记 -->
               <div v-if="watchHistory.has(`${drama.id}_${index}`) && currentEpisode !== index"
-                class="absolute top-1 right-1 w-1.5 h-1.5 bg-green-500 rounded-full">
+                class="absolute top-1 right-1 w-2 h-2 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full">
               </div>
 
               <!-- 集数标签优化 -->
               <span class="relative z-10 flex flex-col items-center justify-center h-full w-full">
-                <span class="text-[10px] text-gray-500 block">第{{ index + 1 }}集</span>
-                <span class="text-[11px] font-semibold block w-full px-1 "
+                <span class="text-[10px] sm:text-[10px] text-gray-500 block">第{{ index + 1 }}集</span>
+                <span class="text-xs sm:text-[11px] font-semibold block w-full px-1 leading-tight"
                   :title="formatEpisodeTitle(episode.number)">{{ formatEpisodeTitle(episode.number) }}</span>
               </span>
             </button>
@@ -967,7 +967,7 @@ onUnmounted(() => {
     </div>
 
     <!-- 移动端剧集列表遮罩 -->
-    <div v-if="showEpisodeList" @click="toggleEpisodeList" class="lg:hidden fixed inset-0 bg-black/50 z-30"></div>
+    <div v-if="showEpisodeList" @click="toggleEpisodeList" class="sm:hidden fixed inset-0 bg-black/60 z-30 backdrop-blur-sm"></div>
   </div>
 </template>
 <style scoped>
@@ -1007,6 +1007,50 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.5);
 }
 
+/* 移动端优化 */
+@media (max-width: 640px) {
+  .drama-player {
+    padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+  }
+  
+  .episode-btn:hover {
+    transform: none;
+  }
+
+  .episode-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* 移动端按钮优化 */
+  button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  /* 防止移动端缩放 */
+  input, select, textarea {
+    font-size: 16px;
+  }
+  
+  /* 移动端滚动优化 */
+  .overflow-y-auto {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+}
+
+/* 超小屏幕优化 */
+@media (max-width: 480px) {
+  .xs\:inline {
+    display: inline;
+  }
+  
+  .h-18 {
+    height: 4.5rem;
+  }
+}
+
 /* 响应式调整 */
 @media (max-width: 1024px) {
   aside {
@@ -1020,13 +1064,13 @@ onUnmounted(() => {
   }
 }
 
-@media (max-width: 640px) {
-  .episode-btn:hover {
-    transform: none;
-  }
-
-  .episode-btn {
-    -webkit-tap-highlight-color: transparent;
+/* 安全区域适配 */
+@supports (padding: max(0px)) {
+  .drama-player {
+    padding-left: max(env(safe-area-inset-left), 0px);
+    padding-right: max(env(safe-area-inset-right), 0px);
+    padding-top: max(env(safe-area-inset-top), 0px);
+    padding-bottom: max(env(safe-area-inset-bottom), 0px);
   }
 }
 
