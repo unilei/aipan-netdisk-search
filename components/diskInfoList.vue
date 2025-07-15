@@ -26,7 +26,12 @@ const diskIcons = {
   BAIDU: new URL('@/assets/netdisk/baidu.png', import.meta.url).href,
   XUNLEI: new URL('@/assets/netdisk/xunlei.png', import.meta.url).href,
   UC: new URL('@/assets/netdisk/uc.png', import.meta.url).href,
-  OTHER: new URL('@/assets/netdisk/xunlei.png', import.meta.url).href,
+  OTHER: new URL('@/assets/netdisk/other.svg', import.meta.url).href,
+  115: new URL('@/assets/netdisk/115.svg', import.meta.url).href,
+  TIANYI: new URL('@/assets/netdisk/189.png', import.meta.url).href,
+  MOBILE: new URL('@/assets/netdisk/caiyun.png', import.meta.url).href,
+  PIKPAK: new URL('@/assets/netdisk/pikpak.png', import.meta.url).href,
+  123: new URL('@/assets/netdisk/123.png', import.meta.url).href,
 }
 
 // 获取网盘图标
