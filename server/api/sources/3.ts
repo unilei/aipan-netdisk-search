@@ -1,7 +1,3 @@
-interface Result {
-    list: Array<any>
-}
-
 interface Body {
     name: string
 }
