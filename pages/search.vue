@@ -63,9 +63,14 @@ const keyword = ref(decodeURIComponent(route.query.keyword));
 const checkSensitiveWords = (text) => {
   return badWords.some(word => text.toLowerCase().includes(word.toLowerCase()));
 };
+const search = (searchText) => {
+  keyword.value = searchText
+  searchByKeyword()
+}
 
 // 搜索函数
-const search = async () => {
+const searchByKeyword = async () => {
+
   if (!keyword.value || keyword.value.trim() === "") {
     return;
   }
@@ -96,7 +101,7 @@ onMounted(async () => {
   await loadSources();
 
   if (keyword.value && keyword.value.trim() !== "") {
-    await search();
+    await searchByKeyword();
   }
 });
 
@@ -115,14 +120,14 @@ onUnmounted(() => {
 watch(() => route.query.keyword, (newKeyword) => {
   if (newKeyword) {
     keyword.value = decodeURIComponent(newKeyword);
-    search();
+    searchByKeyword();
   }
 });
 
 // 监听分类变化
 watch(category, (newCategory) => {
   if (keyword.value && keyword.value.trim() !== "") {
-    search();
+    searchByKeyword();
   }
 });
 </script>
