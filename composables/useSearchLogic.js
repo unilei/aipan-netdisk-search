@@ -185,12 +185,7 @@ export const useSearchLogic = () => {
 
       // 改进的响应验证和错误处理
       if (res && typeof res === "object") {
-        if (
-          res.code === 1 &&
-          res.list &&
-          Array.isArray(res.list) &&
-          res.list.length > 0
-        ) {
+        if (res.list && Array.isArray(res.list) && res.list.length > 0) {
           // 验证每个item的基本结构
           const validItems = res.list.filter(
             (item) =>
@@ -312,6 +307,7 @@ export const useSearchLogic = () => {
     loadingStatus,
     vodConfigSources
   ) => {
+    console.log(keyword);
     if (!keyword || keyword.trim() === "") {
       vodData.value = [];
       return;
@@ -322,6 +318,7 @@ export const useSearchLogic = () => {
     // 清理之前的加载状态
     loadingStatus.value.clear();
 
+    console.log(vodConfigSources.value);
     // 使用 Promise.allSettled 处理并发请求，避免竞态条件
     const searchPromises = vodConfigSources.value.map((vodApi) => {
       loadingStatus.value.set(vodApi.api, true);
