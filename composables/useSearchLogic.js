@@ -270,12 +270,14 @@ export const useSearchLogic = () => {
     running = 0;
     window._needProcessQuarkLinks = false;
 
-    // 重置加载进度
-    loadingProgress.value = {
-      total: sourcesApiEndpoints.length,
-      completed: 0,
-      isLoading: true,
-    };
+    // 确保加载状态已设置（如果外部没有设置的话）
+    if (!loadingProgress.value.isLoading) {
+      loadingProgress.value = {
+        total: sourcesApiEndpoints.length,
+        completed: 0,
+        isLoading: true,
+      };
+    }
 
     // 优先处理 1
     const aipanEndpoint = sourcesApiEndpoints.find(
@@ -315,13 +317,20 @@ export const useSearchLogic = () => {
 
     vodData.value = [];
 
-    // 清理之前的加载状态
-    loadingStatus.value.clear();
+    // 确保加载状态已设置（如果外部没有设置的话）
+    if (loadingStatus.value.size === 0) {
+      vodConfigSources.value.forEach((vodApi) => {
+        loadingStatus.value.set(vodApi.api, true);
+      });
+    }
 
     // console.log(vodConfigSources.value);
     // 使用 Promise.allSettled 处理并发请求，避免竞态条件
     const searchPromises = vodConfigSources.value.map((vodApi) => {
-      loadingStatus.value.set(vodApi.api, true);
+      // 确保每个API的加载状态都已设置
+      if (!loadingStatus.value.has(vodApi.api)) {
+        loadingStatus.value.set(vodApi.api, true);
+      }
       return handleSingleVodSearch(vodApi, keyword, vodData, loadingStatus);
     });
 
