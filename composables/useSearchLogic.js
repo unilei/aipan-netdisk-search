@@ -318,7 +318,7 @@ export const useSearchLogic = () => {
     // 清理之前的加载状态
     loadingStatus.value.clear();
 
-    console.log(vodConfigSources.value);
+    // console.log(vodConfigSources.value);
     // 使用 Promise.allSettled 处理并发请求，避免竞态条件
     const searchPromises = vodConfigSources.value.map((vodApi) => {
       loadingStatus.value.set(vodApi.api, true);
