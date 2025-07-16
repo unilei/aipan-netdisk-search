@@ -320,6 +320,7 @@ const stopRouteWatcher = watch(
 }
 
 :root.dark .custom-bg {
+  background-image: none;
   background-color: rgba(17, 24, 39, 0.95);
 }
 
