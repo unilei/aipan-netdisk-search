@@ -81,11 +81,24 @@ const searchByKeyword = async () => {
     return;
   }
 
+  // 立即设置搜索状态和加载状态，避免显示空状态
   searchPerformed.value = true;
 
   if (category.value === "clouddrive") {
+    // 立即设置加载状态
+    loadingProgress.value.isLoading = true;
+    loadingProgress.value.total = sourcesApiEndpoints.length;
+    loadingProgress.value.completed = 0;
+
     await handleSearch(keyword.value, sources, loadingProgress, sourcesApiEndpoints);
   } else if (category.value === "onlineVod") {
+    // 立即设置VOD加载状态
+    loadingStatus.value.clear();
+    // 为每个VOD源设置加载状态
+    vodConfigSources.value.forEach(vodApi => {
+      loadingStatus.value.set(vodApi.api, true);
+    });
+
     await searchByVod(keyword.value, vodData, loadingStatus, vodConfigSources);
   }
 };
