@@ -28,7 +28,7 @@ useHead({
     },
     { property: "og:type", content: "website" },
     { property: "og:url", content: "https://www.aipan.me/tv" }, // 动态获取当前页面的 URL
-    { property: "og:image", content: "/logo.png" }, // 替换为适当的缩略图链接
+    { property: "og:image", content: "https://www.aipan.me/default-og-image.png" }, // 替换为适当的缩略图链接
     { name: "twitter:card", content: "summary_large_image" },
     {
       name: "twitter:title",
@@ -39,13 +39,12 @@ useHead({
       content:
         "爱盼提供最新的电视直播和 Alist 数据源聚合播放，轻松享受精彩内容！",
     },
-    { name: "twitter:image", content: "/logo.png" }, // 替换为适当的 Twitter 卡片图像链接
+    { name: "twitter:image", content: "https://www.aipan.me/default-og-image.png" }, // 替换为适当的 Twitter 卡片图像链接
   ],
 });
 import Hls from "hls.js";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
-import bgImage from "~/assets/tv-bg-1.jpg";
 import { sourcesAipan } from "~/assets/vod/tv";
 import { useTvStore } from "~/stores/tv";
 import { ElMessage } from "element-plus";

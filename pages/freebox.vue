@@ -22,9 +22,9 @@ useHead({
     { name: "format-detection", content: "telephone=no" },
     { property: "og:type", content: "website" },
     { property: "og:url", content: "https://www.aipan.me/freebox" },
-    { property: "og:image", content: "/logo.png" },
+    { property: "og:image", content: "https://www.aipan.me/default-og-image.png" },
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:image", content: "/logo.png" }
+    { name: "twitter:image", content: "https://www.aipan.me/default-og-image.png" }
   ]
 })
 
