@@ -25,7 +25,7 @@ useHead({
             property: 'og:description',
             content: '爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。'
         },
-        { property: 'og:image', content: '/blog-default-og.jpg' },
+        { property: 'og:image', content: 'https://www.aipan.me/default-og-image.png' },
         { property: 'og:url', content: 'https://www.aipan.me/blog' },
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
@@ -34,7 +34,7 @@ useHead({
             name: 'twitter:description',
             content: '爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。'
         },
-        { name: 'twitter:image', content: '/blog-default-og.jpg' },
+        { name: 'twitter:image', content: 'https://www.aipan.me/default-og-image.png' },
         // 其他重要的meta标签
         { name: 'robots', content: 'index,follow' },
         { name: 'author', content: 'AIPAN.ME' }
