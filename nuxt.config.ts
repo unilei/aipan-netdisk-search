@@ -67,7 +67,7 @@ export default defineNuxtConfig({
           content:
             'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体，一个网站满足所有数字娱乐需求。',
         },
-        { property: 'og:image', content: 'https://www.aipan.me/logo.png' },
+        { property: 'og:image', content: 'https://www.aipan.me/default-og-image.png' },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
         { property: 'og:url', content: 'https://www.aipan.me' },
@@ -80,7 +80,7 @@ export default defineNuxtConfig({
           name: 'twitter:description',
           content: '你的数字生活伙伴！资源搜索、音乐播放、社区交流、休闲游戏、电视直播，一个网站满足所有需求！',
         },
-        { name: 'twitter:image', content: 'https://www.aipan.me/logo.png' },
+        { name: 'twitter:image', content: 'https://www.aipan.me/default-og-image.png' },
         // 统一 referrer 策略
         { name: 'referrer', content: 'strict-origin-when-cross-origin' },
       ],

@@ -175,12 +175,12 @@ useHead({
         { property: 'og:type', content: 'website' },
         { property: 'og:title', content: '2026马年新春特别页面 - AIPAN.ME' },
         { property: 'og:description', content: '2026马年新春特别页面，提供新年祝福生成器、生肖运势查询、新年倒计时等功能。' },
-        { property: 'og:image', content: '/spring-festival-og.jpg' },
+        { property: 'og:image', content: 'https://www.aipan.me/default-og-image.png' },
         // Twitter
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:title', content: '2026马年新春特别页面 - AIPAN.ME' },
         { name: 'twitter:description', content: '2026马年新春特别页面，提供新年祝福生成器、生肖运势查询、新年倒计时等功能。' },
-        { name: 'twitter:image', content: '/spring-festival-og.jpg' },
+        { name: 'twitter:image', content: 'https://www.aipan.me/default-og-image.png' },
         // 其他重要的meta标签
         { name: 'robots', content: 'index,follow' },
         { name: 'author', content: 'AIPAN.ME' },

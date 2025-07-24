@@ -94,7 +94,7 @@ useHead({
     },
     {
       property: "og:image",
-      content: computed(() => blog.value?.cover || "/blog-default-og.jpg"),
+      content: computed(() => "https://www.aipan.me/default-og-image.png"),
     },
     {
       property: "og:url",
@@ -127,7 +127,7 @@ useHead({
     },
     {
       name: "twitter:image",
-      content: computed(() => blog.value?.cover || "/blog-default-og.jpg"),
+      content: computed(() => blog.value?.cover || "https://www.aipan.me/default-og-image.png"),
     },
     // 其他重要的meta标签
     { name: "robots", content: "index,follow" },
