@@ -129,7 +129,13 @@ const handleImageError = (e) => {
 }
 
 // 复制提取码
-const copyPwd = async (pwd) => {
+const copyPwd = async (pwd, event) => {
+  // 阻止事件冒泡和默认行为，防止页面滚动
+  if (event) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+  
   try {
     await navigator.clipboard.writeText(pwd)
     ElMessage({
@@ -253,7 +259,7 @@ const handleLinkClick = (e, link) => {
                              text-blue-700 dark:text-blue-300
                              border border-blue-200 dark:border-blue-700
                              cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50
-                             transition-colors duration-200" @click.stop="copyPwd(link.pwd)"
+                             transition-colors duration-200" @click="copyPwd(link.pwd, $event)"
                   :title="'点击复制提取码：' + link.pwd">
                   {{ link.pwd }}
                 </span>
