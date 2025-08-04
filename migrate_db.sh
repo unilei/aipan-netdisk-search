@@ -2,17 +2,50 @@
 
 # 数据库迁移脚本 - AIPan网盘搜索应用
 # 该脚本将源数据库的内容迁移到目标数据库，并提供各种辅助功能
+# 支持完整的Prisma schema结构，包括用户、资源、博客、论坛、聊天、签到、导航等模块
 
 # 设置颜色
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
 NC='\033[0m' # 无颜色
 
 # 源数据库和目标数据库连接字符串
-SRC_CONN_STRING="postgresql://aipanme:aipanme123@142.171.105.185:5432/aipanme"
-DST_CONN_STRING="postgresql://aipanme:aipanme123456@66.103.211.214:5432/aipan"
+SRC_CONN_STRING="postgresql://aipanme:aipanme123456@66.103.211.214:5432/aipan"
+DST_CONN_STRING="postgresql://aipanme:aipanme123456@209.54.106.114:5432/aipan"
+
+# Prisma schema 表列表（按依赖关系排序）
+PRISMA_TABLES=(
+    "User"
+    "ResourceType"
+    "Resource"
+    "PostCategory"
+    "Post"
+    "PostToCategory"
+    "Alist"
+    "Comment"
+    "BlogCategory"
+    "BlogPost"
+    "BlogPostToCategory"
+    "UserResource"
+    "SystemSettings"
+    "SearchRecord"
+    "UserVodConfig"
+    "ForumCategory"
+    "ForumTopic"
+    "ForumPost"
+    "Notification"
+    "ChatRoom"
+    "ChatRoomUser"
+    "ChatMessage"
+    "CheckIn"
+    "PointsHistory"
+    "NavigationCategory"
+    "NavigationItem"
+)
 
 # 从连接字符串解析信息的函数
 parse_conn_string() {
@@ -57,6 +90,283 @@ if ! command -v docker &> /dev/null; then
     echo -e "${RED}错误: Docker未安装。本脚本需要Docker来运行PostgreSQL客户端。${NC}"
     exit 1
 fi
+
+# 验证Prisma表结构函数
+verify_prisma_tables() {
+    local db_host=$1
+    local db_port=$2
+    local db_name=$3
+    local db_user=$4
+    local db_pass=$5
+    
+    echo -e "${CYAN}验证Prisma表结构...${NC}"
+    
+    # 获取数据库中的所有表
+    local existing_tables=$(docker run --rm -e PGPASSWORD="$db_pass" \
+        postgres:16-alpine psql -h "$db_host" -p "$db_port" -d "$db_name" -U "$db_user" -t \
+        -c "SELECT tablename FROM pg_tables WHERE schemaname = 'public' ORDER BY tablename;")
+    
+    echo -e "${YELLOW}数据库中现有的表:${NC}"
+    echo "$existing_tables" | sed 's/^[ \t]*//;s/[ \t]*$//' | grep -v '^$'
+    
+    echo -e "${YELLOW}Prisma schema中定义的表:${NC}"
+    printf '%s\n' "${PRISMA_TABLES[@]}"
+    
+    # 检查缺失的表
+    echo -e "${PURPLE}检查表结构完整性...${NC}"
+    local missing_tables=()
+    for table in "${PRISMA_TABLES[@]}"; do
+        # 转换为小写进行比较（PostgreSQL表名通常是小写）
+        local table_lower=$(echo "$table" | tr '[:upper:]' '[:lower:]')
+        if ! echo "$existing_tables" | grep -qi "$table_lower"; then
+            missing_tables+=("$table")
+        fi
+    done
+    
+    if [ ${#missing_tables[@]} -eq 0 ]; then
+        echo -e "${GREEN}✓ 所有Prisma表都存在于数据库中${NC}"
+        return 0
+    else
+        echo -e "${RED}✗ 发现缺失的表:${NC}"
+        printf '%s\n' "${missing_tables[@]}"
+        echo -e "${YELLOW}建议运行 'npx prisma db push' 或 'npx prisma migrate deploy' 来同步数据库结构${NC}"
+        return 1
+    fi
+}
+
+# 获取表数据统计函数
+get_table_stats() {
+    local db_host=$1
+    local db_port=$2
+    local db_name=$3
+    local db_user=$4
+    local db_pass=$5
+    
+    echo -e "${CYAN}获取数据库表统计信息...${NC}"
+    
+    # 创建统计查询SQL
+    cat > /tmp/table_stats.sql << 'EOF'
+SELECT 
+    schemaname,
+    tablename,
+    n_live_tup as row_count,
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size
+FROM pg_stat_user_tables 
+WHERE schemaname = 'public'
+ORDER BY n_live_tup DESC;
+EOF
+
+    # 执行统计查询
+    docker run --rm -v /tmp/table_stats.sql:/table_stats.sql \
+        -e PGPASSWORD="$db_pass" \
+        postgres:16-alpine psql -h "$db_host" -p "$db_port" -d "$db_name" -U "$db_user" -f /table_stats.sql
+}
+
+# 按表迁移数据函数
+migrate_table_by_table() {
+    local src_host=$1
+    local src_port=$2
+    local src_db=$3
+    local src_user=$4
+    local src_pass=$5
+    local dst_host=$6
+    local dst_port=$7
+    local dst_db=$8
+    local dst_user=$9
+    local dst_pass=${10}
+    
+    echo -e "${CYAN}开始按表迁移数据...${NC}"
+    
+    local success_count=0
+    local error_count=0
+    
+    for table in "${PRISMA_TABLES[@]}"; do
+        echo -e "${YELLOW}迁移表: $table${NC}"
+        
+        # 转换为小写（PostgreSQL约定）
+        local table_lower=$(echo "$table" | tr '[:upper:]' '[:lower:]')
+        
+        # 检查源表是否存在
+        local table_exists=$(docker run --rm -e PGPASSWORD="$src_pass" \
+            postgres:16-alpine psql -h "$src_host" -p "$src_port" -d "$src_db" -U "$src_user" -t \
+            -c "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = 'public' AND table_name = '$table_lower');")
+        
+        if echo "$table_exists" | grep -q "t"; then
+            # 导出表数据
+            echo "  导出 $table 数据..."
+            docker run --rm -e PGPASSWORD="$src_pass" \
+                postgres:16-alpine pg_dump -h "$src_host" -p "$src_port" -U "$src_user" -d "$src_db" \
+                --table="$table_lower" --data-only --inserts --no-owner --no-acl > "/tmp/${table_lower}_data.sql"
+            
+            # 导入表数据
+            if [ -s "/tmp/${table_lower}_data.sql" ]; then
+                echo "  导入 $table 数据..."
+                cat "/tmp/${table_lower}_data.sql" | docker run --rm -i -e PGPASSWORD="$dst_pass" \
+                    postgres:16-alpine psql -h "$dst_host" -p "$dst_port" -U "$dst_user" -d "$dst_db" -q
+                
+                if [ $? -eq 0 ]; then
+                    echo -e "  ${GREEN}✓ $table 迁移成功${NC}"
+                    success_count=$((success_count + 1))
+                else
+                    echo -e "  ${RED}✗ $table 迁移失败${NC}"
+                    error_count=$((error_count + 1))
+                fi
+            else
+                echo -e "  ${YELLOW}⚠ $table 无数据或导出失败${NC}"
+            fi
+        else
+            echo -e "  ${YELLOW}⚠ 源数据库中不存在表 $table${NC}"
+        fi
+        
+        # 清理临时文件
+        rm -f "/tmp/${table_lower}_data.sql"
+    done
+    
+    echo -e "${BLUE}按表迁移完成: ${GREEN}$success_count 成功${NC}, ${RED}$error_count 失败${NC}"
+}
+
+# 测试数据库连接函数
+test_database_connection() {
+    local db_host=$1
+    local db_port=$2
+    local db_name=$3
+    local db_user=$4
+    local db_pass=$5
+    local db_label=$6
+    
+    echo -e "${CYAN}测试 $db_label 数据库连接...${NC}"
+    echo "主机: $db_host:$db_port"
+    echo "数据库: $db_name"
+    echo "用户: $db_user"
+    
+    # 测试连接
+    local result=$(docker run --rm -e PGPASSWORD="$db_pass" \
+        postgres:16-alpine psql -h "$db_host" -p "$db_port" -d "$db_name" -U "$db_user" \
+        -c "SELECT version();" 2>&1)
+    
+    if echo "$result" | grep -q "PostgreSQL"; then
+        echo -e "${GREEN}✓ $db_label 数据库连接成功${NC}"
+        echo "PostgreSQL版本: $(echo "$result" | grep PostgreSQL | head -1)"
+        return 0
+    else
+        echo -e "${RED}✗ $db_label 数据库连接失败${NC}"
+        echo "错误信息: $result"
+        return 1
+    fi
+}
+
+# 同步Prisma schema到数据库函数
+sync_prisma_schema() {
+    echo -e "${CYAN}同步Prisma schema到数据库...${NC}"
+    
+    # 检查是否在项目根目录
+    if [ ! -f "prisma/schema.prisma" ]; then
+        echo -e "${RED}错误: 未找到 prisma/schema.prisma 文件${NC}"
+        echo -e "${YELLOW}请确保在项目根目录下运行此脚本${NC}"
+        return 1
+    fi
+    
+    # 检查是否安装了Node.js和npm
+    if ! command -v npm &> /dev/null; then
+        echo -e "${RED}错误: 未找到npm命令${NC}"
+        echo -e "${YELLOW}请先安装Node.js和npm${NC}"
+        return 1
+    fi
+    
+    echo -e "${YELLOW}选择同步方式:${NC}"
+    echo "1) db push (推荐用于开发环境，直接同步schema)"
+    echo "2) migrate deploy (推荐用于生产环境，应用已有的迁移文件)"
+    echo "3) migrate dev (创建新的迁移文件并应用)"
+    read -p "请选择 (1-3): " sync_choice
+    
+    case $sync_choice in
+        1)
+            echo -e "${YELLOW}执行 npx prisma db push...${NC}"
+            npx prisma db push
+            ;;
+        2)
+            echo -e "${YELLOW}执行 npx prisma migrate deploy...${NC}"
+            npx prisma migrate deploy
+            ;;
+        3)
+            read -p "请输入迁移名称: " migration_name
+            echo -e "${YELLOW}执行 npx prisma migrate dev --name $migration_name...${NC}"
+            npx prisma migrate dev --name "$migration_name"
+            ;;
+        *)
+            echo -e "${RED}无效的选择${NC}"
+            return 1
+            ;;
+    esac
+    
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✓ Prisma schema同步成功${NC}"
+        return 0
+    else
+        echo -e "${RED}✗ Prisma schema同步失败${NC}"
+        return 1
+    fi
+}
+
+# 数据完整性检查函数
+check_data_integrity() {
+    local src_host=$1
+    local src_port=$2
+    local src_db=$3
+    local src_user=$4
+    local src_pass=$5
+    local dst_host=$6
+    local dst_port=$7
+    local dst_db=$8
+    local dst_user=$9
+    local dst_pass=${10}
+    
+    echo -e "${CYAN}执行数据完整性检查...${NC}"
+    
+    local total_errors=0
+    
+    for table in "${PRISMA_TABLES[@]}"; do
+        local table_lower=$(echo "$table" | tr '[:upper:]' '[:lower:]')
+        
+        # 获取源表行数
+        local src_count=$(docker run --rm -e PGPASSWORD="$src_pass" \
+            postgres:16-alpine psql -h "$src_host" -p "$src_port" -d "$src_db" -U "$src_user" -t \
+            -c "SELECT COUNT(*) FROM $table_lower;" 2>/dev/null | tr -d '[:space:]')
+        
+        # 获取目标表行数
+        local dst_count=$(docker run --rm -e PGPASSWORD="$dst_pass" \
+            postgres:16-alpine psql -h "$dst_host" -p "$dst_port" -d "$dst_db" -U "$dst_user" -t \
+            -c "SELECT COUNT(*) FROM $table_lower;" 2>/dev/null | tr -d '[:space:]')
+        
+        # 检查表是否存在
+        if [ -z "$src_count" ]; then
+            echo -e "  ${YELLOW}⚠ 源数据库中不存在表 $table${NC}"
+            continue
+        fi
+        
+        if [ -z "$dst_count" ]; then
+            echo -e "  ${RED}✗ 目标数据库中不存在表 $table${NC}"
+            total_errors=$((total_errors + 1))
+            continue
+        fi
+        
+        # 比较行数
+        if [ "$src_count" = "$dst_count" ]; then
+            echo -e "  ${GREEN}✓ $table: $src_count 行${NC}"
+        else
+            echo -e "  ${RED}✗ $table: 源($src_count) != 目标($dst_count)${NC}"
+            total_errors=$((total_errors + 1))
+        fi
+    done
+    
+    if [ $total_errors -eq 0 ]; then
+        echo -e "${GREEN}✓ 数据完整性检查通过${NC}"
+        return 0
+    else
+        echo -e "${RED}✗ 发现 $total_errors 个数据完整性问题${NC}"
+        return 1
+    fi
+}
 
 # 设置超级用户函数，使用多种方法
 set_superuser() {
@@ -518,16 +828,28 @@ migrate_database() {
 # 显示菜单
 show_menu() {
     echo ""
-    echo -e "${BLUE}=== 数据库迁移选项 ===${NC}"
+    echo -e "${BLUE}=== AIPan数据库迁移工具 ===${NC}"
+    echo -e "${CYAN}基础迁移功能:${NC}"
     echo "1) 完整数据库迁移"
-    echo "2) 清空目标数据库"
-    echo "3) 设置目标数据库用户为超级用户"
-    echo "4) 使用超级用户清空数据库（使用 postgres 默认超级用户）"
-    echo "5) 创建新的超级用户"
-    echo "6) 列出数据库中的超级用户"
-    echo "7) 退出"
+    echo "2) 按表迁移数据（推荐用于Prisma）"
+    echo "3) 清空目标数据库"
     echo ""
-    echo -n "请选择操作(1-7): "
+    echo -e "${CYAN}Prisma专用功能:${NC}"
+    echo "4) 验证Prisma表结构"
+    echo "5) 获取数据库表统计信息"
+    echo "6) 同步Prisma schema到数据库"
+    echo ""
+    echo -e "${CYAN}用户权限管理:${NC}"
+    echo "7) 设置目标数据库用户为超级用户"
+    echo "8) 使用超级用户清空数据库"
+    echo "9) 创建新的超级用户"
+    echo "10) 列出数据库中的超级用户"
+    echo ""
+    echo -e "${CYAN}其他功能:${NC}"
+    echo "11) 测试数据库连接"
+    echo "12) 退出"
+    echo ""
+    echo -n "请选择操作(1-12): "
 }
 
 # 主程序
@@ -556,6 +878,25 @@ while true; do
                 "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS"
             ;;
         2)
+            read -p "是否在迁移前清空目标数据库? (y/n): " empty_first
+            if [[ $empty_first == "y" || $empty_first == "Y" ]]; then
+                read -p "是否需要使用超级用户来清空数据库? (y/n): " use_superuser
+                if [[ $use_superuser == "y" || $use_superuser == "Y" ]]; then
+                    echo "使用超级用户清空数据库:"
+                    read -p "请输入超级用户名 [postgres]: " su_user
+                    su_user=${su_user:-"postgres"}
+                    read -s -p "请输入超级用户密码 [postgres]: " su_pass
+                    echo ""
+                    su_pass=${su_pass:-"postgres"}
+                    empty_database_with_superuser "$DST_HOST" "$DST_PORT" "$DST_DB" "$su_user" "$su_pass"
+                else
+                    empty_database "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS"
+                fi
+            fi
+            migrate_table_by_table "$SRC_HOST" "$SRC_PORT" "$SRC_DB" "$SRC_USER" "$SRC_PASS" \
+                "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS"
+            ;;
+        3)
             read -p "是否需要使用超级用户来清空数据库? (y/n): " use_superuser
             if [[ $use_superuser == "y" || $use_superuser == "Y" ]]; then
                 echo "使用超级用户清空数据库:"
@@ -569,7 +910,16 @@ while true; do
                 empty_database "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS"
             fi
             ;;
-        3)
+        4)
+            verify_prisma_tables "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS"
+            ;;
+        5)
+            get_table_stats "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS"
+            ;;
+        6)
+            sync_prisma_schema
+            ;;
+        7)
             echo "设置目标数据库用户 '$DST_USER' 为超级用户:"
             read -p "请输入管理员用户名 [postgres]: " admin_user
             admin_user=${admin_user:-"postgres"}
@@ -578,7 +928,7 @@ while true; do
             admin_pass=${admin_pass:-"postgres"}
             set_superuser "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$admin_user" "$admin_pass"
             ;;
-        4)
+        8)
             echo "使用超级用户清空数据库:"
             read -p "请输入超级用户名 [postgres]: " su_user
             su_user=${su_user:-"postgres"}
@@ -587,7 +937,7 @@ while true; do
             su_pass=${su_pass:-"postgres"}
             empty_database_with_superuser "$DST_HOST" "$DST_PORT" "$DST_DB" "$su_user" "$su_pass"
             ;;
-        5)
+        9)
             echo "创建新的超级用户:"
             read -p "请输入新超级用户名: " new_superuser
             read -s -p "请输入新超级用户密码: " new_superuser_pass
@@ -599,10 +949,38 @@ while true; do
             admin_pass=${admin_pass:-"postgres"}
             create_superuser "$DST_HOST" "$DST_PORT" "$DST_DB" "$new_superuser" "$new_superuser_pass" "$admin_user" "$admin_pass"
             ;;
-        6)
+        10)
             list_superusers "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS"
             ;;
-        7)
+        11)
+            echo -e "${CYAN}测试数据库连接${NC}"
+            echo "1) 测试源数据库连接"
+            echo "2) 测试目标数据库连接"
+            echo "3) 测试两个数据库连接"
+            echo "4) 数据完整性检查"
+            read -p "请选择 (1-4): " test_choice
+            case $test_choice in
+                1)
+                    test_database_connection "$SRC_HOST" "$SRC_PORT" "$SRC_DB" "$SRC_USER" "$SRC_PASS" "源"
+                    ;;
+                2)
+                    test_database_connection "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS" "目标"
+                    ;;
+                3)
+                    test_database_connection "$SRC_HOST" "$SRC_PORT" "$SRC_DB" "$SRC_USER" "$SRC_PASS" "源"
+                    echo ""
+                    test_database_connection "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS" "目标"
+                    ;;
+                4)
+                    check_data_integrity "$SRC_HOST" "$SRC_PORT" "$SRC_DB" "$SRC_USER" "$SRC_PASS" \
+                        "$DST_HOST" "$DST_PORT" "$DST_DB" "$DST_USER" "$DST_PASS"
+                    ;;
+                *)
+                    echo -e "${RED}无效的选择${NC}"
+                    ;;
+            esac
+            ;;
+        12)
             echo -e "${GREEN}感谢使用数据库迁移工具!${NC}"
             exit 0
             ;;
