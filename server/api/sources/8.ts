@@ -151,13 +151,13 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
         const searchTerm = body.name.trim()
 
         // 调用pansou API
-        const apiUrl = 'https://pansou.252035.xyz/api/search'
+        const apiUrl = 'https://pansou.aipan.me/api/search'
         const params = new URLSearchParams({
             kw: searchTerm,
             refresh: 'false',
             res: 'merge',
             src: 'all',
-            plugins: 'pansearch,qupansou,panta,pan666,hunhepan,jikepan'
+            cloud_types: 'baidu,aliyun,quark,tianyi,uc,mobile,115,pikpak,xunlei,123',
         })
 
         console.log(`调用pansou API: ${apiUrl}?${params.toString()}`)
