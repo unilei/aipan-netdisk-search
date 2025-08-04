@@ -81,6 +81,10 @@
     },
     "./runtime/client": {
       "types": "./runtime/client.d.ts",
+      "node": {
+        "require": "./runtime/client.js",
+        "default": "./runtime/client.js"
+      },
       "require": "./runtime/client.js",
       "import": "./runtime/client.mjs",
       "default": "./runtime/client.mjs"
@@ -141,7 +145,7 @@
     },
     "./*": "./*"
   },
-  "version": "6.9.0",
+  "version": "6.13.0",
   "sideEffects": false,
   "imports": {
     "#wasm-compiler-loader": {
