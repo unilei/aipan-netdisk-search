@@ -118,10 +118,21 @@ export default defineNuxtConfig({
     '@nuxtjs/google-fonts',
     '@nuxtjs/color-mode',
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
     '@nuxtjs/sitemap',
     '@nuxtjs/i18n',
   ],
+
+  // Pinia 配置
+  pinia: {
+    storesDirs: ['./stores/**'],
+  },
+
+  // Pinia Plugin Persistedstate 配置
+  piniaPluginPersistedstate: {
+    storage: 'localStorage',
+    debug: true,
+  },
 
   // i18n 配置 - 简化版本
   i18n: {
