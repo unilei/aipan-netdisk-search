@@ -11,7 +11,7 @@ const footerLinks = [
 </script>
 
 <template>
-  <footer class="bg-slate-100 dark:bg-slate-800 dark:text-white py-6 space-y-2">
+  <footer class="bg-white-100 dark:bg-slate-900 dark:text-white py-6 space-y-2">
 
     <!-- 版权信息 -->
     <p class="text-center text-xs sm:text-sm">
