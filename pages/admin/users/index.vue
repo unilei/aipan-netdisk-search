@@ -168,7 +168,7 @@ definePageMeta({
 
 // 用户列表数据
 const users = ref([])
-const loading = ref(true)
+const loading = ref(false)
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)

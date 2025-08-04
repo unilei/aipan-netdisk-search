@@ -13,7 +13,5 @@ export const useDoubanStore = defineStore('douban', {
             }
         }
     },
-    persist: {
-        storage: persistedState.localStorage
-    },
+    persist: true,
 })
