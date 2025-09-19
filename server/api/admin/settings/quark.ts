@@ -1,5 +1,19 @@
 import prisma from "~/lib/prisma";
 
+const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
+const DEFAULT_ACCESS_DURATION = 60;
+
+const DEFAULT_CONFIG = {
+    quarkCookie: '',
+    userId: '',
+    typeId: '',
+    enabled: false,
+    apiUrl: DEFAULT_API_URL,
+    verificationEnabled: false,
+    shareLink: '',
+    accessDurationMinutes: DEFAULT_ACCESS_DURATION
+};
+
 export default defineEventHandler(async (event) => {
     // 验证管理员权限
     const user = event.context.user;
@@ -19,14 +33,14 @@ export default defineEventHandler(async (event) => {
                 }
             });
 
+            const storedConfig = settings ? JSON.parse(settings.value) : {};
+
             return {
                 code: 200,
-                data: settings ? JSON.parse(settings.value) : {
-                    quarkCookie: '',
-                    userId: '',
-                    typeId: '',
-                    enabled: false,
-                    apiUrl: 'http://127.0.0.1:5000/api/quark/sharepage/save'
+                data: {
+                    ...DEFAULT_CONFIG,
+                    ...storedConfig,
+                    accessDurationMinutes: Number(storedConfig?.accessDurationMinutes ?? DEFAULT_ACCESS_DURATION)
                 }
             };
         } catch (error) {
@@ -42,18 +56,29 @@ export default defineEventHandler(async (event) => {
         try {
             const body = await readBody(event);
 
+            const normalizedConfig = {
+                ...DEFAULT_CONFIG,
+                ...body,
+                enabled: Boolean(body.enabled),
+                verificationEnabled: Boolean(body.verificationEnabled),
+                accessDurationMinutes: Math.min(
+                    1440,
+                    Math.max(5, Number(body.accessDurationMinutes ?? DEFAULT_ACCESS_DURATION))
+                )
+            };
+
             await prisma.systemSettings.upsert({
                 where: {
                     key: 'quark_config'
                 },
                 update: {
-                    value: JSON.stringify(body),
+                    value: JSON.stringify(normalizedConfig),
                     group: 'quark',
                     description: '夸克网盘转存配置'
                 },
                 create: {
                     key: 'quark_config',
-                    value: JSON.stringify(body),
+                    value: JSON.stringify(normalizedConfig),
                     group: 'quark',
                     description: '夸克网盘转存配置'
                 }

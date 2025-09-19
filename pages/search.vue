@@ -28,6 +28,7 @@ import { useSearchQueue } from "~/composables/useSearchQueue";
 
 definePageMeta({
   layout: "custom",
+  middleware: ["quark-verification"]
 });
 
 // 基础设置

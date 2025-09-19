@@ -69,7 +69,7 @@
                     </div>
                 </div>
 
-                <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" :disabled="!form.enabled">
+                <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
                     <el-form-item label="API URL" prop="apiUrl">
                         <el-input v-model="form.apiUrl" placeholder="请输入 API URL" :disabled="!form.enabled">
                             <template #append>
@@ -101,13 +101,39 @@
                         </div>
                     </el-form-item>
 
+                    <el-divider></el-divider>
+
+                    <div class="mb-4">
+                        <h3 class="text-base font-medium text-gray-900">访问验证配置</h3>
+                        <p class="text-xs text-gray-500 mt-1">配置用户访问站点前需要提交的夸克转存信息</p>
+                    </div>
+
+                    <el-form-item label="开启验证">
+                        <el-switch v-model="form.verificationEnabled" active-text="启用验证" inactive-text="关闭验证" />
+                    </el-form-item>
+
+                    <el-form-item label="目标分享链接" prop="shareLink">
+                        <el-input v-model="form.shareLink" placeholder="请输入需要用户转存的夸克分享链接"
+                            :disabled="!form.verificationEnabled" />
+                        <div class="mt-1 text-xs text-gray-500">
+                            用户提交的转存链接将与此链接内容比对，仅支持无提取码的公开链接
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item label="访问时长(分钟)" prop="accessDurationMinutes">
+                        <el-input-number v-model="form.accessDurationMinutes" :min="5" :max="1440" :step="5"
+                            :disabled="!form.verificationEnabled" class="w-full" />
+                        <div class="mt-1 text-xs text-gray-500">
+                            验证通过后允许访问的时长，最终到期不会超过当日24点；默认 {{ DEFAULT_ACCESS_DURATION }} 分钟
+                        </div>
+                    </el-form-item>
+
                     <el-form-item>
                         <div class="flex items-center gap-4">
-                            <el-button type="primary" @click="handleSubmit" :loading="loading"
-                                :disabled="!form.enabled">
+                            <el-button type="primary" @click="handleSubmit" :loading="loading">
                                 保存配置
                             </el-button>
-                            <el-button @click="resetForm" :disabled="!form.enabled">
+                            <el-button @click="resetForm">
                                 重置表单
                             </el-button>
                         </div>
@@ -134,12 +160,16 @@ const musicForm = reactive({
 });
 
 const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
+const DEFAULT_ACCESS_DURATION = 60;
 
 const form = reactive({
     apiUrl: '',
     quarkCookie: '',
     typeId: '',
-    enabled: false
+    enabled: false,
+    verificationEnabled: false,
+    shareLink: '',
+    accessDurationMinutes: DEFAULT_ACCESS_DURATION
 });
 
 const musicRules = {
@@ -149,16 +179,98 @@ const musicRules = {
     ]
 };
 
+const validateUrl = (_rule, value, callback) => {
+    if (!form.enabled) {
+        callback();
+        return;
+    }
+
+    if (!value) {
+        callback(new Error('请输入 API URL'));
+        return;
+    }
+
+    try {
+        new URL(value);
+        callback();
+    } catch (error) {
+        callback(new Error('请输入有效的 URL'));
+    }
+};
+
+const requiredWhenEnabled = (message) => {
+    return (_rule, value, callback) => {
+        if (!form.enabled) {
+            callback();
+            return;
+        }
+        if (value === undefined || value === null || value === '') {
+            callback(new Error(message));
+            return;
+        }
+        callback();
+    };
+};
+
+const validateShareLink = (_rule, value, callback) => {
+    if (!form.verificationEnabled) {
+        callback();
+        return;
+    }
+
+    if (!value) {
+        callback(new Error('请输入夸克分享链接'));
+        return;
+    }
+
+    const pattern = /https?:\/\/pan\.quark\.cn\/s\/[A-Za-z0-9]+/;
+    if (!pattern.test(value)) {
+        callback(new Error('请输入有效的夸克分享链接'));
+        return;
+    }
+
+    callback();
+};
+
+const validateAccessDuration = (_rule, value, callback) => {
+    if (!form.verificationEnabled) {
+        callback();
+        return;
+    }
+
+    if (typeof value !== 'number') {
+        callback(new Error('请输入访问时长'));
+        return;
+    }
+
+    if (value < 5) {
+        callback(new Error('访问时长至少为5分钟'));
+        return;
+    }
+
+    if (value > 1440) {
+        callback(new Error('访问时长不能超过1440分钟'));
+        return;
+    }
+
+    callback();
+};
+
 const rules = {
     apiUrl: [
-        { required: true, message: '请输入 API URL', trigger: 'blur' },
-        { type: 'url', message: '请输入有效的 URL', trigger: 'blur' }
+        { validator: validateUrl, trigger: 'blur' }
     ],
     quarkCookie: [
-        { required: true, message: '请输入夸克网盘 Cookie', trigger: 'blur' }
+        { validator: requiredWhenEnabled('请输入夸克网盘 Cookie'), trigger: 'blur' }
     ],
     typeId: [
-        { required: true, message: '请选择资源类型', trigger: 'change' }
+        { validator: requiredWhenEnabled('请选择资源类型'), trigger: 'change' }
+    ],
+    shareLink: [
+        { validator: validateShareLink, trigger: 'blur' }
+    ],
+    accessDurationMinutes: [
+        { validator: validateAccessDuration, trigger: ['blur', 'change'] }
     ]
 };
 
@@ -199,6 +311,9 @@ const resetForm = () => {
     ).then(() => {
         formRef.value?.resetFields();
         form.apiUrl = DEFAULT_API_URL;
+        form.verificationEnabled = false;
+        form.shareLink = '';
+        form.accessDurationMinutes = DEFAULT_ACCESS_DURATION;
     });
 };
 
@@ -229,9 +344,12 @@ const getConfig = async () => {
         });
         if (res.code === 200) {
             form.apiUrl = res.data.apiUrl || DEFAULT_API_URL;
-            form.quarkCookie = res.data.quarkCookie;
-            form.typeId = res.data.typeId;
-            form.enabled = res.data.enabled;
+            form.quarkCookie = res.data.quarkCookie || '';
+            form.typeId = res.data.typeId || '';
+            form.enabled = res.data.enabled ?? false;
+            form.verificationEnabled = res.data.verificationEnabled ?? false;
+            form.shareLink = res.data.shareLink || '';
+            form.accessDurationMinutes = res.data.accessDurationMinutes ?? DEFAULT_ACCESS_DURATION;
         }
     } catch (error) {
         console.error('获取配置失败:', error);
@@ -244,11 +362,8 @@ const handleSubmit = async () => {
     if (!formRef.value) return;
 
     try {
-        // 如果是禁用状态，跳过表单验证
-        if (form.enabled) {
-            const valid = await formRef.value.validate();
-            if (!valid) return;
-        }
+        const valid = await formRef.value.validate();
+        if (!valid) return;
 
         loading.value = true;
 
@@ -270,7 +385,10 @@ const handleSubmit = async () => {
                 quarkCookie: form.quarkCookie,
                 typeId: form.typeId,
                 userId: userInfo.data.id,
-                enabled: form.enabled
+                enabled: form.enabled,
+                verificationEnabled: form.verificationEnabled,
+                shareLink: form.shareLink,
+                accessDurationMinutes: form.accessDurationMinutes
             },
             headers: {
                 Authorization: `Bearer ${useCookie('token').value}`

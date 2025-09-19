@@ -9,6 +9,9 @@ export const useQuarkConfig = () => {
     typeId: "",
     userId: "",
     enabled: false,
+    verificationEnabled: false,
+    shareLink: "",
+    accessDurationMinutes: 60,
   });
 
   // 获取夸克配置
@@ -29,13 +32,16 @@ export const useQuarkConfig = () => {
         retryDelay: 1000
       });
 
-      if (res.success && res.data) {
+      if ((res.success || res.code === 200) && res.data) {
         const config = {
           apiUrl: res.data.apiUrl || quarkConfig.value.apiUrl,
           quarkCookie: res.data.quarkCookie,
           typeId: res.data.typeId,
           userId: res.data.userId,
           enabled: res.data.enabled,
+          verificationEnabled: res.data.verificationEnabled ?? quarkConfig.value.verificationEnabled,
+          shareLink: res.data.shareLink || quarkConfig.value.shareLink,
+          accessDurationMinutes: res.data.accessDurationMinutes ?? quarkConfig.value.accessDurationMinutes,
         };
         quarkConfig.value = config;
         await smartCache.setWithStrategy(configCacheKey, config, "config");
