@@ -11,6 +11,10 @@ import type {
 
 const getApiEndpoints = (baseUrl: string, searchTerm: string): ApiEndpoint[] => [
     {
+        url: `${baseUrl}/api/getJuzi`,
+        priority: 1
+    },
+    {
         url: `${baseUrl}/api/sortWeb`,
         append: {
             tabN: "movie_200317xlb",
@@ -25,40 +29,28 @@ const getApiEndpoints = (baseUrl: string, searchTerm: string): ApiEndpoint[] => 
     },
     {
         url: `${baseUrl}/api/getTop`,
-        append: {
-            topNo: 10,
-            keys: "question,answer,isTop,id",
-            searchKey: searchTerm
-        },
         priority: 2
     },
     {
-        url: `${baseUrl}/api/getXiaoy`,
-        append: {
-            topNo: 10,
-            keys: "question,answer,isTop,id",
-            searchKey: searchTerm
-        },
-        priority: 3
-    },
-    {
         url: `${baseUrl}/api/getDyfx`,
-        append: {
-            topNo: 10,
-            keys: "question,answer,isTop,id",
-            searchKey: searchTerm
-        },
         priority: 3
     },
     {
         url: `${baseUrl}/api/getTTZJB`,
-        append: {
-            topNo: 10,
-            keys: "question,answer,isTop,id",
-            searchKey: searchTerm
-        },
         priority: 3
-    }
+    },
+    {
+        url: `${baseUrl}/api/getGirls`,
+        priority: 3
+    },
+    {
+        url: `${baseUrl}/api/getXiaoy`,
+        priority: 3
+    },
+    {
+        url: `${baseUrl}/api/getGGang`,
+        priority: 3
+    },
 ]
 
 export default defineEventHandler(async (event: H3Event): Promise<TransformedResult> => {
