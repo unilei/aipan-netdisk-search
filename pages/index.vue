@@ -3,7 +3,6 @@ import { useDoubanStore } from "~/stores/douban";
 import { badWords } from "~/utils/sensitiveWords";
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
 import { useDebounceFn } from "@vueuse/core";
-import i18nNavigationConfig from "@/assets/navigation/config.i18n.json";
 
 definePageMeta({
   layout: "netdisk",
@@ -15,7 +14,6 @@ const { locale, locales, setLocale, t } = useI18n();
 
 // 清理函数，防止内存泄漏
 onUnmounted(() => {
-  if (stopLocaleWatcher) stopLocaleWatcher();
   if (stopRouteWatcher) stopRouteWatcher();
 });
 
@@ -84,13 +82,6 @@ useHead({
   ]
 });
 
-
-
-// 使用activeCategoryCookie作为唯一存储方式
-const activeCategoryCookie = useCookie("activeCategory", {
-  maxAge: 60 * 60 * 24 * 7, // 保存7天
-});
-
 const debouncedSearch = useDebounceFn((keyword) => {
   if (!keyword || !keyword.trim()) return;
   if (badWords.includes(keyword)) {
@@ -120,51 +111,7 @@ const goDouban = useDebounceFn((movie) => {
   });
 }, 300);
 
-// 导航数据
-const categories = ref([]);
-
-// 加载导航数据
-const loadNavigationData = async () => {
-  try {
-    const { data } = await $fetch('/api/navigation');
-    categories.value = data || [];
-  } catch (error) {
-    console.error('Failed to load navigation data:', error);
-    // 如果API失败，回退到静态配置
-    const currentLang = locale.value;
-    const config = i18nNavigationConfig[currentLang] || i18nNavigationConfig.zh;
-    categories.value = config?.categories || [];
-  }
-};
-
-const activeCategory = ref("");
-
-// 确保在页面加载之前初始化活跃分类
-onBeforeMount(async () => {
-  await loadNavigationData();
-  if (categories.value && categories.value.length > 0) {
-    activeCategory.value = activeCategoryCookie.value || categories.value[0]?.id || '';
-  }
-});
-
-// 监听activeCategory变化，只保存到cookie
-watch(activeCategory, (newValue) => {
-  activeCategoryCookie.value = newValue;
-});
-
-// 监听语言变化，重新加载导航数据
-const stopLocaleWatcher = watch(locale, async () => {
-  await loadNavigationData();
-  if (categories.value && categories.value.length > 0) {
-    // 检查当前活跃分类在新语言中是否存在
-    const categoryExists = categories.value.some(c => c.id === activeCategory.value);
-    if (!categoryExists) {
-      // 如果不存在，使用第一个分类
-      activeCategory.value = categories.value[0]?.id || '';
-    }
-  }
-});
-
+ 
 onMounted(async () => {
   try {
     // 加载豆瓣数据
@@ -228,42 +175,7 @@ const stopRouteWatcher = watch(
         </div>
       </div>
 
-      <ClientOnly>
-        <div class="max-w-[1240px] mx-auto mt-4 px-4">
-          <!-- 导航分类标签 -->
-          <div class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
-            <button v-for="category in categories" :key="category.id"
-              class="px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 whitespace-nowrap" :class="[
-                activeCategory === category.id
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 dark:from-blue-400 dark:to-purple-400 text-white shadow-md'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
-              ]" @click="activeCategory = category.id">
-              {{ category.name }}
-            </button>
-          </div>
-
-          <!-- 导航网格 -->
-          <div class="flex items-center justify-center flex-wrap gap-2">
-            <template v-for="category in categories" :key="category.id">
-              <template v-if="activeCategory === category.id">
-                <nuxt-link v-for="item in category.items" :key="item.path" :to="item.path"
-                  class="group flex items-center gap-2 p-2 rounded-lg bg-white dark:bg-gray-800/50 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/20 dark:hover:to-purple-900/20 border border-gray-100 dark:border-gray-700/50 transform hover:scale-[1.02] transition-all duration-300 shadow-sm hover:shadow-md dark:shadow-gray-900/10">
-                  <div class="flex items-center justify-center shadow-lg">
-                    <i :class="['fa-solid', item.icon, 'dark:text-white text-xs']"></i>
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <h3
-                      class="text-gray-800 dark:text-gray-200 text-xs font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                      {{ item.title }}
-                    </h3>
-                    <!-- <p class="text-gray-500 dark:text-gray-400 text-[10px] truncate">{{ item.description }}</p> -->
-                  </div>
-                </nuxt-link>
-              </template>
-            </template>
-          </div>
-        </div>
-      </ClientOnly>
+       
       <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
       <!-- Enhanced Backtop -->
       <el-backtop :right="24" :bottom="24"

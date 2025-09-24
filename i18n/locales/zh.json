@@ -21,13 +21,9 @@
   "header": {
     "navItems": {
       "music": "音乐",
-      "blog": "博客",
-      "forum": "论坛",
       "chat": "聊天",
       "games": "游戏",
-      "home": "首页",
-      "tv": "电视TV",
-      "tvbox": "TVbox接口"
+      "home": "首页"
     },
     "user": {
       "login": "登录",

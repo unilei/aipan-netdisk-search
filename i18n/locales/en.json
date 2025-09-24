@@ -21,13 +21,9 @@
   "header": {
     "navItems": {
       "music": "Music",
-      "blog": "Blog",
-      "forum": "Forum",
       "chat": "Chat",
       "games": "Games",
-      "home": "Home",
-      "tv": "TV",
-      "tvbox": "TVbox API"
+      "home": "Home"
     },
     "user": {
       "login": "Login",

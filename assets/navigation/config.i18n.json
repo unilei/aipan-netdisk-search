@@ -46,12 +46,6 @@
             "description": "享受本地音乐",
             "icon": "fa-music",
             "path": "/music/player"
-          },
-          {
-            "title": "新年倒计时",
-            "description": "倒计时迎接新的一年",
-            "icon": "fa-calendar-days",
-            "path": "/spring-festival"
           }
         ]
       },

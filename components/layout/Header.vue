@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
-import { useColorMode } from "#imports";
 import { useUserStore } from "~/stores/user";
 import NotificationIcon from "~/components/NotificationIcon.vue";
 import { useI18n } from "vue-i18n";
@@ -50,22 +49,6 @@ const navItems = [
     icon: {
       light: "fa-solid fa-music",
       dark: "fa-solid fa-music",
-    },
-  },
-  {
-    name: "header.navItems.blog",
-    path: "/blog",
-    icon: {
-      light: "fa-solid fa-blog",
-      dark: "fa-solid fa-blog",
-    },
-  },
-  {
-    name: "header.navItems.forum",
-    path: "/forum",
-    icon: {
-      light: "fa-solid fa-comments",
-      dark: "fa-solid fa-comments",
     },
   },
   {

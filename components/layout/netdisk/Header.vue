@@ -65,19 +65,7 @@ onBeforeUnmount(() => {
         <nuxt-link to="/" class="text-sm text-slate-600 dark:text-white">
           <i class="fa-solid fa-house"></i> {{ $t('header.navItems.home') }}
         </nuxt-link>
-        <nuxt-link to="/blog" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-book"></i> {{ $t('header.navItems.blog') }}
-        </nuxt-link>
-        <nuxt-link to="/forum" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-comments"></i> {{ $t('header.navItems.forum') }}
-        </nuxt-link>
-        <nuxt-link to="/tv" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tv') }}
-        </nuxt-link>
-        <nuxt-link to="/tvbox" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tvbox') }}
-        </nuxt-link>
-
+        
         <!-- 关于网站下拉菜单 -->
         <div class="relative" ref="aboutMenuRef">
           <div class="flex items-center cursor-pointer group"
@@ -119,26 +107,7 @@ onBeforeUnmount(() => {
             @click="isMenuOpen = false">
             <i class="fa-solid fa-house"></i> {{ $t('header.navItems.home') }}
           </nuxt-link>
-          <nuxt-link to="/blog"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-book"></i> {{ $t('header.navItems.blog') }}
-          </nuxt-link>
-          <nuxt-link to="/forum"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-comments"></i> {{ $t('header.navItems.forum') }}
-          </nuxt-link>
-          <nuxt-link to="/tv"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tv') }}
-          </nuxt-link>
-          <nuxt-link to="/tvbox"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tvbox') }}
-          </nuxt-link>
+          
 
           <!-- 移动端关于网站分组标题 -->
           <div class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-750">
