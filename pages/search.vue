@@ -1,20 +1,42 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-    <search-header :keyword="keyword" @search="search" class="mb-2"></search-header>
+    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300"
+  >
+    <search-header
+      :keyword="keyword"
+      @search="search"
+      class="mb-2"
+    ></search-header>
 
-    <!-- Category Tabs -->
-    <CategoryTabs :categories="categories" :current-category="category" :show-settings-button="!userStore.loggedIn"
-      :loading-progress="loadingProgress" @switch-category="switchCategory" />
+    <client-only>
+      <!-- Category Tabs -->
+      <CategoryTabs
+        :categories="categories"
+        :current-category="category"
+        :show-settings-button="!userStore.loggedIn"
+        :loading-progress="loadingProgress"
+        @switch-category="switchCategory"
+      />
+    </client-only>
 
     <!-- 群二维码显示在搜索结果前 -->
-    <div v-if="shouldShowInSearchResults && searchPerformed" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div
+      v-if="shouldShowInSearchResults && searchPerformed"
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
       <GroupQrCode variant="search-result" />
     </div>
 
     <!-- Main Content Area -->
-    <SearchContent :category="category" :sources="sources" :skeleton-loading="skeletonLoading" :vod-data="vodData"
-      :loading-status="loadingStatus" :loading-progress="loadingProgress" :search-performed="searchPerformed" />
+    <SearchContent
+      :category="category"
+      :sources="sources"
+      :skeleton-loading="skeletonLoading"
+      :vod-data="vodData"
+      :loading-status="loadingStatus"
+      :loading-progress="loadingProgress"
+      :search-performed="searchPerformed"
+    />
   </div>
 </template>
 
@@ -34,7 +56,7 @@ import { useSearchQueue } from "~/composables/useSearchQueue";
 import { useGroupQrConfig } from "~/composables/useGroupQrConfig";
 
 definePageMeta({
-  layout: "custom"
+  layout: "custom",
 });
 
 // 基础设置
@@ -55,30 +77,32 @@ const {
   categories,
   switchCategory,
   resetSearchState,
-  resetVodState
+  resetVodState,
 } = useSearchState();
 
 const { smartCache } = useSmartCache();
 const { handleSearch, searchByVod, cleanup } = useSearchLogic();
 const { getQuarkConfig } = useQuarkConfig();
 const { stopQueueProcessing } = useSearchQueue();
-const { shouldShowInSearchResults, getConfig: getGroupQrConfig } = useGroupQrConfig();
+const { shouldShowInSearchResults, getConfig: getGroupQrConfig } =
+  useGroupQrConfig();
 
 // 关键词
 const keyword = ref(decodeURIComponent(route.query.keyword));
 
 // 敏感词检查
 const checkSensitiveWords = (text) => {
-  return badWords.some(word => text.toLowerCase().includes(word.toLowerCase()));
+  return badWords.some((word) =>
+    text.toLowerCase().includes(word.toLowerCase())
+  );
 };
 const search = (searchText) => {
-  keyword.value = searchText
-  searchByKeyword()
-}
+  keyword.value = searchText;
+  searchByKeyword();
+};
 
 // 搜索函数
 const searchByKeyword = async () => {
-
   if (!keyword.value || keyword.value.trim() === "") {
     return;
   }
@@ -98,12 +122,17 @@ const searchByKeyword = async () => {
     loadingProgress.value.total = sourcesApiEndpoints.length;
     loadingProgress.value.completed = 0;
 
-    await handleSearch(keyword.value, sources, loadingProgress, sourcesApiEndpoints);
+    await handleSearch(
+      keyword.value,
+      sources,
+      loadingProgress,
+      sourcesApiEndpoints
+    );
   } else if (category.value === "onlineVod") {
     // 立即设置VOD加载状态
     loadingStatus.value.clear();
     // 为每个VOD源设置加载状态
-    vodConfigSources.value.forEach(vodApi => {
+    vodConfigSources.value.forEach((vodApi) => {
       loadingStatus.value.set(vodApi.api, true);
     });
 
@@ -133,18 +162,21 @@ onUnmounted(() => {
   cleanup();
 
   // 清理缓存系统
-  if (smartCache && typeof smartCache.destroy === 'function') {
+  if (smartCache && typeof smartCache.destroy === "function") {
     smartCache.destroy();
   }
 });
 
 // 监听路由变化
-watch(() => route.query.keyword, (newKeyword) => {
-  if (newKeyword) {
-    keyword.value = decodeURIComponent(newKeyword);
-    searchByKeyword();
+watch(
+  () => route.query.keyword,
+  (newKeyword) => {
+    if (newKeyword) {
+      keyword.value = decodeURIComponent(newKeyword);
+      searchByKeyword();
+    }
   }
-});
+);
 
 // 监听分类变化
 watch(category, (newCategory) => {
@@ -225,7 +257,6 @@ watch(category, (newCategory) => {
 }
 
 @keyframes pulse {
-
   0%,
   100% {
     opacity: 1;
