@@ -149,29 +149,6 @@ const handleNotificationClick = async (notification) => {
     await fetchUnreadCount();
   }
 
-  // 根据通知类型跳转到相应页面
-  if (notification.type === "reply" || notification.type === "topic") {
-    try {
-      // 先获取帖子信息，从中获取所属主题的slug
-      const response = await fetch(
-        `/api/forum/posts/${notification.relatedId}/topic-slug`,
-        {
-          headers: {
-            authorization: "Bearer " + useCookie("token").value,
-          },
-        }
-      );
-      const data = await response.json();
-      if (data.success && data.data.slug) {
-        navigateTo(`/forum/topic/${data.data.slug}`);
-      } else {
-        ElMessage.error("无法找到相关主题");
-      }
-    } catch (error) {
-      console.error("获取主题信息失败:", error);
-      ElMessage.error("获取主题信息失败");
-    }
-  }
 };
 
 // 格式化时间

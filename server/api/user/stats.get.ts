@@ -19,19 +19,11 @@ export default defineEventHandler(async (event) => {
       }
     })
 
-    // 获取用户的文章数量（所有状态）
-    const postCount = await prisma.blogPost.count({
-      where: {
-        authorId: userId
-      }
-    })
-
     return {
       code: 200,
       message: '获取统计数据成功',
       data: {
         resourceCount,
-        postCount
       }
     }
   } catch (error: any) {

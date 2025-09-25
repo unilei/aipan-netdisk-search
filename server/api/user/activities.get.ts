@@ -28,24 +28,7 @@ export default defineEventHandler(async (event) => {
         createdAt: true
       }
     })
-
-    // 获取最近的文章活动
-    const posts = await prisma.blogPost.findMany({
-      where: {
-        authorId: userId
-      },
-      orderBy: {
-        createdAt: 'desc'
-      },
-      take: 5,
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        createdAt: true
-      }
-    })
-
+ 
     // 合并并格式化活动数据
     const activities = [
       ...resources.map((resource: { id: number; name: string; status: string; createdAt: Date }) => ({
@@ -54,12 +37,7 @@ export default defineEventHandler(async (event) => {
         content: `${resource.status === 'published' ? '发布' : '提交'}了资源《${resource.name}》`,
         createdAt: resource.createdAt
       })),
-      ...posts.map((post: { id: number; title: string; status: string; createdAt: Date }) => ({
-        id: `post-${post.id}`,
-        type: 'post',
-        content: `${post.status === 'published' ? '发布' : '提交'}了文章《${post.title}》`,
-        createdAt: post.createdAt
-      }))
+       
     ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, 10) // 只返回最近10条活动
 
