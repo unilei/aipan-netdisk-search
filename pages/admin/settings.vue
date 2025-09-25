@@ -11,6 +11,78 @@
                 </div>
             </div>
 
+            <!-- 群二维码配置 -->
+            <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-lg font-semibold">群二维码配置</h2>
+                        <el-tag v-if="groupQrForm.enabled" type="success" size="small">已启用</el-tag>
+                        <el-tag v-else type="info" size="small">已禁用</el-tag>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <el-switch v-model="groupQrForm.enabled" active-text="启用显示" inactive-text="关闭显示" class="ml-2"
+                            @change="handleGroupQrEnabledChange" />
+                    </div>
+                </div>
+
+                <el-form ref="groupQrFormRef" :model="groupQrForm" :rules="groupQrRules" label-width="120px">
+                    <el-form-item label="标题" prop="title">
+                        <el-input v-model="groupQrForm.title" placeholder="请输入显示标题"
+                            :disabled="!groupQrForm.enabled" />
+                        <div class="mt-1 text-xs text-gray-500">
+                            在搜索结果和页面头部显示的标题文字
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item label="描述" prop="description">
+                        <el-input v-model="groupQrForm.description" type="textarea" :rows="2" placeholder="请输入描述信息"
+                            :disabled="!groupQrForm.enabled" />
+                        <div class="mt-1 text-xs text-gray-500">
+                            显示在二维码下方的描述文字
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item label="二维码图片" prop="qrCodeUrl">
+                        <el-input v-model="groupQrForm.qrCodeUrl" placeholder="请输入二维码图片链接"
+                            :disabled="!groupQrForm.enabled">
+                            <template #prepend>
+                                <span>URL</span>
+                            </template>
+                        </el-input>
+                        <div class="mt-1 text-xs text-gray-500">
+                            请输入二维码图片的完整URL地址，支持 https:// 或 http:// 链接
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item label="显示位置">
+                        <div class="space-y-2">
+                            <el-checkbox v-model="groupQrForm.showInHeader" :disabled="!groupQrForm.enabled">
+                                页面头部（右上角）
+                            </el-checkbox>
+                            <br>
+                            <el-checkbox v-model="groupQrForm.showInSearchResults" :disabled="!groupQrForm.enabled">
+                                搜索结果首条
+                            </el-checkbox>
+                        </div>
+                        <div class="mt-1 text-xs text-gray-500">
+                            选择二维码显示的位置
+                        </div>
+                    </el-form-item>
+
+                    <el-form-item>
+                        <div class="flex items-center gap-4">
+                            <el-button type="primary" @click="handleGroupQrSubmit" :loading="groupQrLoading"
+                                :disabled="!groupQrForm.enabled">
+                                保存配置
+                            </el-button>
+                            <el-button @click="resetGroupQrForm" :disabled="!groupQrForm.enabled">
+                                重置表单
+                            </el-button>
+                        </div>
+                    </el-form-item>
+                </el-form>
+            </div>
+
             <!-- 音乐验证码配置 -->
             <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
                 <div class="flex items-center justify-between mb-4">
@@ -152,11 +224,21 @@ definePageMeta({
 const formRef = ref(null);
 const loading = ref(false)
 const musicLoading = ref(false)
+const groupQrLoading = ref(false)
 const resourceTypes = ref([])
 
 const musicForm = reactive({
     enabled: true,
     password: 'ailookzy.com2025'
+});
+
+const groupQrForm = reactive({
+    enabled: true,
+    title: '为防止网站和谐，请进ailook群获取最新网址',
+    description: '长按识别二维码或扫码进群',
+    qrCodeUrl: '',
+    showInHeader: true,
+    showInSearchResults: true
 });
 
 const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
@@ -176,6 +258,37 @@ const musicRules = {
     password: [
         { required: true, message: '请输入访问密码', trigger: 'blur' },
         { min: 6, message: '密码长度不能少于6位', trigger: 'blur' }
+    ]
+};
+
+const groupQrRules = {
+    title: [
+        { required: true, message: '请输入标题', trigger: 'blur' },
+        { min: 1, max: 100, message: '标题长度在 1 到 100 个字符', trigger: 'blur' }
+    ],
+    description: [
+        { max: 200, message: '描述长度不能超过 200 个字符', trigger: 'blur' }
+    ],
+    qrCodeUrl: [
+        {
+            validator: (rule, value, callback) => {
+                if (!groupQrForm.enabled) {
+                    callback();
+                    return;
+                }
+                if (!value || value.trim() === '') {
+                    callback(new Error('启用显示时二维码图片链接不能为空'));
+                    return;
+                }
+                try {
+                    new URL(value);
+                    callback();
+                } catch (error) {
+                    callback(new Error('请输入有效的URL地址'));
+                }
+            },
+            trigger: 'blur'
+        }
     ]
 };
 
@@ -410,6 +523,7 @@ const handleSubmit = async () => {
 
 // 音乐验证码相关方法
 const musicFormRef = ref(null);
+const groupQrFormRef = ref(null);
 
 const handleMusicEnabledChange = (value) => {
     if (!value) {
@@ -507,10 +621,112 @@ const getMusicConfig = async () => {
     }
 };
 
+// 群二维码相关方法
+const handleGroupQrEnabledChange = (value) => {
+    if (!value) {
+        ElMessageBox.confirm(
+            '关闭群二维码显示将隐藏所有相关内容，是否继续？',
+            '警告',
+            {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }
+        ).then(() => {
+            handleGroupQrSubmit();
+        }).catch(() => {
+            groupQrForm.enabled = true;
+        });
+    } else {
+        handleGroupQrSubmit();
+    }
+};
+
+const resetGroupQrForm = () => {
+    ElMessageBox.confirm(
+        '确定要重置群二维码配置吗？',
+        '提示',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }
+    ).then(() => {
+        groupQrFormRef.value?.resetFields();
+        groupQrForm.title = '为防止网站和谐，请进ailook群获取最新网址';
+        groupQrForm.description = '长按识别二维码或扫码进群';
+        groupQrForm.qrCodeUrl = '';
+        groupQrForm.showInHeader = true;
+        groupQrForm.showInSearchResults = true;
+        handleGroupQrSubmit();
+    });
+};
+
+const handleGroupQrSubmit = async () => {
+    if (!groupQrFormRef.value) return;
+
+    try {
+        if (groupQrForm.enabled) {
+            const valid = await groupQrFormRef.value.validate();
+            if (!valid) return;
+        }
+
+        groupQrLoading.value = true;
+
+        const res = await $fetch('/api/admin/settings/group-qr', {
+            method: 'POST',
+            body: {
+                enabled: groupQrForm.enabled,
+                title: groupQrForm.title,
+                description: groupQrForm.description,
+                qrCodeUrl: groupQrForm.qrCodeUrl,
+                showInHeader: groupQrForm.showInHeader,
+                showInSearchResults: groupQrForm.showInSearchResults
+            },
+            headers: {
+                Authorization: `Bearer ${useCookie('token').value}`
+            }
+        });
+
+        if (res.code === 200) {
+            ElMessage.success('群二维码配置保存成功');
+        } else {
+            ElMessage.error(res.msg || '保存失败');
+        }
+    } catch (error) {
+        console.error('保存群二维码配置失败:', error);
+        ElMessage.error('保存配置失败');
+    } finally {
+        groupQrLoading.value = false;
+    }
+};
+
+const getGroupQrConfig = async () => {
+    try {
+        const res = await $fetch('/api/admin/settings/group-qr', {
+            headers: {
+                Authorization: `Bearer ${useCookie('token').value}`
+            }
+        });
+        if (res.code === 200) {
+            groupQrForm.enabled = res.data.enabled ?? true;
+            groupQrForm.title = res.data.title || '为防止网站和谐，请进ailook群获取最新网址';
+            groupQrForm.description = res.data.description || '长按识别二维码或扫码进群';
+            groupQrForm.qrCodeUrl = res.data.qrCodeUrl || '';
+            groupQrForm.showInHeader = res.data.showInHeader ?? true;
+            groupQrForm.showInSearchResults = res.data.showInSearchResults ?? true;
+        }
+    } catch (error) {
+        console.error('获取群二维码配置失败:', error);
+        ElMessage.error('获取群二维码配置失败');
+    }
+};
+
 onMounted(() => {
     getResourceTypes();
     getConfig();
     getMusicConfig();
+    getGroupQrConfig();
 });
 </script>
 

@@ -7,6 +7,11 @@
     <CategoryTabs :categories="categories" :current-category="category" :show-settings-button="!userStore.loggedIn"
       :loading-progress="loadingProgress" @switch-category="switchCategory" />
 
+    <!-- 群二维码显示在搜索结果前 -->
+    <div v-if="shouldShowInSearchResults && searchPerformed" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <GroupQrCode variant="search-result" />
+    </div>
+
     <!-- Main Content Area -->
     <SearchContent :category="category" :sources="sources" :skeleton-loading="skeletonLoading" :vod-data="vodData"
       :loading-status="loadingStatus" :loading-progress="loadingProgress" :search-performed="searchPerformed" />
@@ -17,6 +22,7 @@
 import SearchHeader from "~/components/search/SearchHeader.vue";
 import CategoryTabs from "~/components/search/CategoryTabs.vue";
 import SearchContent from "~/components/search/SearchContent.vue";
+import GroupQrCode from "~/components/GroupQrCode.vue";
 import sourcesApiEndpoints from "~/assets/vod/clouddrive.json";
 import { badWords } from "~/utils/sensitiveWords";
 import { useUserStore } from "~/stores/user";
@@ -25,6 +31,7 @@ import { useSearchState } from "~/composables/useSearchState";
 import { useSearchLogic } from "~/composables/useSearchLogic";
 import { useQuarkConfig } from "~/composables/useQuarkConfig";
 import { useSearchQueue } from "~/composables/useSearchQueue";
+import { useGroupQrConfig } from "~/composables/useGroupQrConfig";
 
 definePageMeta({
   layout: "custom"
@@ -55,6 +62,7 @@ const { smartCache } = useSmartCache();
 const { handleSearch, searchByVod, cleanup } = useSearchLogic();
 const { getQuarkConfig } = useQuarkConfig();
 const { stopQueueProcessing } = useSearchQueue();
+const { shouldShowInSearchResults, getConfig: getGroupQrConfig } = useGroupQrConfig();
 
 // 关键词
 const keyword = ref(decodeURIComponent(route.query.keyword));
@@ -111,6 +119,7 @@ onMounted(async () => {
   }
 
   await getQuarkConfig();
+  await getGroupQrConfig();
   await loadSources();
 
   if (keyword.value && keyword.value.trim() !== "") {
