@@ -71,7 +71,7 @@ else
 fi
 
 # 设置镜像名称和标签
-IMAGE_NAME=${1:-"unilei/aipan-netdisk-search"}
+IMAGE_NAME=${1:-"unilei/aipan-netdisk-search-simple"}
 TAG=${2:-"latest"}
 
 info "开始构建多平台镜像: ${IMAGE_NAME}:${TAG}"

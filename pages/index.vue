@@ -150,7 +150,7 @@ const stopRouteWatcher = watch(
           <div>
             <h1
               class="text-2xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-              ailookzy.com
+              爱看网盘资源
             </h1>
             <p class="text-gray-600 text-left text-xs dark:text-gray-400">
               {{ $t('subtitle') }}
@@ -158,6 +158,7 @@ const stopRouteWatcher = watch(
           </div>
         </div>
       </div>
+      
       <div class="max-w-[1240px] mx-auto mt-[20px] md:mt-[30px] px-4 md:px-0">
         <div class="w-full md:w-[700px] mx-auto">
           <div class="relative group">

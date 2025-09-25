@@ -156,74 +156,6 @@ exports.Prisma.ResourceScalarFieldEnum = {
   creatorId: 'creatorId'
 };
 
-exports.Prisma.PostScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  slug: 'slug',
-  content: 'content',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  creatorId: 'creatorId'
-};
-
-exports.Prisma.PostCategoryScalarFieldEnum = {
-  id: 'id',
-  name: 'name'
-};
-
-exports.Prisma.PostToCategoryScalarFieldEnum = {
-  postId: 'postId',
-  categoryId: 'categoryId'
-};
-
-exports.Prisma.AlistScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  link: 'link',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  creatorId: 'creatorId'
-};
-
-exports.Prisma.CommentScalarFieldEnum = {
-  id: 'id',
-  content: 'content',
-  author: 'author',
-  email: 'email',
-  website: 'website',
-  avatar: 'avatar',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  postId: 'postId',
-  parentId: 'parentId',
-  likes: 'likes',
-  deleteToken: 'deleteToken'
-};
-
-exports.Prisma.BlogCategoryScalarFieldEnum = {
-  id: 'id',
-  name: 'name'
-};
-
-exports.Prisma.BlogPostToCategoryScalarFieldEnum = {
-  postId: 'postId',
-  categoryId: 'categoryId'
-};
-
-exports.Prisma.BlogPostScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  slug: 'slug',
-  content: 'content',
-  tags: 'tags',
-  status: 'status',
-  rejectionReason: 'rejectionReason',
-  postId: 'postId',
-  authorId: 'authorId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.UserResourceScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -264,44 +196,6 @@ exports.Prisma.UserVodConfigScalarFieldEnum = {
   config: 'config',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ForumCategoryScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description',
-  slug: 'slug',
-  order: 'order',
-  icon: 'icon',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ForumTopicScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  content: 'content',
-  slug: 'slug',
-  isSticky: 'isSticky',
-  isLocked: 'isLocked',
-  viewCount: 'viewCount',
-  status: 'status',
-  categoryId: 'categoryId',
-  authorId: 'authorId',
-  lastActivityAt: 'lastActivityAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ForumPostScalarFieldEnum = {
-  id: 'id',
-  content: 'content',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  topicId: 'topicId',
-  authorId: 'authorId',
-  parentId: 'parentId'
 };
 
 exports.Prisma.NotificationScalarFieldEnum = {
@@ -420,21 +314,10 @@ exports.Prisma.ModelName = {
   User: 'User',
   ResourceType: 'ResourceType',
   Resource: 'Resource',
-  Post: 'Post',
-  PostCategory: 'PostCategory',
-  PostToCategory: 'PostToCategory',
-  Alist: 'Alist',
-  Comment: 'Comment',
-  BlogCategory: 'BlogCategory',
-  BlogPostToCategory: 'BlogPostToCategory',
-  BlogPost: 'BlogPost',
   UserResource: 'UserResource',
   SystemSettings: 'SystemSettings',
   SearchRecord: 'SearchRecord',
   UserVodConfig: 'UserVodConfig',
-  ForumCategory: 'ForumCategory',
-  ForumTopic: 'ForumTopic',
-  ForumPost: 'ForumPost',
   Notification: 'Notification',
   ChatRoom: 'ChatRoom',
   ChatRoomUser: 'ChatRoomUser',

@@ -508,7 +508,7 @@ version: '3.8'
 services:
   # 数据库迁移服务
   prisma-migrate:
-    image: unilei/aipan-netdisk-search:latest
+    image: unilei/aipan-netdisk-search-simple:latest
     container_name: aipan-prisma-migrate
     restart: "no"
     environment:
@@ -526,7 +526,7 @@ services:
 
   # 主应用服务
   aipan-netdisk-search:
-    image: unilei/aipan-netdisk-search:latest
+    image: unilei/aipan-netdisk-search-simple:latest
     container_name: aipan-netdisk-search-app
     restart: always
     ports:
@@ -622,7 +622,7 @@ EOL
 # 拉取镜像
 pull_images() {
   info "拉取最新的Docker镜像..."
-  docker pull unilei/aipan-netdisk-search:latest
+  docker pull unilei/aipan-netdisk-search-simple:latest
   docker pull postgres:15-alpine
   docker pull redis:alpine
   info "镜像拉取完成 ✓"
@@ -1069,7 +1069,7 @@ regenerate_prisma_client() {
   docker run --rm \
     --name aipan-prisma-generate \
     -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
-    unilei/aipan-netdisk-search:latest \
+    unilei/aipan-netdisk-search-simple:latest \
     /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Generating Prisma client with ESM fix')\""
   
   if [ $? -eq 0 ]; then
@@ -1143,7 +1143,7 @@ run_database_migration() {
     --network aipan-network \
     -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
     -e SHADOW_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}" \
-    unilei/aipan-netdisk-search:latest \
+    unilei/aipan-netdisk-search-simple:latest \
     /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" npx prisma migrate deploy && npx prisma db seed"
   
   if [ $? -eq 0 ]; then
@@ -1258,7 +1258,7 @@ update_docker_image() {
   
   if [[ ! "$pull_latest" =~ ^[Nn]$ ]]; then
     info "拉取最新的Docker镜像..."
-    docker pull unilei/aipan-netdisk-search:latest
+    docker pull unilei/aipan-netdisk-search-simple:latest
     
     if [ $? -ne 0 ]; then
       error "拉取镜像失败，请检查网络连接或镜像名称"

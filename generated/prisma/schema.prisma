@@ -33,13 +33,8 @@ model User {
 
   resources     Resource[] // 一个用户可以有多个资源
   resourceTypes ResourceType[] // 一个用户可以创建多种资源类型
-  posts         Post[] // 用户的博客文章
-  alist         Alist[]
-  blogPosts     BlogPost[] // 用户的博客文章
   userResources UserResource[] // 用户的资源投稿
   vodConfigs    UserVodConfig[]
-  forumTopics   ForumTopic[] // 用户的论坛主题
-  forumPosts    ForumPost[] // 用户的论坛回复
   notifications Notification[] // 用户的通知
 
   // Chat related
@@ -94,118 +89,6 @@ model Resource {
   @@index([typeId])
   @@index([createdAt])
   @@index([name])
-}
-
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  slug      String   @unique
-  content   String   @db.Text // 文章内容
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  creatorId Int
-
-  categories PostToCategory[]
-  comments   Comment[]
-
-  creator User @relation(fields: [creatorId], references: [id])
-
-  @@index([creatorId])
-  @@index([createdAt])
-  @@index([title])
-}
-
-model PostCategory {
-  id   Int    @id @default(autoincrement())
-  name String @unique @db.VarChar(255)
-
-  posts PostToCategory[] // 使用中间表实现多对多关系
-}
-
-// 中间表，用于表示文章和分类的多对多关系
-model PostToCategory {
-  postId     Int
-  categoryId Int
-
-  post     Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
-  category PostCategory @relation(fields: [categoryId], references: [id])
-
-  @@id([postId, categoryId]) // 组合主键，确保唯一性
-}
-
-model Alist {
-  id        Int      @id @default(autoincrement())
-  name      String
-  link      String // alist 源链接
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  creatorId Int
-
-  creator User @relation(fields: [creatorId], references: [id])
-}
-
-model Comment {
-  id          Int       @id @default(autoincrement())
-  content     String    @db.Text
-  author      String?
-  email       String?
-  website     String?
-  avatar      String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  postId      Int
-  parentId    Int? // 用于回复功能
-  post        Post      @relation(fields: [postId], references: [id])
-  parent      Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
-  replies     Comment[] @relation("CommentToComment")
-  likes       Int       @default(0)
-  deleteToken String    @unique // 用于评论删除验证
-
-  @@index([postId])
-  @@index([parentId])
-}
-
-// 博客分类模型
-model BlogCategory {
-  id   Int    @id @default(autoincrement())
-  name String @unique @db.VarChar(255)
-
-  posts BlogPostToCategory[] // 使用中间表实现多对多关系
-}
-
-// 博客文章和分类的多对多关系中间表
-model BlogPostToCategory {
-  postId     Int
-  categoryId Int
-
-  post     BlogPost     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  category BlogCategory @relation(fields: [categoryId], references: [id])
-
-  @@id([postId, categoryId]) // 组合主键，确保唯一性
-}
-
-// 博客文章模型
-model BlogPost {
-  id              Int      @id @default(autoincrement())
-  title           String
-  slug            String   @unique
-  content         String   @db.Text
-  tags            String[]
-  status          String   @default("pending") // pending, published, rejected
-  rejectionReason String?  @db.Text // 拒绝原因
-  postId          Int? // 关联到已发布的 Post 记录
-  author          User     @relation(fields: [authorId], references: [id])
-  authorId        Int
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  categories BlogPostToCategory[] // 使用中间表实现多对多关系
-
-  @@index([authorId])
-  @@index([status])
-  @@index([createdAt])
-  @@index([title])
-  @@index([tags])
 }
 
 // 新增的用户资源模型
@@ -273,69 +156,6 @@ model UserVodConfig {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-}
-
-// 论坛板块模型
-model ForumCategory {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique
-  description String   @db.Text
-  slug        String   @unique
-  order       Int      @default(0)
-  icon        String? // 图标
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  topics ForumTopic[]
-
-  @@index([order])
-  @@index([createdAt])
-}
-
-// 论坛主题模型
-model ForumTopic {
-  id             Int           @id @default(autoincrement())
-  title          String
-  content        String
-  slug           String        @unique
-  isSticky       Boolean       @default(false)
-  isLocked       Boolean       @default(false)
-  viewCount      Int           @default(0)
-  status         String        @default("pending")
-  categoryId     Int
-  authorId       Int
-  lastActivityAt DateTime      @default(now())
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  author         User          @relation(fields: [authorId], references: [id])
-  category       ForumCategory @relation(fields: [categoryId], references: [id])
-  posts          ForumPost[]
-
-  @@index([categoryId])
-  @@index([authorId])
-  @@index([lastActivityAt])
-  @@index([status])
-}
-
-// 论坛回复模型
-model ForumPost {
-  id        Int         @id @default(autoincrement())
-  content   String
-  status    String      @default("pending")
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  topicId   Int
-  authorId  Int
-  parentId  Int? // 添加父回复ID字段，用于回复的回复功能
-  author    User        @relation(fields: [authorId], references: [id])
-  topic     ForumTopic  @relation(fields: [topicId], references: [id])
-  parent    ForumPost?  @relation("PostToPost", fields: [parentId], references: [id], onDelete: SetNull)
-  replies   ForumPost[] @relation("PostToPost")
-
-  @@index([topicId])
-  @@index([authorId])
-  @@index([status])
-  @@index([parentId])
 }
 
 // 通知模型
