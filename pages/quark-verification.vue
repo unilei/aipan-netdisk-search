@@ -22,7 +22,7 @@
               <p class="font-medium mb-2">验证说明</p>
               <div class="space-y-2">
                 <p>为防止资源滥用，请先转存到您的夸克网盘，再重新分享并提交您的分享链接，验证通过后即可访问站点。</p>
-                <p class="text-xs">每天第一次操作需要进行验证，当天 23:59 之前有效，次日需要重新验证。</p>
+                <p class="text-xs">验证后有效时间：{{ getAccessDurationText() }}。</p>
                 <p class="text-xs text-orange-600 dark:text-orange-400">注意：不同的浏览器需要分别验证。</p>
               </div>
             </div>
@@ -174,12 +174,22 @@ const setAccessState = (value) => {
   if (value === null) {
     window.localStorage.removeItem('quark_access_verification');
   } else {
-    // 设置验证状态，使用当天的时间戳
-    const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
-    window.localStorage.setItem('quark_access_verification', JSON.stringify({
-      timestamp: todayStart.getTime()
-    }));
+    // 设置验证状态
+    const accessDurationMinutes = shareConfig.value.accessDurationMinutes || 1440;
+    
+    if (accessDurationMinutes === 1440) {
+      // 默认24小时：使用当天开始时间（兼容原有逻辑）
+      const today = new Date();
+      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+      window.localStorage.setItem('quark_access_verification', JSON.stringify({
+        timestamp: todayStart.getTime()
+      }));
+    } else {
+      // 自定义时长：使用当前时间戳
+      window.localStorage.setItem('quark_access_verification', JSON.stringify({
+        timestamp: Date.now()
+      }));
+    }
   }
 };
 
@@ -196,6 +206,37 @@ const loadShareConfig = async () => {
     }
   } catch (error) {
     console.error('加载分享配置失败:', error);
+  }
+};
+
+// 获取访问时长文本
+const getAccessDurationText = () => {
+  const minutes = shareConfig.value.accessDurationMinutes;
+  
+  // 默认24小时（每日过期模式）
+  if (minutes === 1440) {
+    return '当天 23:59 之前有效，次日需重新验证';
+  }
+  
+  // 自定义时长模式
+  if (minutes >= 1440) {
+    const days = Math.floor(minutes / 1440);
+    const remainingHours = Math.floor((minutes % 1440) / 60);
+    if (remainingHours === 0) {
+      return `${days}天`;
+    } else {
+      return `${days}天${remainingHours}小时`;
+    }
+  } else if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    if (remainingMinutes === 0) {
+      return `${hours}小时`;
+    } else {
+      return `${hours}小时${remainingMinutes}分钟`;
+    }
+  } else {
+    return `${minutes}分钟`;
   }
 };
 

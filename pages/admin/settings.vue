@@ -160,7 +160,7 @@ const musicForm = reactive({
 });
 
 const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
-const DEFAULT_ACCESS_DURATION = 60;
+const DEFAULT_ACCESS_DURATION = 1440;
 
 const form = reactive({
     apiUrl: '',

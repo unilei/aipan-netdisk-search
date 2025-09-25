@@ -1,7 +1,7 @@
 import prisma from "~/lib/prisma";
 
 const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
-const DEFAULT_ACCESS_DURATION = 60;
+const DEFAULT_ACCESS_DURATION = 1440;
 
 const DEFAULT_CONFIG = {
     quarkCookie: '',

@@ -175,7 +175,8 @@ const handleLinkClick = async (e, link) => {
     // 验证功能已启用，检查验证状态
     const { checkQuarkVerification } = await import('@/middleware/quark-verification.ts');
     
-    if (!checkQuarkVerification()) {
+    const isVerified = await checkQuarkVerification();
+    if (!isVerified) {
       // 需要验证，将链接加密后跳转到验证页面
       try {
         // 使用服务器端加密API

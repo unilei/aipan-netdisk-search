@@ -1,5 +1,5 @@
 // 检查网盘链接访问验证状态
-export const checkQuarkVerification = () => {
+export const checkQuarkVerification = async () => {
   // 只在客户端执行
   if (typeof window === 'undefined') return false;
   
@@ -10,13 +10,35 @@ export const checkQuarkVerification = () => {
     const data = JSON.parse(stored);
     const now = Date.now();
     
-    // 检查是否过期（每日23:59过期）
-    const today = new Date();
-    const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0);
+    // 获取配置的访问时长
+    let accessDurationMinutes = 1440; // 默认24小时
+    try {
+      const configRes = await $fetch('/api/quark/setting') as any;
+      if (configRes?.data?.accessDurationMinutes) {
+        accessDurationMinutes = Number(configRes.data.accessDurationMinutes);
+      }
+    } catch (error) {
+      console.warn('获取访问时长配置失败，使用默认值:', error);
+    }
     
-    if (now >= todayEnd.getTime() || now < data.timestamp) {
-      window.localStorage.removeItem('quark_access_verification');
-      return false;
+    // 判断使用哪种过期模式
+    if (accessDurationMinutes === 1440) {
+      // 默认24小时：使用每日过期模式（当天23:59过期）
+      const today = new Date();
+      const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1, 0, 0, 0, 0);
+      
+      if (now >= todayEnd.getTime() || now < data.timestamp) {
+        window.localStorage.removeItem('quark_access_verification');
+        return false;
+      }
+    } else {
+      // 自定义时长：使用精确的分钟计算
+      const expirationTime = data.timestamp + (accessDurationMinutes * 60 * 1000);
+      
+      if (now >= expirationTime || now < data.timestamp) {
+        window.localStorage.removeItem('quark_access_verification');
+        return false;
+      }
     }
     
     return true;
