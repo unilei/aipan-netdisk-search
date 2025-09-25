@@ -28,7 +28,7 @@ export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
-      title: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定',
+      title: 'ailookzy-爱看网盘资源搜索',
       htmlAttrs: {
         lang: 'zh-CN'
       },
@@ -38,7 +38,7 @@ export default defineNuxtConfig({
           href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
         },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'canonical', href: 'https://www.aipan.me' },
+        { rel: 'canonical', href: 'https://www.ailookzy.com' },
       ],
       meta: [
         { charset: 'utf-8' },
@@ -46,41 +46,41 @@ export default defineNuxtConfig({
         {
           name: 'keywords',
           content:
-            'AIPAN,爱盼,数字生活伙伴,网盘搜索,资源搜索,在线音乐,博客平台,论坛社区,休闲游戏,电视直播,FM电台,影视资源,音乐播放器,TVBox,百度网盘,阿里云盘,夸克网盘,一站搞定',
+            'ailookzy,爱看,网盘搜索,资源搜索,百度网盘,阿里云盘,夸克网盘,网盘资源,影视资源,音乐资源,软件下载,文档搜索,免费资源,网盘搜索引擎',
         },
         {
           name: 'description',
           content:
-            'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体。支持百度网盘、阿里云盘、夸克网盘搜索，海量影视音乐资源随心享用。一个网站，满足你的所有数字娱乐需求！',
+            'ailookzy.com是专业的网盘资源搜索引擎，支持百度网盘、阿里云盘、夸克网盘资源搜索。提供海量影视、音乐、软件、文档等资源免费搜索下载，是您寻找网盘资源的最佳选择！',
         },
-        { name: 'author', content: 'AIPAN.ME' },
-        { name: 'publisher', content: 'AIPAN.ME' },
+        { name: 'author', content: 'ailookzy.com' },
+        { name: 'publisher', content: 'ailookzy.com' },
         { name: 'robots', content: 'index, follow' },
         { name: 'format-detection', content: 'telephone=no' },
         { name: 'theme-color', content: '#3b82f6' },
         // Open Graph
         { property: 'og:type', content: 'website' },
-        { property: 'og:site_name', content: '爱盼' },
-        { property: 'og:title', content: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定' },
+        { property: 'og:site_name', content: '爱看网盘资源搜索' },
+        { property: 'og:title', content: 'ailookzy.com - 爱看网盘资源搜索 | 百度网盘·阿里云盘·夸克网盘资源搜索' },
         {
           property: 'og:description',
           content:
-            'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体，一个网站满足所有数字娱乐需求。',
+            'ailookzy.com是专业的网盘资源搜索引擎，支持百度网盘、阿里云盘、夸克网盘资源搜索，海量影视、音乐、软件资源免费搜索下载。',
         },
-        { property: 'og:image', content: 'https://www.aipan.me/default-og-image.png' },
+        { property: 'og:image', content: 'https://www.ailookzy.com/default-og-image.png' },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
-        { property: 'og:url', content: 'https://www.aipan.me' },
+        { property: 'og:url', content: 'https://www.ailookzy.com' },
         { property: 'og:locale', content: 'zh_CN' },
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:site', content: '@aipan_me' },
-        { name: 'twitter:title', content: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定' },
+        { name: 'twitter:site', content: '@ailookzy' },
+        { name: 'twitter:title', content: 'ailookzy.com - 爱看网盘资源搜索 | 百度网盘·阿里云盘·夸克网盘资源搜索' },
         {
           name: 'twitter:description',
-          content: '你的数字生活伙伴！资源搜索、音乐播放、社区交流、休闲游戏、电视直播，一个网站满足所有需求！',
+          content: '专业的网盘资源搜索引擎！支持百度网盘、阿里云盘、夸克网盘资源搜索，海量影视、音乐、软件资源免费搜索下载。',
         },
-        { name: 'twitter:image', content: 'https://www.aipan.me/default-og-image.png' },
+        { name: 'twitter:image', content: 'https://www.ailookzy.com/default-og-image.png' },
         // 统一 referrer 策略
         { name: 'referrer', content: 'strict-origin-when-cross-origin' },
       ],
@@ -216,10 +216,10 @@ export default defineNuxtConfig({
     exclude: ['/admin/**'],
   },
   site: {
-    name: 'AIPAN.ME - 你的数字生活伙伴',
-    url: 'https://www.aipan.me',
+    name: 'ailookzy.com - 爱看网盘资源搜索',
+    url: 'https://www.ailookzy.com',
     description:
-      'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体，一个网站满足所有数字娱乐需求。',
+      'ailookzy.com是专业的网盘资源搜索引擎，支持百度网盘、阿里云盘、夸克网盘资源搜索，提供海量影视、音乐、软件等资源免费搜索下载。',
   },
   compatibilityDate: '2025-07-12',
 })

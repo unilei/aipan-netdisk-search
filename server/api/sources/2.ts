@@ -161,8 +161,8 @@ export default defineEventHandler(async (event) => {
         const referer = getRequestHeader(event, 'referer') || '';
         const clientIP = getRequestIP(event) || 'unknown';
 
-        const isValidDomain = host.endsWith('aipan.me') ||
-            referer.includes('aipan.me') || host.includes('localhost');
+        const isValidDomain = host.endsWith('ailookzy.com') ||
+            referer.includes('ailookzy.com') || host.includes('localhost');
 
         if (!isValidDomain) {
             return {

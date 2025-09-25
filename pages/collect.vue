@@ -5,11 +5,11 @@ definePageMeta({
 
 // SEO配置
 useHead({
-    title: "收藏发布页 - AIPAN.ME",
+    title: "收藏发布页 - ailookzy.com",
     meta: [
         {
             name: "description",
-            content: "爱盼网盘搜索引擎的收藏网站发布页，获取最新的发布地址和更新信息。",
+            content: "爱看网盘资源搜索引擎的收藏网站发布页，获取最新的发布地址和更新信息。",
         },
     ],
 });
@@ -36,10 +36,10 @@ useHead({
                         请收藏我们的永久发布页，以便随时获取最新的网站地址：
                     </p>
                     <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-4">
-                        <a href="https://link0.me/aipan" target="_blank"
+                        <a href="https://www.ailookzy.com" target="_blank"
                             class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors duration-300 flex items-center">
                             <i class="fas fa-external-link-alt mr-2"></i>
-                            https://link0.me/aipan
+                            https://www.ailookzy.com
                         </a>
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">

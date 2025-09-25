@@ -8,7 +8,7 @@ Disallow: /login
 Disallow: /register
 
 # Sitemap
-Sitemap: https://www.aipan.me/sitemap.xml
+Sitemap: https://www.ailookzy.com/sitemap.xml
 
 # Crawl-delay for better server performance
 Crawl-delay: 1

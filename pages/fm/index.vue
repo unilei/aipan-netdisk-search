@@ -101,7 +101,7 @@ onUnmounted(() => {
 
 // SEO配置
 useHead({
-  title: 'FM电台 - AIPAN.ME',
+  title: 'FM电台 - ailookzy.com',
   meta: [
     { name: 'description', content: '在线收听各类精选电台频道，包括古典音乐、爵士、流行音乐等多种类型。' },
     { name: 'keywords', content: 'FM电台,在线电台,音乐电台,网络电台,古典音乐,爵士音乐,流行音乐' },

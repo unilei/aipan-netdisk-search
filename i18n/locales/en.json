@@ -1,17 +1,17 @@
 {
-  "welcome": "Welcome to AIPAN",
+  "welcome": "Welcome to ailookzy",
   "search": "Search",
-  "app_title": "AIPAN - Unlimited Resources & Entertainment",
-  "subtitle": "Resources at Will, Unlimited Entertainment",
+  "app_title": "ailookzy - Professional Netdisk Resource Search Engine",
+  "subtitle": "Professional Netdisk Resource Search, Find Everything You Need",
   "search_placeholder": "Enter keywords to search",
   "sensitive_word_alert": "Please do not enter sensitive words",
   "meta": {
-    "title": "AIPAN.ME - Your Digital Life Companion | Search·Music·Community·Games·Live TV All-in-One",
-    "description": "AIPAN.ME is your digital life companion! Integrating resource search, music player, community interaction, casual games, and live TV. Support Baidu Netdisk, Aliyun Drive, Quark Drive. One website for all your digital entertainment needs!",
-    "keywords": "AIPAN,digital life companion,cloud drive search,online music,blog platform,forum community,casual games,live TV,FM radio,entertainment platform,music player,TVBox,baidu netdisk,aliyun drive,quark drive,all-in-one"
+    "title": "ailookzy.com - Professional Netdisk Resource Search | Baidu Netdisk·Aliyun Drive·Quark Drive Resource Search",
+    "description": "ailookzy.com is a professional netdisk resource search engine, supporting Baidu Netdisk, Aliyun Drive, and Quark Drive resource search. Provides massive movies, music, software and other resources for free search and download.",
+    "keywords": "ailookzy,netdisk search,resource search,baidu netdisk,aliyun drive,quark drive,netdisk resources,movie resources,music resources,software download,document search,free resources,netdisk search engine"
   },
   "broadcast": {
-    "message": "Bookmark our site: https://link0.me/aipan"
+    "message": "Bookmark our site: https://www.ailookzy.com"
   },
   "language": {
     "switch": "Switch Language",
@@ -40,7 +40,7 @@
     }
   },
   "footer": {
-    "copyright": "© 2025 AIPAN.ME - Resources at Will, Unlimited Entertainment",
+    "copyright": "© 2025 ailookzy.com - Professional Netdisk Resource Search Engine",
     "links": {
       "about": "About Us",
       "disclaimer": "Disclaimer",

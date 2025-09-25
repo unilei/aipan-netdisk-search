@@ -43,12 +43,12 @@ console.log(colorMode.preference);
               <h1
                 class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
               >
-                AIPAN.ME
+                爱看网盘资源
               </h1>
               <p
                 class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400"
               >
-                爱盼 - 资源搜索
+                网盘资源搜索
               </p>
             </div>
           </div>

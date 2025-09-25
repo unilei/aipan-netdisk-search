@@ -80,7 +80,7 @@ const handleSubmit = async () => {
             return
         }
 
-        if (password.value !== (currentPassword || 'aipan.me2025')) {
+        if (password.value !== (currentPassword || 'ailookzy.com2025')) {
             error.value = '密码错误'
             return
         }

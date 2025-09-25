@@ -1,2 +1,2 @@
 // Music page password
-export const MUSIC_PAGE_PASSWORD = 'aipan.me2025' 
+export const MUSIC_PAGE_PASSWORD = 'ailookzy.com2025' 

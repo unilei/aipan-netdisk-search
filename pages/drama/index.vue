@@ -7,7 +7,7 @@ import { useVodSources } from '~/composables/useVodSources'
 
 // SEO配置
 useHead({
-  title: '壳儿 - AIPAN.ME',
+  title: '壳儿 - ailookzy.com',
   meta: [
     { name: 'description', content: '壳儿 - 免费观看最新热门影视剧集，海量高清资源在线播放，支持多集连播' },
     { name: 'keywords', content: '壳儿,免费影视,在线观看,影视大全,热门剧集,电影电视剧' }

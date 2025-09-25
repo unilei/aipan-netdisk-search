@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
         });
 
         // 返回密码和启用状态
-        const password = settings?.value || 'aipan.me2025';
+        const password = settings?.value || 'ailookzy.com2025';
         const enabled = settings?.isEnabled ?? true;
 
         return {

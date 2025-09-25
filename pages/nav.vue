@@ -14,7 +14,7 @@
                 <i class="fas fa-compass text-amber-800 dark:text-amber-100 text-sm"></i>
               </div>
               <span
-                class="bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">爱盼导航</span>
+                class="bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">爱看导航</span>
             </h2>
           </nuxt-link>
           <p class="text-stone-600 dark:text-stone-400 text-xs leading-relaxed">探索精选网站，发现无限可能</p>
@@ -293,15 +293,15 @@ definePageMeta({
 
 // SEO配置
 useHead({
-  title: '网站导航 - AIPAN.ME',
+  title: '网站导航 - ailookzy.com',
   meta: [
     {
       name: 'description',
-      content: 'AIPAN.ME网站导航，精选优质网站资源，包括常用工具、影视资源、音乐播放、AI工具等，一站式满足您的数字生活需求。'
+      content: 'ailookzy.com网站导航，精选优质网站资源，包括常用工具、影视资源、音乐播放、AI工具等，一站式满足您的数字生活需求。'
     },
     {
       name: 'keywords',
-      content: '网站导航,AIPAN导航,常用工具,影视资源,音乐播放,AI工具,数字生活,一站式服务'
+      content: '网站导航,ailookzy导航,常用工具,影视资源,音乐播放,AI工具,数字生活,一站式服务'
     }
   ]
 })

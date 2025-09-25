@@ -117,7 +117,7 @@ definePageMeta({
 
 // 页面元数据
 useHead({
-  title: '访问验证 - AIPAN.ME',
+  title: '访问验证 - ailookzy.com',
   meta: [
     { name: 'robots', content: 'noindex, nofollow' }
   ]

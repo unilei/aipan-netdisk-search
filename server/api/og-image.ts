@@ -57,9 +57,9 @@ export default defineEventHandler(async (event) => {
     ctx.shadowOffsetY = 2
 
     // 绘制描边
-    ctx.strokeText('AIPAN.ME', canvas.width / 2, 260)
+    ctx.strokeText('ailookzy.com', canvas.width / 2, 260)
     // 绘制填充
-    ctx.fillText('AIPAN.ME', canvas.width / 2, 260)
+    ctx.fillText('ailookzy.com', canvas.width / 2, 260)
 
     // 重置阴影
     ctx.shadowColor = 'transparent'
@@ -113,10 +113,8 @@ export default defineEventHandler(async (event) => {
           </linearGradient>
         </defs>
         <rect width="100%" height="100%" fill="url(#grad)"/>
-        <text x="600" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">AIPAN.ME</text>
-        <text x="600" y="340" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.9)">AI网盘搜索 · 智能助手 · 多功能平台</text>
-        <text x="600" y="380" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">网盘搜索 · AI助手 · 音乐播放 · 游戏娱乐</text>
-        <text x="600" y="410" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">博客论坛 · 聊天社区 · 影视直播</text>
+        <text x="600" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">ailookzy.com</text>
+        <text x="600" y="340" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.9)">爱看网盘资源搜索</text>
       </svg>
     `
 

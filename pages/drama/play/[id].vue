@@ -7,7 +7,7 @@ const dramaId = route.params.id
 
 // SEO配置
 useHead({
-  title: '播放中 - 壳儿 - AIPAN.ME',
+  title: '播放中 - 壳儿 - ailookzy.com',
   meta: [
     { name: 'description', content: '正在播放影视内容 - 壳儿免费在线观看' },
     { name: 'keywords', content: '壳儿,免费影视,在线播放,影视播放器' }

@@ -37,7 +37,7 @@
                             </template>
                         </el-input>
                         <div class="mt-1 text-xs text-gray-500">
-                            默认密码：aipan.me2025
+                            默认密码：ailookzy.com2025
                         </div>
                     </el-form-item>
 
@@ -156,7 +156,7 @@ const resourceTypes = ref([])
 
 const musicForm = reactive({
     enabled: true,
-    password: 'aipan.me2025'
+    password: 'ailookzy.com2025'
 });
 
 const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
@@ -433,7 +433,7 @@ const handleMusicEnabledChange = (value) => {
 };
 
 const resetMusicPassword = () => {
-    musicForm.password = 'aipan.me2025';
+    musicForm.password = 'ailookzy.com2025';
     // 调用API保存到数据库
     handleMusicSubmit();
 };
@@ -449,7 +449,7 @@ const resetMusicForm = () => {
         }
     ).then(() => {
         musicFormRef.value?.resetFields();
-        musicForm.password = 'aipan.me2025';
+        musicForm.password = 'ailookzy.com2025';
         // 调用API保存到数据库
         handleMusicSubmit();
     });
@@ -499,7 +499,7 @@ const getMusicConfig = async () => {
         });
         if (res.code === 200) {
             musicForm.enabled = res.data.enabled ?? true;
-            musicForm.password = res.data.password || 'aipan.me2025';
+            musicForm.password = res.data.password || 'ailookzy.com2025';
         }
     } catch (error) {
         console.error('获取音乐验证码配置失败:', error);

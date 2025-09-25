@@ -4,12 +4,12 @@ import { ElMessage, ElNotification } from 'element-plus'
 
 // SEO优化
 useSeoMeta({
-  title: 'AIPAN免费盒子 - VIP视频解析播放器 | 支持爱奇艺腾讯优酷等全网VIP视频',
-  description: 'AIPAN免费盒子提供免费的VIP视频解析服务，支持爱奇艺、腾讯视频、优酷、芒果TV、哔哩哔哩等主流视频平台。一键解析，高清播放，完全免费使用。',
-  keywords: 'VIP视频解析,免费视频解析,爱奇艺解析,腾讯视频解析,优酷解析,芒果TV解析,哔哩哔哩解析,在线视频播放,AIPAN免费盒子',
-  ogTitle: 'AIPAN免费盒子 - VIP视频解析播放器',
-  ogDescription: 'AIPAN免费盒子提供免费的VIP视频解析服务，支持全网主流视频平台VIP内容解析播放。',
-  twitterTitle: 'AIPAN免费盒子 - VIP视频解析播放器',
+  title: 'ailookzy免费盒子 - VIP视频解析播放器 | 支持爱奇艺腾讯优酷等全网VIP视频',
+  description: 'ailookzy免费盒子提供免费的VIP视频解析服务，支持爱奇艺、腾讯视频、优酷、芒果TV、哔哩哔哩等主流视频平台。一键解析，高清播放，完全免费使用。',
+  keywords: 'VIP视频解析,免费视频解析,爱奇艺解析,腾讯视频解析,优酷解析,芒果TV解析,哔哩哔哩解析,在线视频播放,ailookzy免费盒子',
+  ogTitle: 'ailookzy免费盒子 - VIP视频解析播放器',
+  ogDescription: 'ailookzy免费盒子提供免费的VIP视频解析服务，支持全网主流视频平台VIP内容解析播放。',
+  twitterTitle: 'ailookzy免费盒子 - VIP视频解析播放器',
   twitterDescription: '免费VIP视频解析！支持爱奇艺腾讯优酷等全网平台，一键解析高清播放！'
 })
 
@@ -17,14 +17,14 @@ useHead({
   meta: [
     { charset: "utf-8" },
     { name: "viewport", content: "width=device-width, initial-scale=1, shrink-to-fit=no" },
-    { name: "author", content: "爱盼团队" },
+    { name: "author", content: "爱看团队" },
     { name: "robots", content: "index, follow" },
     { name: "format-detection", content: "telephone=no" },
     { property: "og:type", content: "website" },
-    { property: "og:url", content: "https://www.aipan.me/freebox" },
-    { property: "og:image", content: "https://www.aipan.me/default-og-image.png" },
+    { property: "og:url", content: "https://www.ailookzy.com/freebox" },
+    { property: "og:image", content: "https://www.ailookzy.com/default-og-image.png" },
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:image", content: "https://www.aipan.me/default-og-image.png" }
+    { name: "twitter:image", content: "https://www.ailookzy.com/default-og-image.png" }
   ]
 })
 
@@ -98,7 +98,7 @@ onMounted(() => {
   if (currentInterfaceIndex.value === -1) currentInterfaceIndex.value = 0
 
   // 设置页面标题
-  document.title = 'VIP视频解析 - AIPAN.ME'
+  document.title = 'VIP视频解析 - ailookzy.com'
 })
 
 // 播放视频
@@ -316,7 +316,7 @@ const fillExample = (example) => {
         <div class="text-center">
           <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             <i class="fas fa-play-circle text-blue-600 mr-3"></i>
-            AIPAN免费盒子
+            ailookzy免费盒子
           </h1>
           <p class="text-gray-600 dark:text-gray-400">
             免费VIP视频解析播放器，支持全网主流视频平台

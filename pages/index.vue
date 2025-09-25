@@ -36,7 +36,7 @@ useHead({
       property: "og:description",
       content: t('meta.description'),
     },
-    { property: "og:image", content: "https://www.aipan.me/default-og-image.png" },
+    { property: "og:image", content: "https://www.ailookzy.com/default-og-image.png" },
     // Twitter
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: t('meta.title') },
@@ -44,35 +44,35 @@ useHead({
       name: "twitter:description",
       content: t('meta.description'),
     },
-    { name: "twitter:image", content: "https://www.aipan.me/default-og-image.png" },
+    { name: "twitter:image", content: "https://www.ailookzy.com/default-og-image.png" },
     // 其他重要的meta标签
     { name: "robots", content: "index,follow" },
-    { name: "author", content: "AIPAN.ME" },
+    { name: "author", content: "ailookzy.com" },
     { name: "viewport", content: "width=device-width, initial-scale=1" },
   ],
-  link: [{ rel: "canonical", href: "https://www.aipan.me" }],
+  link: [{ rel: "canonical", href: "https://www.ailookzy.com" }],
   script: [
     {
       type: 'application/ld+json',
       children: JSON.stringify({
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "爱盼",
-        "alternateName": "AIPAN.ME",
-        "url": "https://www.aipan.me",
-        "description": "爱盼是一个开源免费的资源搜索平台，提供网盘资源搜索、音乐下载、TV直播、TVBox接口地址以及博客发布等多项功能",
+        "name": "爱看网盘资源搜索",
+        "alternateName": "ailookzy.com",
+        "url": "https://www.ailookzy.com",
+        "description": "爱看是专业的网盘资源搜索引擎，提供网盘资源搜索、网站导航、在线工具等多项功能",
         "potentialAction": {
           "@type": "SearchAction",
           "target": {
             "@type": "EntryPoint",
-            "urlTemplate": "https://www.aipan.me/search?keyword={search_term_string}"
+            "urlTemplate": "https://www.ailookzy.com/search?keyword={search_term_string}"
           },
           "query-input": "required name=search_term_string"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "AIPAN.ME",
-          "url": "https://www.aipan.me"
+          "name": "ailookzy.com",
+          "url": "https://www.ailookzy.com"
         },
         "sameAs": [
           "https://github.com/aipan-me"
@@ -150,7 +150,7 @@ const stopRouteWatcher = watch(
           <div>
             <h1
               class="text-2xl text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-              AIPAN.ME
+              ailookzy.com
             </h1>
             <p class="text-gray-600 text-left text-xs dark:text-gray-400">
               {{ $t('subtitle') }}

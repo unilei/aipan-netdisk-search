@@ -112,7 +112,7 @@ generate_random_username() {
 # 生成随机邮箱
 generate_random_email() {
   username=$(generate_random_string 8 6)
-  domains=("aipan.me")
+  domains=("ailookzy.com")
   domain_index=$((RANDOM % ${#domains[@]}))
   domain=${domains[$domain_index]}
   echo "${username}@${domain}"

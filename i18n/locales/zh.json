@@ -1,17 +1,17 @@
 {
-  "welcome": "欢迎使用爱盼",
+  "welcome": "欢迎使用爱看网盘资源搜索",
   "search": "搜索",
-  "app_title": "爱盼 - 资源随心，娱乐无限",
-  "subtitle": "资源随心，娱乐无限",
+  "app_title": "爱看网盘资源搜索 - 专业网盘搜索引擎",
+  "subtitle": "专业网盘资源搜索，海量资源一键找到",
   "search_placeholder": "请输入关键词搜索",
   "sensitive_word_alert": "请勿输入敏感词",
   "meta": {
-    "title": "AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定",
-    "description": "AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体。支持百度网盘、阿里云盘、夸克网盘搜索，海量影视音乐资源随心享用。一个网站，满足你的所有数字娱乐需求！",
-    "keywords": "AIPAN,爱盼,数字生活伙伴,网盘搜索,资源搜索,在线音乐,博客平台,论坛社区,休闲游戏,电视直播,FM电台,影视资源,音乐播放器,TVBox,百度网盘,阿里云盘,夸克网盘,一站搞定"
+    "title": "ailookzy.com - 爱看网盘资源搜索 | 百度网盘·阿里云盘·夸克网盘资源搜索",
+    "description": "ailookzy.com是专业的网盘资源搜索引擎，支持百度网盘、阿里云盘、夸克网盘资源搜索。提供海量影视、音乐、软件、文档等资源免费搜索下载，是您寻找网盘资源的最佳选择！",
+    "keywords": "ailookzy,爱看,网盘搜索,资源搜索,百度网盘,阿里云盘,夸克网盘,网盘资源,影视资源,音乐资源,软件下载,文档搜索,免费资源,网盘搜索引擎"
   },
   "broadcast": {
-    "message": "收藏网站发布页: https://link0.me/aipan"
+    "message": "收藏网站地址: https://www.ailookzy.com"
   },
   "language": {
     "switch": "切换语言",
@@ -40,7 +40,7 @@
     }
   },
   "footer": {
-    "copyright": "© 2025 AIPAN.ME 爱盼 - 资源随心，娱乐无限",
+    "copyright": "© 2025 ailookzy.com 爱看网盘资源搜索 - 专业网盘搜索引擎",
     "links": {
       "about": "关于网站",
       "disclaimer": "免责声明",

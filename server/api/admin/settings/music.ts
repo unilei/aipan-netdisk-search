@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
             return {
                 code: 200,
                 data: {
-                    password: settings?.value || 'aipan.me2025',
+                    password: settings?.value || 'ailookzy.com2025',
                     enabled: settings?.isEnabled ?? true
                 }
             };

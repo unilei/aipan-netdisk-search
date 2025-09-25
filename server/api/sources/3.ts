@@ -26,8 +26,8 @@ export default defineEventHandler(async (event) => {
         const host = getRequestHeader(event, 'host') || '';
         const referer = getRequestHeader(event, 'referer') || '';
 
-        const isValidDomain = host.endsWith('aipan.me') ||
-            referer.includes('aipan.me') || host.includes('localhost');
+        const isValidDomain = host.endsWith('ailookzy.com') ||
+            referer.includes('ailookzy.com') || host.includes('localhost');
 
         if (!isValidDomain) {
             return {

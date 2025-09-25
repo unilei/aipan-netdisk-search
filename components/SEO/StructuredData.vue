@@ -56,25 +56,25 @@ const structuredData = computed(() => {
     "@type": props.type,
     "name": props.title,
     "description": props.description,
-    "url": props.url || "https://www.aipan.me"
+    "url": props.url || "https://www.ailookzy.com"
   }
 
   if (props.type === 'WebSite') {
     return {
       ...baseData,
-      "alternateName": "AIPAN.ME",
+      "alternateName": "爱看网盘资源搜索",
       "potentialAction": {
         "@type": "SearchAction",
         "target": {
           "@type": "EntryPoint",
-          "urlTemplate": "https://www.aipan.me/search?keyword={search_term_string}"
+          "urlTemplate": "https://www.ailookzy.com/search?keyword={search_term_string}"
         },
         "query-input": "required name=search_term_string"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "AIPAN.ME",
-        "url": "https://www.aipan.me"
+        "name": "ailookzy.com",
+        "url": "https://www.ailookzy.com"
       }
     }
   }
@@ -87,12 +87,12 @@ const structuredData = computed(() => {
       "image": props.image,
       "author": {
         "@type": "Person",
-        "name": props.author || "AIPAN.ME"
+        "name": props.author || "ailookzy.com"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "AIPAN.ME",
-        "url": "https://www.aipan.me"
+        "name": "ailookzy.com",
+        "url": "https://www.ailookzy.com"
       },
       "datePublished": props.datePublished,
       "dateModified": props.dateModified,

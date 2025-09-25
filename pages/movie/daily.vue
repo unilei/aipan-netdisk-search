@@ -5,7 +5,7 @@ onMounted(() => {
     console.log(movieData.value)
     // SEO配置
     useHead({
-        title: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐 | AIPAN.ME` : '每日电影推荐 | AIPAN.ME'),
+        title: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐 | ailookzy.com` : '每日电影推荐 | ailookzy.com'),
         meta: [
             {
                 name: 'description',
@@ -27,7 +27,7 @@ onMounted(() => {
             { property: 'og:type', content: 'article' },
             {
                 property: 'og:title',
-                content: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐` : '每日电影推荐 | AIPAN.ME')
+                content: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐` : '每日电影推荐 | ailookzy.com')
             },
             {
                 property: 'og:description',
@@ -45,7 +45,7 @@ onMounted(() => {
             { name: 'twitter:card', content: 'summary_large_image' },
             {
                 name: 'twitter:title',
-                content: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐` : '每日电影推荐 | AIPAN.ME')
+                content: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐` : '每日电影推荐 | ailookzy.com')
             },
             {
                 name: 'twitter:description',
@@ -61,14 +61,14 @@ onMounted(() => {
             },
             // 其他重要的meta标签
             { name: 'robots', content: 'index,follow' },
-            { name: 'author', content: 'AIPAN.ME' },
+            { name: 'author', content: 'ailookzy.com' },
             {
                 name: 'article:published_time',
                 content: computed(() => movieInfo.value?.上映日期 || new Date().toISOString())
             },
         ],
         link: [
-            { rel: 'canonical', href: 'https://www.aipan.me/movie/daily' }
+            { rel: 'canonical', href: 'https://www.ailookzy.com/movie/daily' }
         ]
     })
 })
