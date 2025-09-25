@@ -4,8 +4,8 @@
       <!-- Logo和标题 -->
       <div class="text-center mb-8">
         <img src="/logo.png" alt="Logo" class="w-16 h-16 mx-auto mb-4" />
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">访问验证</h1>
-        <p class="text-gray-600 dark:text-gray-400">请完成验证以继续访问</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">网盘链接访问验证</h1>
+        <p class="text-gray-600 dark:text-gray-400">请完成验证以访问网盘资源</p>
       </div>
 
       <!-- 验证卡片 -->
@@ -19,8 +19,12 @@
               </svg>
             </div>
             <div class="text-sm text-blue-800 dark:text-blue-200">
-              <p class="font-medium mb-1">验证说明</p>
-              <p>请先转存以下资源到您的夸克网盘，再重新分享并提交您的分享链接，验证通过后即可访问站点。</p>
+              <p class="font-medium mb-2">验证说明</p>
+              <div class="space-y-2">
+                <p>为防止资源滥用，请先转存到您的夸克网盘，再重新分享并提交您的分享链接，验证通过后即可访问站点。</p>
+                <p class="text-xs">每天第一次操作需要进行验证，当天 23:59 之前有效，次日需要重新验证。</p>
+                <p class="text-xs text-orange-600 dark:text-orange-400">注意：不同的浏览器需要分别验证。</p>
+              </div>
             </div>
           </div>
         </div>
@@ -122,6 +126,35 @@ useHead({
 const route = useRoute();
 const router = useRouter();
 
+// 解码加密的链接
+const decodeTargetLink = async () => {
+  try {
+    if (route.query.token) {
+      // 使用服务器端解密API
+      const decryptRes = await $fetch('/api/quark/decrypt-link', {
+        method: 'POST',
+        body: {
+          token: decodeURIComponent(route.query.token)
+        }
+      });
+      
+      if (decryptRes.code === 200) {
+        return decryptRes.data.link;
+      } else {
+        console.error('解密失败:', decryptRes.msg);
+        return null;
+      }
+    } else if (route.query.link) {
+      // 兼容旧版本（直接传递链接）
+      return decodeURIComponent(route.query.link);
+    }
+    return null;
+  } catch (error) {
+    console.error('链接解码失败:', error);
+    return null;
+  }
+};
+
 // 验证表单状态
 const verificationForm = reactive({
   shareLink: '',
@@ -141,7 +174,12 @@ const setAccessState = (value) => {
   if (value === null) {
     window.localStorage.removeItem('quark_access_verification');
   } else {
-    window.localStorage.setItem('quark_access_verification', JSON.stringify(value));
+    // 设置验证状态，使用当天的时间戳
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0);
+    window.localStorage.setItem('quark_access_verification', JSON.stringify({
+      timestamp: todayStart.getTime()
+    }));
   }
 };
 
@@ -198,16 +236,32 @@ const submitVerification = async () => {
     });
 
     if (res.code === 200) {
-      // 设置验证状态，使用与中间件一致的格式
-      setAccessState({
-        timestamp: Date.now()
-      });
+      // 设置验证状态
+      setAccessState(true);
 
       ElMessage.success('验证成功，正在跳转...');
       
-      // 跳转到原始页面，保留完整的URL路径和参数
-      const redirectPath = route.query.redirect ? decodeURIComponent(route.query.redirect) : '/search';
-      await router.push(redirectPath);
+      // 判断跳转逻辑
+      if (route.query.from === 'netdisk' && (route.query.token || route.query.link)) {
+        // 从网盘链接点击过来的，解码并打开链接
+        const targetLink = await decodeTargetLink();
+        if (targetLink) {
+          window.open(targetLink, '_blank', 'noopener,noreferrer');
+        } else {
+          ElMessage.error('链接解码失败或已过期');
+        }
+        
+        // 返回上一页或首页
+        if (window.history.length > 1) {
+          await router.back();
+        } else {
+          await router.push('/');
+        }
+      } else {
+        // 跳转到原始页面，保留完整的URL路径和参数
+        const redirectPath = route.query.redirect ? decodeURIComponent(route.query.redirect) : '/search';
+        await router.push(redirectPath);
+      }
     } else {
       verificationForm.error = res.msg || '验证失败，请检查您的分享链接';
     }

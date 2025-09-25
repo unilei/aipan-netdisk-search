@@ -71,22 +71,6 @@
 
                 <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
                     <div class="flex items-center space-x-2">
-                        <el-icon :size="20" class="text-green-500">
-                            <Document />
-                        </el-icon>
-                        <h3 class="text-gray-500 text-sm font-medium">博客文章数</h3>
-                    </div>
-                    <div class="mt-2 flex items-baseline">
-                        <el-skeleton-item v-if="stats.blogPosts.loading" variant="text" class="w-16 h-8" />
-                        <template v-else>
-                            <span class="text-2xl font-semibold text-gray-900">{{ stats.blogPosts.count }}</span>
-                            <span class="ml-2 text-sm text-gray-500">篇文章</span>
-                        </template>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <div class="flex items-center space-x-2">
                         <el-icon :size="20" class="text-red-500">
                             <User />
                         </el-icon>
@@ -97,59 +81,6 @@
                         <template v-else>
                             <span class="text-2xl font-semibold text-gray-900">{{ stats.users.count }}</span>
                             <span class="ml-2 text-sm text-gray-500">位用户</span>
-                        </template>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <div class="flex items-center space-x-2">
-                        <el-icon :size="20" class="text-purple-500">
-                            <Monitor />
-                        </el-icon>
-                        <h3 class="text-gray-500 text-sm font-medium">存储源数量</h3>
-                    </div>
-                    <div class="mt-2 flex items-baseline">
-                        <el-skeleton-item v-if="stats.alistSources.loading" variant="text" class="w-16 h-8" />
-                        <template v-else>
-                            <span class="text-2xl font-semibold text-gray-900">{{ stats.alistSources.count }}</span>
-                            <span class="ml-2 text-sm text-blue-600 flex items-center">
-                                <el-icon :size="16" class="mr-0.5">
-                                    <CircleCheck />
-                                </el-icon>
-                                活跃
-                            </span>
-                        </template>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <div class="flex items-center space-x-2">
-                        <el-icon :size="20" class="text-orange-500">
-                            <ChatLineRound />
-                        </el-icon>
-                        <h3 class="text-gray-500 text-sm font-medium">评论数量</h3>
-                    </div>
-                    <div class="mt-2 flex items-baseline">
-                        <el-skeleton-item v-if="stats.comments.loading" variant="text" class="w-16 h-8" />
-                        <template v-else>
-                            <span class="text-2xl font-semibold text-gray-900">{{ stats.comments.count }}</span>
-                            <span class="ml-2 text-sm text-gray-500">条评论</span>
-                        </template>
-                    </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <div class="flex items-center space-x-2">
-                        <el-icon :size="20" class="text-cyan-500">
-                            <ChatLineRound />
-                        </el-icon>
-                        <h3 class="text-gray-500 text-sm font-medium">论坛主题数</h3>
-                    </div>
-                    <div class="mt-2 flex items-baseline">
-                        <el-skeleton-item v-if="stats.forumTopics.loading" variant="text" class="w-16 h-8" />
-                        <template v-else>
-                            <span class="text-2xl font-semibold text-gray-900">{{ stats.forumTopics.count }}</span>
-                            <span class="ml-2 text-sm text-gray-500">个主题</span>
                         </template>
                     </div>
                 </div>
@@ -178,12 +109,9 @@
 import {
     House,
     Folder,
-    Document,
     Monitor,
     ArrowRight,
-    TrendCharts,
     CircleCheck,
-    ChatLineRound,
     ChatRound,
     User
 } from '@element-plus/icons-vue'
@@ -203,32 +131,11 @@ const menuCards = [
         color: 'bg-blue-500'
     },
     {
-        title: '博客管理',
-        description: '管理博客文章和内容',
-        icon: Document,
-        link: '/admin/blog',
-        color: 'bg-green-500'
-    },
-    {
-        title: 'Alist源管理',
-        description: '管理Alist存储源配置',
-        icon: Monitor,
-        link: '/admin/alist',
-        color: 'bg-purple-500'
-    },
-    {
         title: '聊天管理',
         description: '管理用户群聊和私聊消息内容',
         icon: ChatRound,
         link: '/admin/chat',
         color: 'bg-indigo-500'
-    },
-    {
-        title: '论坛管理',
-        description: '管理论坛分类和内容',
-        icon: ChatLineRound,
-        link: '/admin/forum/topics',
-        color: 'bg-cyan-500'
     },
     {
         title: '用户管理',
@@ -238,25 +145,11 @@ const menuCards = [
         color: 'bg-red-500'
     },
     {
-        title: '评论管理',
-        description: '管理博客评论和回复',
-        icon: ChatLineRound,
-        link: '/admin/comments',
-        color: 'bg-orange-500'
-    },
-    {
         title: '用户资源管理',
         description: '管理用户上传的资源内容',
         icon: 'FolderOpened',
         link: '/admin/user-resources',
         color: 'bg-indigo-500'
-    },
-    {
-        title: '用户文章管理',
-        description: '管理用户投稿的文章内容',
-        icon: 'Reading',
-        link: '/admin/user-posts',
-        color: 'bg-pink-500'
     },
     {
         title: '系统配置',
@@ -287,23 +180,7 @@ const stats = reactive({
         count: 0,
         loading: true
     },
-    blogPosts: {
-        count: 0,
-        loading: true
-    },
-    alistSources: {
-        count: 0,
-        loading: true
-    },
-    comments: {
-        count: 0,
-        loading: true
-    },
     users: {
-        count: 0,
-        loading: true
-    },
-    forumTopics: {
         count: 0,
         loading: true
     },
@@ -330,57 +207,6 @@ const getCloudFilesCount = async () => {
     }
 }
 
-// 获取博客文章数量
-const getBlogPostsCount = async () => {
-    try {
-        const res = await $fetch('/api/admin/blog/posts/stats', {
-            method: 'GET',
-            headers: {
-                "authorization": "Bearer " + useCookie('token').value
-            }
-        })
-        stats.blogPosts.count = res.count
-    } catch (error) {
-        console.error('Failed to fetch blog posts count:', error)
-    } finally {
-        stats.blogPosts.loading = false
-    }
-}
-
-// 获取Alist源数量
-const getAlistSourcesCount = async () => {
-    try {
-        const res = await $fetch('/api/admin/alist/stats', {
-            method: 'GET',
-            headers: {
-                "authorization": "Bearer " + useCookie('token').value
-            }
-        })
-        stats.alistSources.count = res.count
-    } catch (error) {
-        console.error('Failed to fetch alist sources count:', error)
-    } finally {
-        stats.alistSources.loading = false
-    }
-}
-
-// 获取评论数量
-const getCommentsCount = async () => {
-    try {
-        const res = await $fetch('/api/blog/comments?page=1&pageSize=1', {
-            method: 'GET',
-            headers: {
-                "authorization": "Bearer " + useCookie('token').value
-            }
-        })
-        stats.comments.count = res.data.total
-    } catch (error) {
-        console.error('Failed to fetch comments count:', error)
-    } finally {
-        stats.comments.loading = false
-    }
-}
-
 // 获取用户数量
 const getUsersCount = async () => {
     try {
@@ -395,23 +221,6 @@ const getUsersCount = async () => {
         console.error('Failed to fetch users count:', error)
     } finally {
         stats.users.loading = false
-    }
-}
-
-// 获取论坛主题数量
-const getForumTopicsCount = async () => {
-    try {
-        const res = await $fetch('/api/admin/forum/topics/stats', {
-            method: 'GET',
-            headers: {
-                "authorization": "Bearer " + useCookie('token').value
-            }
-        })
-        stats.forumTopics.count = res.count
-    } catch (error) {
-        console.error('Failed to fetch forum topics count:', error)
-    } finally {
-        stats.forumTopics.loading = false
     }
 }
 
@@ -435,17 +244,14 @@ const getChatRoomsCount = async () => {
 // 页面加载时获取统计数据
 onMounted(() => {
     getCloudFilesCount()
-    getBlogPostsCount()
-    getAlistSourcesCount()
-    getCommentsCount()
     getUsersCount()
-    getForumTopicsCount()
     getChatRoomsCount()
 })
 
 const handleLogout = () => {
     logout();
 };
+
 </script>
 
 <style scoped>

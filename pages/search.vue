@@ -27,8 +27,7 @@ import { useQuarkConfig } from "~/composables/useQuarkConfig";
 import { useSearchQueue } from "~/composables/useSearchQueue";
 
 definePageMeta({
-  layout: "custom",
-  middleware: ["quark-verification"]
+  layout: "custom"
 });
 
 // 基础设置

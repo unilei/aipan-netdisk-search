@@ -208,8 +208,7 @@
 
 <script setup>
 definePageMeta({
-  layout: "custom",
-  middleware: ["quark-verification"]
+  layout: "custom"
 });
 import { ref, onMounted, computed } from "vue";
 import { Search } from "@element-plus/icons-vue";
