@@ -198,6 +198,47 @@ get_available_port() {
   return $current_port
 }
 
+# 检查并保护数据库容器（用于更新操作）
+check_and_protect_database() {
+  info "检查数据库容器状态..."
+  
+  # 检查PostgreSQL容器
+  if docker ps --format '{{.Names}}' | grep -q "^aipan-postgres$"; then
+    info "PostgreSQL容器正在运行 ✓"
+  elif docker ps -a --format '{{.Names}}' | grep -q "^aipan-postgres$"; then
+    info "检测到停止的PostgreSQL容器，正在启动..."
+    docker start aipan-postgres
+    sleep 3
+  else
+    warn "PostgreSQL容器不存在，需要先启动数据库服务"
+    if [ "$USE_DOCKER_PLUGIN" = true ]; then
+      docker compose up -d postgres
+    else
+      docker-compose up -d postgres
+    fi
+    sleep 5
+  fi
+  
+  # 检查Redis容器
+  if docker ps --format '{{.Names}}' | grep -q "^aipan-redis$"; then
+    info "Redis容器正在运行 ✓"
+  elif docker ps -a --format '{{.Names}}' | grep -q "^aipan-redis$"; then
+    info "检测到停止的Redis容器，正在启动..."
+    docker start aipan-redis
+    sleep 2
+  else
+    warn "Redis容器不存在，需要先启动Redis服务"
+    if [ "$USE_DOCKER_PLUGIN" = true ]; then
+      docker compose up -d redis
+    else
+      docker-compose up -d redis
+    fi
+    sleep 3
+  fi
+  
+  info "数据库和Redis服务状态检查完成 ✓"
+}
+
 # 配置端口
 configure_ports() {
   info "配置应用端口..."
@@ -378,6 +419,91 @@ configure_redis() {
   info "- 连接 URL: $REDIS_URL"
 }
 
+# 配置管理员信息
+configure_admin() {
+  info "配置管理员信息..."
+  
+  # 询问是否要自定义管理员信息
+  info "是否要自定义管理员信息？(y/n) [默认: n - 使用随机生成的安全凭据]"
+  read -r customize_admin
+  
+  if [[ "$customize_admin" =~ ^[Yy]$ ]]; then
+    # 用户名
+    info "请输入管理员用户名 [至少5个字符]: "
+    while true; do
+      read -r input_admin_user
+      if [ -n "$input_admin_user" ] && [ ${#input_admin_user} -ge 5 ]; then
+        ADMIN_USER="$input_admin_user"
+        break
+      else
+        warn "用户名必须至少包含5个字符，请重新输入:"
+      fi
+    done
+    
+    # 密码
+    info "请输入管理员密码 [至少8个字符]: "
+    while true; do
+      read -r input_admin_password
+      if [ -n "$input_admin_password" ] && [ ${#input_admin_password} -ge 8 ]; then
+        ADMIN_PASSWORD="$input_admin_password"
+        break
+      else
+        warn "密码必须至少包含8个字符，请重新输入:"
+      fi
+    done
+    
+    # 邮箱
+    info "请输入管理员邮箱: "
+    while true; do
+      read -r input_admin_email
+      # 简单的邮箱格式验证
+      if [[ "$input_admin_email" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; then
+        ADMIN_EMAIL="$input_admin_email"
+        break
+      else
+        warn "请输入有效的邮箱格式，例如: admin@example.com"
+      fi
+    done
+    
+    info "管理员信息配置完成 ✓"
+    info "- 用户名: $ADMIN_USER"
+    info "- 邮箱: $ADMIN_EMAIL"
+    info "- 密码: [已设置]"
+    
+  else
+    # 使用随机生成的凭据
+    info "使用随机生成的安全凭据..."
+    
+    ADMIN_USER=$(generate_random_username)
+    ADMIN_PASSWORD=$(generate_random_password)
+    ADMIN_EMAIL=$(generate_random_email)
+    
+    # 验证生成的凭据
+    if [ -z "$ADMIN_USER" ] || [ ${#ADMIN_USER} -lt 5 ]; then
+      warn "生成的管理员用户名无效，重新生成"
+      ADMIN_USER="admin_$(generate_random_string 8 8)"
+    fi
+    
+    if [ -z "$ADMIN_PASSWORD" ] || [ ${#ADMIN_PASSWORD} -lt 8 ]; then
+      warn "生成的管理员密码无效，重新生成"
+      ADMIN_PASSWORD=$(generate_random_string 16 12)
+    fi
+    
+    info "已生成随机管理员凭据:"
+    info "- 用户名: $ADMIN_USER"
+    info "- 密码: $ADMIN_PASSWORD"
+    info "- 邮箱: $ADMIN_EMAIL"
+    warn "请立即记录这些凭据，它们只会显示一次!"
+  fi
+  
+  # 生成JWT密钥
+  JWT_SECRET=$(generate_random_jwt_secret)
+  if [ -z "$JWT_SECRET" ] || [ ${#JWT_SECRET} -lt 16 ]; then
+    warn "生成的JWT密钥无效，重新生成"
+    JWT_SECRET=$(generate_random_string 48 32)
+  fi
+}
+
 # 创建配置文件
 create_config() {
   info "创建配置文件..."
@@ -391,36 +517,12 @@ create_config() {
   # 配置 Redis
   configure_redis
   
+  # 配置管理员信息
+  configure_admin
+  
   # 确保.env文件存在
   if [ ! -f .env ]; then
     info "创建.env文件..."
-    
-    # 生成随机凭据
-    random_username=$(generate_random_username)
-    random_password=$(generate_random_password)
-    random_jwt_secret=$(generate_random_jwt_secret)
-    random_email=$(generate_random_email)
-    
-    # 验证生成的凭据
-    if [ -z "$random_username" ] || [ ${#random_username} -lt 5 ]; then
-      warn "生成的管理员用户名无效，重新生成"
-      random_username="admin_$(generate_random_string 8 8)"
-    fi
-    
-    if [ -z "$random_password" ] || [ ${#random_password} -lt 8 ]; then
-      warn "生成的管理员密码无效，重新生成"
-      random_password=$(generate_random_string 16 12)
-    fi
-    
-    if [ -z "$random_jwt_secret" ] || [ ${#random_jwt_secret} -lt 16 ]; then
-      warn "生成的JWT密钥无效，重新生成"
-      random_jwt_secret=$(generate_random_string 48 32)
-    fi
-    
-    info "已生成随机管理员用户名: ${random_username}"
-    info "已生成随机管理员密码: ${random_password}"
-    info "已生成随机管理员邮箱: ${random_email}"
-    info "请保存这些凭据，它们只会显示一次!"
     
     cat > .env << EOL
 # 数据库配置
@@ -432,12 +534,12 @@ DATABASE_URL=${DATABASE_URL}
 SHADOW_DATABASE_URL=${SHADOW_DATABASE_URL}
 
 # 管理员配置
-ADMIN_USER=${random_username}
-ADMIN_PASSWORD=${random_password}
-ADMIN_EMAIL=${random_email}
+ADMIN_USER=${ADMIN_USER}
+ADMIN_PASSWORD=${ADMIN_PASSWORD}
+ADMIN_EMAIL=${ADMIN_EMAIL}
 
 # 安全配置
-JWT_SECRET=${random_jwt_secret}
+JWT_SECRET=${JWT_SECRET}
 
 # 端口配置
 APP_PORT=${APP_PORT}
@@ -466,15 +568,15 @@ EOL
         AIPan网盘搜索应用 - 配置信息
 ===============================================
 
-请妥善保管以下信息，此文件仅生成一次！
+请妖善保管以下信息，此文件仅生成一次！
 
 ## 管理员信息
-管理员用户名: ${random_username}
-管理员密码: ${random_password}
-管理员邮箱: ${random_email}
+管理员用户名: ${ADMIN_USER}
+管理员密码: ${ADMIN_PASSWORD}
+管理员邮箱: ${ADMIN_EMAIL}
 
 ## 安全配置
-JWT密钥: ${random_jwt_secret}
+JWT密钥: ${JWT_SECRET}
 
 ## 端口配置
 应用端口: ${APP_PORT}
@@ -494,7 +596,7 @@ WebSocket端口: ${WS_PORT}
 ===============================================
 EOL
     info "所有配置信息已保存到 admin_credentials.txt 文件 ✓"
-    info "请妥善保管此文件，并在安全的地方备份!"
+    info "请妖善保管此文件，并在安全的地方备份!"
     
   else
     info ".env文件已存在 ✓"
@@ -569,8 +671,8 @@ services:
       # WebSocket配置
       - WS_PORT=\${WS_PORT}
       
-      # Redis配置
-      - REDIS_URL=\${REDIS_URL}
+      # Redis配置 - 修复为容器内部地址
+      - REDIS_URL=redis://redis:6379
       
       # 环境配置
       - NODE_ENV=production
@@ -591,8 +693,9 @@ services:
       - POSTGRES_DB=\${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # 安全修复：移除端口映射，只允许容器内部访问
+    # ports:
+    #   - "5432:5432"  # 已移除：避免数据库端口暴露到公网
     networks:
       - aipan-network
 
@@ -603,8 +706,9 @@ services:
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
-    ports:
-      - "6379:6379"
+    # 安全修复：移除端口映射，只允许容器内部访问
+    # ports:
+    #   - "6379:6379"  # 已移除：避免Redis端口暴露到公网
     networks:
       - aipan-network
 
@@ -630,10 +734,17 @@ pull_images() {
 
 # 检查并处理已存在的容器
 check_existing_containers() {
+  local skip_database="$1"  # 新增参数，用于跳过数据库容器
   info "检查已存在的容器..."
   
   # 定义要检查的容器名称
-  containers=("aipan-netdisk-search-app" "aipan-postgres" "aipan-redis" "aipan-prisma-migrate")
+  if [ "$skip_database" = "true" ]; then
+    containers=("aipan-netdisk-search-app" "aipan-prisma-migrate")
+    info "更新模式：仅检查应用容器，保护数据库和Redis容器"
+  else
+    containers=("aipan-netdisk-search-app" "aipan-postgres" "aipan-redis" "aipan-prisma-migrate")
+    info "完整部署模式：检查所有容器"
+  fi
   
   for container in "${containers[@]}"; do
     if docker ps -a --format '{{.Names}}' | grep -q "^$container$"; then
@@ -837,8 +948,8 @@ initialize_database_user() {
 
 # 启动服务
 start_services() {
-  # 首先检查并处理已存在的容器
-  check_existing_containers
+  # 首先检查并处理已存在的容器（完整模式）
+  check_existing_containers "false"
   
   # 确保环境变量可用
   export APP_PORT
@@ -928,10 +1039,18 @@ update_config() {
       info "已生成新的JWT密钥"
     fi
     
-    # 更新.env文件
-    sed -i "" "s/^ADMIN_USER=.*/ADMIN_USER=$ADMIN_USER/" .env
-    sed -i "" "s/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=$ADMIN_PASSWORD/" .env
-    sed -i "" "s/^JWT_SECRET=.*/JWT_SECRET=$JWT_SECRET/" .env
+    # 更新.env文件（兼容macOS和Linux）
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      # macOS
+      sed -i "" "s/^ADMIN_USER=.*/ADMIN_USER=$ADMIN_USER/" .env
+      sed -i "" "s/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=$ADMIN_PASSWORD/" .env
+      sed -i "" "s/^JWT_SECRET=.*/JWT_SECRET=$JWT_SECRET/" .env
+    else
+      # Linux
+      sed -i "s/^ADMIN_USER=.*/ADMIN_USER=$ADMIN_USER/" .env
+      sed -i "s/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=$ADMIN_PASSWORD/" .env
+      sed -i "s/^JWT_SECRET=.*/JWT_SECRET=$JWT_SECRET/" .env
+    fi
     
     info "已自动修复配置问题 ✓"
     
@@ -1010,13 +1129,23 @@ EOL
   
   # 检查容器是否存在
   if ! docker ps -a | grep -q "aipan-netdisk-search-app"; then
-    warn "未找到运行中的容器，将执行完整部署而非重启"
-    check_existing_containers
+    warn "未找到应用容器，将启动所有必要的服务"
+    info "注意：这不会删除现有数据，只会确保服务正常运行"
     
+    # 确保数据库和Redis容器正在运行
+    info "检查并启动数据库和Redis容器..."
     if [ "$USE_DOCKER_PLUGIN" = true ]; then
-      APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker compose up -d
+      docker compose up -d postgres redis
     else
-      APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker-compose up -d
+      docker-compose up -d postgres redis
+    fi
+    
+    # 启动应用容器
+    info "启动应用容器..."
+    if [ "$USE_DOCKER_PLUGIN" = true ]; then
+      APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker compose up -d aipan-netdisk-search
+    else
+      APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker-compose up -d aipan-netdisk-search
     fi
   else
     # 正常重启容器
@@ -1064,10 +1193,34 @@ regenerate_prisma_client() {
     docker rm -f aipan-prisma-generate > /dev/null 2>&1
   fi
   
+  # 检查PostgreSQL容器是否运行
+  if ! docker ps --format '{{.Names}}' | grep -q "^aipan-postgres$"; then
+    warn "PostgreSQL容器未运行，无法生成 Prisma 客户端"
+    info "是否启动PostgreSQL容器? (y/n)"
+    read -r start_postgres
+    
+    if [[ "$start_postgres" =~ ^[Yy]$ ]]; then
+      info "启动PostgreSQL容器..."
+      if [ "$USE_DOCKER_PLUGIN" = true ]; then
+        docker compose up -d postgres
+      else
+        docker-compose up -d postgres
+      fi
+      
+      # 等待PostgreSQL启动
+      info "等待PostgreSQL启动..."
+      sleep 10
+    else
+      error "无法生成 Prisma 客户端，PostgreSQL容器未运行"
+      return 1
+    fi
+  fi
+  
   # 运行 Prisma 客户端生成
   info "正在生成 Prisma 客户端..."
   docker run --rm \
     --name aipan-prisma-generate \
+    --network aipan-network \
     -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
     unilei/aipan-netdisk-search-simple:latest \
     /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Generating Prisma client with ESM fix')\""
@@ -1252,6 +1405,9 @@ update_docker_image() {
     exit 1
   }
   
+  # 先检查并保护数据库容器
+  check_and_protect_database
+  
   # 询问是否要拉取最新镜像
   info "是否拉取最新的Docker镜像? (y/n) [默认: y]"
   read -r pull_latest
@@ -1270,21 +1426,45 @@ update_docker_image() {
   
   # 检查容器是否存在
   if ! docker ps -a | grep -q "aipan-netdisk-search-app"; then
-    warn "未找到运行中的容器，将执行完整部署而非更新"
-    info "是否继续执行完整部署? (y/n) [默认: y]"
-    read -r do_full_deploy
+    warn "未找到应用容器 aipan-netdisk-search-app"
+    info "这可能是因为容器名称不匹配或容器已被删除"
+    info "选项5仅用于更新应用镜像，不会重新部署整个系统"
+    info "如需完整部署，请选择选项1"
+    info "是否仍要继续尝试启动应用容器? (y/n) [默认: n]"
+    read -r continue_update
     
-    if [[ ! "$do_full_deploy" =~ ^[Nn]$ ]]; then
-      full_deployment
-      return $?
+    if [[ ! "$continue_update" =~ ^[Yy]$ ]]; then
+      error "操作已取消，请使用选项1进行完整部署"
+      return 1
+    fi
+    
+    # 确保数据库和Redis容器正在运行
+    info "检查数据库和Redis容器状态..."
+    if [ "$USE_DOCKER_PLUGIN" = true ]; then
+      docker compose up -d postgres redis
     else
-      error "操作已取消"
+      docker-compose up -d postgres redis
+    fi
+    
+    # 直接启动应用容器
+    info "启动应用容器..."
+    if [ "$USE_DOCKER_PLUGIN" = true ]; then
+      APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker compose up -d aipan-netdisk-search
+    else
+      APP_PORT=$APP_PORT WS_PORT=$WS_PORT docker-compose up -d aipan-netdisk-search
+    fi
+    
+    if [ $? -eq 0 ]; then
+      info "应用容器启动成功! ✓"
+      return 0
+    else
+      error "应用容器启动失败"
       return 1
     fi
   fi
   
-  # 停止并移除现有容器
-  info "停止并移除现有容器..."
+  # 停止并移除现有容器（仅应用容器）
+  info "停止并移除现有应用容器..."
   
   if [ "$USE_DOCKER_PLUGIN" = true ]; then
     docker compose stop aipan-netdisk-search
@@ -1344,10 +1524,10 @@ show_menu() {
   info "===== AIPan网盘搜索部署脚本 =====" 
   echo ""
   echo "  1) 完整部署 (首次部署或重新部署)"
-  echo "  2) 更新配置 (仅修改配置并重启服务)"
+  echo "  2) 更新配置 (修改配置并重启服务，保护数据库)"
   echo "  3) 运行数据库迁移 (初始化或更新数据库结构)"
-  echo "  4) 重新生成 Prisma 客户端 (解决 Prisma 相关问题)"
-  echo "  5) 更新Docker镜像 (拉取最新镜像并重启服务)"
+  echo "  4) 重新生成 Prisma 客户端 (解决 Prisma 相关问题，需要数据库连接)"
+  echo "  5) 更新Docker镜像 (仅更新应用镜像，保护数据库数据)"
   echo "  6) 退出"
   echo ""
   info "请选择操作 [默认: 1]: "
@@ -1402,17 +1582,8 @@ full_deployment() {
   # 检查Docker
   check_docker
   
-  # 创建配置文件
+  # 创建配置文件（已包含管理员信息的交互式配置）
   create_config
-  
-  # 询问是否需要自定义配置
-  info "是否需要自定义配置? (y/n) [默认: n]"
-  read -r customize
-  if [[ "$customize" =~ ^[Yy]$ ]]; then
-    info "请编辑.env文件，完成后按任意键继续..."
-    read -n 1 -s -r
-    info "配置已更新 ✓"
-  fi
   
   # 拉取镜像
   pull_images

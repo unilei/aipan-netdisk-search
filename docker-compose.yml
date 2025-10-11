@@ -64,8 +64,8 @@ services:
       # WebSocket配置
       - WS_PORT=${WS_PORT}
       
-      # Redis配置
-      - REDIS_URL=${REDIS_URL}
+      # Redis配置 - 修复为容器内部地址
+      - REDIS_URL=redis://redis:6379
       
       # 环境配置
       - NODE_ENV=production
@@ -86,8 +86,9 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    # 安全修复：移除端口映射，只允许容器内部访问
+    # ports:
+    #   - "5432:5432"  # 已移除：避免数据库端口暴露到公网
     networks:
       - aipan-network
 
@@ -98,8 +99,9 @@ services:
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
-    ports:
-      - "6379:6379"
+    # 安全修复：移除端口映射，只允许容器内部访问
+    # ports:
+    #   - "6379:6379"  # 已移除：避免Redis端口暴露到公网
     networks:
       - aipan-network
 
