@@ -60,15 +60,10 @@ if ! docker buildx version > /dev/null 2>&1; then
   exit 1
 fi
 
-# 创建或使用 buildx builder
+# 使用默认的 buildx builder
 info "设置 buildx builder..."
-if ! docker buildx inspect multiarch-builder > /dev/null 2>&1; then
-  info "创建新的 buildx builder: multiarch-builder"
-  docker buildx create --name multiarch-builder --use
-else
-  info "使用现有的 buildx builder: multiarch-builder"
-  docker buildx use multiarch-builder
-fi
+info "使用默认的 buildx builder: desktop-linux"
+docker buildx use desktop-linux
 
 # 设置镜像名称和标签
 IMAGE_NAME=${1:-"unilei/aipan-netdisk-search-simple"}

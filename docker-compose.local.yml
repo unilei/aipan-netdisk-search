@@ -8,18 +8,50 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"  # Web应用端口
-      - "3002:3002"  # WebSocket端口
+      - "${APP_PORT}:3000"  # Web应用端口
+      - "${WS_PORT}:3002"  # WebSocket端口
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan?schema=public
-      - NUXT_DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan?schema=public
-      - DATABASE_SCHEMA=public
-      - NUXT_DATABASE_SCHEMA=public
-      - JWT_SECRET=local_development_secret_key
-      - NUXT_JWT_SECRET=local_development_secret_key
-      - WS_PORT=3002
+      # 数据库配置
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+      - NUXT_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+      - DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - NUXT_DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - SHADOW_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}
+      # 数据库连接信息
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      
+      # 管理员配置
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      # Nuxt 版本的管理员配置（用于 useRuntimeConfig 访问）
+      - NUXT_ADMIN_USER=${ADMIN_USER}
+      - NUXT_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - NUXT_ADMIN_EMAIL=${ADMIN_EMAIL}
+      
+      # 安全配置
+      - JWT_SECRET=${JWT_SECRET}
+      - NUXT_JWT_SECRET=${JWT_SECRET}
+      
+      # GitHub配置
+      - NUXT_PUBLIC_GITHUB_OWNER=${NUXT_PUBLIC_GITHUB_OWNER}
+      - NUXT_PUBLIC_GITHUB_REPO=${NUXT_PUBLIC_GITHUB_REPO}
+      - NUXT_PUBLIC_GITHUB_TOKEN=${NUXT_PUBLIC_GITHUB_TOKEN}
+      - NUXT_PUBLIC_GITHUB_BRANCH=${NUXT_PUBLIC_GITHUB_BRANCH}
+      
+      # Quark配置
+      - NUXT_PUBLIC_QUARK_COOKIE=${NUXT_PUBLIC_QUARK_COOKIE}
+      
+      # WebSocket配置
+      - WS_PORT=${WS_PORT}
+      
+      # Redis配置 - 容器内部地址
       - REDIS_URL=redis://redis:6379
+      
+      # 环境配置
+      - NODE_ENV=development
     volumes:
       # 挂载源代码目录，便于开发时实时更新
       - ./prisma:/app/prisma
@@ -35,15 +67,16 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: aipan-postgres
+    restart: always
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=aipan
-    ports:
-      - "5432:5432"
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    restart: unless-stopped
+    # 安全修复：移除端口映射，只允许容器内部访问
+    # ports:
+    #   - "5432:5432"  # 已移除：避免数据库端口暴露到公网
     networks:
       - aipan-network
 
@@ -51,6 +84,7 @@ services:
   prisma-migrate:
     image: node:20.18.0-alpine
     container_name: aipan-prisma-migrate
+    restart: "no"
     command: >
       sh -c '
       npm install prisma --no-save &&
@@ -61,10 +95,13 @@ services:
       - ./prisma:/app/prisma
       - ./.env:/app/.env
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/aipan?schema=public
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+      - SHADOW_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     depends_on:
       - postgres
-    restart: "no"
     networks:
       - aipan-network
 
@@ -72,12 +109,13 @@ services:
   redis:
     image: redis:alpine
     container_name: aipan-redis
-    ports:
-      - "6379:6379"
+    restart: always
     volumes:
       - redis-data:/data
     command: redis-server --appendonly yes
-    restart: unless-stopped
+    # 安全修复：移除端口映射，只允许容器内部访问
+    # ports:
+    #   - "6379:6379"  # 已移除：避免Redis端口暴露到公网
     networks:
       - aipan-network
 

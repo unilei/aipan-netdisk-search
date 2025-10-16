@@ -131,7 +131,7 @@ model SystemSettings {
   @@map("system_settings")
 }
 
-// 搜索记录模型
+// 搜索记录模型（累计统计）
 model SearchRecord {
   id           Int      @id @default(autoincrement())
   keyword      String   @unique // 添加唯一索引
@@ -142,6 +142,21 @@ model SearchRecord {
 
   @@index([count])
   @@map("search_records")
+}
+
+// 每日搜索统计模型（用于精确统计每天的搜索次数）
+model DailySearchStats {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @db.Date // 日期
+  keyword   String // 关键词
+  count     Int      @default(1) // 当天搜索次数
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([date, keyword]) // 每天每个关键词只有一条记录
+  @@index([date])
+  @@index([keyword])
+  @@map("daily_search_stats")
 }
 
 // UserVodConfig模型 - 用户VOD配置

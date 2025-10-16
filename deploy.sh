@@ -1193,6 +1193,21 @@ regenerate_prisma_client() {
     docker rm -f aipan-prisma-generate > /dev/null 2>&1
   fi
   
+  # 检查Docker网络是否存在，不存在则创建
+  info "检查Docker网络..."
+  if ! docker network ls --format '{{.Name}}' | grep -q "^aipan-network$"; then
+    warn "Docker网络 aipan-network 不存在，正在创建..."
+    docker network create aipan-network
+    if [ $? -eq 0 ]; then
+      info "Docker网络 aipan-network 创建成功 ✓"
+    else
+      error "创建Docker网络失败"
+      return 1
+    fi
+  else
+    info "Docker网络 aipan-network 已存在 ✓"
+  fi
+  
   # 检查PostgreSQL容器是否运行
   if ! docker ps --format '{{.Names}}' | grep -q "^aipan-postgres$"; then
     warn "PostgreSQL容器未运行，无法生成 Prisma 客户端"
@@ -1210,10 +1225,22 @@ regenerate_prisma_client() {
       # 等待PostgreSQL启动
       info "等待PostgreSQL启动..."
       sleep 10
+      
+      # 初始化数据库用户和权限
+      initialize_database_user
     else
       error "无法生成 Prisma 客户端，PostgreSQL容器未运行"
       return 1
     fi
+  fi
+  
+  # 确保PostgreSQL容器已连接到aipan-network网络
+  info "确保PostgreSQL容器已连接到aipan-network网络..."
+  if ! docker network inspect aipan-network --format '{{range .Containers}}{{.Name}} {{end}}' | grep -q "aipan-postgres"; then
+    info "将PostgreSQL容器连接到aipan-network网络..."
+    docker network connect aipan-network aipan-postgres 2>/dev/null || {
+      warn "PostgreSQL容器可能已经连接到网络"
+    }
   fi
   
   # 运行 Prisma 客户端生成
@@ -1221,7 +1248,7 @@ regenerate_prisma_client() {
   docker run --rm \
     --name aipan-prisma-generate \
     --network aipan-network \
-    -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
+    -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@aipan-postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
     unilei/aipan-netdisk-search-simple:latest \
     /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Generating Prisma client with ESM fix')\""
   
@@ -1266,6 +1293,21 @@ run_database_migration() {
     docker rm -f aipan-prisma-migrate > /dev/null 2>&1
   fi
   
+  # 检查Docker网络是否存在，不存在则创建
+  info "检查Docker网络..."
+  if ! docker network ls --format '{{.Name}}' | grep -q "^aipan-network$"; then
+    warn "Docker网络 aipan-network 不存在，正在创建..."
+    docker network create aipan-network
+    if [ $? -eq 0 ]; then
+      info "Docker网络 aipan-network 创建成功 ✓"
+    else
+      error "创建Docker网络失败"
+      return 1
+    fi
+  else
+    info "Docker网络 aipan-network 已存在 ✓"
+  fi
+  
   # 检查PostgreSQL容器是否运行
   if ! docker ps --format '{{.Names}}' | grep -q "^aipan-postgres$"; then
     warn "PostgreSQL容器未运行，无法执行迁移"
@@ -1283,53 +1325,106 @@ run_database_migration() {
       # 等待PostgreSQL启动
       info "等待PostgreSQL启动..."
       sleep 10
+      
+      # 初始化数据库用户和权限
+      initialize_database_user
     else
       error "无法执行数据库迁移，PostgreSQL容器未运行"
       return 1
     fi
   fi
   
+  # 确保PostgreSQL容器已连接到aipan-network网络
+  info "确保PostgreSQL容器已连接到aipan-network网络..."
+  if ! docker network inspect aipan-network --format '{{range .Containers}}{{.Name}} {{end}}' | grep -q "aipan-postgres"; then
+    info "将PostgreSQL容器连接到aipan-network网络..."
+    docker network connect aipan-network aipan-postgres 2>/dev/null || {
+      warn "PostgreSQL容器可能已经连接到网络"
+    }
+  fi
+  
+  # 检查并修复失败的迁移
+  info "检查是否存在失败的迁移记录..."
+  
+  # 确定使用哪个数据库用户（优先使用配置的用户，避免权限问题）
+  DB_USER="${POSTGRES_USER:-postgres}"
+  
+  # 先尝试从public schema查询（Prisma默认使用public）
+  FAILED_COUNT=$(docker exec aipan-postgres psql -U "$DB_USER" -d $POSTGRES_DB -t -c "SELECT COUNT(*) FROM public.\"_prisma_migrations\" WHERE finished_at IS NULL;" 2>/dev/null | xargs)
+  
+  # 如果public中没有，再尝试配置的schema
+  if [ -z "$FAILED_COUNT" ] || [ "$FAILED_COUNT" = "0" ]; then
+    FAILED_COUNT=$(docker exec aipan-postgres psql -U "$DB_USER" -d $POSTGRES_DB -t -c "SELECT COUNT(*) FROM ${DATABASE_SCHEMA}.\"_prisma_migrations\" WHERE finished_at IS NULL;" 2>/dev/null | xargs)
+    SCHEMA_TO_USE="${DATABASE_SCHEMA}"
+  else
+    SCHEMA_TO_USE="public"
+  fi
+  
+  if [ "$FAILED_COUNT" != "0" ] && [ -n "$FAILED_COUNT" ]; then
+    FAILED_MIGRATIONS=$(docker exec aipan-postgres psql -U "$DB_USER" -d $POSTGRES_DB -t -c "SELECT migration_name FROM ${SCHEMA_TO_USE}.\"_prisma_migrations\" WHERE finished_at IS NULL;" 2>/dev/null | xargs)
+    warn "发现 $FAILED_COUNT 个失败的迁移记录: $FAILED_MIGRATIONS"
+    info "是否要清理失败的迁移记录并重新尝试? (y/n) [推荐: y]"
+    read -r fix_failed_migrations
+    
+    if [[ "$fix_failed_migrations" =~ ^[Yy]$ ]]; then
+      info "清理失败的迁移记录（使用数据库用户: $DB_USER）..."
+      docker exec aipan-postgres psql -U "$DB_USER" -d $POSTGRES_DB -c "DELETE FROM ${SCHEMA_TO_USE}.\"_prisma_migrations\" WHERE finished_at IS NULL;" || {
+        warn "清理失败记录时出现问题，尝试使用postgres超级用户..."
+        # 如果使用配置用户失败，尝试用postgres用户
+        docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "DELETE FROM ${SCHEMA_TO_USE}.\"_prisma_migrations\" WHERE finished_at IS NULL;" || {
+          error "清理失败，请手动清理或检查权限"
+          return 1
+        }
+      }
+      info "失败的迁移记录已清理 ✓"
+    else
+      warn "保留失败的迁移记录，迁移可能会失败"
+    fi
+  else
+    info "没有发现失败的迁移记录 ✓"
+  fi
+  
   # 运行数据库迁移
-  info "运行数据库迁移..."
+  info "运行数据库迁移（仅同步表结构，不执行种子数据）..."
   docker run --rm \
     --name aipan-prisma-migrate \
     --network aipan-network \
-    -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
-    -e SHADOW_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}" \
+    -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@aipan-postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
+    -e SHADOW_DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@aipan-postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}" \
     unilei/aipan-netdisk-search-simple:latest \
-    /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" npx prisma migrate deploy && npx prisma db seed"
+    /bin/sh -c "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma migrate deploy"
   
   if [ $? -eq 0 ]; then
     info "数据库迁移成功! ✓"
-    
-    # 迁移后更新表权限
-    if [ "$POSTGRES_USER" != "postgres" ]; then
-      info "迁移后更新表权限..."
-      
-      # 授予用户对所有表的权限
-      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
-        warn "迁移后授予表权限失败"
-      }
-      
-      # 授予用户对所有序列的权限
-      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA $DATABASE_SCHEMA TO $POSTGRES_USER;" || {
-        warn "迁移后授予序列权限失败"
-      }
-      
-      # 尝试将表的所有权设置为用户
-      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "SELECT 'ALTER TABLE ' || schemaname || '.' || tablename || ' OWNER TO $POSTGRES_USER;' FROM pg_tables WHERE schemaname = '$DATABASE_SCHEMA' \gexec" || {
-        warn "设置表所有权失败"
-      }
-      
-      # 尝试将序列的所有权设置为用户
-      docker exec aipan-postgres psql -U postgres -d $POSTGRES_DB -c "SELECT 'ALTER SEQUENCE ' || sequence_schema || '.' || sequence_name || ' OWNER TO $POSTGRES_USER;' FROM information_schema.sequences WHERE sequence_schema = '$DATABASE_SCHEMA' \gexec" || {
-        warn "设置序列所有权失败"
-      }
-      
-      info "表权限更新完成 ✓"
-    fi
+    info "数据库表结构已同步完成"
   else
-    error "数据库迁移失败，请检查日志"
+    error "数据库迁移失败"
+    warn "如果错误显示表或字段已存在，可能是因为迁移部分完成但未记录"
+    info "是否要尝试标记失败的迁移为已解决? (y/n) [推荐: y]"
+    read -r resolve_migration
+    
+    if [[ "$resolve_migration" =~ ^[Yy]$ ]]; then
+      info "请输入要标记为已解决的迁移名称（例如: 20250925074619_init）"
+      info "留空则跳过"
+      read -r migration_name
+      
+      if [ -n "$migration_name" ]; then
+        info "标记迁移 $migration_name 为已应用..."
+        docker run --rm \
+          --name aipan-prisma-resolve \
+          --network aipan-network \
+          -e DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@aipan-postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}" \
+          unilei/aipan-netdisk-search-simple:latest \
+          npx prisma migrate resolve --applied "$migration_name"
+        
+        if [ $? -eq 0 ]; then
+          info "迁移已标记为已应用 ✓"
+          info "现在可以重新运行迁移了"
+        else
+          error "标记迁移失败"
+        fi
+      fi
+    fi
     return 1
   fi
   
@@ -1496,6 +1591,19 @@ update_docker_image() {
     
     # 显示日志
     show_logs
+    
+    # 询问是否需要运行数据库迁移
+    echo ""
+    warn "重要提示: 如果新版本包含数据库结构变更（如新增表、字段等），需要运行数据库迁移！"
+    info "是否立即运行数据库迁移? (y/n) [推荐: y]"
+    read -r run_migration
+    
+    if [[ "$run_migration" =~ ^[Yy]$ ]]; then
+      run_database_migration
+    else
+      warn "已跳过数据库迁移"
+      warn "如果遇到数据库相关错误，请手动运行: ./deploy.sh 并选择选项 3"
+    fi
   else
     error "使用最新镜像启动容器失败，尝试回滚..."
     
