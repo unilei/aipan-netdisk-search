@@ -111,20 +111,29 @@
                     爱盼网盘小助手</span>
                 </a>
               </div>
-              <button
-                class="p-2 md:p-2.5 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-700/80"
-                @click="
-                  colorMode.preference =
-                  colorMode.preference === 'dark' ? 'light' : 'dark'
-                  ">
-                <i v-if="colorMode.preference === 'dark'"
-                  class="fa-solid fa-sun transition-transform duration-300 hover:rotate-90"></i>
-                <i v-else class="fa-solid fa-moon transition-transform duration-300 hover:rotate-90"></i>
-              </button>
+              <div class="flex items-center space-x-4">
+                <!-- 群二维码 -->
+                <GroupQrCode v-if="shouldShowInHeader" variant="header" />
+                
+                <button
+                  class="p-2 md:p-2.5 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-700/80"
+                  @click="
+                    colorMode.preference =
+                    colorMode.preference === 'dark' ? 'light' : 'dark'
+                    ">
+                  <i v-if="colorMode.preference === 'dark'"
+                    class="fa-solid fa-sun transition-transform duration-300 hover:rotate-90"></i>
+                  <i v-else class="fa-solid fa-moon transition-transform duration-300 hover:rotate-90"></i>
+                </button>
+              </div>
             </div>
 
             <!-- 聊天历史区域 -->
             <div class="flex-1 overflow-y-auto px-3 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6" id="chat-container">
+              <!-- 群二维码显示（在第一条AI消息前） -->
+              <GroupQrCode v-if="shouldShowInSearchResults && messages.length > 1" 
+                           variant="search-result" />
+              
               <template v-for="(msg, index) in messages" :key="index">
                 <!-- AI 消息 -->
                 <div v-if="msg.type === 'ai'" class="flex items-start space-x-2 md:space-x-4 w-full md:max-w-4xl">
@@ -208,15 +217,18 @@
 
 <script setup>
 definePageMeta({
-  layout: "custom",
+  layout: "custom"
 });
 import { ref, onMounted, computed } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import DiskInfoList from "~/components/diskInfoList.vue";
+import GroupQrCode from "~/components/GroupQrCode.vue";
 import sourcesApiEndpoints from "~/assets/vod/clouddrive.json";
 import { badWords } from "~/utils/sensitiveWords";
+import { useGroupQrConfig } from "~/composables/useGroupQrConfig";
 
 const colorMode = useColorMode()
+const { shouldShowInHeader, shouldShowInSearchResults, getConfig } = useGroupQrConfig()
 
 const message = ref("");
 const messages = ref([
@@ -301,6 +313,8 @@ const loadChatsFromStorage = () => {
 // 在组件挂载时加载聊天记录
 onMounted(() => {
   loadChatsFromStorage();
+  // 初始化群二维码配置
+  getConfig();
 });
 
 // 搜索相关状态

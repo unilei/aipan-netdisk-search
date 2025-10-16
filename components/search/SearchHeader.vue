@@ -1,5 +1,15 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import GroupQrCode from '~/components/GroupQrCode.vue'
+import { useGroupQrConfig } from '~/composables/useGroupQrConfig'
+
 const router = useRouter();
+const { shouldShowInHeader, getConfig } = useGroupQrConfig();
+
+onMounted(() => {
+  getConfig()
+})
+
 const goHome = () => {
   router.push("/");
 };
@@ -68,7 +78,10 @@ console.log(colorMode.preference);
           </div>
         </div>
 
-        <div>
+        <div class="flex items-center space-x-2">
+          <!-- 群二维码 -->
+          <GroupQrCode v-if="shouldShowInHeader" variant="header" />
+          
           <!-- 主题切换按钮 -->
           <button
             class="p-2 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
