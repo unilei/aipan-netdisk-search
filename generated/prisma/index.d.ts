@@ -84,6 +84,11 @@ export type SystemSettings = $Result.DefaultSelection<Prisma.$SystemSettingsPayl
  */
 export type SearchRecord = $Result.DefaultSelection<Prisma.$SearchRecordPayload>
 /**
+ * Model DailySearchStats
+ * 
+ */
+export type DailySearchStats = $Result.DefaultSelection<Prisma.$DailySearchStatsPayload>
+/**
  * Model UserVodConfig
  * 
  */
@@ -408,6 +413,16 @@ export class PrismaClient<
     * ```
     */
   get searchRecord(): Prisma.SearchRecordDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.dailySearchStats`: Exposes CRUD operations for the **DailySearchStats** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DailySearchStats
+    * const dailySearchStats = await prisma.dailySearchStats.findMany()
+    * ```
+    */
+  get dailySearchStats(): Prisma.DailySearchStatsDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.userVodConfig`: Exposes CRUD operations for the **UserVodConfig** model.
@@ -982,6 +997,7 @@ export namespace Prisma {
     UserResource: 'UserResource',
     SystemSettings: 'SystemSettings',
     SearchRecord: 'SearchRecord',
+    DailySearchStats: 'DailySearchStats',
     UserVodConfig: 'UserVodConfig',
     ForumCategory: 'ForumCategory',
     ForumTopic: 'ForumTopic',
@@ -1012,7 +1028,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "userVodConfig" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "navigationCategory" | "navigationItem"
+      modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "dailySearchStats" | "userVodConfig" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "navigationCategory" | "navigationItem"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -2052,6 +2068,80 @@ export namespace Prisma {
           }
         }
       }
+      DailySearchStats: {
+        payload: Prisma.$DailySearchStatsPayload<ExtArgs>
+        fields: Prisma.DailySearchStatsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DailySearchStatsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DailySearchStatsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>
+          }
+          findFirst: {
+            args: Prisma.DailySearchStatsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DailySearchStatsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>
+          }
+          findMany: {
+            args: Prisma.DailySearchStatsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>[]
+          }
+          create: {
+            args: Prisma.DailySearchStatsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>
+          }
+          createMany: {
+            args: Prisma.DailySearchStatsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DailySearchStatsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>[]
+          }
+          delete: {
+            args: Prisma.DailySearchStatsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>
+          }
+          update: {
+            args: Prisma.DailySearchStatsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>
+          }
+          deleteMany: {
+            args: Prisma.DailySearchStatsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DailySearchStatsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DailySearchStatsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>[]
+          }
+          upsert: {
+            args: Prisma.DailySearchStatsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DailySearchStatsPayload>
+          }
+          aggregate: {
+            args: Prisma.DailySearchStatsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDailySearchStats>
+          }
+          groupBy: {
+            args: Prisma.DailySearchStatsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DailySearchStatsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DailySearchStatsCountArgs<ExtArgs>
+            result: $Utils.Optional<DailySearchStatsCountAggregateOutputType> | number
+          }
+        }
+      }
       UserVodConfig: {
         payload: Prisma.$UserVodConfigPayload<ExtArgs>
         fields: Prisma.UserVodConfigFieldRefs
@@ -3050,6 +3140,7 @@ export namespace Prisma {
     userResource?: UserResourceOmit
     systemSettings?: SystemSettingsOmit
     searchRecord?: SearchRecordOmit
+    dailySearchStats?: DailySearchStatsOmit
     userVodConfig?: UserVodConfigOmit
     forumCategory?: ForumCategoryOmit
     forumTopic?: ForumTopicOmit
@@ -19944,6 +20035,1052 @@ export namespace Prisma {
 
 
   /**
+   * Model DailySearchStats
+   */
+
+  export type AggregateDailySearchStats = {
+    _count: DailySearchStatsCountAggregateOutputType | null
+    _avg: DailySearchStatsAvgAggregateOutputType | null
+    _sum: DailySearchStatsSumAggregateOutputType | null
+    _min: DailySearchStatsMinAggregateOutputType | null
+    _max: DailySearchStatsMaxAggregateOutputType | null
+  }
+
+  export type DailySearchStatsAvgAggregateOutputType = {
+    id: number | null
+    count: number | null
+  }
+
+  export type DailySearchStatsSumAggregateOutputType = {
+    id: number | null
+    count: number | null
+  }
+
+  export type DailySearchStatsMinAggregateOutputType = {
+    id: number | null
+    date: Date | null
+    keyword: string | null
+    count: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DailySearchStatsMaxAggregateOutputType = {
+    id: number | null
+    date: Date | null
+    keyword: string | null
+    count: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type DailySearchStatsCountAggregateOutputType = {
+    id: number
+    date: number
+    keyword: number
+    count: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type DailySearchStatsAvgAggregateInputType = {
+    id?: true
+    count?: true
+  }
+
+  export type DailySearchStatsSumAggregateInputType = {
+    id?: true
+    count?: true
+  }
+
+  export type DailySearchStatsMinAggregateInputType = {
+    id?: true
+    date?: true
+    keyword?: true
+    count?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DailySearchStatsMaxAggregateInputType = {
+    id?: true
+    date?: true
+    keyword?: true
+    count?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type DailySearchStatsCountAggregateInputType = {
+    id?: true
+    date?: true
+    keyword?: true
+    count?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type DailySearchStatsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DailySearchStats to aggregate.
+     */
+    where?: DailySearchStatsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailySearchStats to fetch.
+     */
+    orderBy?: DailySearchStatsOrderByWithRelationInput | DailySearchStatsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DailySearchStatsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailySearchStats from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailySearchStats.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DailySearchStats
+    **/
+    _count?: true | DailySearchStatsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DailySearchStatsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DailySearchStatsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DailySearchStatsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DailySearchStatsMaxAggregateInputType
+  }
+
+  export type GetDailySearchStatsAggregateType<T extends DailySearchStatsAggregateArgs> = {
+        [P in keyof T & keyof AggregateDailySearchStats]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDailySearchStats[P]>
+      : GetScalarType<T[P], AggregateDailySearchStats[P]>
+  }
+
+
+
+
+  export type DailySearchStatsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DailySearchStatsWhereInput
+    orderBy?: DailySearchStatsOrderByWithAggregationInput | DailySearchStatsOrderByWithAggregationInput[]
+    by: DailySearchStatsScalarFieldEnum[] | DailySearchStatsScalarFieldEnum
+    having?: DailySearchStatsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DailySearchStatsCountAggregateInputType | true
+    _avg?: DailySearchStatsAvgAggregateInputType
+    _sum?: DailySearchStatsSumAggregateInputType
+    _min?: DailySearchStatsMinAggregateInputType
+    _max?: DailySearchStatsMaxAggregateInputType
+  }
+
+  export type DailySearchStatsGroupByOutputType = {
+    id: number
+    date: Date
+    keyword: string
+    count: number
+    createdAt: Date
+    updatedAt: Date
+    _count: DailySearchStatsCountAggregateOutputType | null
+    _avg: DailySearchStatsAvgAggregateOutputType | null
+    _sum: DailySearchStatsSumAggregateOutputType | null
+    _min: DailySearchStatsMinAggregateOutputType | null
+    _max: DailySearchStatsMaxAggregateOutputType | null
+  }
+
+  type GetDailySearchStatsGroupByPayload<T extends DailySearchStatsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DailySearchStatsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DailySearchStatsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DailySearchStatsGroupByOutputType[P]>
+            : GetScalarType<T[P], DailySearchStatsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DailySearchStatsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    keyword?: boolean
+    count?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["dailySearchStats"]>
+
+  export type DailySearchStatsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    keyword?: boolean
+    count?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["dailySearchStats"]>
+
+  export type DailySearchStatsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    keyword?: boolean
+    count?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["dailySearchStats"]>
+
+  export type DailySearchStatsSelectScalar = {
+    id?: boolean
+    date?: boolean
+    keyword?: boolean
+    count?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type DailySearchStatsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "keyword" | "count" | "createdAt" | "updatedAt", ExtArgs["result"]["dailySearchStats"]>
+
+  export type $DailySearchStatsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DailySearchStats"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      date: Date
+      keyword: string
+      count: number
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["dailySearchStats"]>
+    composites: {}
+  }
+
+  type DailySearchStatsGetPayload<S extends boolean | null | undefined | DailySearchStatsDefaultArgs> = $Result.GetResult<Prisma.$DailySearchStatsPayload, S>
+
+  type DailySearchStatsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DailySearchStatsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DailySearchStatsCountAggregateInputType | true
+    }
+
+  export interface DailySearchStatsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DailySearchStats'], meta: { name: 'DailySearchStats' } }
+    /**
+     * Find zero or one DailySearchStats that matches the filter.
+     * @param {DailySearchStatsFindUniqueArgs} args - Arguments to find a DailySearchStats
+     * @example
+     * // Get one DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DailySearchStatsFindUniqueArgs>(args: SelectSubset<T, DailySearchStatsFindUniqueArgs<ExtArgs>>): Prisma__DailySearchStatsClient<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DailySearchStats that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DailySearchStatsFindUniqueOrThrowArgs} args - Arguments to find a DailySearchStats
+     * @example
+     * // Get one DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DailySearchStatsFindUniqueOrThrowArgs>(args: SelectSubset<T, DailySearchStatsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DailySearchStatsClient<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DailySearchStats that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailySearchStatsFindFirstArgs} args - Arguments to find a DailySearchStats
+     * @example
+     * // Get one DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DailySearchStatsFindFirstArgs>(args?: SelectSubset<T, DailySearchStatsFindFirstArgs<ExtArgs>>): Prisma__DailySearchStatsClient<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DailySearchStats that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailySearchStatsFindFirstOrThrowArgs} args - Arguments to find a DailySearchStats
+     * @example
+     * // Get one DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DailySearchStatsFindFirstOrThrowArgs>(args?: SelectSubset<T, DailySearchStatsFindFirstOrThrowArgs<ExtArgs>>): Prisma__DailySearchStatsClient<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DailySearchStats that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailySearchStatsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.findMany()
+     * 
+     * // Get first 10 DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const dailySearchStatsWithIdOnly = await prisma.dailySearchStats.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends DailySearchStatsFindManyArgs>(args?: SelectSubset<T, DailySearchStatsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DailySearchStats.
+     * @param {DailySearchStatsCreateArgs} args - Arguments to create a DailySearchStats.
+     * @example
+     * // Create one DailySearchStats
+     * const DailySearchStats = await prisma.dailySearchStats.create({
+     *   data: {
+     *     // ... data to create a DailySearchStats
+     *   }
+     * })
+     * 
+     */
+    create<T extends DailySearchStatsCreateArgs>(args: SelectSubset<T, DailySearchStatsCreateArgs<ExtArgs>>): Prisma__DailySearchStatsClient<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DailySearchStats.
+     * @param {DailySearchStatsCreateManyArgs} args - Arguments to create many DailySearchStats.
+     * @example
+     * // Create many DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DailySearchStatsCreateManyArgs>(args?: SelectSubset<T, DailySearchStatsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DailySearchStats and returns the data saved in the database.
+     * @param {DailySearchStatsCreateManyAndReturnArgs} args - Arguments to create many DailySearchStats.
+     * @example
+     * // Create many DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DailySearchStats and only return the `id`
+     * const dailySearchStatsWithIdOnly = await prisma.dailySearchStats.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DailySearchStatsCreateManyAndReturnArgs>(args?: SelectSubset<T, DailySearchStatsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DailySearchStats.
+     * @param {DailySearchStatsDeleteArgs} args - Arguments to delete one DailySearchStats.
+     * @example
+     * // Delete one DailySearchStats
+     * const DailySearchStats = await prisma.dailySearchStats.delete({
+     *   where: {
+     *     // ... filter to delete one DailySearchStats
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DailySearchStatsDeleteArgs>(args: SelectSubset<T, DailySearchStatsDeleteArgs<ExtArgs>>): Prisma__DailySearchStatsClient<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DailySearchStats.
+     * @param {DailySearchStatsUpdateArgs} args - Arguments to update one DailySearchStats.
+     * @example
+     * // Update one DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DailySearchStatsUpdateArgs>(args: SelectSubset<T, DailySearchStatsUpdateArgs<ExtArgs>>): Prisma__DailySearchStatsClient<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DailySearchStats.
+     * @param {DailySearchStatsDeleteManyArgs} args - Arguments to filter DailySearchStats to delete.
+     * @example
+     * // Delete a few DailySearchStats
+     * const { count } = await prisma.dailySearchStats.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DailySearchStatsDeleteManyArgs>(args?: SelectSubset<T, DailySearchStatsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DailySearchStats.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailySearchStatsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DailySearchStatsUpdateManyArgs>(args: SelectSubset<T, DailySearchStatsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DailySearchStats and returns the data updated in the database.
+     * @param {DailySearchStatsUpdateManyAndReturnArgs} args - Arguments to update many DailySearchStats.
+     * @example
+     * // Update many DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DailySearchStats and only return the `id`
+     * const dailySearchStatsWithIdOnly = await prisma.dailySearchStats.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DailySearchStatsUpdateManyAndReturnArgs>(args: SelectSubset<T, DailySearchStatsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DailySearchStats.
+     * @param {DailySearchStatsUpsertArgs} args - Arguments to update or create a DailySearchStats.
+     * @example
+     * // Update or create a DailySearchStats
+     * const dailySearchStats = await prisma.dailySearchStats.upsert({
+     *   create: {
+     *     // ... data to create a DailySearchStats
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DailySearchStats we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DailySearchStatsUpsertArgs>(args: SelectSubset<T, DailySearchStatsUpsertArgs<ExtArgs>>): Prisma__DailySearchStatsClient<$Result.GetResult<Prisma.$DailySearchStatsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DailySearchStats.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailySearchStatsCountArgs} args - Arguments to filter DailySearchStats to count.
+     * @example
+     * // Count the number of DailySearchStats
+     * const count = await prisma.dailySearchStats.count({
+     *   where: {
+     *     // ... the filter for the DailySearchStats we want to count
+     *   }
+     * })
+    **/
+    count<T extends DailySearchStatsCountArgs>(
+      args?: Subset<T, DailySearchStatsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DailySearchStatsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DailySearchStats.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailySearchStatsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DailySearchStatsAggregateArgs>(args: Subset<T, DailySearchStatsAggregateArgs>): Prisma.PrismaPromise<GetDailySearchStatsAggregateType<T>>
+
+    /**
+     * Group by DailySearchStats.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DailySearchStatsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DailySearchStatsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DailySearchStatsGroupByArgs['orderBy'] }
+        : { orderBy?: DailySearchStatsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DailySearchStatsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDailySearchStatsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DailySearchStats model
+   */
+  readonly fields: DailySearchStatsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DailySearchStats.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DailySearchStatsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DailySearchStats model
+   */
+  interface DailySearchStatsFieldRefs {
+    readonly id: FieldRef<"DailySearchStats", 'Int'>
+    readonly date: FieldRef<"DailySearchStats", 'DateTime'>
+    readonly keyword: FieldRef<"DailySearchStats", 'String'>
+    readonly count: FieldRef<"DailySearchStats", 'Int'>
+    readonly createdAt: FieldRef<"DailySearchStats", 'DateTime'>
+    readonly updatedAt: FieldRef<"DailySearchStats", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DailySearchStats findUnique
+   */
+  export type DailySearchStatsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * Filter, which DailySearchStats to fetch.
+     */
+    where: DailySearchStatsWhereUniqueInput
+  }
+
+  /**
+   * DailySearchStats findUniqueOrThrow
+   */
+  export type DailySearchStatsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * Filter, which DailySearchStats to fetch.
+     */
+    where: DailySearchStatsWhereUniqueInput
+  }
+
+  /**
+   * DailySearchStats findFirst
+   */
+  export type DailySearchStatsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * Filter, which DailySearchStats to fetch.
+     */
+    where?: DailySearchStatsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailySearchStats to fetch.
+     */
+    orderBy?: DailySearchStatsOrderByWithRelationInput | DailySearchStatsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DailySearchStats.
+     */
+    cursor?: DailySearchStatsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailySearchStats from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailySearchStats.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DailySearchStats.
+     */
+    distinct?: DailySearchStatsScalarFieldEnum | DailySearchStatsScalarFieldEnum[]
+  }
+
+  /**
+   * DailySearchStats findFirstOrThrow
+   */
+  export type DailySearchStatsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * Filter, which DailySearchStats to fetch.
+     */
+    where?: DailySearchStatsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailySearchStats to fetch.
+     */
+    orderBy?: DailySearchStatsOrderByWithRelationInput | DailySearchStatsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DailySearchStats.
+     */
+    cursor?: DailySearchStatsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailySearchStats from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailySearchStats.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DailySearchStats.
+     */
+    distinct?: DailySearchStatsScalarFieldEnum | DailySearchStatsScalarFieldEnum[]
+  }
+
+  /**
+   * DailySearchStats findMany
+   */
+  export type DailySearchStatsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * Filter, which DailySearchStats to fetch.
+     */
+    where?: DailySearchStatsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DailySearchStats to fetch.
+     */
+    orderBy?: DailySearchStatsOrderByWithRelationInput | DailySearchStatsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DailySearchStats.
+     */
+    cursor?: DailySearchStatsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DailySearchStats from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DailySearchStats.
+     */
+    skip?: number
+    distinct?: DailySearchStatsScalarFieldEnum | DailySearchStatsScalarFieldEnum[]
+  }
+
+  /**
+   * DailySearchStats create
+   */
+  export type DailySearchStatsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a DailySearchStats.
+     */
+    data: XOR<DailySearchStatsCreateInput, DailySearchStatsUncheckedCreateInput>
+  }
+
+  /**
+   * DailySearchStats createMany
+   */
+  export type DailySearchStatsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DailySearchStats.
+     */
+    data: DailySearchStatsCreateManyInput | DailySearchStatsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DailySearchStats createManyAndReturn
+   */
+  export type DailySearchStatsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * The data used to create many DailySearchStats.
+     */
+    data: DailySearchStatsCreateManyInput | DailySearchStatsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DailySearchStats update
+   */
+  export type DailySearchStatsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a DailySearchStats.
+     */
+    data: XOR<DailySearchStatsUpdateInput, DailySearchStatsUncheckedUpdateInput>
+    /**
+     * Choose, which DailySearchStats to update.
+     */
+    where: DailySearchStatsWhereUniqueInput
+  }
+
+  /**
+   * DailySearchStats updateMany
+   */
+  export type DailySearchStatsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DailySearchStats.
+     */
+    data: XOR<DailySearchStatsUpdateManyMutationInput, DailySearchStatsUncheckedUpdateManyInput>
+    /**
+     * Filter which DailySearchStats to update
+     */
+    where?: DailySearchStatsWhereInput
+    /**
+     * Limit how many DailySearchStats to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DailySearchStats updateManyAndReturn
+   */
+  export type DailySearchStatsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * The data used to update DailySearchStats.
+     */
+    data: XOR<DailySearchStatsUpdateManyMutationInput, DailySearchStatsUncheckedUpdateManyInput>
+    /**
+     * Filter which DailySearchStats to update
+     */
+    where?: DailySearchStatsWhereInput
+    /**
+     * Limit how many DailySearchStats to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DailySearchStats upsert
+   */
+  export type DailySearchStatsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the DailySearchStats to update in case it exists.
+     */
+    where: DailySearchStatsWhereUniqueInput
+    /**
+     * In case the DailySearchStats found by the `where` argument doesn't exist, create a new DailySearchStats with this data.
+     */
+    create: XOR<DailySearchStatsCreateInput, DailySearchStatsUncheckedCreateInput>
+    /**
+     * In case the DailySearchStats was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DailySearchStatsUpdateInput, DailySearchStatsUncheckedUpdateInput>
+  }
+
+  /**
+   * DailySearchStats delete
+   */
+  export type DailySearchStatsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+    /**
+     * Filter which DailySearchStats to delete.
+     */
+    where: DailySearchStatsWhereUniqueInput
+  }
+
+  /**
+   * DailySearchStats deleteMany
+   */
+  export type DailySearchStatsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DailySearchStats to delete
+     */
+    where?: DailySearchStatsWhereInput
+    /**
+     * Limit how many DailySearchStats to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DailySearchStats without action
+   */
+  export type DailySearchStatsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DailySearchStats
+     */
+    select?: DailySearchStatsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DailySearchStats
+     */
+    omit?: DailySearchStatsOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model UserVodConfig
    */
 
@@ -34059,6 +35196,18 @@ export namespace Prisma {
   export type SearchRecordScalarFieldEnum = (typeof SearchRecordScalarFieldEnum)[keyof typeof SearchRecordScalarFieldEnum]
 
 
+  export const DailySearchStatsScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    keyword: 'keyword',
+    count: 'count',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type DailySearchStatsScalarFieldEnum = (typeof DailySearchStatsScalarFieldEnum)[keyof typeof DailySearchStatsScalarFieldEnum]
+
+
   export const UserVodConfigScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -35349,6 +36498,66 @@ export namespace Prisma {
     lastSearchAt?: DateTimeWithAggregatesFilter<"SearchRecord"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"SearchRecord"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"SearchRecord"> | Date | string
+  }
+
+  export type DailySearchStatsWhereInput = {
+    AND?: DailySearchStatsWhereInput | DailySearchStatsWhereInput[]
+    OR?: DailySearchStatsWhereInput[]
+    NOT?: DailySearchStatsWhereInput | DailySearchStatsWhereInput[]
+    id?: IntFilter<"DailySearchStats"> | number
+    date?: DateTimeFilter<"DailySearchStats"> | Date | string
+    keyword?: StringFilter<"DailySearchStats"> | string
+    count?: IntFilter<"DailySearchStats"> | number
+    createdAt?: DateTimeFilter<"DailySearchStats"> | Date | string
+    updatedAt?: DateTimeFilter<"DailySearchStats"> | Date | string
+  }
+
+  export type DailySearchStatsOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    keyword?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailySearchStatsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    date_keyword?: DailySearchStatsDateKeywordCompoundUniqueInput
+    AND?: DailySearchStatsWhereInput | DailySearchStatsWhereInput[]
+    OR?: DailySearchStatsWhereInput[]
+    NOT?: DailySearchStatsWhereInput | DailySearchStatsWhereInput[]
+    date?: DateTimeFilter<"DailySearchStats"> | Date | string
+    keyword?: StringFilter<"DailySearchStats"> | string
+    count?: IntFilter<"DailySearchStats"> | number
+    createdAt?: DateTimeFilter<"DailySearchStats"> | Date | string
+    updatedAt?: DateTimeFilter<"DailySearchStats"> | Date | string
+  }, "id" | "date_keyword">
+
+  export type DailySearchStatsOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    keyword?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: DailySearchStatsCountOrderByAggregateInput
+    _avg?: DailySearchStatsAvgOrderByAggregateInput
+    _max?: DailySearchStatsMaxOrderByAggregateInput
+    _min?: DailySearchStatsMinOrderByAggregateInput
+    _sum?: DailySearchStatsSumOrderByAggregateInput
+  }
+
+  export type DailySearchStatsScalarWhereWithAggregatesInput = {
+    AND?: DailySearchStatsScalarWhereWithAggregatesInput | DailySearchStatsScalarWhereWithAggregatesInput[]
+    OR?: DailySearchStatsScalarWhereWithAggregatesInput[]
+    NOT?: DailySearchStatsScalarWhereWithAggregatesInput | DailySearchStatsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"DailySearchStats"> | number
+    date?: DateTimeWithAggregatesFilter<"DailySearchStats"> | Date | string
+    keyword?: StringWithAggregatesFilter<"DailySearchStats"> | string
+    count?: IntWithAggregatesFilter<"DailySearchStats"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"DailySearchStats"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"DailySearchStats"> | Date | string
   }
 
   export type UserVodConfigWhereInput = {
@@ -37260,6 +38469,66 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DailySearchStatsCreateInput = {
+    date: Date | string
+    keyword: string
+    count?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailySearchStatsUncheckedCreateInput = {
+    id?: number
+    date: Date | string
+    keyword: string
+    count?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailySearchStatsUpdateInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailySearchStatsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailySearchStatsCreateManyInput = {
+    id?: number
+    date: Date | string
+    keyword: string
+    count?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DailySearchStatsUpdateManyMutationInput = {
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DailySearchStatsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    keyword?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type UserVodConfigCreateInput = {
     config: JsonNullValueInput | InputJsonValue
     createdAt?: Date | string
@@ -39113,6 +40382,48 @@ export namespace Prisma {
   }
 
   export type SearchRecordSumOrderByAggregateInput = {
+    id?: SortOrder
+    count?: SortOrder
+  }
+
+  export type DailySearchStatsDateKeywordCompoundUniqueInput = {
+    date: Date | string
+    keyword: string
+  }
+
+  export type DailySearchStatsCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    keyword?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailySearchStatsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    count?: SortOrder
+  }
+
+  export type DailySearchStatsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    keyword?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailySearchStatsMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    keyword?: SortOrder
+    count?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type DailySearchStatsSumOrderByAggregateInput = {
     id?: SortOrder
     count?: SortOrder
   }

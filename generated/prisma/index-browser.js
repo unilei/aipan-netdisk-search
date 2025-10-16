@@ -258,6 +258,15 @@ exports.Prisma.SearchRecordScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.DailySearchStatsScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  keyword: 'keyword',
+  count: 'count',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.UserVodConfigScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -431,6 +440,7 @@ exports.Prisma.ModelName = {
   UserResource: 'UserResource',
   SystemSettings: 'SystemSettings',
   SearchRecord: 'SearchRecord',
+  DailySearchStats: 'DailySearchStats',
   UserVodConfig: 'UserVodConfig',
   ForumCategory: 'ForumCategory',
   ForumTopic: 'ForumTopic',
