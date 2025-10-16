@@ -18,18 +18,16 @@ export default defineEventHandler(async (event) => {
             }
         });
 
-        // 获取今日搜索次数
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // 获取今日搜索次数（从每日统计表）
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-        const todaySearches = await prisma.searchRecord.aggregate({
+        const todaySearches = await prisma.dailySearchStats.aggregate({
             _sum: {
                 count: true
             },
             where: {
-                lastSearchAt: {
-                    gte: today
-                }
+                date: today
             }
         });
 
@@ -40,7 +38,7 @@ export default defineEventHandler(async (event) => {
             code: 200,
             data: {
                 totalSearches: totalSearches._sum.count || 0,
-                todaySearches: todaySearches._sum.count || 0,
+                todaySearches: todaySearches._sum.count || 0, // 今日搜索次数
                 uniqueKeywords
             }
         };

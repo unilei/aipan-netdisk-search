@@ -12,21 +12,45 @@ export default defineEventHandler(async (event) => {
                 };
             }
 
-            // 使用 upsert 来更新或创建记录
-            await prisma.searchRecord.upsert({
-                where: {
-                    keyword
-                },
-                update: {
-                    count: { increment: 1 },
-                    lastSearchAt: new Date()
-                },
-                create: {
-                    keyword,
-                    count: 1,
-                    lastSearchAt: new Date()
-                }
-            });
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+            // 使用事务同时更新两个表
+            await prisma.$transaction([
+                // 更新总搜索记录
+                prisma.searchRecord.upsert({
+                    where: {
+                        keyword
+                    },
+                    update: {
+                        count: { increment: 1 },
+                        lastSearchAt: now
+                    },
+                    create: {
+                        keyword,
+                        count: 1,
+                        lastSearchAt: now
+                    }
+                }),
+                // 更新每日搜索统计
+                prisma.dailySearchStats.upsert({
+                    where: {
+                        date_keyword: {
+                            date: today,
+                            keyword
+                        }
+                    },
+                    update: {
+                        count: { increment: 1 },
+                        updatedAt: now
+                    },
+                    create: {
+                        date: today,
+                        keyword,
+                        count: 1
+                    }
+                })
+            ]);
 
             return {
                 code: 200,

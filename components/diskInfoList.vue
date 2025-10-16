@@ -153,15 +153,71 @@ const copyPwd = async (pwd, event) => {
 }
 
 // 处理链接点击
-const handleLinkClick = (e, link) => {
+const handleLinkClick = async (e, link) => {
   e.preventDefault();
-  if (props.redirectStatus) {
-    // 在新窗口中打开 redirect 页面
-    const redirectUrl = `/redirect?url=${encodeURIComponent(link.link)}`;
-    window.open(redirectUrl, '_blank', 'noopener,noreferrer');
-  } else {
-    // 直接在新窗口中打开链接
-    window.open(link.link, '_blank', 'noopener,noreferrer');
+  
+  // 首先检查验证功能是否启用
+  try {
+    const configRes = await $fetch('/api/quark/setting');
+    const isVerificationEnabled = configRes?.data?.verificationEnabled || false;
+    
+    // 如果验证未启用，直接访问链接
+    if (!isVerificationEnabled) {
+      if (props.redirectStatus) {
+        const redirectUrl = `/redirect?url=${encodeURIComponent(link.link)}`;
+        window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+      } else {
+        window.open(link.link, '_blank', 'noopener,noreferrer');
+      }
+      return;
+    }
+    
+    // 验证功能已启用，检查验证状态
+    const { checkQuarkVerification } = await import('@/middleware/quark-verification.ts');
+    
+    const isVerified = await checkQuarkVerification();
+    if (!isVerified) {
+      // 需要验证，将链接加密后跳转到验证页面
+      try {
+        // 使用服务器端加密API
+        const encryptRes = await $fetch('/api/quark/encrypt-link', {
+          method: 'POST',
+          body: {
+            link: link.link
+          }
+        });
+        
+        if (encryptRes.code === 200) {
+          const verificationUrl = `/quark-verification?token=${encodeURIComponent(encryptRes.data.token)}&from=netdisk`;
+          return navigateTo(verificationUrl);
+        } else {
+          throw new Error(encryptRes.msg || '加密失败');
+        }
+      } catch (error) {
+        console.error('链接加密失败:', error);
+        ElMessage.error('链接处理失败，请稍后重试');
+        return;
+      }
+    }
+    
+    // 验证通过，正常访问链接
+    if (props.redirectStatus) {
+      // 在新窗口中打开 redirect 页面
+      const redirectUrl = `/redirect?url=${encodeURIComponent(link.link)}`;
+      window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      // 直接在新窗口中打开链接
+      window.open(link.link, '_blank', 'noopener,noreferrer');
+    }
+  } catch (error) {
+    console.error('检查验证配置失败:', error);
+    // 如果检查配置失败，默认直接访问链接（降级处理）
+    if (props.redirectStatus) {
+      const redirectUrl = `/redirect?url=${encodeURIComponent(link.link)}`;
+      window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      window.open(link.link, '_blank', 'noopener,noreferrer');
+    }
   }
 };
 </script>
