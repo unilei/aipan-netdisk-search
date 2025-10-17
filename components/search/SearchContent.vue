@@ -15,30 +15,54 @@
       <transition name="fade" mode="out-in">
         <div v-if="category === 'onlineVod'" class="p-2">
           <div class="space-y-4">
+            <!-- VOD Player (播放界面) -->
+            <template v-if="selectedVodForPlay">
+              <div class="space-y-4">
+                <!-- 返回按钮 -->
+                <button 
+                  @click="backToList"
+                  class="flex items-center gap-2 px-4 py-2.5 
+                         text-sm font-medium 
+                         text-gray-700 dark:text-gray-300 
+                         hover:text-purple-600 dark:hover:text-purple-400 
+                         bg-white dark:bg-gray-800/80
+                         hover:bg-purple-50 dark:hover:bg-gray-700/80
+                         border border-gray-200 dark:border-gray-700
+                         hover:border-purple-300 dark:hover:border-purple-600
+                         rounded-lg
+                         shadow-sm dark:shadow-gray-900/30
+                         transition-all duration-200
+                         backdrop-blur-sm
+                         active:scale-95">
+                  <i class="fas fa-arrow-left text-base"></i>
+                  <span>返回列表</span>
+                </button>
+                
+                <!-- 播放器 -->
+                <vod-list :vod-data="[selectedVodForPlay]"></vod-list>
+              </div>
+            </template>
+
             <!-- Loading Skeletons -->
-            <VodSkeleton v-if="
+            <VodSkeleton v-else-if="
               vodData.length === 0 &&
               Array.from(loadingStatus.values()).some((status) => status)
             " />
 
-            <!-- VOD List -->
-            <template v-else>
-              <vod-list :vod-data="vodData" class="transition-opacity duration-300" :class="{
-                'opacity-0': Array.from(loadingStatus.values()).some(
-                  (status) => status
-                ),
-              }"></vod-list>
-            </template>
+            <!-- VOD Card Grid -->
+            <VodDetailCard 
+              v-else-if="vodData.length > 0"
+              :vod-data="vodData" 
+              @play-vod="handlePlayVod"
+            />
           </div>
         </div>
       </transition>
     </div>
 
-    <!-- Loading State -->
+    <!-- Loading State (只在网盘搜索时显示) -->
     <LoadingState v-if="
-      (category === 'clouddrive' && loadingProgress.isLoading) ||
-      (category === 'onlineVod' &&
-        Array.from(loadingStatus.values()).some((status) => status))
+      category === 'clouddrive' && loadingProgress.isLoading
     " />
 
     <!-- Empty State -->
@@ -60,12 +84,14 @@
 </template>
 
 <script setup>
+import { ref, watch } from 'vue'
 import DiskInfoList from "~/components/diskInfoList.vue";
 import VodSkeleton from './VodSkeleton.vue'
 import LoadingState from './LoadingState.vue'
 import EmptyState from './EmptyState.vue'
+import VodDetailCard from '~/components/vod/VodDetailCard.vue'
 
-defineProps({
+const props = defineProps({
   category: {
     type: String,
     required: true
@@ -97,6 +123,34 @@ defineProps({
   searchPerformed: {
     type: Boolean,
     default: false
+  }
+})
+
+// 当前播放的VOD
+const selectedVodForPlay = ref(null)
+
+// 处理播放VOD
+const handlePlayVod = (vod) => {
+  selectedVodForPlay.value = vod
+  // 滚动到顶部
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+// 返回列表
+const backToList = () => {
+  selectedVodForPlay.value = null
+}
+
+// 监听分类变化，重置播放状态
+watch(() => props.category, () => {
+  selectedVodForPlay.value = null
+})
+
+// 监听vodData变化，当开始新搜索时重置播放状态
+watch(() => props.vodData, (newVal, oldVal) => {
+  if (newVal.length === 0 || (oldVal && oldVal.length > 0 && newVal.length > oldVal.length)) {
+    // 新搜索开始，重置播放状态
+    selectedVodForPlay.value = null
   }
 })
 </script>

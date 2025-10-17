@@ -16,8 +16,12 @@ export const useSearchState = () => {
   // VOD加载状态
   const loadingStatus = ref(new Map());
   
+  // 从URL读取初始分类
+  const route = useRoute();
+  const initialCategory = route.query.category || "clouddrive";
+  
   // 分类状态
-  const category = ref("clouddrive");
+  const category = ref(initialCategory);
   
   // 分类配置
   const categories = [
@@ -38,6 +42,16 @@ export const useSearchState = () => {
   // 切换分类
   const switchCategory = (newCategory) => {
     category.value = newCategory;
+    
+    // 更新URL参数
+    const router = useRouter();
+    const currentQuery = { ...route.query };
+    router.push({
+      query: {
+        ...currentQuery,
+        category: newCategory
+      }
+    });
     
     // 重置相关状态
     if (newCategory === "clouddrive") {
