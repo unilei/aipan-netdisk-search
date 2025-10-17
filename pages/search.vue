@@ -22,7 +22,7 @@
     <!-- 群二维码显示在搜索结果前 -->
     <div
       v-if="shouldShowInSearchResults && searchPerformed"
-      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3"
     >
       <GroupQrCode variant="search-result" />
     </div>
@@ -61,6 +61,7 @@ definePageMeta({
 
 // 基础设置
 const route = useRoute();
+const router = useRouter();
 const userStore = useUserStore();
 const config = useRuntimeConfig();
 
@@ -179,9 +180,19 @@ watch(
 );
 
 // 监听分类变化
-watch(category, (newCategory) => {
+watch(category, async (newCategory) => {
+  // 如果切换到在线影视且有关键词，立即设置加载状态
+  if (newCategory === "onlineVod" && keyword.value && keyword.value.trim() !== "") {
+    // 立即设置加载状态，让骨架屏显示
+    loadingStatus.value.clear();
+    vodConfigSources.value.forEach((vodApi) => {
+      loadingStatus.value.set(vodApi.api, true);
+    });
+  }
+  
+  // 执行搜索
   if (keyword.value && keyword.value.trim() !== "") {
-    searchByKeyword();
+    await searchByKeyword();
   }
 });
 </script>

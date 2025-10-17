@@ -1,24 +1,33 @@
 <template>
-  <div class="space-y-4">
-    <!-- Header Skeleton -->
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4 px-2 animate-pulse">
-      <div class="h-6 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg w-48"></div>
-      <div class="h-8 bg-red-100/50 dark:bg-red-900/30 rounded-full w-64"></div>
-    </div>
-
-    <!-- Video Player Skeleton -->
-    <div class="relative rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 backdrop-blur-sm">
-      <div class="aspect-video w-full bg-gray-200/50 dark:bg-gray-700/50 animate-pulse">
-        <div class="absolute inset-0 flex items-center justify-center">
-          <i class="fas fa-film text-4xl text-gray-400 dark:text-gray-600"></i>
+  <div class="p-4">
+    <!-- VOD卡片网格骨架屏 -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+      <div 
+        v-for="i in 12" 
+        :key="i"
+        class="vod-skeleton-card"
+      >
+        <!-- 海报骨架 -->
+        <div class="aspect-[2/3] rounded-lg overflow-hidden 
+                    bg-gray-200 dark:bg-gray-700 
+                    shadow-sm
+                    animate-pulse
+                    flex items-center justify-center">
+          <i class="fas fa-film text-2xl text-gray-300 dark:text-gray-600"></i>
+        </div>
+        
+        <!-- 标题骨架 -->
+        <div class="mt-2 px-1 space-y-2 animate-pulse">
+          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+          
+          <!-- 附加信息骨架 -->
+          <div class="flex items-center gap-2 mt-1">
+            <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-12"></div>
+            <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+          </div>
         </div>
       </div>
-    </div>
-
-    <!-- Episodes List Skeleton -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2 p-2">
-      <div v-for="i in 12" :key="i"
-        class="h-10 bg-gray-200/50 dark:bg-gray-700/50 rounded-lg animate-pulse"></div>
     </div>
   </div>
 </template>
@@ -26,3 +35,20 @@
 <script setup>
 // No props needed for skeleton
 </script>
+
+<style scoped>
+.vod-skeleton-card {
+  /* 防止内容抖动 */
+  min-height: 0;
+}
+
+/* 脉动动画 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+</style>
