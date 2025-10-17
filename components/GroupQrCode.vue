@@ -2,7 +2,7 @@
   <div v-if="config.enabled && config.qrCodeUrl" class="group-qr-container">
     <!-- 搜索结果紧凑样式 -->
     <div v-if="variant === 'search-result'" 
-         class="bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 border border-blue-200/60 dark:border-blue-700/60 rounded-lg p-3 mb-3 transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600">
+         class="bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 border border-blue-200/60 dark:border-blue-700/60 rounded-lg p-3 transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600">
       <div class="flex items-center gap-3">
         <!-- 二维码图片 -->
         <div class="flex-shrink-0">
@@ -49,14 +49,18 @@
         :class="{ 'bg-blue-50 text-blue-600 dark:bg-gray-700/80 dark:text-blue-300': showPopover }"
       >
         <i class="fas fa-qrcode text-base md:text-lg"></i>
-        <!-- 小红点提示 -->
-        <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
       </button>
       
       <!-- 弹出层 -->
       <transition name="popover">
         <div v-if="showPopover" 
-             class="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50"
+             class="absolute right-0 top-full mt-2 w-64 
+                    bg-white dark:bg-gray-800 
+                    rounded-xl 
+                    shadow-lg dark:shadow-gray-900/50
+                    border border-gray-200 dark:border-gray-700/80
+                    backdrop-blur-sm
+                    p-4 z-50"
              @click.stop>
           <!-- 关闭按钮 -->
           <button 
@@ -186,6 +190,7 @@ defineExpose({
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
