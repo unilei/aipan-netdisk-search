@@ -9,6 +9,7 @@ const form = reactive({
   email: "",
   password: "",
   username: "",
+  agreedToTerms: false,
 });
 
 const formMode = ref('login');
@@ -57,6 +58,12 @@ const handleSubmit = async () => {
     // 根据当前模式验证必要字段
     if (formMode.value === 'register' && !form.username) {
       ElMessage.error('请输入用户名');
+      return;
+    }
+
+    // 注册时验证是否同意协议
+    if (formMode.value === 'register' && !form.agreedToTerms) {
+      ElMessage.warning('请阅读并同意用户服务协议和隐私政策');
       return;
     }
 
@@ -166,6 +173,21 @@ onMounted(async () => {
             </el-input>
           </el-form-item>
 
+          <!-- 注册时的协议同意 -->
+          <template v-if="formMode === 'register'">
+            <el-form-item>
+              <div class="flex items-start space-x-2">
+                <el-checkbox v-model="form.agreedToTerms" class="mt-1" />
+                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                  我已阅读并同意
+                  <nuxt-link to="/user-agreement" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">《用户服务协议》</nuxt-link>
+                  和
+                  <nuxt-link to="/privacy-policy" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">《隐私政策》</nuxt-link>
+                </p>
+              </div>
+            </el-form-item>
+          </template>
+
           <!-- 按钮区域 -->
           <div class="pt-2 space-y-4">
             <button type="button" @click="handleSubmit" :disabled="btnLoading"
@@ -186,9 +208,10 @@ onMounted(async () => {
         <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
           <p class="text-xs text-center text-gray-500 dark:text-gray-400">
             登录即表示您同意我们的
-            <a href="/disclaimer" class="text-blue-600 dark:text-blue-400 hover:underline">免责声明</a>
+            <nuxt-link to="/user-agreement" class="text-blue-600 dark:text-blue-400 hover:underline">用户协议</nuxt-link>、
+            <nuxt-link to="/privacy-policy" class="text-blue-600 dark:text-blue-400 hover:underline">隐私政策</nuxt-link>
             和
-            <a href="/copyright" class="text-blue-600 dark:text-blue-400 hover:underline">版权声明</a>
+            <nuxt-link to="/disclaimer" class="text-blue-600 dark:text-blue-400 hover:underline">免责声明</nuxt-link>
           </p>
         </div>
       </div>

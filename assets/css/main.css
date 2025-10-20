@@ -56,7 +56,8 @@
     --el-pagination-bg-color: transparent;
     --el-pagination-hover-color: var(--el-color-primary);
     --el-pagination-button-bg-color: transparent;
-    @apply flex items-center gap-2;
+    @apply flex items-center;
+    gap: 0.5rem;
   }
 
   .pagination-custom .el-pagination__total {
@@ -68,7 +69,8 @@
   }
 
   .pagination-custom .el-pager {
-    @apply flex items-center gap-1;
+    @apply flex items-center;
+    gap: 0.25rem;
   }
 
   .pagination-custom .el-pager li {

@@ -1,7 +1,8 @@
 <script setup>
-import { House, Document, Edit, Delete, Plus, ArrowLeft, Refresh } from '@element-plus/icons-vue'
+import { Document, Edit, Delete, Plus, Refresh } from '@element-plus/icons-vue'
 
 definePageMeta({
+    layout: 'admin',
     middleware: ['auth']
 })
 
@@ -149,31 +150,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="min-h-[calc(100vh-60px)] bg-gray-50 dark:bg-gray-900">
-        <div class="max-w-[1240px] mx-auto p-6 space-y-6">
-            <!-- 头部区域 -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                            <nuxt-link to="/admin/dashboard" class="hover:text-primary flex items-center">
-                                <el-icon class="mr-1"><House /></el-icon>
-                                后台管理面板
-                            </nuxt-link>
-                            <span>/</span>
-                            <span class="text-gray-900 dark:text-gray-200">Alist源管理</span>
-                        </div>
-                        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-200">Alist数据源管理</h1>
-                        <p class="text-gray-500 dark:text-gray-400 mt-1">管理和维护Alist数据源配置</p>
-                    </div>
-                    <el-button @click="() => navigateTo('/admin/dashboard')" class="flex items-center">
-                        <el-icon class="mr-1"><ArrowLeft /></el-icon>
-                        返回面板
-                    </el-button>
-                </div>
-            </div>
-
-            <!-- 操作按钮区域 -->
+    <div class="space-y-6">
+        <!-- 操作按钮区域 -->
             <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
                 <div class="flex items-center space-x-4">
                     <el-button type="primary" @click="handleAddAlist" class="flex items-center">
@@ -250,7 +228,6 @@ onMounted(() => {
                     />
                 </div>
             </div>
-        </div>
 
         <!-- 添加/编辑对话框 -->
         <el-dialog 

@@ -1,6 +1,6 @@
 <template>
-    <div class="min-h-[calc(100vh-60px)] bg-gray-50 p-6">
-        <div class="max-w-[1240px] mx-auto space-y-6">
+    <div class="bg-gray-50">
+        <div class="mx-auto space-y-6">
             <!-- 头部区域 -->
             <div class="bg-white rounded-lg p-6 shadow-sm">
                 <div class="flex items-center justify-between">
@@ -147,6 +147,7 @@
 import { House, Plus, ArrowLeft, Edit, Delete, Refresh, Document, ChatDotRound } from '@element-plus/icons-vue'
 
 definePageMeta({
+    layout: 'admin',
     middleware: ['admin']
 })
 
