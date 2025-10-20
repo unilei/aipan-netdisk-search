@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-gray-50">
+  <div class="admin-page-bg">
     <div class="mx-auto space-y-6">
       <!-- 头部区域 -->
-      <div class="bg-white rounded-lg p-6 shadow-sm">
+      <div class="admin-card-bg rounded-lg p-6 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">用户资源管理</h1>
-            <p class="text-gray-500 mt-1">管理用户上传的资源内容</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">用户资源管理</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">管理用户上传的资源内容</p>
           </div>
           <div class="flex items-center space-x-4">
             <el-button
@@ -24,7 +24,7 @@
       </div>
 
       <!-- 搜索和筛选区域 -->
-      <div class="bg-white rounded-lg p-6 shadow-sm">
+      <div class="admin-card-bg rounded-lg p-6 shadow-sm">
         <div class="flex items-center space-x-4">
           <el-input
             v-model="searchQuery"

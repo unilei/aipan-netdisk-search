@@ -10,16 +10,35 @@
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
 
 const nuxtApp = useNuxtApp();
+const colorMode = useColorMode();
 
+// 注册所有 Element Plus 图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   nuxtApp.vueApp.component(key, component);
 }
+
+// 确保初始化时应用正确的 dark class
+onMounted(() => {
+  if (process.client) {
+    const html = document.documentElement;
+    if (colorMode.value === 'dark') {
+      html.classList.add('dark');
+    } else {
+      html.classList.remove('dark');
+    }
+  }
+});
 </script>
 <style>
 body {
   background-color: #fcfcfd;
   padding: 0;
   margin: 0 auto;
+  transition: background-color 0.3s ease;
+}
+
+html.dark body {
+  background-color: #111827;
 }
 
 h1,

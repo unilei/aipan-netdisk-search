@@ -110,6 +110,12 @@ export default defineNuxtConfig({
     },
   },
 
+  // Element Plus 配置
+  elementPlus: {
+    importStyle: 'scss',
+    themes: ['dark'],
+  },
+
   // build modules
   modules: [
     '@element-plus/nuxt',
@@ -150,10 +156,14 @@ export default defineNuxtConfig({
     // 语言文件目录
     langDir: 'locales'
   },
-  css: ['~/assets/css/main.css'],
+  css: [
+    '~/assets/css/main.css',
+    'element-plus/theme-chalk/dark/css-vars.css',
+  ],
 
   colorMode: {
-    preference: 'light',
+    preference: 'system',
+    fallback: 'light',
     classSuffix: '',
   },
 

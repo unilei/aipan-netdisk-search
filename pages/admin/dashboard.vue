@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- 欢迎卡片 -->
     <div
-      class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white shadow-lg"
+      class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 rounded-lg p-6 text-white shadow-lg"
     >
       <h2 class="text-2xl font-bold mb-2">欢迎回来！</h2>
       <p class="opacity-90">使用侧边栏导航选择要管理的功能模块</p>
@@ -10,12 +10,12 @@
 
     <!-- 统计信息区域 -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-blue-500">
             <Folder />
           </el-icon>
-          <h3 class="text-gray-500 text-sm font-medium">云盘文件数</h3>
+          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">云盘文件数</h3>
         </div>
         <div class="mt-2 flex items-baseline">
           <el-skeleton-item
@@ -24,20 +24,20 @@
             class="w-16 h-8"
           />
           <template v-else>
-            <span class="text-2xl font-semibold text-gray-900">{{
+            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
               stats.cloudFiles.count
             }}</span>
-            <span class="ml-2 text-sm text-gray-500">个文件</span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">个文件</span>
           </template>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-green-500">
             <Document />
           </el-icon>
-          <h3 class="text-gray-500 text-sm font-medium">博客文章数</h3>
+          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">博客文章数</h3>
         </div>
         <div class="mt-2 flex items-baseline">
           <el-skeleton-item
@@ -46,20 +46,20 @@
             class="w-16 h-8"
           />
           <template v-else>
-            <span class="text-2xl font-semibold text-gray-900">{{
+            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
               stats.blogPosts.count
             }}</span>
-            <span class="ml-2 text-sm text-gray-500">篇文章</span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">篇文章</span>
           </template>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-red-500">
             <User />
           </el-icon>
-          <h3 class="text-gray-500 text-sm font-medium">用户数量</h3>
+          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">用户数量</h3>
         </div>
         <div class="mt-2 flex items-baseline">
           <el-skeleton-item
@@ -68,20 +68,20 @@
             class="w-16 h-8"
           />
           <template v-else>
-            <span class="text-2xl font-semibold text-gray-900">{{
+            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
               stats.users.count
             }}</span>
-            <span class="ml-2 text-sm text-gray-500">位用户</span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">位用户</span>
           </template>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-purple-500">
             <Monitor />
           </el-icon>
-          <h3 class="text-gray-500 text-sm font-medium">存储源数量</h3>
+          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">存储源数量</h3>
         </div>
         <div class="mt-2 flex items-baseline">
           <el-skeleton-item
@@ -90,7 +90,7 @@
             class="w-16 h-8"
           />
           <template v-else>
-            <span class="text-2xl font-semibold text-gray-900">{{
+            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
               stats.alistSources.count
             }}</span>
             <span class="ml-2 text-sm text-blue-600 flex items-center">
@@ -103,12 +103,12 @@
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-orange-500">
             <ChatLineRound />
           </el-icon>
-          <h3 class="text-gray-500 text-sm font-medium">评论数量</h3>
+          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">评论数量</h3>
         </div>
         <div class="mt-2 flex items-baseline">
           <el-skeleton-item
@@ -117,20 +117,20 @@
             class="w-16 h-8"
           />
           <template v-else>
-            <span class="text-2xl font-semibold text-gray-900">{{
+            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
               stats.comments.count
             }}</span>
-            <span class="ml-2 text-sm text-gray-500">条评论</span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">条评论</span>
           </template>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-cyan-500">
             <ChatLineRound />
           </el-icon>
-          <h3 class="text-gray-500 text-sm font-medium">论坛主题数</h3>
+          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">论坛主题数</h3>
         </div>
         <div class="mt-2 flex items-baseline">
           <el-skeleton-item
@@ -139,20 +139,20 @@
             class="w-16 h-8"
           />
           <template v-else>
-            <span class="text-2xl font-semibold text-gray-900">{{
+            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
               stats.forumTopics.count
             }}</span>
-            <span class="ml-2 text-sm text-gray-500">个主题</span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">个主题</span>
           </template>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-indigo-500">
             <ChatRound />
           </el-icon>
-          <h3 class="text-gray-500 text-sm font-medium">聊天室数量</h3>
+          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">聊天室数量</h3>
         </div>
         <div class="mt-2 flex items-baseline">
           <el-skeleton-item
@@ -161,20 +161,20 @@
             class="w-16 h-8"
           />
           <template v-else>
-            <span class="text-2xl font-semibold text-gray-900">{{
+            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
               stats.chatRooms.count
             }}</span>
-            <span class="ml-2 text-sm text-gray-500">个聊天室</span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">个聊天室</span>
           </template>
         </div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-red-500">
             <Warning />
           </el-icon>
-          <h3 class="text-gray-500 text-sm font-medium">待处理举报</h3>
+          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">待处理举报</h3>
         </div>
         <div class="mt-2 flex items-baseline">
           <el-skeleton-item
@@ -183,10 +183,10 @@
             class="w-16 h-8"
           />
           <template v-else>
-            <span class="text-2xl font-semibold text-gray-900">{{
+            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
               stats.reports.pending
             }}</span>
-            <span class="ml-2 text-sm text-gray-500">条待处理</span>
+            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">条待处理</span>
           </template>
         </div>
       </div>
