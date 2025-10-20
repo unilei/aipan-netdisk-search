@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="bg-gray-50">
+    <div class="admin-page-bg">
       <div class="mx-auto space-y-6">
         <!-- 头部区域 -->
-        <div class="bg-white rounded-lg p-6 shadow-sm">
+        <div class="admin-card-bg rounded-lg p-6 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
               <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
@@ -14,10 +14,10 @@
                   后台管理面板
                 </nuxt-link>
                 <span>/</span>
-                <span class="text-gray-900">导航管理</span>
+                <span class="text-gray-900 dark:text-white">导航管理</span>
               </div>
-              <h1 class="text-2xl font-bold text-gray-900">导航分类管理</h1>
-              <p class="text-gray-500 mt-1">管理网站导航分类和导航项</p>
+              <h1 class="text-2xl font-bold text-gray-900 dark:text-white">导航分类管理</h1>
+              <p class="text-gray-500 dark:text-gray-400 mt-1">管理网站导航分类和导航项</p>
             </div>
             <div class="flex items-center space-x-4">
               <el-button type="primary" @click="showCategoryDialog = true" class="flex items-center">
@@ -45,8 +45,8 @@
         <!-- 分类管理 -->
         <div class="bg-white rounded-lg p-6 shadow-sm" v-if="!selectedCategory">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900">导航分类</h2>
-            <div class="text-sm text-gray-500">
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">导航分类</h2>
+            <div class="text-sm text-gray-500 dark:text-gray-400">
               共 {{ categories.length }} 个分类
             </div>
           </div>

@@ -2,6 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Element Plus Dark Mode 颜色适配 */
+@layer utilities {
+  .admin-page-bg {
+    @apply bg-gray-50;
+  }
+  
+  .admin-card-bg {
+    @apply bg-white;
+  }
+  
+  html.dark .admin-page-bg {
+    background-color: var(--el-bg-color-page, #0a0a0a);
+  }
+  
+  html.dark .admin-card-bg {
+    background-color: var(--el-bg-color-overlay, #1d1e1f);
+  }
+}
+
 /* Element Plus 组件 z-index 设置 */
 :root {
   --el-z-index-message: 3002;

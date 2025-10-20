@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-gray-50">
+  <div class="admin-page-bg">
     <div class="mx-auto space-y-6">
       <!-- 头部 -->
-      <div class="bg-white rounded-lg p-6 shadow-sm">
+      <div class="admin-card-bg rounded-lg p-6 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">系统配置</h1>
-            <p class="text-gray-500 mt-1">管理系统相关配置信息</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">系统配置</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">管理系统相关配置信息</p>
           </div>
         </div>
       </div>
@@ -15,7 +15,7 @@
       <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <h2 class="text-lg font-semibold">群二维码配置</h2>
+            <h2 class="text-lg font-semibold dark:text-gray-200">群二维码配置</h2>
             <el-tag v-if="groupQrForm.enabled" type="success" size="small"
               >已启用</el-tag
             >
@@ -44,7 +44,7 @@
               placeholder="请输入显示标题"
               :disabled="!groupQrForm.enabled"
             />
-            <div class="mt-1 text-xs text-gray-500">
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               在搜索结果和页面头部显示的标题文字
             </div>
           </el-form-item>
@@ -57,7 +57,7 @@
               placeholder="请输入描述信息"
               :disabled="!groupQrForm.enabled"
             />
-            <div class="mt-1 text-xs text-gray-500">
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               显示在二维码下方的描述文字
             </div>
           </el-form-item>
@@ -72,7 +72,7 @@
                 <span>URL</span>
               </template>
             </el-input>
-            <div class="mt-1 text-xs text-gray-500">
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               请输入二维码图片的完整URL地址，支持 https:// 或 http:// 链接
             </div>
           </el-form-item>
@@ -93,7 +93,7 @@
                 搜索结果首条
               </el-checkbox>
             </div>
-            <div class="mt-1 text-xs text-gray-500">选择二维码显示的位置</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">选择二维码显示的位置</div>
           </el-form-item>
 
           <el-form-item>
@@ -121,7 +121,7 @@
       <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <h2 class="text-lg font-semibold">音乐验证码配置</h2>
+            <h2 class="text-lg font-semibold dark:text-gray-200">音乐验证码配置</h2>
             <el-tag v-if="musicForm.enabled" type="success" size="small"
               >已启用</el-tag
             >
@@ -156,7 +156,7 @@
                 <el-button @click="resetMusicPassword"> 重置 </el-button>
               </template>
             </el-input>
-            <div class="mt-1 text-xs text-gray-500">默认密码：aipan.me2025</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">默认密码：aipan.me2025</div>
           </el-form-item>
 
           <el-form-item>
@@ -178,7 +178,7 @@
       </div>
 
       <!-- 夸克网盘配置 -->
-      <div class="bg-white rounded-lg p-6 shadow-sm">
+      <div class="admin-card-bg rounded-lg p-6 shadow-sm">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
             <h2 class="text-lg font-semibold">夸克网盘配置</h2>
@@ -209,7 +209,7 @@
                 <el-button @click="resetApiUrl"> 重置 </el-button>
               </template>
             </el-input>
-            <div class="mt-1 text-xs text-gray-500">
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               默认值：http://127.0.0.1:5000/api/quark/sharepage/save
             </div>
           </el-form-item>
@@ -222,7 +222,7 @@
               placeholder="请输入夸克网盘 Cookie"
               :disabled="!form.enabled"
             />
-            <div class="mt-1 text-xs text-gray-500">
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               请从夸克网盘页面获取 Cookie，确保包含必要的认证信息
             </div>
           </el-form-item>
@@ -241,7 +241,7 @@
                 :value="type.id"
               />
             </el-select>
-            <div class="mt-1 text-xs text-gray-500">选择转存资源的默认分类</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">选择转存资源的默认分类</div>
           </el-form-item>
 
           <el-divider></el-divider>
@@ -267,7 +267,7 @@
               placeholder="请输入需要用户转存的夸克分享链接"
               :disabled="!form.verificationEnabled"
             />
-            <div class="mt-1 text-xs text-gray-500">
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               用户提交的转存链接将与此链接内容比对，仅支持无提取码的公开链接
             </div>
           </el-form-item>
@@ -281,7 +281,7 @@
               :disabled="!form.verificationEnabled"
               class="w-full"
             />
-            <div class="mt-1 text-xs text-gray-500">
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               验证通过后允许访问的时长，最终到期不会超过当日24点；默认
               {{ DEFAULT_ACCESS_DURATION }} 分钟
             </div>

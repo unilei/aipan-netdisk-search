@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen admin-page-bg">
     <!-- 侧边栏 -->
     <aside
       :class="[
@@ -9,7 +9,7 @@
       ]"
       class="w-64"
     >
-      <div class="h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+      <div class="h-full flex flex-col admin-card-bg border-r border-gray-200 dark:border-gray-700">
         <!-- Logo区域 -->
         <div class="flex items-center justify-between mb-5 px-6 py-4 flex-shrink-0">
           <NuxtLink to="/admin/dashboard" class="flex items-center">
@@ -94,7 +94,7 @@
     <!-- 主内容区域 -->
     <div class="sm:ml-64">
       <!-- 顶部导航栏 -->
-      <nav class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <nav class="admin-card-bg border-b border-gray-200 dark:border-gray-700">
         <div class="px-3 py-3 lg:px-5 lg:pl-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center justify-start">
