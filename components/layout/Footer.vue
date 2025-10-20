@@ -5,6 +5,8 @@ const { t } = useI18n();
 
 const footerLinks = [
   { name: 'footer.links.about', path: '/about' },
+  { name: 'footer.links.userAgreement', path: '/user-agreement' },
+  { name: 'footer.links.privacy', path: '/privacy-policy' },
   { name: 'footer.links.disclaimer', path: '/disclaimer' },
   { name: 'footer.links.copyright', path: '/copyright' },
 ];

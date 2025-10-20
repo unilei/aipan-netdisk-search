@@ -1,19 +1,20 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { 
-  House, 
-  Document, 
-  Edit, 
-  Delete, 
-  Plus, 
+import { ref, reactive, onMounted } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
+import {
+  House,
+  Document,
+  Edit,
+  Delete,
+  Plus,
   ArrowLeft,
   Check,
   Close,
-  Filter
-} from '@element-plus/icons-vue';
+  Filter,
+} from "@element-plus/icons-vue";
 
 definePageMeta({
+  layout: "admin",
   middleware: ["auth"],
 });
 const router = useRouter();
@@ -21,7 +22,7 @@ const postsData = ref([]);
 const page = ref(1);
 const pageSize = ref(10);
 const totalCount = ref(0);
-const filterStatus = ref('all');
+const filterStatus = ref("all");
 
 // 拒绝对话框
 const rejectDialog = reactive({
@@ -29,8 +30,8 @@ const rejectDialog = reactive({
   postId: null,
   loading: false,
   form: {
-    reason: ''
-  }
+    reason: "",
+  },
 });
 
 const getPosts = async () => {
@@ -39,7 +40,7 @@ const getPosts = async () => {
     query: {
       page: page.value,
       pageSize: pageSize.value,
-      status: filterStatus.value
+      status: filterStatus.value,
     },
     headers: {
       authorization: "Bearer " + useCookie("token").value,
@@ -67,8 +68,8 @@ const handleFilterChange = () => {
 
 const handleEditPostsById = (row) => {
   // 如果是管理员文章（ID 以 "admin_" 开头）
-  if (typeof row.id === 'string' && row.id.startsWith('admin_')) {
-    const actualId = row.id.replace('admin_', '');
+  if (typeof row.id === "string" && row.id.startsWith("admin_")) {
+    const actualId = row.id.replace("admin_", "");
     router.push(`/admin/blog/${actualId}`);
   } else {
     router.push(`/admin/blog/${row.id}`);
@@ -78,8 +79,8 @@ const handleEditPostsById = (row) => {
 const handleDeletePostsById = async (row) => {
   try {
     // 如果是管理员文章（ID 以 "admin_" 开头）
-    if (typeof row.id === 'string' && row.id.startsWith('admin_')) {
-      const actualId = row.id.replace('admin_', '');
+    if (typeof row.id === "string" && row.id.startsWith("admin_")) {
+      const actualId = row.id.replace("admin_", "");
       await $fetch(`/api/admin/blog/posts/${actualId}`, {
         method: "DELETE",
         headers: {
@@ -95,11 +96,11 @@ const handleDeletePostsById = async (row) => {
         },
       });
     }
-    
-    ElMessage.success('文章删除成功');
+
+    ElMessage.success("文章删除成功");
     getPosts(); // 刷新列表
   } catch (error) {
-    ElMessage.error('删除失败: ' + (error.message || '未知错误'));
+    ElMessage.error("删除失败: " + (error.message || "未知错误"));
   }
 };
 
@@ -111,31 +112,31 @@ const handleAddPost = () => {
 const handleApprovePost = async (post) => {
   try {
     await ElMessageBox.confirm(
-      `确定要审核通过文章 "${post.title}" 吗？通过后将发布到博客页面。`, 
-      '确认审核', 
+      `确定要审核通过文章 "${post.title}" 吗？通过后将发布到博客页面。`,
+      "确认审核",
       {
-        confirmButtonText: '通过',
-        cancelButtonText: '取消',
-        type: 'success'
+        confirmButtonText: "通过",
+        cancelButtonText: "取消",
+        type: "success",
       }
     );
-    
+
     const res = await $fetch(`/api/admin/blog/posts/approve/${post.id}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        authorization: "Bearer " + useCookie('token').value
-      }
+        authorization: "Bearer " + useCookie("token").value,
+      },
     });
-    
+
     if (res.code === 200) {
-      ElMessage.success('文章审核通过');
+      ElMessage.success("文章审核通过");
       getPosts(); // 刷新列表
     } else {
-      ElMessage.error(res.msg || '操作失败');
+      ElMessage.error(res.msg || "操作失败");
     }
   } catch (error) {
-    if (error !== 'cancel') {
-      ElMessage.error('操作失败: ' + error);
+    if (error !== "cancel") {
+      ElMessage.error("操作失败: " + error);
     }
   }
 };
@@ -143,38 +144,41 @@ const handleApprovePost = async (post) => {
 // 处理拒绝文章
 const handleRejectPost = (post) => {
   rejectDialog.postId = post.id;
-  rejectDialog.form.reason = '';
+  rejectDialog.form.reason = "";
   rejectDialog.visible = true;
 };
 
 // 确认拒绝
 const confirmReject = async () => {
   if (!rejectDialog.form.reason.trim()) {
-    ElMessage.warning('请输入拒绝原因');
+    ElMessage.warning("请输入拒绝原因");
     return;
   }
-  
+
   rejectDialog.loading = true;
   try {
-    const res = await $fetch(`/api/admin/blog/posts/reject/${rejectDialog.postId}`, {
-      method: 'POST',
-      body: {
-        reason: rejectDialog.form.reason
-      },
-      headers: {
-        authorization: "Bearer " + useCookie('token').value
+    const res = await $fetch(
+      `/api/admin/blog/posts/reject/${rejectDialog.postId}`,
+      {
+        method: "POST",
+        body: {
+          reason: rejectDialog.form.reason,
+        },
+        headers: {
+          authorization: "Bearer " + useCookie("token").value,
+        },
       }
-    });
-    
+    );
+
     if (res.code === 200) {
-      ElMessage.success('已拒绝文章');
+      ElMessage.success("已拒绝文章");
       rejectDialog.visible = false;
       getPosts(); // 刷新列表
     } else {
-      ElMessage.error(res.msg || '操作失败');
+      ElMessage.error(res.msg || "操作失败");
     }
   } catch (error) {
-    ElMessage.error('操作失败: ' + error);
+    ElMessage.error("操作失败: " + error);
   } finally {
     rejectDialog.loading = false;
   }
@@ -186,13 +190,15 @@ onMounted(() => {
 </script>
 <template>
   <div>
-    <div class="min-h-[calc(100vh-60px)] bg-gray-50 p-6">
-      <div class="max-w-[1240px] mx-auto space-y-6">
+    <div class="bg-gray-50">
+      <div class="mx-auto space-y-6">
         <!-- 头部区域 -->
         <div class="bg-white rounded-lg p-6 shadow-sm">
           <div class="flex items-center justify-between">
             <div>
-              <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
+              <div
+                class="flex items-center space-x-2 text-sm text-gray-500 mb-2"
+              >
                 <nuxt-link
                   to="/admin/dashboard"
                   class="hover:text-primary flex items-center"
@@ -237,7 +243,10 @@ onMounted(() => {
             <!-- 添加筛选器 -->
             <div class="flex items-center space-x-4">
               <span class="text-gray-600">状态筛选:</span>
-              <el-radio-group v-model="filterStatus" @change="handleFilterChange">
+              <el-radio-group
+                v-model="filterStatus"
+                @change="handleFilterChange"
+              >
                 <el-radio-button :value="'all'">全部</el-radio-button>
                 <el-radio-button :value="'pending'">待审核</el-radio-button>
                 <el-radio-button :value="'published'">已发布</el-radio-button>
@@ -296,31 +305,40 @@ onMounted(() => {
                         : "已拒绝"
                     }}
                   </el-tag>
-                  <el-tag v-if="row.status === 'admin_post'" size="small" type="info" class="ml-1">管理员</el-tag>
+                  <el-tag
+                    v-if="row.status === 'admin_post'"
+                    size="small"
+                    type="info"
+                    class="ml-1"
+                    >管理员</el-tag
+                  >
                 </template>
               </el-table-column>
               <el-table-column label="操作" width="260" fixed="right">
                 <template #default="scope">
                   <!-- 审核操作按钮 - 只对待审核的用户文章显示 -->
-                  <el-button-group v-if="scope.row.status === 'pending'" class="mr-2">
-                    <el-button 
-                      type="success" 
-                      size="small" 
+                  <el-button-group
+                    v-if="scope.row.status === 'pending'"
+                    class="mr-2"
+                  >
+                    <el-button
+                      type="success"
+                      size="small"
                       @click="handleApprovePost(scope.row)"
                     >
                       <el-icon><Check /></el-icon>
                       通过
                     </el-button>
-                    <el-button 
-                      type="danger" 
-                      size="small" 
+                    <el-button
+                      type="danger"
+                      size="small"
                       @click="handleRejectPost(scope.row)"
                     >
                       <el-icon><Close /></el-icon>
                       拒绝
                     </el-button>
                   </el-button-group>
-                  
+
                   <!-- 常规操作按钮 -->
                   <el-button-group>
                     <el-button
@@ -378,17 +396,21 @@ onMounted(() => {
     <el-dialog v-model="rejectDialog.visible" title="拒绝文章" width="500px">
       <el-form :model="rejectDialog.form">
         <el-form-item label="拒绝原因" required>
-          <el-input 
-            type="textarea" 
-            v-model="rejectDialog.form.reason" 
-            rows="4" 
+          <el-input
+            type="textarea"
+            v-model="rejectDialog.form.reason"
+            rows="4"
             placeholder="请输入拒绝原因，将通知给作者"
           ></el-input>
         </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="rejectDialog.visible = false">取消</el-button>
-        <el-button type="primary" @click="confirmReject" :loading="rejectDialog.loading">
+        <el-button
+          type="primary"
+          @click="confirmReject"
+          :loading="rejectDialog.loading"
+        >
           确认拒绝
         </el-button>
       </template>

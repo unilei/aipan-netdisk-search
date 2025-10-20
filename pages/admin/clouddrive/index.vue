@@ -5,14 +5,13 @@ import {
     Delete, 
     Edit, 
     Plus, 
-    Refresh,
-    ArrowLeft,
-    House
+    Refresh
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive, onMounted } from 'vue'
 
 definePageMeta({
+    layout: 'admin',
     middleware: ['auth']
 })
 import Papa from 'papaparse'
@@ -612,31 +611,8 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="min-h-[calc(100vh-60px)] bg-gray-50 p-6">
-        <div class="max-w-[1240px] mx-auto space-y-6">
-            <!-- 头部区域 -->
-            <div class="bg-white rounded-lg p-6 shadow-sm">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
-                            <nuxt-link to="/admin/dashboard" class="hover:text-primary flex items-center">
-                                <el-icon class="mr-1"><House /></el-icon>
-                                后台管理面板
-                            </nuxt-link>
-                            <span>/</span>
-                            <span class="text-gray-900">网盘管理</span>
-                        </div>
-                        <h1 class="text-2xl font-bold text-gray-900">网盘资源管理</h1>
-                        <p class="text-gray-500 mt-1">管理和维护云盘文件系统的资源</p>
-                    </div>
-                    <el-button @click="() => navigateTo('/admin/dashboard')" class="flex items-center">
-                        <el-icon class="mr-1"><ArrowLeft /></el-icon>
-                        返回面板
-                    </el-button>
-                </div>
-            </div>
-
-            <!-- 操作按钮区域 -->
+    <div class="space-y-6">
+        <!-- 操作按钮区域 -->
             <div class="bg-white rounded-lg p-6 shadow-sm">
                 <div class="flex items-center space-x-4">
                     <el-button type="primary" @click="handleAddClouddrive()" class="flex items-center">
@@ -716,7 +692,6 @@ onMounted(() => {
                     </div>
                 </client-only>
             </div>
-        </div>
 
         <!-- 添加/编辑资源对话框 -->
         <el-dialog 

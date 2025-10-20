@@ -92,6 +92,14 @@
             </div>
 
             <div class="flex space-x-2">
+              <!-- 举报按钮 -->
+              <CommonReportButton 
+                v-if="topic?.id"
+                content-type="topic"
+                :content-id="topic.id"
+                :content-title="topic.title"
+              />
+              
               <client-only>
                 <el-button v-if="canModerate && !topic.isSticky" size="small" @click="toggleSticky"
                   class="!bg-purple-50 !text-purple-700 !border-purple-200 hover:!bg-purple-100 !text-xs !h-7">

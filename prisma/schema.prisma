@@ -502,3 +502,27 @@ model NavigationItem {
   @@index([isActive])
   @@index([createdAt])
 }
+
+// 举报模型
+model Report {
+  id            Int      @id @default(autoincrement())
+  contentType   String // 举报内容类型: 'post', 'comment', 'topic', 'message', 'resource'
+  contentId     String // 被举报内容的ID
+  contentTitle  String? // 被举报内容的标题（可选）
+  reason        String // 举报原因: 'spam', 'illegal', 'pornography', 'violence', 'harassment', 'copyright', 'privacy', 'false', 'other'
+  description   String   @db.Text // 详细描述
+  reporterEmail String? // 举报者邮箱（可选）
+  reporterIp    String? // 举报者IP地址
+  status        String   @default("pending") // 处理状态: 'pending', 'reviewing', 'resolved', 'rejected'
+  adminNote     String?  @db.Text // 管理员备注
+  handledBy     Int? // 处理者ID
+  handledAt     DateTime? // 处理时间
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([contentType])
+  @@index([contentId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([reporterIp])
+}

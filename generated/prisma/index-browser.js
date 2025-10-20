@@ -399,6 +399,23 @@ exports.Prisma.NavigationItemScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ReportScalarFieldEnum = {
+  id: 'id',
+  contentType: 'contentType',
+  contentId: 'contentId',
+  contentTitle: 'contentTitle',
+  reason: 'reason',
+  description: 'description',
+  reporterEmail: 'reporterEmail',
+  reporterIp: 'reporterIp',
+  status: 'status',
+  adminNote: 'adminNote',
+  handledBy: 'handledBy',
+  handledAt: 'handledAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -452,7 +469,8 @@ exports.Prisma.ModelName = {
   CheckIn: 'CheckIn',
   PointsHistory: 'PointsHistory',
   NavigationCategory: 'NavigationCategory',
-  NavigationItem: 'NavigationItem'
+  NavigationItem: 'NavigationItem',
+  Report: 'Report'
 };
 
 /**
