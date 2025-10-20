@@ -176,8 +176,8 @@ onMounted(async () => {
           <!-- 注册时的协议同意 -->
           <template v-if="formMode === 'register'">
             <el-form-item>
-              <div class="flex items-start space-x-2">
-                <el-checkbox v-model="form.agreedToTerms" class="mt-1" />
+              <div class="flex items-start sm:items-center space-x-2">
+                <el-checkbox v-model="form.agreedToTerms" />
                 <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
                   我已阅读并同意
                   <nuxt-link to="/user-agreement" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">《用户服务协议》</nuxt-link>
