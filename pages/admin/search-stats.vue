@@ -1,32 +1,57 @@
 <template>
-  <div class="bg-gray-50">
+  <div class="admin-page-bg">
     <div class="mx-auto space-y-6">
       <!-- 头部 -->
-      <div class="bg-white rounded-lg p-6 shadow-sm">
-        <div class="flex items-center justify-between">
+      <div class="admin-card-bg rounded-lg p-6 shadow-sm">
+        <div class="flex flex-col gap-4">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">搜索统计</h1>
-            <p class="text-gray-500 mt-1">查看用户搜索记录和热门关键词</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">搜索统计</h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">查看用户搜索记录和热门关键词</p>
+          </div>
+          <!-- 统计周期选择 -->
+          <div class="flex flex-wrap items-center gap-4">
+            <el-radio-group v-model="statsPeriod" @change="getStats" size="default">
+              <el-radio-button :value="'today'">今日</el-radio-button>
+              <el-radio-button :value="'week'">本周</el-radio-button>
+              <el-radio-button :value="'month'">本月</el-radio-button>
+              <el-radio-button :value="'all'">全部</el-radio-button>
+              <el-radio-button :value="'custom'">自定义日期</el-radio-button>
+            </el-radio-group>
+            <el-date-picker
+              v-if="statsPeriod === 'custom'"
+              v-model="customDate"
+              type="date"
+              placeholder="选择日期"
+              @change="getStats"
+              :clearable="false"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+            />
           </div>
         </div>
       </div>
 
       <!-- 统计卡片 -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-lg p-6 shadow-sm">
-          <h3 class="text-lg font-semibold mb-4">总搜索次数</h3>
+        <div class="admin-card-bg rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-semibold mb-4 dark:text-gray-200">总搜索次数</h3>
           <div class="text-3xl font-bold text-blue-600">
             {{ stats.totalSearches }}
           </div>
         </div>
-        <div class="bg-white rounded-lg p-6 shadow-sm">
-          <h3 class="text-lg font-semibold mb-4">今日搜索次数</h3>
+        <div class="admin-card-bg rounded-lg p-6 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold dark:text-gray-200">{{ periodTitle }}</h3>
+            <el-tag v-if="customDate && statsPeriod === 'custom'" size="small" type="info">
+              {{ formatDate(customDate) }}
+            </el-tag>
+          </div>
           <div class="text-3xl font-bold text-green-600">
-            {{ stats.todaySearches }}
+            {{ stats.periodSearches }}
           </div>
         </div>
-        <div class="bg-white rounded-lg p-6 shadow-sm">
-          <h3 class="text-lg font-semibold mb-4">独立关键词数</h3>
+        <div class="admin-card-bg rounded-lg p-6 shadow-sm">
+          <h3 class="text-lg font-semibold mb-4 dark:text-gray-200">独立关键词数</h3>
           <div class="text-3xl font-bold text-purple-600">
             {{ stats.uniqueKeywords }}
           </div>
@@ -34,27 +59,43 @@
       </div>
 
       <!-- 搜索排行榜 -->
-      <div class="bg-white rounded-lg p-6 shadow-sm">
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-semibold">搜索排行榜</h2>
-          <div class="flex items-center gap-4">
-            <el-radio-group v-model="period" @change="getSearchRanking">
+      <div class="admin-card-bg rounded-lg p-6 shadow-sm">
+        <div class="flex flex-col gap-4 mb-6">
+          <h2 class="text-lg font-semibold dark:text-gray-200">搜索排行榜</h2>
+          <div class="flex flex-wrap items-center gap-4">
+            <el-radio-group v-model="period" @change="getSearchRanking" size="default">
               <el-radio-button :value="'day'">今日</el-radio-button>
               <el-radio-button :value="'week'">本周</el-radio-button>
               <el-radio-button :value="'month'">本月</el-radio-button>
               <el-radio-button :value="'all'">全部</el-radio-button>
+              <el-radio-button :value="'custom'">自定义日期</el-radio-button>
             </el-radio-group>
+            <el-date-picker
+              v-if="period === 'custom'"
+              v-model="rankingCustomDate"
+              type="date"
+              placeholder="选择日期"
+              @change="getSearchRanking"
+              :clearable="false"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+            />
           </div>
         </div>
 
-        <el-table :data="rankingList" stripe>
-          <el-table-column label="排名" width="80">
+        <el-table 
+          :data="rankingList" 
+          stripe 
+          v-loading="rankingLoading"
+          :empty-text="rankingList.length === 0 ? '暂无搜索数据' : '数据加载中...'"
+        >
+          <el-table-column label="排名" width="80" align="center">
             <template #default="{ $index }">
-              <div class="flex items-center">
+              <div class="flex items-center justify-center">
                 <span
                   v-if="$index < 3"
                   :class="[
-                    'w-6 h-6 rounded-full flex items-center justify-center text-white',
+                    'w-7 h-7 rounded-full flex items-center justify-center text-white text-sm font-bold',
                     $index === 0
                       ? 'bg-yellow-500'
                       : $index === 1
@@ -64,12 +105,23 @@
                 >
                   {{ $index + 1 }}
                 </span>
-                <span v-else>{{ $index + 1 }}</span>
+                <span v-else class="text-gray-600 font-medium">{{ $index + 1 }}</span>
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="keyword" label="关键词" />
-          <el-table-column prop="count" label="搜索次数" width="120" />
+          <el-table-column prop="keyword" label="关键词" min-width="150">
+            <template #default="{ row }">
+              <span class="font-medium text-gray-800 dark:text-gray-200">{{ row.keyword }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="count" label="搜索次数" width="150" align="center">
+            <template #default="{ row }">
+              <el-tag type="primary" size="default" round>
+                <i class="fas fa-search mr-1"></i>
+                {{ row.count }} 次
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="lastSearchAt" label="最后搜索时间" width="180">
             <template #default="{ row }">
               {{ new Date(row.lastSearchAt).toLocaleString() }}
@@ -166,11 +218,42 @@ definePageMeta({
 
 const period = ref("all");
 const rankingList = ref([]);
+const rankingCustomDate = ref("");
+const rankingLoading = ref(false);
 const stats = reactive({
   totalSearches: 0,
-  todaySearches: 0,
+  periodSearches: 0,
   uniqueKeywords: 0,
 });
+
+// 统计周期选择
+const statsPeriod = ref("today");
+const customDate = ref("");
+
+// 计算周期标题
+const periodTitle = computed(() => {
+  switch (statsPeriod.value) {
+    case "today":
+      return "今日搜索次数";
+    case "week":
+      return "本周搜索次数";
+    case "month":
+      return "本月搜索次数";
+    case "all":
+      return "全部搜索次数";
+    case "custom":
+      return "指定日期搜索次数";
+    default:
+      return "搜索次数";
+  }
+});
+
+// 格式化日期
+const formatDate = (date) => {
+  if (!date) return "";
+  const d = new Date(date);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
 
 // 转存相关状态
 const transferDialog = reactive({
@@ -202,15 +285,18 @@ import sourcesConfig from "~/assets/vod/clouddrive.json";
 
 // 获取搜索排行榜
 const getSearchRanking = async () => {
+  rankingLoading.value = true;
   try {
-    const res = await $fetch(
-      `/api/admin/search/record?period=${period.value}`,
-      {
-        headers: {
-          Authorization: `Bearer ${useCookie("token").value}`,
-        },
-      }
-    );
+    let url = `/api/admin/search/record?period=${period.value}`;
+    if (period.value === "custom" && rankingCustomDate.value) {
+      url += `&date=${rankingCustomDate.value}`;
+    }
+    
+    const res = await $fetch(url, {
+      headers: {
+        Authorization: `Bearer ${useCookie("token").value}`,
+      },
+    });
     if (res.code === 200) {
       // 为每个排行项添加必要的属性
       rankingList.value = res.data.map((item) => ({
@@ -222,13 +308,20 @@ const getSearchRanking = async () => {
   } catch (error) {
     console.error("获取搜索排行失败:", error);
     ElMessage.error("获取搜索排行失败");
+  } finally {
+    rankingLoading.value = false;
   }
 };
 
 // 获取统计数据
 const getStats = async () => {
   try {
-    const res = await $fetch("/api/admin/search/stats", {
+    let url = `/api/admin/search/stats?period=${statsPeriod.value}`;
+    if (statsPeriod.value === "custom" && customDate.value) {
+      url += `&date=${customDate.value}`;
+    }
+    
+    const res = await $fetch(url, {
       headers: {
         Authorization: `Bearer ${useCookie("token").value}`,
       },

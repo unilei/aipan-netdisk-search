@@ -1,12 +1,12 @@
 <template>
-    <div class="bg-gray-50">
+    <div class="admin-page-bg">
         <div class="mx-auto space-y-6">
             <!-- 头部区域 -->
-            <div class="bg-white rounded-lg p-6 shadow-sm">
+            <div class="admin-card-bg rounded-lg p-6 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">用户管理</h1>
-                        <p class="text-gray-500 mt-1">管理网站用户、角色和权限</p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">用户管理</h1>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">管理网站用户、角色和权限</p>
                     </div>
                     <div class="flex items-center space-x-4">
                         <el-button type="primary" @click="handleAddUser" class="flex items-center">
@@ -26,7 +26,7 @@
             </div>
 
             <!-- 搜索和筛选 -->
-            <div class="bg-white rounded-lg p-6 shadow-sm">
+            <div class="admin-card-bg rounded-lg p-6 shadow-sm">
                 <div class="flex flex-col md:flex-row md:items-center md:space-x-4">
                     <div class="flex-1 mb-4 md:mb-0">
                         <el-input v-model="searchQuery" placeholder="搜索用户名、邮箱或手机号" class="w-full"

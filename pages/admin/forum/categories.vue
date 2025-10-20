@@ -1,8 +1,8 @@
 <template>
-    <div class="bg-gray-50">
+    <div class="admin-page-bg">
         <div class="mx-auto space-y-6">
             <!-- 头部区域 -->
-            <div class="bg-white rounded-lg p-6 shadow-sm">
+            <div class="admin-card-bg rounded-lg p-6 shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <div class="flex items-center space-x-2 text-sm text-gray-500 mb-2">
@@ -13,10 +13,10 @@
                                 后台管理面板
                             </nuxt-link>
                             <span>/</span>
-                            <span class="text-gray-900">论坛管理</span>
+                            <span class="text-gray-900 dark:text-white">论坛管理</span>
                         </div>
-                        <h1 class="text-2xl font-bold text-gray-900">论坛分类管理</h1>
-                        <p class="text-gray-500 mt-1">管理论坛分类和设置</p>
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">论坛分类管理</h1>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">管理论坛分类和设置</p>
                     </div>
                     <div class="flex items-center space-x-4">
                         <el-button type="primary" @click="showCreateDialog" class="flex items-center">
@@ -54,7 +54,7 @@
             </div>
 
             <!-- 表格区域 -->
-            <div class="bg-white rounded-lg p-6 shadow-sm">
+            <div class="admin-card-bg rounded-lg p-6 shadow-sm">
                 <div v-if="loading" class="py-10">
                     <el-skeleton :rows="5" animated />
                 </div>
