@@ -1,6 +1,8 @@
 <template>
   <NuxtLayout>
     <NuxtPage></NuxtPage>
+    <!-- Cookie同意横幅 -->
+    <CommonCookieConsent />
   </NuxtLayout>
 </template>
 

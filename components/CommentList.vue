@@ -162,6 +162,11 @@ onMounted(() => {
                                     class="text-xs text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200">
                                     <i class="fas fa-trash-alt mr-1"></i> 删除
                                 </button>
+                                <CommonReportButton 
+                                    content-type="comment"
+                                    :content-id="comment.id"
+                                    :content-title="`${comment.author}的评论`"
+                                />
                             </div>
                         </div>
                     </div>
@@ -209,6 +214,11 @@ onMounted(() => {
                                         class="text-xs text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors duration-200">
                                         <i class="fas fa-trash-alt mr-1"></i> 删除
                                     </button>
+                                    <CommonReportButton 
+                                        content-type="comment"
+                                        :content-id="reply.id"
+                                        :content-title="`${reply.author}的回复`"
+                                    />
                                 </div>
                             </div>
                         </div>

@@ -33,6 +33,11 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: 'admin',
+  middleware: ['admin']
+});
+
 const router = useRouter()
 const loading = ref(false)
 const results = ref([])

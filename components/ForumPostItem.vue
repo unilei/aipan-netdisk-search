@@ -34,8 +34,14 @@
     
     <!-- 回复操作 -->
     <div
-      class="px-6 py-2 border-t border-gray-100 dark:border-gray-700 flex justify-end"
+      class="px-6 py-2 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center"
     >
+      <CommonReportButton 
+        content-type="topic"
+        :content-id="post.id"
+        :content-title="`${post.author.username}的回复`"
+      />
+      
       <el-button
         v-if="user && canReply"
         size="small"

@@ -442,6 +442,14 @@ onUnmounted(() => {
 
             <!-- 右侧：操作按钮 -->
             <div class="flex items-center space-x-2">
+              <!-- 举报按钮 -->
+              <CommonReportButton 
+                v-if="blog?.id"
+                content-type="post"
+                :content-id="blog.id"
+                :content-title="blog.title"
+              />
+              
               <!-- 目录按钮（移动端） -->
               <button @click="showToc = !showToc"
                 class="lg:hidden p-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-200 dark:hover:border-blue-800">

@@ -5,6 +5,11 @@ import { defineAsyncComponent, shallowRef } from 'vue'
 import 'md-editor-v3/lib/style.css'
 import { uploadImages } from '~/utils/uploadImage'
 
+definePageMeta({
+  layout: 'admin',
+  middleware: ['auth']
+});
+
 const route = useRoute();
 const router = useRouter();
 const isEdit = ref(false)
