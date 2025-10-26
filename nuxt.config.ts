@@ -28,7 +28,7 @@ export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
-      title: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定',
+      title: '爱盼迷 - 一站式资源聚合平台 | 网盘搜索·音乐·电影·游戏·直播',
       htmlAttrs: {
         lang: 'zh-CN'
       },
@@ -46,39 +46,42 @@ export default defineNuxtConfig({
         {
           name: 'keywords',
           content:
-            'AIPAN,爱盼,数字生活伙伴,网盘搜索,资源搜索,在线音乐,博客平台,论坛社区,休闲游戏,电视直播,FM电台,影视资源,音乐播放器,TVBox,百度网盘,阿里云盘,夸克网盘,一站搞定',
+            '爱盼迷,网盘搜索,资源搜索,百度网盘,阿里云盘,夸克网盘,在线音乐,电影播放,电视直播,FM电台,博客平台,社区论坛,休闲游戏,影视资源,音乐播放器,TVBox,资源聚合,一站式娱乐',
         },
         {
           name: 'description',
           content:
-            'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体。支持百度网盘、阿里云盘、夸克网盘搜索，海量影视音乐资源随心享用。一个网站，满足你的所有数字娱乐需求！',
+            '爱盼迷是一站式资源聚合平台！集网盘搜索、在线音乐、电影电视、休闲游戏、直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，海量影视音乐资源随心享用。社区论坛、博客分享、AI搜索等功能齐全，满足你的所有数字娱乐需求！',
         },
-        { name: 'author', content: 'AIPAN.ME' },
-        { name: 'publisher', content: 'AIPAN.ME' },
-        { name: 'robots', content: 'index, follow' },
+        { name: 'author', content: '爱盼迷' },
+        { name: 'publisher', content: '爱盼迷' },
+        { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
         { name: 'format-detection', content: 'telephone=no' },
         { name: 'theme-color', content: '#3b82f6' },
+        { name: 'apple-mobile-web-app-capable', content: 'yes' },
+        { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
         // Open Graph
         { property: 'og:type', content: 'website' },
-        { property: 'og:site_name', content: '爱盼' },
-        { property: 'og:title', content: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定' },
+        { property: 'og:site_name', content: '爱盼迷' },
+        { property: 'og:title', content: '爱盼迷 - 一站式资源聚合平台 | 网盘搜索·音乐·电影·游戏·直播' },
         {
           property: 'og:description',
           content:
-            'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体，一个网站满足所有数字娱乐需求。',
+            '爱盼迷是一站式资源聚合平台，集网盘搜索、在线音乐、电影电视、休闲游戏、直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，满足你的所有数字娱乐需求！',
         },
         { property: 'og:image', content: 'https://www.aipan.me/default-og-image.png' },
         { property: 'og:image:width', content: '1200' },
         { property: 'og:image:height', content: '630' },
+        { property: 'og:image:type', content: 'image/png' },
         { property: 'og:url', content: 'https://www.aipan.me' },
         { property: 'og:locale', content: 'zh_CN' },
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:site', content: '@aipan_me' },
-        { name: 'twitter:title', content: 'AIPAN.ME - 你的数字生活伙伴 | 搜索·音乐·社区·游戏·直播一站搞定' },
+        { name: 'twitter:site', content: '@aipanmi' },
+        { name: 'twitter:title', content: '爱盼迷 - 一站式资源聚合平台' },
         {
           name: 'twitter:description',
-          content: '你的数字生活伙伴！资源搜索、音乐播放、社区交流、休闲游戏、电视直播，一个网站满足所有需求！',
+          content: '网盘搜索、在线音乐、电影电视、休闲游戏、直播电台，一个平台满足所有数字娱乐需求！',
         },
         { name: 'twitter:image', content: 'https://www.aipan.me/default-og-image.png' },
         // 统一 referrer 策略
@@ -223,13 +226,13 @@ export default defineNuxtConfig({
   },
   sitemap: {
     sources: ['/api/__sitemap__/urls'],
-    exclude: ['/admin/**'],
+    exclude: ['/admin/**', '/user/**'],
   },
   site: {
-    name: 'AIPAN.ME - 你的数字生活伙伴',
+    name: '爱盼迷 - 一站式资源聚合平台',
     url: 'https://www.aipan.me',
     description:
-      'AIPAN.ME是你的数字生活伙伴！集资源搜索、音乐播放、社区交流、休闲游戏、电视直播于一体，一个网站满足所有数字娱乐需求。',
+      '爱盼迷是一站式资源聚合平台！集网盘搜索、在线音乐、电影电视、休闲游戏、直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，满足你的所有数字娱乐需求。',
   },
   compatibilityDate: '2025-07-12',
 })

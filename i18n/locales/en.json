@@ -1,14 +1,14 @@
 {
-  "welcome": "Welcome to AIPAN",
+  "welcome": "Welcome to AIPAN.MI",
   "search": "Search",
-  "app_title": "AIPAN - Unlimited Resources & Entertainment",
-  "subtitle": "Resources at Will, Unlimited Entertainment",
+  "app_title": "AIPAN.MI - All-in-One Resource Aggregation Platform",
+  "subtitle": "Cloud Drive Search, Music, Movies, Games & Live TV",
   "search_placeholder": "Enter keywords to search",
   "sensitive_word_alert": "Please do not enter sensitive words",
   "meta": {
-    "title": "AIPAN.ME - Your Digital Life Companion | Search·Music·Community·Games·Live TV All-in-One",
-    "description": "AIPAN.ME is your digital life companion! Integrating resource search, music player, community interaction, casual games, and live TV. Support Baidu Netdisk, Aliyun Drive, Quark Drive. One website for all your digital entertainment needs!",
-    "keywords": "AIPAN,digital life companion,cloud drive search,online music,blog platform,forum community,casual games,live TV,FM radio,entertainment platform,music player,TVBox,baidu netdisk,aliyun drive,quark drive,all-in-one"
+    "title": "AIPAN.MI - All-in-One Resource Aggregation Platform | Cloud Drive Search·Music·Movies·Games·Live TV",
+    "description": "AIPAN.MI is an all-in-one resource aggregation platform! Integrating cloud drive search, online music, movies & TV, casual games, and live streaming. Support Baidu Netdisk, Aliyun Drive, Quark Drive multi-source search. One platform for all your digital entertainment needs!",
+    "keywords": "AIPAN.MI,cloud drive search,resource aggregation,online music,movie streaming,live TV,FM radio,blog platform,forum community,casual games,entertainment platform,music player,TVBox,baidu netdisk,aliyun drive,quark drive,all-in-one"
   },
   "broadcast": {
     "message": "Bookmark our site: https://link0.me/aipan"
@@ -44,7 +44,7 @@
     }
   },
   "footer": {
-    "copyright": "© 2025 AIPAN.ME - Resources at Will, Unlimited Entertainment",
+    "copyright": "© 2025 AIPAN.MI - All-in-One Resource Aggregation Platform",
     "links": {
       "about": "About Us",
       "userAgreement": "User Agreement",
