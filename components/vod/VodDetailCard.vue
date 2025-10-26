@@ -329,7 +329,26 @@ const closeDetail = () => {
 // 播放影视
 const playVod = () => {
   if (selectedVod.value) {
-    emit('play-vod', selectedVod.value)
+    // 查找相同名称的所有播放源
+    const relatedVods = props.vodData.filter(item => 
+      item.vod_name === selectedVod.value.vod_name || 
+      (item.vod_id && selectedVod.value.vod_id && item.vod_id === selectedVod.value.vod_id)
+    )
+    
+    // 如果找到多个播放源，使用它们；否则只使用当前的
+    const vodDataArray = relatedVods.length > 0 ? relatedVods : [selectedVod.value]
+    
+    // 生成唯一的存储 key
+    const storageKey = `vodData_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    
+    // 将数据存储到 sessionStorage
+    sessionStorage.setItem(storageKey, JSON.stringify(vodDataArray))
+    
+    // 构建播放页面 URL（只传递 key）
+    const playUrl = `/play?key=${storageKey}`
+    
+    // 在新标签页打开
+    window.open(playUrl, '_blank')
     closeDetail()
   }
 }
