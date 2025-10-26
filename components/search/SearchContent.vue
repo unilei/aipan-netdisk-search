@@ -131,9 +131,26 @@ const selectedVodForPlay = ref(null)
 
 // 处理播放VOD
 const handlePlayVod = (vod) => {
-  selectedVodForPlay.value = vod
-  // 滚动到顶部
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  // 查找相同名称的所有播放源
+  const relatedVods = props.vodData.filter(item => 
+    item.vod_name === vod.vod_name || 
+    (item.vod_id && vod.vod_id && item.vod_id === vod.vod_id)
+  )
+  
+  // 如果找到多个播放源，使用它们；否则只使用当前的
+  const vodDataArray = relatedVods.length > 0 ? relatedVods : [vod]
+  
+  // 生成唯一的存储 key
+  const storageKey = `vodData_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  
+  // 将数据存储到 sessionStorage
+  sessionStorage.setItem(storageKey, JSON.stringify(vodDataArray))
+  
+  // 构建播放页面 URL（只传递 key）
+  const playUrl = `/play?key=${storageKey}`
+  
+  // 在新标签页打开
+  window.open(playUrl, '_blank')
 }
 
 // 返回列表
