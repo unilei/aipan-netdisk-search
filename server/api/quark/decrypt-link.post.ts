@@ -11,7 +11,11 @@ function decryptLink(token: string): { link: string; timestamp: number } | null 
     const keyBuffer = Buffer.from(SECRET_KEY)
     
     for (let i = 0; i < buffer.length; i++) {
-      buffer[i] ^= keyBuffer[i % keyBuffer.length]
+      const keyByte = keyBuffer[i % keyBuffer.length]
+      const bufferByte = buffer[i]
+      if (keyByte !== undefined && bufferByte !== undefined) {
+        buffer[i] = bufferByte ^ keyByte
+      }
     }
     
     const data = JSON.parse(buffer.toString('utf8'))

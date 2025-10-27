@@ -216,6 +216,12 @@ export default defineEventHandler(async (event) => {
             'https://gying-proxy-api-production.pansearch-proxy.workers.dev/api/search/a_search'
         ];
         const randomUrl = proxyUrls[Math.floor(Math.random() * proxyUrls.length)];
+        if (!randomUrl) {
+            throw createError({
+                statusCode: 500,
+                message: 'No proxy URL available'
+            });
+        }
         console.log(`🎯 Selected proxy URL: ${randomUrl}`);
 
         // Request deduplication - create cache key with selected URL

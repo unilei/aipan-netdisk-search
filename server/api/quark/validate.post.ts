@@ -19,7 +19,7 @@ const extractShareId = (shareLink: string): string | null => {
     }
     const normalized = shareLink.trim();
     const match = normalized.match(/pan\.quark\.cn\/s\/([a-zA-Z0-9]+)/i);
-    return match ? match[1] : null;
+    return match && match[1] ? match[1] : null;
 };
 
 type ShareDetail = Record<string, any> | null;

@@ -52,6 +52,9 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
                 'https://asd.kks021.cn/mv/api/crawler/search'
             ]
             const searchUrl = searchUrls[Math.floor(Math.random() * searchUrls.length)]
+            if (!searchUrl) {
+                throw new Error('No search URL available')
+            }
             console.log('选择的搜索URL:', searchUrl)
             
             // 提取域名部分作为Origin和Referer
@@ -158,17 +161,20 @@ function extractLinks(content: string): Link[] {
         const url = htmlMatch[1]
         const linkText = htmlMatch[2]
         
+        // 跳过没有URL的匹配
+        if (!url) continue
+        
         // 根据URL或链接文本确定服务类型
         let service: Link['service'] = 'OTHER'
         let pwd: string | undefined = undefined
         
-        if (url.includes('pan.baidu.com') || linkText.includes('百度')) {
+        if (url.includes('pan.baidu.com') || (linkText && linkText.includes('百度'))) {
             service = 'BAIDU'
-        } else if (url.includes('pan.xunlei.com') || linkText.includes('迅雷')) {
+        } else if (url.includes('pan.xunlei.com') || (linkText && linkText.includes('迅雷'))) {
             service = 'XUNLEI'
-        } else if (url.includes('pan.quark.cn') || linkText.includes('夸克')) {
+        } else if (url.includes('pan.quark.cn') || (linkText && linkText.includes('夸克'))) {
             service = 'QUARK'
-        } else if (url.includes('aliyundrive.com') || url.includes('alipan.com') || linkText.includes('阿里')) {
+        } else if (url.includes('aliyundrive.com') || url.includes('alipan.com') || (linkText && linkText.includes('阿里'))) {
             service = 'ALIYUN'
         }
         

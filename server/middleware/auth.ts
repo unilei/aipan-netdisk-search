@@ -40,6 +40,13 @@ export default defineEventHandler(async (event: H3Event) => {
         }
 
         const token = authHeader.split(" ")[1];
+        if (!token) {
+            throw createError({
+                statusCode: 401,
+                statusMessage: "Unauthorized",
+                message: "Invalid token format"
+            });
+        }
         const user = verifyToken(token) as JwtPayload;
 
         if (!user) {

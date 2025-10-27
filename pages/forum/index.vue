@@ -444,6 +444,8 @@ onMounted(() => {
 </script>
 
 <style>
+@import "tailwindcss" reference;
+
 /* 添加自定义黑暗模式颜色 */
 .dark\:bg-gray-750 {
   @apply dark:bg-gray-700/70;

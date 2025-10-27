@@ -12,7 +12,11 @@ function encryptLink(link: string): string {
   const keyBuffer = Buffer.from(SECRET_KEY)
   
   for (let i = 0; i < buffer.length; i++) {
-    buffer[i] ^= keyBuffer[i % keyBuffer.length]
+    const keyByte = keyBuffer[i % keyBuffer.length]
+    const bufferByte = buffer[i]
+    if (keyByte !== undefined && bufferByte !== undefined) {
+      buffer[i] = bufferByte ^ keyByte
+    }
   }
   
   return buffer.toString('base64')

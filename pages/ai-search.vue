@@ -451,6 +451,8 @@ const showSidebar = ref(false);
 </script>
 
 <style scoped>
+@import "tailwindcss" reference;
+
 .chat-input :deep(.el-textarea__inner) {
   background-color: white;
   border: 1px solid #e2e8f0;

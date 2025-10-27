@@ -198,6 +198,8 @@ watch(category, async (newCategory) => {
 </script>
 
 <style scoped>
+@import "tailwindcss" reference;
+
 /* Button styles */
 .el-button {
   @apply font-medium border-none shadow-sm hover:shadow-md relative overflow-hidden;

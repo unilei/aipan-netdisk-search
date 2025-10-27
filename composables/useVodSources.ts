@@ -66,18 +66,27 @@ export const useVodSources = () => {
                     selectedVodSource.value = foundSource
                 } else if (sources.value.length > 0) {
                     // 如果选中的源不存在，选择第一个可用源
-                    selectedVodSource.value = sources.value[0]
-                    saveSelectedSourceToLocalStorage(sources.value[0])
+                    const firstSource = sources.value[0]
+                    if (firstSource) {
+                        selectedVodSource.value = firstSource
+                        saveSelectedSourceToLocalStorage(firstSource)
+                    }
                 }
             } else if (sources.value.length > 0) {
                 // 如果没有保存的选中源，选择第一个
-                selectedVodSource.value = sources.value[0]
-                saveSelectedSourceToLocalStorage(sources.value[0])
+                const firstSource = sources.value[0]
+                if (firstSource) {
+                    selectedVodSource.value = firstSource
+                    saveSelectedSourceToLocalStorage(firstSource)
+                }
             }
         } catch (error) {
             console.error('从localStorage加载选中VOD源失败:', error)
             if (sources.value.length > 0) {
-                selectedVodSource.value = sources.value[0]
+                const firstSource = sources.value[0]
+                if (firstSource) {
+                    selectedVodSource.value = firstSource
+                }
             }
         }
     }
@@ -167,13 +176,19 @@ export const useVodSources = () => {
                 const foundSource = newSources.find(s => s.key === selectedVodSource.value?.key)
                 if (!foundSource && newSources.length > 0) {
                     // 如果当前选中的源不在新列表中，选择第一个
-                    selectedVodSource.value = newSources[0]
-                    saveSelectedSourceToLocalStorage(newSources[0])
+                    const firstSource = newSources[0]
+                    if (firstSource) {
+                        selectedVodSource.value = firstSource
+                        saveSelectedSourceToLocalStorage(firstSource)
+                    }
                 }
             } else if (newSources.length > 0) {
                 // 如果没有选中源，选择第一个
-                selectedVodSource.value = newSources[0]
-                saveSelectedSourceToLocalStorage(newSources[0])
+                const firstSource = newSources[0]
+                if (firstSource) {
+                    selectedVodSource.value = firstSource
+                    saveSelectedSourceToLocalStorage(firstSource)
+                }
             }
 
             return true
@@ -206,9 +221,12 @@ export const useVodSources = () => {
 
         // 如果没有选中源但有可用源，选择第一个
         if (sources.value.length > 0) {
-            selectedVodSource.value = sources.value[0]
-            saveSelectedSourceToLocalStorage(sources.value[0])
-            return sources.value[0]
+            const firstSource = sources.value[0]
+            if (firstSource) {
+                selectedVodSource.value = firstSource
+                saveSelectedSourceToLocalStorage(firstSource)
+                return firstSource
+            }
         }
 
         // 如果没有任何源，返回null
@@ -259,8 +277,11 @@ export const useVodSources = () => {
     // 监听sources变化，确保selectedVodSource始终有值
     watch(sources, (newSources) => {
         if (newSources.length > 0 && !selectedVodSource.value) {
-            selectedVodSource.value = newSources[0]
-            saveSelectedSourceToLocalStorage(newSources[0])
+            const firstSource = newSources[0]
+            if (firstSource) {
+                selectedVodSource.value = firstSource
+                saveSelectedSourceToLocalStorage(firstSource)
+            }
         }
     }, { immediate: true })
 
@@ -280,9 +301,11 @@ export const useVodSources = () => {
         // 如果没有选中源但有可用源，自动选择第一个
         if (sources.value.length > 0) {
             const firstSource = sources.value[0]
-            selectedVodSource.value = firstSource
-            saveSelectedSourceToLocalStorage(firstSource)
-            return firstSource
+            if (firstSource) {
+                selectedVodSource.value = firstSource
+                saveSelectedSourceToLocalStorage(firstSource)
+                return firstSource
+            }
         }
 
         return null

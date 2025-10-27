@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
 
                 // 获取关键词的详细信息
                 const records = await Promise.all(
-                    dailyStats.map(async (stat) => {
+                    dailyStats.map(async (stat: any) => {
                         const record = await prisma.searchRecord.findUnique({
                             where: { keyword: stat.keyword }
                         });
@@ -100,7 +100,7 @@ export default defineEventHandler(async (event) => {
                     });
 
                     const todayRecords = await Promise.all(
-                        todayStats.map(async (stat) => {
+                        todayStats.map(async (stat: any) => {
                             const record = await prisma.searchRecord.findUnique({
                                 where: { keyword: stat.keyword }
                             });
@@ -142,7 +142,7 @@ export default defineEventHandler(async (event) => {
                     });
 
                     const weekRecords = await Promise.all(
-                        weekStats.map(async (stat) => {
+                        weekStats.map(async (stat: any) => {
                             const record = await prisma.searchRecord.findUnique({
                                 where: { keyword: stat.keyword }
                             });
@@ -182,7 +182,7 @@ export default defineEventHandler(async (event) => {
                     });
 
                     const monthRecords = await Promise.all(
-                        monthStats.map(async (stat) => {
+                        monthStats.map(async (stat: any) => {
                             const record = await prisma.searchRecord.findUnique({
                                 where: { keyword: stat.keyword }
                             });

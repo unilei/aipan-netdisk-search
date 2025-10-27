@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
 
       for (const fragment of fragments) {
         const parts = fragment.split('$')
-        if (parts.length === 2) {
+        if (parts.length === 2 && parts[0] && parts[1]) {
           const episodeNumber = parts[0].trim()
           const episodeLink = parts[1].trim()
           if (episodeLink.length > 10) {

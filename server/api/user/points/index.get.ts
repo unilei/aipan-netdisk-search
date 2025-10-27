@@ -187,13 +187,15 @@ function groupByDay(history: any[]) {
         const date = new Date()
         date.setDate(date.getDate() - i)
         const dateKey = date.toISOString().split('T')[0]
-        grouped[dateKey] = 0
+        if (dateKey) {
+            grouped[dateKey] = 0
+        }
     }
 
     // 累加每天的积分
     history.forEach(record => {
         const dateKey = new Date(record.createdAt).toISOString().split('T')[0]
-        if (grouped.hasOwnProperty(dateKey)) {
+        if (dateKey && grouped.hasOwnProperty(dateKey)) {
             grouped[dateKey] += record.points > 0 ? record.points : 0
         }
     })
