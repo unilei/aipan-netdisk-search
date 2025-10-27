@@ -266,6 +266,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
+@import "tailwindcss" reference;
+
 .el-form-item :deep(.el-form-item__label) {
     @apply font-medium text-gray-700 dark:text-gray-300;
 }

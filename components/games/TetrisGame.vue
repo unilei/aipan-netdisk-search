@@ -753,6 +753,8 @@ defineExpose({
 </template>
 
 <style scoped>
+@import "tailwindcss" reference;
+
 .tetris-game {
   width: 100%;
 }

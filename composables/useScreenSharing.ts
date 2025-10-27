@@ -233,10 +233,12 @@ export const useScreenSharing = () => {
       
       // 监听流的结束事件（用户停止共享）
       const videoTrack = stream.getVideoTracks()[0];
-      videoTrack.onended = () => {
-        console.log('用户停止了屏幕共享');
-        stopScreenShare();
-      };
+      if (videoTrack) {
+        videoTrack.onended = () => {
+          console.log('用户停止了屏幕共享');
+          stopScreenShare();
+        };
+      }
       
       // 为当前房间中的所有观众创建对等连接
       console.log('currentRoom.viewers:', currentRoom.viewers);
@@ -373,10 +375,13 @@ export const useScreenSharing = () => {
         }
         
         // 添加新轨道到远程流
-        event.streams[0].getTracks().forEach(track => {
-          console.log('添加远程轨道到远程流:', track.kind);
-          remoteStream.value?.addTrack(track);
-        });
+        const stream = event.streams[0];
+        if (stream) {
+          stream.getTracks().forEach(track => {
+            console.log('添加远程轨道到远程流:', track.kind);
+            remoteStream.value?.addTrack(track);
+          });
+        }
       };
 
       // 如果是房主且有屏幕流，添加轨道

@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 /* Element Plus Dark Mode 颜色适配 */
 @layer utilities {

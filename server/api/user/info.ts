@@ -15,6 +15,9 @@ export default defineEventHandler(async (event) => {
         }
 
         const token = authHeader.split(" ")[1];
+        if (!token) {
+            throw createError({ statusCode: 401, statusMessage: "Invalid token format" });
+        }
         const decoded = verifyToken(token);
         if (!decoded) {
             throw createError({ statusCode: 403, statusMessage: "Forbidden" });

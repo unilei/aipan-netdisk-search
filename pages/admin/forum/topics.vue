@@ -701,6 +701,8 @@ onMounted(async () => {
 </script>
 
 <style>
+@import "tailwindcss" reference;
+
 .prose {
     @apply text-gray-900 leading-normal break-words;
 }

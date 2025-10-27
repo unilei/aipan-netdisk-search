@@ -345,6 +345,8 @@ const handleLinkClick = async (e, link) => {
 </template>
 
 <style>
+@import "tailwindcss" reference;
+
 em {
   @apply text-blue-600 dark:text-blue-400 mx-0.5 not-italic font-medium;
 }

@@ -251,6 +251,8 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+@import "tailwindcss" reference;
+
 .router-link-active {
   @apply text-blue-600 bg-blue-50 dark:text-blue-300 dark:bg-gray-800/80;
 }

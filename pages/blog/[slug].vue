@@ -793,6 +793,8 @@ onUnmounted(() => {
 </template>
 
 <style>
+@import "tailwindcss" reference;
+
 /* Markdown 基础样式 */
 .markdown-body {
   color: #24292e;

@@ -232,6 +232,8 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+@import "tailwindcss" reference;
+
 :deep(.el-table) {
     --el-table-header-bg-color: theme('colors.gray.50');
     --el-table-row-hover-bg-color: theme('colors.purple.50');

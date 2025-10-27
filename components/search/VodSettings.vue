@@ -282,6 +282,8 @@ defineExpose({
 </script>
 
 <style scoped>
+@import "tailwindcss" reference;
+
 .vod-settings-dialog :deep(.el-dialog__body) {
     max-height: 70vh;
     overflow-y: auto;
@@ -376,15 +378,15 @@ defineExpose({
 /* 表格样式 */
 .vod-settings-dialog :deep(.el-table) {
     @apply bg-transparent overflow-hidden rounded-lg;
-    --el-table-border-color: theme('colors.gray.200' / 50%);
-    --el-table-header-bg-color: theme('colors.white' / 70%);
-    --el-table-row-hover-bg-color: theme('colors.purple.50' / 50%);
+    --el-table-border-color: rgb(229 231 235 / 0.5);
+    --el-table-header-bg-color: rgb(255 255 255 / 0.7);
+    --el-table-row-hover-bg-color: rgb(250 245 255 / 0.5);
 }
 
 .dark .vod-settings-dialog :deep(.el-table) {
-    --el-table-border-color: theme('colors.gray.700' / 50%);
-    --el-table-header-bg-color: theme('colors.gray.800' / 70%);
-    --el-table-row-hover-bg-color: theme('colors.purple.900' / 30%);
+    --el-table-border-color: rgb(55 65 81 / 0.5);
+    --el-table-header-bg-color: rgb(31 41 55 / 0.7);
+    --el-table-row-hover-bg-color: rgb(88 28 135 / 0.3);
 }
 
 /* 滚动条样式 */
