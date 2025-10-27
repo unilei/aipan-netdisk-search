@@ -1,6 +1,12 @@
 import prisma from "~/lib/prisma";
 export default defineEventHandler(async (event) => {
     const { slug } = getRouterParams(event)
+    if (!slug) {
+        throw createError({
+            statusCode: 400,
+            message: 'Slug parameter is required'
+        })
+    }
     // console.log(decodeURI(slug))
     try {
         const currentPost = await prisma.post.findUnique({

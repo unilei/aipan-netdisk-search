@@ -1,7 +1,10 @@
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineNuxtConfig({
   devtools: { enabled: false },
   // 优化构建配置
   vite: {
+    plugins: [tailwindcss()],
     build: {
       chunkSizeWarningLimit: 3000,
       rollupOptions: {
@@ -122,7 +125,6 @@ export default defineNuxtConfig({
   // build modules
   modules: [
     '@element-plus/nuxt',
-    '@nuxtjs/tailwindcss',
     '@nuxtjs/device',
     '@nuxtjs/google-fonts',
     '@nuxtjs/color-mode',
@@ -168,10 +170,6 @@ export default defineNuxtConfig({
     preference: 'system',
     fallback: 'light',
     classSuffix: '',
-  },
-
-  tailwindcss: {
-    configPath: 'tailwind.config.mjs',
   },
 
   googleFonts: {

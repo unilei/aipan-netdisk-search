@@ -22,15 +22,21 @@ export default defineEventHandler(async (event) => {
         }
 
         const file = formData[0]
-        if (!file.filename) {
+        if (!file || !file.filename || !file.data) {
             throw createError({
                 statusCode: 400,
-                message: "文件名不能为空"
+                message: "文件名或文件数据不能为空"
             })
         }
 
         // 生成唯一的文件名
         const ext = file.filename.split('.').pop()
+        if (!ext) {
+            throw createError({
+                statusCode: 400,
+                message: "无效的文件扩展名"
+            })
+        }
         const fileName = `${randomUUID()}.${ext}`
 
         // 确保上传目录存在

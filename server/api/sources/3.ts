@@ -46,6 +46,12 @@ export default defineEventHandler(async (event) => {
             'https://pansearch-proxy-api-production.pansearch-proxy.workers.dev/api/pansearch/search'
         ];
         const randomUrl = proxyUrls[Math.floor(Math.random() * proxyUrls.length)];
+        if (!randomUrl) {
+            throw createError({
+                statusCode: 500,
+                message: 'No proxy URL available'
+            });
+        }
         console.log(`🎯 Selected proxy URL for c_search: ${randomUrl}`);
 
         // Fetch with retry

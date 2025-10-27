@@ -807,6 +807,8 @@ onBeforeUnmount(() => {
   </div>
 </template>
 <style scoped>
+@import "tailwindcss" reference;
+
 .custom-bg {
   background: linear-gradient(135deg, #1c1c1c 0%, #252525 50%, #2a2a2a 100%);
   position: relative;

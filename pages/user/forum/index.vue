@@ -721,6 +721,8 @@ watch(activeTab, (newVal) => {
 </script>
 
 <style>
+@import "tailwindcss" reference;
+
 .dark\:bg-gray-750 {
     @apply dark:bg-gray-700/70;
 }

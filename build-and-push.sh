@@ -148,7 +148,7 @@ if [ $? -eq 0 ]; then
     
     # 检查必要文件是否存在
     echo "${arch} 架构镜像文件检查结果:"
-    docker exec $CONTAINER_ID ls -la /app/ | grep -E 'ecosystem\.config\.js|prisma-esm-fix\.mjs|generated|prisma'
+    docker exec $CONTAINER_ID ls -la /app/ | grep -E 'ecosystem\.config\.js|generated|prisma'
     
     # 停止并移除临时容器
     docker stop $CONTAINER_ID > /dev/null

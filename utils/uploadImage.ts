@@ -48,7 +48,12 @@ const fileToBase64 = (file: File): Promise<string> => {
         const reader = new FileReader()
         reader.onload = (e) => {
             if (e.target?.result) {
-                resolve(e.target.result.toString().split(',')[1])
+                const result = e.target.result.toString().split(',')[1]
+                if (result) {
+                    resolve(result)
+                } else {
+                    reject(new Error('Failed to extract Base64 data'))
+                }
             } else {
                 reject(new Error('Failed to convert file to Base64'))
             }
