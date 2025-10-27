@@ -143,12 +143,12 @@ definePageMeta({
 
 <template>
     <div
-        class="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-16 px-4 sm:px-6 lg:px-8">
+        class="min-h-screen bg-linear-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-16 px-4 sm:px-6 lg:px-8">
 
         <div class="max-w-4xl mx-auto">
             <div class="flex items-center  gap-4 py-4">
                 <nuxt-link to="/"
-                    class="group flex items-center gap-3 px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium shadow-lg hover:shadow-blue-500/30 transform hover:scale-105 transition-all duration-300">
+                    class="group flex items-center gap-3 px-3 py-1 rounded-full bg-linear-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium shadow-lg hover:shadow-blue-500/30 transform hover:scale-105 transition-all duration-300">
                     <i class="fa-solid fa-arrow-left text-xs"></i>
                     <span class="text-xs">返回首页</span>
                 </nuxt-link>
@@ -156,7 +156,7 @@ definePageMeta({
             <!-- 页面标题 -->
             <div class="text-center mb-12 animate-fadeIn">
                 <h1
-                    class="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    class="text-4xl font-bold bg-linear-to-r from-blue-600 via-purple-500 to-pink-500 bg-clip-text text-transparent">
                     每日推荐
                 </h1>
                 <p class="mt-3 text-gray-600 dark:text-gray-400">发现精彩影片，感受电影魅力</p>
@@ -176,7 +176,7 @@ definePageMeta({
                         <img :src="movieData?.data?.poster_url" :alt="movieInfo?.电影名称"
                             class="h-[450px] w-full md:w-80 object-cover transition-all duration-500 group-hover:scale-105"
                             loading="lazy" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent 
+                        <div class="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent 
                                   opacity-0 group-hover:opacity-100 transition-all duration-500">
                         </div>
                     </div>
@@ -198,7 +198,7 @@ definePageMeta({
                                     {{ movieInfo?.电影名称 }}
                                 </h1>
                                 <div
-                                    class="px-4 py-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold shadow-lg hover:shadow-orange-500/20 transition-shadow duration-300">
+                                    class="px-4 py-2 rounded-full bg-linear-to-r from-yellow-400 to-orange-500 text-white font-bold shadow-lg hover:shadow-orange-500/20 transition-shadow duration-300">
                                     {{ movieInfo?.评分 }}
                                 </div>
                             </div>
@@ -250,7 +250,7 @@ definePageMeta({
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center">
                                 <div
-                                    class="w-12 h-12 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 
+                                    class="w-12 h-12 rounded-xl bg-linear-to-r from-blue-500 to-purple-500 
                                           flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
                                     <span class="text-white font-medium text-lg">{{ review.评论者?.charAt(0) }}</span>
                                 </div>

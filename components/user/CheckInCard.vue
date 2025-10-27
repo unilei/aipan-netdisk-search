@@ -3,7 +3,7 @@
     class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
     <!-- 卡片头部 -->
     <div
-      class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      class="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
       <div class="flex justify-between items-center">
         <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 m-0">
           <i class="fa-solid fa-calendar-days text-blue-600 dark:text-blue-400"></i>
@@ -26,7 +26,7 @@
         </div>
         <div v-else class="py-8">
           <el-button type="primary" size="large" :loading="isCheckingIn" @click="handleCheckIn"
-            class="mb-3 px-8 py-3 text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200">
+            class="mb-3 px-8 py-3 text-lg font-medium bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200">
             <i class="fa-solid fa-star mr-2"></i>
             立即签到
           </el-button>

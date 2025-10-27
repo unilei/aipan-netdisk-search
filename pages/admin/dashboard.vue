@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- 欢迎卡片 -->
     <div
-      class="bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 rounded-lg p-6 text-white shadow-lg"
+      class="bg-linear-to-r from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700 rounded-lg p-6 text-white shadow-lg"
     >
       <h2 class="text-2xl font-bold mb-2">欢迎回来！</h2>
       <p class="opacity-90">使用侧边栏导航选择要管理的功能模块</p>

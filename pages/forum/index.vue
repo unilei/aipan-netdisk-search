@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-50 dark:bg-gray-900 min-h-screen pb-12">
     <!-- 顶部横幅 -->
-    <div class="bg-gradient-to-r from-purple-600 to-blue-400 text-white">
+    <div class="bg-linear-to-r from-purple-600 to-blue-400 text-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="max-w-4xl">
           <h1 class="text-xl font-bold mb-2">社区论坛</h1>
@@ -194,7 +194,7 @@
             </h3>
             <p class="text-xs text-gray-500 mb-4">成为第一个发表主题的用户</p>
             <el-button v-if="user" type="primary" @click="navigateToCreateTopic"
-              class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
+              class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
               发布新主题
             </el-button>
           </div>

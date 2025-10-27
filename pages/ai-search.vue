@@ -12,7 +12,7 @@
         <!-- 新建聊天按钮 -->
         <div class="p-4">
           <button @click="createNewChat"
-            class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 shadow-sm hover:shadow-md">
+            class="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-xl bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 shadow-sm hover:shadow-md">
             <i class="fas fa-plus text-sm"></i>
             <span class="text-sm font-medium">新建聊天</span>
           </button>
@@ -107,7 +107,7 @@
                 <a class="flex items-center space-x-2" href="/">
                   <img src="/logo.png" alt="Logo" class="w-6 h-6 md:w-8 md:h-8" />
                   <span
-                    class="text-base md:text-lg font-semibold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">AI
+                    class="text-base md:text-lg font-semibold bg-linear-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">AI
                     爱盼网盘小助手</span>
                 </a>
               </div>
@@ -138,7 +138,7 @@
                 <!-- AI 消息 -->
                 <div v-if="msg.type === 'ai'" class="flex items-start space-x-2 md:space-x-4 w-full md:max-w-4xl">
                   <div
-                    class="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm flex-shrink-0">
+                    class="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-linear-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm flex-shrink-0">
                     <i class="fas fa-robot text-white text-xs md:text-sm"></i>
                   </div>
                   <div class="flex-1 min-w-0">
@@ -166,7 +166,7 @@
                 <div v-else class="flex items-start space-x-2 md:space-x-4 justify-end w-full md:max-w-4xl ml-auto">
                   <div class="flex-1 min-w-0">
                     <div
-                      class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-3 md:p-4 shadow-sm ml-12 md:ml-0">
+                      class="bg-linear-to-r from-blue-500 to-blue-600 rounded-2xl p-3 md:p-4 shadow-sm ml-12 md:ml-0">
                       <p class="text-white text-xs md:text-sm leading-relaxed break-words">
                         {{ msg.content }}
                       </p>
@@ -477,7 +477,7 @@ const showSidebar = ref(false);
 }
 
 .search-btn {
-  @apply bg-gradient-to-r from-blue-500 to-blue-600 border-none rounded-lg px-6 py-2.5 hover:from-blue-600 hover:to-blue-700 text-sm font-medium;
+  @apply bg-linear-to-r from-blue-500 to-blue-600 border-none rounded-lg px-6 py-2.5 hover:from-blue-600 hover:to-blue-700 text-sm font-medium;
 }
 
 .search-btn:disabled {

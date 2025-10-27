@@ -29,14 +29,14 @@
           />
           <!-- 占位图 -->
           <div v-else class="w-full h-full flex items-center justify-center 
-                            bg-gradient-to-br from-gray-200 to-gray-300 
+                            bg-linear-to-br from-gray-200 to-gray-300 
                             dark:from-gray-700 dark:to-gray-800">
             <i class="fas fa-film text-4xl text-gray-400 dark:text-gray-500"></i>
           </div>
           
           <!-- 悬停遮罩 -->
           <div class="absolute inset-0 
-                      bg-gradient-to-t from-black/70 via-black/20 to-transparent 
+                      bg-linear-to-t from-black/70 via-black/20 to-transparent 
                       opacity-0 group-hover:opacity-100 transition-opacity duration-200
                       flex flex-col justify-end p-2.5">
             <!-- 播放按钮 -->
@@ -384,7 +384,7 @@ const onImageError = (event) => {
   const parent = event.target.parentElement
   if (parent && !parent.querySelector('.placeholder-icon')) {
     const placeholder = document.createElement('div')
-    placeholder.className = 'placeholder-icon w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800'
+    placeholder.className = 'placeholder-icon w-full h-full flex items-center justify-center bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800'
     placeholder.innerHTML = '<i class="fas fa-film text-4xl text-gray-400 dark:text-gray-600"></i>'
     parent.appendChild(placeholder)
   }

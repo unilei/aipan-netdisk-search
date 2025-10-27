@@ -77,7 +77,7 @@
 
     <!-- Enhanced Backtop -->
     <el-backtop :right="24" :bottom="24"
-      class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center">
+      class="!bg-linear-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl backdrop-blur-sm flex items-center justify-center">
       <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
     </el-backtop>
   </div>

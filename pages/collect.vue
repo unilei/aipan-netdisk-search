@@ -22,7 +22,7 @@ useHead({
                 <div class="flex items-center justify-center mb-8">
                     <img class="w-16 h-16 md:w-20 md:h-20 dark:opacity-90 mr-4" src="@/assets/my-logo.png" alt="logo" />
                     <h1
-                        class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                        class="text-2xl md:text-3xl font-bold bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                         收藏网站发布页
                     </h1>
                 </div>

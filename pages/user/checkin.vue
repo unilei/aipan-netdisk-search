@@ -4,7 +4,7 @@
       <!-- 页面标题 -->
       <div class="text-center mb-8 md:mb-12">
         <h1
-          class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+          class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
           签到中心
         </h1>
         <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
@@ -62,28 +62,28 @@
             <div v-if="checkInHistory.monthStats" class="mb-8">
               <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <div
-                  class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 text-center border border-blue-200 dark:border-blue-700/50">
+                  class="bg-linear-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 text-center border border-blue-200 dark:border-blue-700/50">
                   <div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                     {{ checkInHistory.monthStats.checkInCount }}
                   </div>
                   <div class="text-sm text-blue-600/80 dark:text-blue-400/80">签到天数</div>
                 </div>
                 <div
-                  class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4 text-center border border-green-200 dark:border-green-700/50">
+                  class="bg-linear-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4 text-center border border-green-200 dark:border-green-700/50">
                   <div class="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
                     {{ checkInHistory.monthStats.totalPoints }}
                   </div>
                   <div class="text-sm text-green-600/80 dark:text-green-400/80">获得积分</div>
                 </div>
                 <div
-                  class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-4 text-center border border-purple-200 dark:border-purple-700/50">
+                  class="bg-linear-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-4 text-center border border-purple-200 dark:border-purple-700/50">
                   <div class="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                     {{ checkInHistory.monthStats.maxConsecutiveDays }}
                   </div>
                   <div class="text-sm text-purple-600/80 dark:text-purple-400/80">最长连续</div>
                 </div>
                 <div
-                  class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4 text-center border border-orange-200 dark:border-orange-700/50">
+                  class="bg-linear-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4 text-center border border-orange-200 dark:border-orange-700/50">
                   <div class="text-2xl font-bold text-orange-600 dark:text-orange-400 mb-1">
                     {{ checkInHistory.monthStats.checkInRate }}%
                   </div>

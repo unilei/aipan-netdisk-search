@@ -7,7 +7,7 @@
 
                 <div class="flex items-center space-x-4">
                     <el-button type="primary" @click="fixMissingSlugs" :loading="loading"
-                        class="!bg-gradient-to-r !from-purple-600 !to-blue-600 border-0">
+                        class="!bg-linear-to-r !from-purple-600 !to-blue-600 border-0">
                         <i class="fas fa-wrench mr-2"></i> 修复缺失的Slug
                     </el-button>
                     <el-button @click="router.push('/admin/forum')">

@@ -101,7 +101,7 @@
             </div>
             <div>
               <el-button type="primary" size="small" @click="navigateToCreateTopic"
-                class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs !h-8"
+                class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs !h-8"
                 :disabled="!user">
                 <template #icon><i class="fas fa-pen-to-square mr-1 text-xs"></i></template>
                 发布新主题
@@ -127,11 +127,11 @@
             </h3>
             <p class="text-xs text-gray-500 mb-4">成为第一个发表主题的用户</p>
             <el-button v-if="user" type="primary" @click="navigateToCreateTopic"
-              class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
+              class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
               发布新主题
             </el-button>
             <el-button v-else type="primary" @click="navigateToLogin"
-              class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
+              class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
               登录后发布
             </el-button>
           </div>

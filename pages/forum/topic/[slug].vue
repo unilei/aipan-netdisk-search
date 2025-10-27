@@ -165,7 +165,7 @@
               </div>
               <div>
                 <el-button type="primary" :loading="submitting" @click="submitReply"
-                  class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs !h-8">
+                  class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs !h-8">
                   发表回复
                 </el-button>
               </div>
@@ -177,7 +177,7 @@
               您需要登录后才能回复
             </p>
             <el-button type="primary" @click="navigateToLogin" size="small"
-              class="!bg-gradient-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
+              class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
               登录 / 注册
             </el-button>
           </div>

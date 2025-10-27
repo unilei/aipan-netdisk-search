@@ -51,7 +51,7 @@ console.log(colorMode.preference);
             />
             <div class="text-left hidden md:block">
               <h1
-                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
+                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
               >
                 AIPAN.ME
               </h1>

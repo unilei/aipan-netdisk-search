@@ -631,7 +631,7 @@ const formatPlayTime = (seconds) => {
 };
 </script>
 <template>
-  <div class="bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
+  <div class="bg-linear-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
     <div class="max-w-3xl mx-auto p-[20px]">
       <!-- Header -->
       <div class="flex flex-col items-center justify-center gap-3 mb-10">
@@ -640,7 +640,7 @@ const formatPlayTime = (seconds) => {
             <img class="w-[50px] h-[50px]" src="@/assets/my-logo.png" alt="logo" />
           </a>
           <h1
-            class="text-[24px] sm:text-[28px] font-serif font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
+            class="text-[24px] sm:text-[28px] font-serif font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
             爱盼音乐
           </h1>
         </div>
@@ -747,7 +747,7 @@ const formatPlayTime = (seconds) => {
             class="flex flex-row justify-between items-center p-4 bg-white rounded-xl hover:shadow-md transition-all duration-200 dark:bg-gray-800/70 dark:hover:bg-gray-800 dark:border dark:border-gray-700">
             <div class="flex items-center gap-3">
               <div
-                class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
+                class="w-10 h-10 bg-linear-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
                 {{ index + 1 }}
               </div>
               <div class="flex-1 min-w-0">
@@ -862,7 +862,7 @@ const formatPlayTime = (seconds) => {
             <div class="flex items-center justify-between p-4">
               <div class="flex items-center gap-4 flex-1 min-w-0 mr-4">
                 <div
-                  class="h-12 w-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center text-white flex-shrink-0">
+                  class="h-12 w-12 bg-linear-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center text-white flex-shrink-0">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
