@@ -2,7 +2,7 @@
     <div class="spring-festival-container">
         <!-- 顶部区域 -->
         <div
-            class="bg-gradient-to-r from-red-500 to-red-600 dark:from-red-700 dark:to-red-800 py-16 relative overflow-hidden">
+            class="bg-linear-to-r from-red-500 to-red-600 dark:from-red-700 dark:to-red-800 py-16 relative overflow-hidden">
             <div class="container mx-auto text-center relative z-10">
                 <h1 class="text-4xl md:text-5xl font-bold mb-4 text-white">
                     🐎 2026马年新春特别页面 🧧

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <div class="min-h-screen bg-linear-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
     <!-- 顶部导航栏 -->
     <div class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto px-4 py-3">
@@ -100,7 +100,7 @@
                            focus:outline-none focus:ring-2 focus:ring-purple-500"
                     :class="[
                       currentSourceIndex === index 
-                        ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white ring-0' 
+                        ? 'bg-linear-to-r from-purple-500 to-blue-500 text-white ring-0' 
                         : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                     ]"
                   >
@@ -135,7 +135,7 @@
                            focus:outline-none focus:ring-2 focus:ring-purple-500"
                     :class="[
                       currentEpisodeIndex === index
-                        ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white ring-0'
+                        ? 'bg-linear-to-r from-purple-500 to-blue-500 text-white ring-0'
                         : 'hover:bg-gray-50 dark:hover:bg-gray-800'
                     ]"
                   >

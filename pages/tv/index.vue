@@ -590,14 +590,14 @@ onBeforeUnmount(() => {
           <!-- Brand Name -->
           <div class="flex justify-center mb-4">
             <nuxt-link to="/"
-              class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent hover:from-blue-500 hover:to-purple-600 transition-all duration-300 transform hover:scale-105">
+              class="text-xl font-extrabold tracking-wider bg-linear-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent hover:from-blue-500 hover:to-purple-600 transition-all duration-300 transform hover:scale-105">
               AIPAN
             </nuxt-link>
           </div>
 
           <!-- Control Buttons Panel -->
           <div
-            class="tv-buttons-panel flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 bg-gradient-to-b from-neutral-800/50 to-neutral-900/50 p-3 md:p-4 rounded-xl backdrop-blur-sm border border-neutral-700/30">
+            class="tv-buttons-panel flex flex-col md:flex-row items-center justify-between gap-4 md:gap-6 bg-linear-to-b from-neutral-800/50 to-neutral-900/50 p-3 md:p-4 rounded-xl backdrop-blur-sm border border-neutral-700/30">
             <div
               class="tv-left-controls flex flex-wrap justify-center md:justify-start gap-2 md:gap-3 w-full md:w-auto">
               <button class="control-btn" @click="modalShow = !modalShow">
@@ -661,7 +661,7 @@ onBeforeUnmount(() => {
 
       <!-- TV Stand -->
       <div
-        class="tv-stand mt-4 h-16 w-1/3 mx-auto bg-gradient-to-b from-gray-700 to-gray-800 rounded-t-lg transform perspective-1000 rotateX-45">
+        class="tv-stand mt-4 h-16 w-1/3 mx-auto bg-linear-to-b from-gray-700 to-gray-800 rounded-t-lg transform perspective-1000 rotateX-45">
       </div>
     </div>
 
@@ -1222,7 +1222,7 @@ onBeforeUnmount(() => {
 
 .channel-item::before {
   content: "";
-  @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 transition-opacity duration-500;
+  @apply absolute inset-0 bg-linear-to-r from-transparent via-white/5 to-transparent opacity-0 transition-opacity duration-500;
 }
 
 .channel-item:hover::before {

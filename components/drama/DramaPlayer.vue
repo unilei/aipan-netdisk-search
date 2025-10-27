@@ -528,7 +528,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="drama-player h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex flex-col overflow-hidden"
+  <div class="drama-player h-screen bg-linear-to-br from-gray-900 via-gray-800 to-black flex flex-col overflow-hidden"
     @touchstart="handleTouchStart" @touchend="handleTouchEnd">
 
     <!-- 顶部导航栏 -->
@@ -536,7 +536,7 @@ onUnmounted(() => {
       <div class="flex justify-between items-center">
         <div class="flex items-center space-x-2 sm:space-x-3 flex-1 min-w-0">
           <div
-            class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/30 flex-shrink-0">
+            class="w-8 h-8 sm:w-10 sm:h-10 bg-linear-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-amber-500/30 flex-shrink-0">
             <i class="fas fa-play text-white text-xs sm:text-sm"></i>
           </div>
           <div class="min-w-0 flex-1">
@@ -658,7 +658,7 @@ onUnmounted(() => {
             <div class="text-3xl font-bold text-amber-400 mb-2">{{ autoPlayCountdown }}</div>
             <div class="w-32 h-2 bg-white/20 rounded-full mx-auto overflow-hidden">
               <div
-                class="h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full transition-all duration-1000"
+                class="h-full bg-linear-to-r from-amber-400 to-orange-400 rounded-full transition-all duration-1000"
                 :style="{ width: `${(10 - autoPlayCountdown) * 10}%` }"></div>
             </div>
           </div>
@@ -864,12 +864,12 @@ onUnmounted(() => {
             <button v-for="(episode, index) in drama.episodes" :key="index" @click="selectEpisode(index)" :class="[
               'episode-btn relative px-2 py-3 sm:py-2.5 text-xs font-medium rounded-lg transition-all duration-200 overflow-hidden group min-w-0 h-18 sm:h-16 min-h-[44px]',
               currentEpisode === index
-                ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md ring-1 ring-amber-500/50'
+                ? 'bg-linear-to-r from-amber-500 to-orange-600 text-white shadow-md ring-1 ring-amber-500/50'
                 : 'bg-gray-800/50 hover:bg-gray-800 active:bg-gray-700 text-gray-400 hover:text-white border border-gray-700/50'
             ]">
               <!-- 播放中动画 -->
               <div v-if="currentEpisode === index"
-                class="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-600/10">
+                class="absolute inset-0 bg-linear-to-r from-amber-500/10 to-orange-600/10">
               </div>
 
               <!-- 观看历史标记 -->
@@ -923,7 +923,7 @@ onUnmounted(() => {
                   </div>
                   <div class="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
                     <div
-                      class="h-full bg-gradient-to-r from-amber-500 to-orange-600 rounded-full transition-all duration-500"
+                      class="h-full bg-linear-to-r from-amber-500 to-orange-600 rounded-full transition-all duration-500"
                       :style="{ width: `${(currentEpisode + 1) / drama.episodes.length * 100}%` }">
                     </div>
                   </div>

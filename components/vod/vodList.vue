@@ -123,7 +123,7 @@ const vodTab = ref(0)
                  focus:outline-none focus:ring-2 focus:ring-purple-500"
           :class="[
             vodTab === index 
-              ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white ring-0' 
+              ? 'bg-linear-to-r from-purple-500 to-blue-500 text-white ring-0' 
               : 'hover:bg-gray-50 dark:hover:bg-gray-800'
           ]"
           @click="vodTab = index"
@@ -151,7 +151,7 @@ const vodTab = ref(0)
                    focus:outline-none focus:ring-2 focus:ring-purple-500"
             :class="[
               currentIndex === index
-                ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white ring-0'
+                ? 'bg-linear-to-r from-purple-500 to-blue-500 text-white ring-0'
                 : 'hover:bg-gray-50 dark:hover:bg-gray-800'
             ]"
             @click="changeVodUrl(vodData[vodTab], item, index)"

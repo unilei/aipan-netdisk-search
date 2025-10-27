@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
             <img class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
             <div class="text-left">
               <h1
-                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
                 AIPAN.ME
               </h1>
               <p class="text-gray-600 text-[10px] md:text-xs dark:text-gray-400">

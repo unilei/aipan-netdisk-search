@@ -418,7 +418,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    class="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
+    class="min-h-screen bg-linear-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
     <ClientOnly>
       <!-- 顶部导航栏 -->
       <nav
@@ -546,7 +546,7 @@ onUnmounted(() => {
                 class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <!-- 文章头部信息 -->
                 <header
-                  class="px-8 py-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 dark:from-gray-800 dark:to-gray-700">
+                  class="px-8 py-6 border-b border-gray-200 dark:border-gray-700 bg-linear-to-r from-blue-50/50 to-indigo-50/50 dark:from-gray-800 dark:to-gray-700">
                   <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
                     {{ blog?.title }}
                   </h1>
@@ -711,7 +711,7 @@ onUnmounted(() => {
               <nav v-if="headings.length > 0"
                 class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 backdrop-blur-sm">
                 <div class="flex items-center mb-6">
-                  <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
+                  <div class="w-1 h-6 bg-linear-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
                   <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                     目录
                   </h2>
@@ -749,7 +749,7 @@ onUnmounted(() => {
                       <div
                         class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
                         <div class="flex items-center">
-                          <div class="w-1 h-6 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
+                          <div class="w-1 h-6 bg-linear-to-b from-blue-500 to-purple-600 rounded-full mr-3"></div>
                           <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
                             目录
                           </h2>

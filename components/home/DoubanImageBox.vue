@@ -179,7 +179,7 @@ const goDouban = (movie) => {
           </div>
 
           <div
-            class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+            class="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
             <div class="absolute bottom-0 left-0 right-0 p-3">
               <p class="text-white text-sm font-medium mb-1 line-clamp-2">
                 {{ movie.title }}

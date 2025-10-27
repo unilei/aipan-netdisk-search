@@ -3,7 +3,7 @@
     class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
     <!-- 卡片头部 -->
     <div
-      class="bg-gradient-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      class="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/20 dark:to-blue-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
       <div class="flex justify-between items-center">
         <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 m-0">
           <i class="fa-solid fa-coins text-green-600 dark:text-green-400"></i>
@@ -19,7 +19,7 @@
 
     <div class="p-6">
       <!-- 当前积分 -->
-      <div class="text-center mb-6 p-6 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl text-white">
+      <div class="text-center mb-6 p-6 bg-linear-to-br from-purple-500 to-blue-600 rounded-xl text-white">
         <div class="text-4xl font-bold mb-2">{{ pointsData.currentPoints }}</div>
         <div class="text-lg opacity-90">当前积分</div>
       </div>
@@ -27,25 +27,25 @@
       <!-- 积分统计 -->
       <div class="grid grid-cols-2 gap-4 mb-6">
         <div
-          class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border border-blue-200 dark:border-blue-700/50">
+          class="text-center p-4 bg-linear-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg border border-blue-200 dark:border-blue-700/50">
           <div class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-1">{{ pointsData.stats?.dailyEarned || 0 }}
           </div>
           <div class="text-sm text-blue-600/80 dark:text-blue-400/80">今日获得</div>
         </div>
         <div
-          class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-200 dark:border-green-700/50">
+          class="text-center p-4 bg-linear-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg border border-green-200 dark:border-green-700/50">
           <div class="text-xl font-bold text-green-600 dark:text-green-400 mb-1">{{ pointsData.stats?.monthlyEarned || 0
             }}</div>
           <div class="text-sm text-green-600/80 dark:text-green-400/80">本月获得</div>
         </div>
         <div
-          class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg border border-purple-200 dark:border-purple-700/50">
+          class="text-center p-4 bg-linear-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg border border-purple-200 dark:border-purple-700/50">
           <div class="text-xl font-bold text-purple-600 dark:text-purple-400 mb-1">{{ pointsData.stats?.totalEarned || 0
             }}</div>
           <div class="text-sm text-purple-600/80 dark:text-purple-400/80">累计获得</div>
         </div>
         <div
-          class="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg border border-orange-200 dark:border-orange-700/50">
+          class="text-center p-4 bg-linear-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg border border-orange-200 dark:border-orange-700/50">
           <div class="text-xl font-bold text-orange-600 dark:text-orange-400 mb-1">{{ pointsData.stats?.totalSpent || 0
             }}</div>
           <div class="text-sm text-orange-600/80 dark:text-orange-400/80">累计消费</div>
@@ -94,7 +94,7 @@
         <div class="flex items-end justify-between h-20 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
           <div v-for="(day, index) in pointsData.stats.weeklyTrend" :key="day.date"
             class="flex flex-col items-center flex-1 h-full">
-            <div class="w-5 bg-gradient-to-t from-blue-600 to-green-500 rounded-t-sm mb-2 min-h-[2px]"
+            <div class="w-5 bg-linear-to-t from-blue-600 to-green-500 rounded-t-sm mb-2 min-h-[2px]"
               :style="{ height: getTrendBarHeight(day.points) }"></div>
             <div class="text-xs text-gray-500 dark:text-gray-400 text-center">{{ formatTrendDate(day.date, index) }}
             </div>

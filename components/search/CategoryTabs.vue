@@ -9,7 +9,7 @@
           <el-button v-for="(item, index) in categories" :key="index"
             class="snap-start min-w-fit transition-all duration-300 rounded-xl group relative" :class="[
               currentCategory === item.value
-                ? 'shadow-lg !text-white scale-105 !bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
+                ? 'shadow-lg !text-white scale-105 !bg-linear-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
                 : 'bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80',
               index === 0 && 'ml-0.5',
               index === categories.length - 1 && 'mr-0.5',
@@ -17,7 +17,7 @@
             :plain="currentCategory !== item.value">
             <!-- Background hover effect -->
             <span v-if="currentCategory !== item.value"
-              class="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+              class="absolute inset-0 rounded-xl bg-linear-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
 
             <!-- Icon and text with better alignment -->
             <div class="flex items-center gap-2">
@@ -33,7 +33,7 @@
 
             <!-- Bottom border animation for active tab -->
             <span v-if="currentCategory === item.value"
-              class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-400 to-blue-400"></span>
+              class="absolute bottom-0 left-0 w-full h-0.5 bg-linear-to-r from-purple-400 to-blue-400"></span>
           </el-button>
 
           <!-- Settings button with tooltip -->

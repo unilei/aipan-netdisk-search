@@ -2,7 +2,7 @@
   <div class="min-h-[calc(100vh-60px)] bg-gray-50 dark:bg-gray-900">
     <div class="max-w-[1240px] mx-auto p-6">
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        <div class="relative h-32 bg-gradient-to-r from-blue-500 to-purple-500">
+        <div class="relative h-32 bg-linear-to-r from-blue-500 to-purple-500">
           <div class="absolute -bottom-12 left-6">
             <div class="w-24 h-24 rounded-full bg-white dark:bg-gray-700 p-1 cursor-pointer group relative"
               @click="showAvatarDialog = true">

@@ -109,7 +109,7 @@ onMounted(() => {
         </div>
         <p class="text-white text-lg sm:text-xl font-medium mb-4 leading-relaxed">{{ error }}</p>
         <button @click="goBack"
-          class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-medium rounded-full hover:from-amber-600 hover:to-orange-600 active:from-amber-700 active:to-orange-700 transition-all duration-300 shadow-lg shadow-amber-500/20 focus:ring-4 focus:outline-none focus:ring-amber-300 min-h-[44px] flex items-center justify-center">
+          class="w-full sm:w-auto px-6 py-3 bg-linear-to-r from-amber-500 to-orange-500 text-white font-medium rounded-full hover:from-amber-600 hover:to-orange-600 active:from-amber-700 active:to-orange-700 transition-all duration-300 shadow-lg shadow-amber-500/20 focus:ring-4 focus:outline-none focus:ring-amber-300 min-h-[44px] flex items-center justify-center">
           <i class="fas fa-arrow-left mr-2"></i>
           <span>返回影视列表</span>
         </button>

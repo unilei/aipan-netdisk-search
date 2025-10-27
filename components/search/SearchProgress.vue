@@ -8,7 +8,7 @@
         " :stroke-width="6" :show-text="false" class="flex-1">
       </el-progress>
       <div
-        class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer">
+        class="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-shimmer">
       </div>
     </div>
     <span

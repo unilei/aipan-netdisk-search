@@ -146,7 +146,7 @@ defineExpose({
         class="aspect-square rounded-full overflow-hidden relative cursor-pointer transition-all"
       >
         <!-- Hole -->
-        <div class="absolute inset-0 bg-gradient-to-b from-amber-800 to-amber-950 rounded-full"></div>
+        <div class="absolute inset-0 bg-linear-to-b from-amber-800 to-amber-950 rounded-full"></div>
         
         <!-- Mole -->
         <div 

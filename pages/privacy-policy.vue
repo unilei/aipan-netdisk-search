@@ -341,7 +341,7 @@ section:last-of-type {
 }
 
 .final-notice {
-  @apply bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-6 border border-blue-200 dark:border-blue-700;
+  @apply bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-6 border border-blue-200 dark:border-blue-700;
 }
 
 .related-links {

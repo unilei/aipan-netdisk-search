@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-[calc(100vh-194px)] bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+    class="min-h-[calc(100vh-194px)] bg-linear-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
     <div class="max-w-[1240px] mx-auto px-4 py-20">
       <div class="flex flex-col items-center justify-center space-y-4 sm:space-y-8">
         <!-- Loading Animation -->
