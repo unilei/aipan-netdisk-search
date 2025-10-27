@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
+    class="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
     <!-- 左侧固定导航 -->
     <aside
       class="fixed left-0 top-0 w-72 h-full bg-white/80 dark:bg-slate-700/90 backdrop-blur-xl border-r border-stone-200/50 dark:border-slate-600/50 overflow-y-auto z-40 shadow-2xl shadow-amber-500/5 dark:shadow-slate-900/20">
@@ -10,11 +10,11 @@
           <nuxt-link to="/">
             <h2 class="text-lg font-semibold text-stone-800 dark:text-stone-100 mb-2 flex items-center group">
               <div
-                class="w-8 h-8 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/30 transition-all duration-300 group-hover:scale-105">
+                class="w-8 h-8 bg-linear-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/30 transition-all duration-300 group-hover:scale-105">
                 <i class="fas fa-compass text-amber-800 dark:text-amber-100 text-sm"></i>
               </div>
               <span
-                class="bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">爱盼导航</span>
+                class="bg-linear-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">爱盼导航</span>
             </h2>
           </nuxt-link>
           <p class="text-stone-600 dark:text-stone-400 text-xs leading-relaxed">探索精选网站，发现无限可能</p>
@@ -51,12 +51,12 @@
             @click="scrollToCategory(category.id)" :class="[
               'w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none group relative overflow-hidden block',
               activeCategory === category.id
-                ? 'bg-gradient-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 shadow-lg shadow-amber-500/20'
+                ? 'bg-linear-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 shadow-lg shadow-amber-500/20'
                 : 'text-stone-700 dark:text-stone-300 hover:bg-white/60 dark:hover:bg-slate-600/60 hover:shadow-md backdrop-blur-sm'
             ]" :aria-pressed="activeCategory === category.id">
             <!-- 背景装饰 -->
             <div v-if="activeCategory === category.id"
-              class="absolute inset-0 bg-gradient-to-r from-amber-300/20 to-orange-300/20 dark:from-amber-600/20 dark:to-orange-600/20">
+              class="absolute inset-0 bg-linear-to-r from-amber-300/20 to-orange-300/20 dark:from-amber-600/20 dark:to-orange-600/20">
             </div>
             <div class="flex items-center justify-between relative z-10">
               <div class="flex items-center">
@@ -90,7 +90,7 @@
         <div class="flex items-center justify-between mb-4">
           <div>
             <h1
-              class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2 bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
+              class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2 bg-linear-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
               {{selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : '全部导航'}}
             </h1>
             <p class="text-stone-600 dark:text-stone-400 text-xs leading-relaxed">
@@ -98,7 +98,7 @@
             </p>
           </div>
           <div
-            class="bg-gradient-to-br from-amber-100/80 to-orange-100/80 dark:from-slate-600/80 dark:to-slate-700/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-amber-200/50 dark:border-slate-500/50 shadow-lg shadow-amber-500/5">
+            class="bg-linear-to-br from-amber-100/80 to-orange-100/80 dark:from-slate-600/80 dark:to-slate-700/80 backdrop-blur-sm px-4 py-3 rounded-xl border border-amber-200/50 dark:border-slate-500/50 shadow-lg shadow-amber-500/5">
             <div class="text-center">
               <p class="text-xs text-stone-500 dark:text-stone-400 font-medium mb-1">统计信息</p>
               <div class="flex items-center space-x-3">
@@ -167,7 +167,7 @@
 
       <!-- 导航内容区域 -->
       <div v-else
-        class="p-6 bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-yellow-50/50 dark:from-slate-800/50 dark:via-slate-800/30 dark:to-slate-900/50 min-h-screen">
+        class="p-6 bg-linear-to-br from-amber-50/50 via-orange-50/30 to-yellow-50/50 dark:from-slate-800/50 dark:via-slate-800/30 dark:to-slate-900/50 min-h-screen">
         <!-- 分类区块展示 -->
         <div class="space-y-8">
           <section v-for="category in filteredCategories" :key="category.id" :id="`category-${category.id}`"
@@ -176,18 +176,18 @@
             <div class="mb-6">
               <div class="flex items-center mb-3">
                 <div
-                  class="w-10 h-10 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-amber-500/20">
+                  class="w-10 h-10 bg-linear-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3 shadow-lg shadow-amber-500/20">
                   <i :class="getCategoryIcon(category.name)" class="text-amber-800 dark:text-amber-100 text-lg"></i>
                 </div>
                 <div>
                   <h2
-                    class="text-sm font-bold text-stone-800 dark:text-stone-100 mb-1 bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
+                    class="text-sm font-bold text-stone-800 dark:text-stone-100 mb-1 bg-linear-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
                     {{ category.name }}
                   </h2>
                   <p class="text-xs text-stone-600 dark:text-stone-400">{{ category.items.length }} 个网站</p>
                 </div>
               </div>
-              <div class="h-0.5 bg-gradient-to-r from-amber-400 via-orange-400 to-red-400 rounded-full w-16"></div>
+              <div class="h-0.5 bg-linear-to-r from-amber-400 via-orange-400 to-red-400 rounded-full w-16"></div>
             </div>
 
             <!-- 该分类下的导航项网格 -->
@@ -206,14 +206,14 @@
 
                     <!-- 背景装饰 -->
                     <div
-                      class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-200/20 to-orange-300/20 dark:from-amber-600/10 dark:to-orange-700/10 rounded-full -translate-y-10 translate-x-10 group-hover:scale-150 transition-transform duration-500">
+                      class="absolute top-0 right-0 w-20 h-20 bg-linear-to-br from-amber-200/20 to-orange-300/20 dark:from-amber-600/10 dark:to-orange-700/10 rounded-full -translate-y-10 translate-x-10 group-hover:scale-150 transition-transform duration-500">
                     </div>
 
                     <!-- 头部：图标和状态 -->
                     <div class="flex items-start justify-between mb-4 relative z-10">
                       <!-- 图标容器 -->
                       <div
-                        class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900 rounded-xl flex-shrink-0 group-hover:from-amber-200 group-hover:to-orange-300 dark:group-hover:from-amber-700 dark:group-hover:to-orange-800 transition-all duration-300 shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/30 group-hover:scale-105">
+                        class="flex items-center justify-center w-10 h-10 bg-linear-to-br from-amber-100 to-orange-200 dark:from-amber-800 dark:to-orange-900 rounded-xl flex-shrink-0 group-hover:from-amber-200 group-hover:to-orange-300 dark:group-hover:from-amber-700 dark:group-hover:to-orange-800 transition-all duration-300 shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/30 group-hover:scale-105">
                         <!-- 网站图标或FontAwesome图标 -->
                         <img v-if="getWebsiteIcon(item.path) && !iconErrors[item.path]" :src="getWebsiteIcon(item.path)"
                           :alt="`${item.title} 图标`" class="w-5 h-5 rounded-lg shadow-sm" loading="lazy" decoding="async"

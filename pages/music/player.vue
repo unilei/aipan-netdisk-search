@@ -14,7 +14,7 @@
           <div class="flex items-center gap-4">
             <el-button
               type="primary"
-              class="px-4 md:px-8 py-3 md:py-4 text-sm md:text-base rounded-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 md:gap-3 transform hover:scale-105"
+              class="px-4 md:px-8 py-3 md:py-4 text-sm md:text-base rounded-full bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500 hover:from-blue-600 hover:via-indigo-600 hover:to-purple-600 border-0 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center gap-2 md:gap-3 transform hover:scale-105"
               @click="selectFolder"
             >
               <i class="fa-solid fa-folder-open text-base md:text-lg"></i>
@@ -43,7 +43,7 @@
               :class="[
                 'px-4 md:px-6 py-2 md:py-2.5 rounded-full text-xs md:text-sm font-medium whitespace-nowrap transition-all duration-300',
                 currentTheme === theme.id
-                  ? 'bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 text-white shadow-lg'
+                  ? 'bg-linear-to-r from-blue-500 via-indigo-500 to-purple-500 text-white shadow-lg'
                   : 'bg-white/5 text-gray-300 hover:bg-white/10 backdrop-blur-lg',
               ]"
             >
@@ -64,7 +64,7 @@
             class="absolute -top-12 md:-top-20 left-4 md:left-8 w-32 md:w-48 h-32 md:h-48 rounded-2xl overflow-hidden shadow-2xl z-10"
           >
             <div
-              class="w-full h-full bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 backdrop-blur-xl flex items-center justify-center"
+              class="w-full h-full bg-linear-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 backdrop-blur-xl flex items-center justify-center"
             >
               <i
                 class="fa-solid fa-music text-2xl md:text-4xl text-white/70"
@@ -74,7 +74,7 @@
 
           <!-- Visualization Container -->
           <div
-            class="w-full aspect-[16/9] md:aspect-[21/9] bg-gradient-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-8 relative overflow-hidden shadow-2xl border border-white/5"
+            class="w-full aspect-[16/9] md:aspect-[21/9] bg-linear-to-br from-black/40 to-black/20 backdrop-blur-xl rounded-2xl md:rounded-3xl p-4 md:p-8 relative overflow-hidden shadow-2xl border border-white/5"
           >
             <canvas ref="waveformCanvas" class="w-full h-full"></canvas>
             <div
@@ -101,7 +101,7 @@
       >
         <div class="relative">
           <div
-            class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-3xl"
+            class="absolute inset-0 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 opacity-20 blur-3xl"
           ></div>
           <div class="relative text-center">
             <i
@@ -147,7 +147,7 @@
             <div class="w-12 h-12 rounded-xl overflow-hidden shadow-lg mr-3">
               <template v-if="currentPlaying">
                 <div
-                  class="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center"
+                  class="w-full h-full bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center"
                 >
                   <i class="fa-solid fa-music text-lg text-white/90"></i>
                 </div>
@@ -179,7 +179,7 @@
               <i class="fa-solid fa-backward-step text-xl"></i>
             </button>
             <button
-              class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white flex items-center justify-center hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg"
+              class="w-12 h-12 rounded-full bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 text-white flex items-center justify-center hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg"
               @click="togglePlay"
             >
               <i
@@ -239,7 +239,7 @@
             <i class="fa-solid fa-list text-lg"></i>
             <span
               v-if="musicList.length > 0"
-              class="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-xs flex items-center justify-center"
+              class="absolute -top-1 -right-1 w-4 h-4 bg-linear-to-r from-blue-500 to-purple-500 rounded-full text-xs flex items-center justify-center"
             >
               {{ musicList.length }}
             </span>
@@ -254,7 +254,7 @@
           <div class="w-16 h-16 rounded-2xl overflow-hidden shadow-2xl mr-5">
             <template v-if="currentPlaying">
               <div
-                class="w-full h-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center"
+                class="w-full h-full bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center"
               >
                 <i class="fa-solid fa-music text-2xl text-white/90"></i>
               </div>
@@ -290,7 +290,7 @@
               <i class="fa-solid fa-backward-step text-2xl"></i>
             </button>
             <button
-              class="w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white flex items-center justify-center hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              class="w-14 h-14 rounded-full bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 text-white flex items-center justify-center hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               @click="togglePlay"
             >
               <i
@@ -361,7 +361,7 @@
             <i class="fa-solid fa-list text-xl"></i>
             <span
               v-if="musicList.length > 0"
-              class="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full text-xs flex items-center justify-center shadow-lg"
+              class="absolute -top-1 -right-1 w-5 h-5 bg-linear-to-r from-blue-500 to-purple-500 rounded-full text-xs flex items-center justify-center shadow-lg"
             >
               {{ musicList.length }}
             </span>
@@ -380,14 +380,14 @@
       :modal-class="'!bg-black/30 backdrop-blur-sm'"
     >
       <div
-        class="h-full flex flex-col bg-gradient-to-br from-gray-900 via-gray-900 to-black"
+        class="h-full flex flex-col bg-linear-to-br from-gray-900 via-gray-900 to-black"
       >
         <!-- Header -->
         <div class="p-6 border-b border-white/5">
           <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-4">
               <div
-                class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg"
+                class="w-12 h-12 rounded-xl bg-linear-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg"
               >
                 <i class="fa-solid fa-music text-2xl text-white"></i>
               </div>
@@ -447,7 +447,7 @@
           >
             <div class="relative">
               <div
-                class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 opacity-10 blur-3xl"
+                class="absolute inset-0 bg-linear-to-r from-blue-500 via-purple-500 to-pink-500 opacity-10 blur-3xl"
               ></div>
               <div class="relative text-center">
                 <i class="fa-solid fa-music text-6xl mb-4"></i>
@@ -469,7 +469,7 @@
           >
             <!-- Playing Indicator -->
             <div
-              class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 opacity-0 transition-opacity duration-300"
+              class="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-blue-500 via-purple-500 to-pink-500 opacity-0 transition-opacity duration-300"
               :class="{ 'opacity-100': currentPlaying?.path === music.path }"
             ></div>
 

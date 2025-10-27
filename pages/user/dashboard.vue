@@ -3,7 +3,7 @@
     <div class="max-w-[1240px] mx-auto p-6">
       <!-- 用户信息卡片 -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
-        <div class="relative h-32 bg-gradient-to-r from-blue-500 to-purple-500">
+        <div class="relative h-32 bg-linear-to-r from-blue-500 to-purple-500">
           <div class="absolute -bottom-12 left-6">
             <div class="w-24 h-24 rounded-full bg-white dark:bg-gray-700 p-1">
               <img :src="userStore.userAvatar" alt="avatar" class="w-full h-full rounded-full object-cover" />
@@ -22,7 +22,7 @@
             </div>
             <div class="flex items-center space-x-3">
               <button @click="() => navigateTo('/user/profile')"
-                class="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-sm py-2 px-4 rounded-lg transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
+                class="bg-linear-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white text-sm py-2 px-4 rounded-lg transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
                 <i class="fa-solid fa-user-pen"></i>
                 <span>编辑资料</span>
               </button>

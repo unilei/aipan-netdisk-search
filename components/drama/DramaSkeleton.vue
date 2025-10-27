@@ -14,9 +14,9 @@ defineProps({
       class="bg-white/70 dark:bg-slate-700/70 backdrop-blur-sm rounded-2xl overflow-hidden shadow-lg shadow-stone-500/5 dark:shadow-slate-900/20 border border-stone-200/50 dark:border-slate-600/50 animate-pulse">
       <!-- 封面图片骨架 -->
       <div
-        class="aspect-[9/14] bg-gradient-to-br from-stone-200 to-stone-300 dark:from-slate-600 dark:to-slate-700 relative overflow-hidden">
+        class="aspect-[9/14] bg-linear-to-br from-stone-200 to-stone-300 dark:from-slate-600 dark:to-slate-700 relative overflow-hidden">
         <div
-          class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 dark:via-slate-500/20 to-transparent animate-shimmer">
+          class="absolute inset-0 bg-linear-to-r from-transparent via-white/20 dark:via-slate-500/20 to-transparent animate-shimmer">
         </div>
       </div>
     </div>

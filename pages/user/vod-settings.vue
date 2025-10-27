@@ -3,7 +3,7 @@
         <div class="max-w-[1240px] mx-auto p-6">
             <!-- 头部区域 -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
-                <div class="relative h-24 bg-gradient-to-r from-blue-500 to-purple-500">
+                <div class="relative h-24 bg-linear-to-r from-blue-500 to-purple-500">
                     <div class="absolute bottom-0 left-0 right-0 px-6 py-4 bg-white/10 backdrop-blur-sm">
                         <div class="flex items-center space-x-2 text-sm text-white">
                             <nuxt-link to="/user/dashboard"

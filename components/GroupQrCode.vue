@@ -2,7 +2,7 @@
   <div v-if="config.enabled && config.qrCodeUrl" class="group-qr-container">
     <!-- 搜索结果紧凑样式 -->
     <div v-if="variant === 'search-result'" 
-         class="bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 border border-blue-200/60 dark:border-blue-700/60 rounded-lg p-3 transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600">
+         class="bg-linear-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/10 dark:to-purple-900/10 border border-blue-200/60 dark:border-blue-700/60 rounded-lg p-3 transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600">
       <div class="flex items-center gap-3">
         <!-- 二维码图片 -->
         <div class="flex-shrink-0">

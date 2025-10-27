@@ -190,7 +190,7 @@ onMounted(async () => {
                     <div v-if="postsData.length === 0" class="col-span-full">
                         <div class="text-center py-20">
                             <div
-                                class="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center">
+                                class="w-24 h-24 mx-auto mb-6 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center">
                                 <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

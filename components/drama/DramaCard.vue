@@ -174,13 +174,13 @@ onUnmounted(() => {
 
       <!-- 类型标签 -->
       <div
-        class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-gradient-to-r from-purple-400 to-purple-600 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-lg">
+        class="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 bg-linear-to-r from-purple-400 to-purple-600 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-lg">
         {{ drama.remarks || drama.type || '影视' }}
       </div>
 
       <!-- 评分标签 -->
       <div v-if="drama.score && parseFloat(drama.score) > 0"
-        class="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex items-center shadow-lg">
+        class="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 bg-linear-to-r from-yellow-500 to-orange-500 text-white text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full flex items-center shadow-lg">
         <i class="fas fa-star mr-1 text-xs"></i>
         {{ drama.score }}
       </div>

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Tailwind v4 Dark Mode 配置 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* Element Plus Dark Mode 颜色适配 */
 @layer utilities {
   .admin-page-bg {

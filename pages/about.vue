@@ -22,7 +22,7 @@ useHead({
         </h1>
         
         <div class="space-y-6 text-gray-600 dark:text-gray-300">
-          <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-6">
+          <div class="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg p-6">
             <p class="text-lg leading-relaxed">
               AIPAN.ME 是一个创意实践的技术乐园。这里承载着开发者的奇思妙想，每一个有趣的想法都可能在这里落地生根。
             </p>

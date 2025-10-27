@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300"
+    class="min-h-screen bg-linear-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300"
   >
     <search-header
       :keyword="keyword"
@@ -222,7 +222,7 @@ watch(category, async (newCategory) => {
 
 /* Progress bar */
 :deep(.el-progress-bar__inner) {
-  @apply bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500;
+  @apply bg-linear-to-r from-purple-500 via-blue-500 to-purple-500;
 }
 
 :deep(.el-progress-bar__outer) {
@@ -247,7 +247,7 @@ watch(category, async (newCategory) => {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gradient-to-b from-purple-400/40 to-blue-400/40 rounded-full;
+  @apply bg-linear-to-b from-purple-400/40 to-blue-400/40 rounded-full;
 }
 
 /* Animations */

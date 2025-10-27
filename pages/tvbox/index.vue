@@ -200,7 +200,7 @@ const refreshData = async () => {
       <!-- 头部区域 -->
       <div class="text-center mb-12">
         <h1
-          class="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+          class="text-3xl md:text-4xl font-bold mb-4 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
           TVbox系列数据源接口地址
         </h1>
         <div class="flex items-center justify-center gap-3 text-sm text-gray-600 dark:text-gray-400">
@@ -208,7 +208,7 @@ const refreshData = async () => {
             <i class="fas fa-clock mr-2"></i> {{ currentDate }}
           </span>
           <span v-if="cacheInfo && cacheInfo.exists"
-            class="px-3 py-1 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-600 dark:text-blue-400 rounded-full text-xs font-medium shadow-sm">
+            class="px-3 py-1 bg-linear-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-600 dark:text-blue-400 rounded-full text-xs font-medium shadow-sm">
             <i class="fas fa-database mr-1"></i> {{ cacheExpiryTime }}
           </span>
           <button @click="refreshData"
@@ -268,7 +268,7 @@ const refreshData = async () => {
               <input type="text" :value="item.link" readonly
                 class="flex-1 px-3 py-2 text-sm bg-gray-50 dark:bg-gray-700/70 rounded-lg border border-gray-200 dark:border-gray-700 dark:text-gray-200 focus:outline-none transition-colors duration-300" />
               <button @click="copy(item.link)"
-                class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20">
+                class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg text-white bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-sm hover:shadow-blue-500/30 dark:hover:shadow-blue-400/20">
                 <i class="fas fa-copy mr-1"></i> 复制
               </button>
             </div>
@@ -279,7 +279,7 @@ const refreshData = async () => {
 
     <!-- Enhanced Backtop -->
     <el-backtop :right="24" :bottom="24"
-      class="!bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl dark:!shadow-gray-900/30 backdrop-blur-sm flex items-center justify-center">
+      class="!bg-linear-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl dark:!shadow-gray-900/30 backdrop-blur-sm flex items-center justify-center">
       <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
     </el-backtop>
   </div>

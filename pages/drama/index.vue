@@ -260,12 +260,12 @@ const goHome = () => {
 
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
+    class="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 transition-all duration-500">
     <!-- 移动端顶部导航栏 -->
     <div class="lg:hidden sticky top-0 z-50 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border-b border-stone-200/50 dark:border-slate-600/50 px-4 py-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <div class="w-8 h-8 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3">
+          <div class="w-8 h-8 bg-linear-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-xl flex items-center justify-center mr-3">
             <i class="fas fa-play text-amber-800 dark:text-amber-100 text-sm"></i>
           </div>
           <h1 class="text-lg font-bold text-stone-800 dark:text-stone-100">壳儿</h1>
@@ -296,12 +296,12 @@ const goHome = () => {
         <div class="mb-8 cursor-pointer" @click="goHome">
           <div class="flex items-center mb-4">
             <div
-              class="w-12 h-12 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-amber-500/20">
+              class="w-12 h-12 bg-linear-to-br from-amber-200 to-orange-300 dark:from-amber-700 dark:to-orange-800 rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-amber-500/20">
               <i class="fas fa-play text-amber-800 dark:text-amber-100 text-xl"></i>
             </div>
             <div>
               <h1
-                class="text-xl font-bold text-stone-800 dark:text-stone-100 bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
+                class="text-xl font-bold text-stone-800 dark:text-stone-100 bg-linear-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
                 壳儿
               </h1>
               <p class="text-xs text-stone-500 dark:text-stone-400">免费在线观看</p>
@@ -328,7 +328,7 @@ const goHome = () => {
           </div>
 
           <button @click="searchDrama" :disabled="loading"
-            class="w-full mt-3 px-4 py-3 bg-gradient-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 font-medium rounded-xl hover:from-amber-300 hover:to-orange-300 dark:hover:from-amber-600 dark:hover:to-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 flex items-center justify-center">
+            class="w-full mt-3 px-4 py-3 bg-linear-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 font-medium rounded-xl hover:from-amber-300 hover:to-orange-300 dark:hover:from-amber-600 dark:hover:to-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 flex items-center justify-center">
             <i class="fas fa-search mr-2"></i>
             {{ loading ? '搜索中...' : '搜索影视' }}
           </button>
@@ -344,7 +344,7 @@ const goHome = () => {
             <button v-for="source in vodSources" :key="source.key" @click="switchVodSource(source.key)" :class="[
               'w-full px-4 py-3 text-left rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none group relative overflow-hidden',
               selectedVodSource?.key === source.key
-                ? 'bg-gradient-to-r from-green-200 to-emerald-200 dark:from-green-700 dark:to-emerald-700 text-green-900 dark:text-green-100 shadow-lg shadow-green-500/20'
+                ? 'bg-linear-to-r from-green-200 to-emerald-200 dark:from-green-700 dark:to-emerald-700 text-green-900 dark:text-green-100 shadow-lg shadow-green-500/20'
                 : 'text-stone-700 dark:text-stone-300 hover:bg-white/60 dark:hover:bg-slate-600/60 hover:shadow-md backdrop-blur-sm'
             ]">
               <div class="flex items-center justify-between relative z-10">
@@ -377,7 +377,7 @@ const goHome = () => {
             popper-class="backdrop-blur-md bg-white/90 dark:bg-gray-800/90 border border-gray-100/50 dark:border-gray-700/50 rounded-xl shadow-xl">
             <template #reference>
               <button
-                class="w-full px-4 py-3 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-700 dark:to-purple-700 text-blue-900 dark:text-blue-100 font-medium rounded-xl hover:from-blue-300 hover:to-purple-300 dark:hover:from-blue-600 dark:hover:to-purple-600 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 flex items-center justify-center group">
+                class="w-full px-4 py-3 bg-linear-to-r from-blue-200 to-purple-200 dark:from-blue-700 dark:to-purple-700 text-blue-900 dark:text-blue-100 font-medium rounded-xl hover:from-blue-300 hover:to-purple-300 dark:hover:from-blue-600 dark:hover:to-purple-600 transition-all duration-300 shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 flex items-center justify-center group">
                 <i class="fas fa-cog mr-2 group-hover:rotate-45 transition-transform duration-300"></i>
                 配置影视源
               </button>
@@ -440,7 +440,7 @@ const goHome = () => {
                 <button @click="selectCategory(category.id)" :class="[
                   'flex-1 text-left px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 focus:outline-none group relative overflow-hidden',
                   selectedCategory === category.id
-                    ? 'bg-gradient-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 shadow-lg shadow-amber-500/20'
+                    ? 'bg-linear-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 text-amber-900 dark:text-amber-100 shadow-lg shadow-amber-500/20'
                     : 'text-stone-700 dark:text-stone-300 hover:bg-white/60 dark:hover:bg-slate-600/60 hover:shadow-md backdrop-blur-sm'
                 ]">
                   <div class="flex items-center justify-between relative z-10">
@@ -469,7 +469,7 @@ const goHome = () => {
                 <button v-for="child in category.children" :key="child.id" @click="selectCategory(child.id)" :class="[
                   'w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 focus:outline-none group relative overflow-hidden',
                   selectedCategory === child.id
-                    ? 'bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-800 dark:to-orange-800 text-amber-800 dark:text-amber-200 shadow-md shadow-amber-500/10'
+                    ? 'bg-linear-to-r from-amber-100 to-orange-100 dark:from-amber-800 dark:to-orange-800 text-amber-800 dark:text-amber-200 shadow-md shadow-amber-500/10'
                     : 'text-stone-600 dark:text-stone-400 hover:bg-white/40 dark:hover:bg-slate-600/40 hover:shadow-sm backdrop-blur-sm'
                 ]">
                   <div class="flex items-center justify-between relative z-10">
@@ -520,7 +520,7 @@ const goHome = () => {
         <div v-else class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
           <div class="flex-1">
             <h1
-              class="text-lg sm:text-xl font-bold text-stone-800 dark:text-stone-100 mb-2 bg-gradient-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
+              class="text-lg sm:text-xl font-bold text-stone-800 dark:text-stone-100 mb-2 bg-linear-to-r from-stone-800 to-stone-600 dark:from-stone-100 dark:to-stone-300 bg-clip-text text-transparent">
               {{selectedCategory ? categories.find(c => c.id === selectedCategory)?.name : '壳儿'}}
             </h1>
             <p class="text-stone-600 dark:text-stone-400 text-xs leading-relaxed">
@@ -528,7 +528,7 @@ const goHome = () => {
             </p>
           </div>
           <div
-            class="bg-gradient-to-br from-amber-100/80 to-orange-100/80 dark:from-slate-600/80 dark:to-slate-700/80 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-amber-200/50 dark:border-slate-500/50 shadow-lg shadow-amber-500/5 w-full sm:w-auto">
+            class="bg-linear-to-br from-amber-100/80 to-orange-100/80 dark:from-slate-600/80 dark:to-slate-700/80 backdrop-blur-sm px-3 sm:px-4 py-2 sm:py-3 rounded-xl border border-amber-200/50 dark:border-slate-500/50 shadow-lg shadow-amber-500/5 w-full sm:w-auto">
             <div class="text-center">
               <p class="text-xs text-stone-500 dark:text-stone-400 font-medium mb-1">统计信息</p>
               <div class="flex items-center justify-center space-x-3">
@@ -550,7 +550,7 @@ const goHome = () => {
 
       <!-- 影视内容区域 -->
       <div
-        class="p-3 sm:p-4 lg:p-6 bg-gradient-to-br from-amber-50/50 via-orange-50/30 to-yellow-50/50 dark:from-slate-800/50 dark:via-slate-800/30 dark:to-slate-900/50 min-h-screen">
+        class="p-3 sm:p-4 lg:p-6 bg-linear-to-br from-amber-50/50 via-orange-50/30 to-yellow-50/50 dark:from-slate-800/50 dark:via-slate-800/30 dark:to-slate-900/50 min-h-screen">
 
         <!-- 初始化骨架屏 -->
         <div v-if="initialLoading">
@@ -588,7 +588,7 @@ const goHome = () => {
           <!-- 还有更多内容 -->
           <div v-else-if="currentPage < totalPages" class="flex flex-col items-center">
             <div
-              class="w-8 h-1 bg-gradient-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 rounded-full mb-3">
+              class="w-8 h-1 bg-linear-to-r from-amber-200 to-orange-200 dark:from-amber-700 dark:to-orange-700 rounded-full mb-3">
             </div>
             <p class="text-stone-500 dark:text-stone-400 text-sm">继续滚动查看更多内容</p>
           </div>
@@ -596,7 +596,7 @@ const goHome = () => {
           <!-- 没有更多数据 -->
           <div v-else class="flex flex-col items-center">
             <div
-              class="w-12 h-12 bg-gradient-to-br from-amber-100 to-orange-100 dark:from-slate-600 dark:to-slate-700 rounded-full flex items-center justify-center mb-3">
+              class="w-12 h-12 bg-linear-to-br from-amber-100 to-orange-100 dark:from-slate-600 dark:to-slate-700 rounded-full flex items-center justify-center mb-3">
               <i class="fas fa-check text-amber-600 dark:text-amber-400 text-lg"></i>
             </div>
             <p class="text-stone-500 dark:text-stone-400 text-sm font-medium">已加载全部内容</p>

@@ -309,7 +309,7 @@ const fillExample = (example) => {
 
 <template>
   <div
-    class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+    class="min-h-screen bg-linear-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
     <!-- 页面头部 -->
     <div class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
       <div class="max-w-6xl mx-auto px-4 py-6">
@@ -526,7 +526,7 @@ const fillExample = (example) => {
 
       <!-- 快捷操作区域 -->
       <div v-if="!iframeUrl"
-        class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 mb-8">
+        class="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-6 mb-8">
         <div class="text-center">
           <div class="text-6xl text-blue-500 mb-4">
             <i class="fas fa-video"></i>
