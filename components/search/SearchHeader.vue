@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import GroupQrCode from '~/components/GroupQrCode.vue'
+import UserMenu from '~/components/common/UserMenu.vue'
 import { useGroupQrConfig } from '~/composables/useGroupQrConfig'
 
 const router = useRouter();
@@ -51,7 +52,7 @@ console.log(colorMode.preference);
             />
             <div class="text-left hidden md:block">
               <h1
-                class="text-xs md:text-sm text-gray-800 font-bold dark:text-white bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
+                class="text-xs md:text-sm font-bold bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent"
               >
                 AIPAN.ME
               </h1>
@@ -99,6 +100,9 @@ console.log(colorMode.preference);
               class="fa-solid fa-moon transition-transform duration-300 hover:rotate-90"
             ></i>
           </button>
+
+          <!-- 用户菜单 -->
+          <UserMenu />
         </div>
       </div>
     </div>

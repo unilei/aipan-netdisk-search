@@ -142,19 +142,7 @@
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- 赞助支持 -->
-        <section class="py-12 bg-red-50 dark:bg-gray-900">
-            <div class="container mx-auto px-4 text-center">
-                <h2 class="text-2xl font-bold mb-4 text-red-600 dark:text-red-400">支持我们</h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-6">您的支持是我们持续提供优质服务的动力</p>
-                <NuxtLink to="/donate"
-                    class="inline-block bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors duration-200">
-                    成为赞助者
-                </NuxtLink>
-            </div>
-        </section>
+        </section> 
     </div>
 </template>
 

@@ -9,7 +9,7 @@
           <el-button v-for="(item, index) in categories" :key="index"
             class="snap-start min-w-fit transition-all duration-300 rounded-xl group relative" :class="[
               currentCategory === item.value
-                ? 'shadow-lg !text-white scale-105 !bg-linear-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
+                ? 'shadow-lg text-white! scale-105 bg-linear-to-r! from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600'
                 : 'bg-white/50 dark:bg-gray-700/50 hover:bg-white/80 dark:hover:bg-gray-600/80',
               index === 0 && 'ml-0.5',
               index === categories.length - 1 && 'mr-0.5',
@@ -61,10 +61,10 @@
                     登录后可以将您的视频源配置保存到云端，在任何设备上使用相同的视频源。
                   </p>
                   <div class="flex gap-2">
-                    <el-button type="primary" @click="navigateTo('/login')" size="small" class="!rounded-lg">
+                    <el-button type="primary" @click="navigateTo('/login')" size="small" class="rounded-lg!">
                       <i class="fas fa-sign-in-alt mr-1"></i> 登录
                     </el-button>
-                    <el-button @click="navigateTo('/user/vod-settings')" size="small" class="!rounded-lg">
+                    <el-button @click="navigateTo('/user/vod-settings')" size="small" class="rounded-lg!">
                       <i class="fas fa-cog mr-1"></i> 管理配置
                     </el-button>
                   </div>

@@ -2,11 +2,11 @@
   <div
     class="min-h-screen bg-linear-to-br from-purple-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300"
   >
-    <search-header
+    <SearchHeader
       :keyword="keyword"
       @search="search"
       class="mb-2"
-    ></search-header>
+    />
 
     <client-only>
       <!-- Category Tabs -->
@@ -61,9 +61,7 @@ definePageMeta({
 
 // 基础设置
 const route = useRoute();
-const router = useRouter();
 const userStore = useUserStore();
-const config = useRuntimeConfig();
 
 // 使用 composables
 const { sources: vodConfigSources, loadSources } = useVodSources();
@@ -77,11 +75,8 @@ const {
   category,
   categories,
   switchCategory,
-  resetSearchState,
-  resetVodState,
 } = useSearchState();
 
-const { smartCache } = useSmartCache();
 const { handleSearch, searchByVod, cleanup } = useSearchLogic();
 const { getQuarkConfig } = useQuarkConfig();
 const { stopQueueProcessing } = useSearchQueue();
@@ -89,10 +84,11 @@ const { shouldShowInSearchResults, getConfig: getGroupQrConfig } =
   useGroupQrConfig();
 
 // 关键词
-const keyword = ref(decodeURIComponent(route.query.keyword));
+const keyword = ref(route.query.keyword ? decodeURIComponent(route.query.keyword) : '');
 
 // 敏感词检查
 const checkSensitiveWords = (text) => {
+  if (!text || typeof text !== 'string') return false;
   return badWords.some((word) =>
     text.toLowerCase().includes(word.toLowerCase())
   );
@@ -143,17 +139,18 @@ const searchByKeyword = async () => {
 
 // 初始化
 onMounted(async () => {
-  // 初始化缓存系统
-  if (import.meta.client && smartCache) {
-    smartCache.init();
-  }
+  try {
+    await Promise.all([
+      getQuarkConfig(),
+      getGroupQrConfig(),
+      loadSources()
+    ]);
 
-  await getQuarkConfig();
-  await getGroupQrConfig();
-  await loadSources();
-
-  if (keyword.value && keyword.value.trim() !== "") {
-    await searchByKeyword();
+    if (keyword.value && keyword.value.trim() !== "") {
+      await searchByKeyword();
+    }
+  } catch (error) {
+    console.error('初始化失败:', error);
   }
 });
 
@@ -161,11 +158,6 @@ onMounted(async () => {
 onUnmounted(() => {
   stopQueueProcessing();
   cleanup();
-
-  // 清理缓存系统
-  if (smartCache && typeof smartCache.destroy === "function") {
-    smartCache.destroy();
-  }
 });
 
 // 监听路由变化
@@ -175,21 +167,14 @@ watch(
     if (newKeyword) {
       keyword.value = decodeURIComponent(newKeyword);
       searchByKeyword();
+    } else {
+      keyword.value = '';
     }
   }
 );
 
 // 监听分类变化
-watch(category, async (newCategory) => {
-  // 如果切换到在线影视且有关键词，立即设置加载状态
-  if (newCategory === "onlineVod" && keyword.value && keyword.value.trim() !== "") {
-    // 立即设置加载状态，让骨架屏显示
-    loadingStatus.value.clear();
-    vodConfigSources.value.forEach((vodApi) => {
-      loadingStatus.value.set(vodApi.api, true);
-    });
-  }
-  
+watch(category, async () => {
   // 执行搜索
   if (keyword.value && keyword.value.trim() !== "") {
     await searchByKeyword();
@@ -199,84 +184,4 @@ watch(category, async (newCategory) => {
 
 <style scoped>
 @import "tailwindcss" reference;
-
-/* Button styles */
-.el-button {
-  @apply font-medium border-none shadow-sm hover:shadow-md relative overflow-hidden;
-  transition: all 0.3s ease;
-}
-
-.el-button:hover {
-  transform: translateY(-1px);
-}
-
-/* Hide scrollbar */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Progress bar */
-:deep(.el-progress-bar__inner) {
-  @apply bg-linear-to-r from-purple-500 via-blue-500 to-purple-500;
-}
-
-:deep(.el-progress-bar__outer) {
-  @apply bg-gray-100/50 dark:bg-gray-700/50 rounded-full overflow-hidden;
-}
-
-/* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  @apply w-1.5 h-1.5;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-linear-to-b from-purple-400/40 to-blue-400/40 rounded-full;
-}
-
-/* Animations */
-@keyframes shimmer {
-  from {
-    transform: translateX(-100%);
-  }
-
-  to {
-    transform: translateX(100%);
-  }
-}
-
-.animate-shimmer {
-  animation: shimmer 2s infinite;
-}
-
-.animate-pulse {
-  animation: pulse 2s ease infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-}
 </style>

@@ -7,21 +7,5 @@
   },
   {
     "api": "/api/sources/8"
-  },
-  {
-    "api": "/api/sources/3"
-  },
-  {
-    "api": "/api/sources/4"
-  },
-  {
-    "api": "/api/sources/5"
-  },
-  {
-    "api": "/api/sources/6"
-  },
-  {
-    "api": "/api/sources/7"
-  } 
-  
+  }
 ]
