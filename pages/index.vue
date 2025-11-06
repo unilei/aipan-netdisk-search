@@ -256,7 +256,7 @@ const stopRouteWatcher = watch(
                       class="text-gray-800 dark:text-gray-200 text-xs font-medium truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                       {{ item.title }}
                     </h3>
-                    <!-- <p class="text-gray-500 dark:text-gray-400 text-[10px] truncate">{{ item.description }}</p> -->
+                     
                   </div>
                 </nuxt-link>
               </template>
@@ -267,7 +267,7 @@ const stopRouteWatcher = watch(
       <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
       <!-- Enhanced Backtop -->
       <el-backtop :right="24" :bottom="24"
-        class="!bg-linear-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 !w-12 !h-12 transition-all duration-300 !rounded-xl group hover:scale-110 !shadow-lg hover:!shadow-xl dark:!shadow-gray-900/30 backdrop-blur-sm flex items-center justify-center">
+        class="bg-linear-to-r! from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 w-12! h-12! transition-all duration-300 rounded-xl! group hover:scale-110 shadow-lg! hover:shadow-xl! dark:shadow-gray-900/30! backdrop-blur-sm flex items-center justify-center">
         <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
       </el-backtop>
     </div>

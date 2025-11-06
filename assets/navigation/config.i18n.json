@@ -6,12 +6,6 @@
         "name": "常用",
         "items": [
           {
-            "title": "收藏发布页",
-            "description": "获取最新网站地址",
-            "icon": "fa-bookmark",
-            "path": "/collect"
-          },
-          {
             "title": "AI网盘搜索",
             "description": "AI网盘搜索（Beta）",
             "icon": "fa-paintbrush",
