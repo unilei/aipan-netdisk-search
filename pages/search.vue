@@ -45,7 +45,8 @@ import SearchHeader from "~/components/search/SearchHeader.vue";
 import CategoryTabs from "~/components/search/CategoryTabs.vue";
 import SearchContent from "~/components/search/SearchContent.vue";
 import GroupQrCode from "~/components/GroupQrCode.vue";
-import sourcesApiEndpoints from "~/assets/vod/clouddrive.json";
+import sourcesApiEndpointsGuest from "~/assets/vod/clouddrive.json";
+import sourcesApiEndpointsLoggedIn from "~/assets/vod/clouddrive-login.json";
 import { badWords } from "~/utils/sensitiveWords";
 import { useUserStore } from "~/stores/user";
 import { useVodSources } from "~/composables/useVodSources";
@@ -86,6 +87,12 @@ const { shouldShowInSearchResults, getConfig: getGroupQrConfig } =
 // 关键词
 const keyword = ref(route.query.keyword ? decodeURIComponent(route.query.keyword) : '');
 
+// 根据登录状态选择搜索源
+const sourcesApiEndpoints = computed(() => {
+  const endpoints = userStore.loggedIn ? sourcesApiEndpointsLoggedIn : sourcesApiEndpointsGuest;
+  return endpoints;
+});
+
 // 敏感词检查
 const checkSensitiveWords = (text) => {
   if (!text || typeof text !== 'string') return false;
@@ -116,14 +123,14 @@ const searchByKeyword = async () => {
   if (category.value === "clouddrive") {
     // 立即设置加载状态
     loadingProgress.value.isLoading = true;
-    loadingProgress.value.total = sourcesApiEndpoints.length;
+    loadingProgress.value.total = sourcesApiEndpoints.value.length;
     loadingProgress.value.completed = 0;
 
     await handleSearch(
       keyword.value,
       sources,
       loadingProgress,
-      sourcesApiEndpoints
+      sourcesApiEndpoints.value
     );
   } else if (category.value === "onlineVod") {
     // 立即设置VOD加载状态
