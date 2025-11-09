@@ -167,7 +167,41 @@ export default defineEventHandler(async (event) => {
         if (!isValidDomain) {
             return {
                 code: 403,
-                msg: 'Access denied',
+                msg: 'Access denied - domain restriction',
+            };
+        }
+
+        // Check user authentication
+        const authHeader = getRequestHeader(event, 'authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return {
+                code: 401,
+                msg: 'Authentication required',
+            };
+        }
+
+        const token = authHeader.split(' ')[1];
+        if (!token) {
+            return {
+                code: 401,
+                msg: 'Invalid authentication token',
+            };
+        }
+
+        // Verify token using the existing verifyToken function
+        try {
+            const { verifyToken } = await import('~/server/model/user');
+            const user = verifyToken(token);
+            if (!user) {
+                return {
+                    code: 401,
+                    msg: 'Invalid or expired token',
+                };
+            }
+        } catch (error) {
+            return {
+                code: 401,
+                msg: 'Authentication failed',
             };
         }
 
