@@ -33,6 +33,59 @@ function getAuthToken(searchTerm: string): string {
 
 export default defineEventHandler(async (event: H3Event): Promise<TransformedResult> => {
     try {
+        // Check domain access restriction
+        const host = getRequestHeader(event, 'host') || '';
+        const referer = getRequestHeader(event, 'referer') || '';
+
+        const isValidDomain = host.endsWith('aipan.me') ||
+            referer.includes('aipan.me') || host.includes('localhost');
+
+        if (!isValidDomain) {
+            return {
+                list: [],
+                code: 403,
+                msg: 'Access denied - domain restriction',
+            };
+        }
+
+        // Check user authentication
+        const authHeader = getRequestHeader(event, 'authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return {
+                list: [],
+                code: 401,
+                msg: 'Authentication required',
+            };
+        }
+
+        const authToken = authHeader.split(' ')[1];
+        if (!authToken) {
+            return {
+                list: [],
+                code: 401,
+                msg: 'Invalid authentication token',
+            };
+        }
+
+        // Verify token
+        try {
+            const { verifyToken } = await import('~/server/model/user');
+            const user = verifyToken(authToken);
+            if (!user) {
+                return {
+                    list: [],
+                    code: 401,
+                    msg: 'Invalid or expired token',
+                };
+            }
+        } catch (error) {
+            return {
+                list: [],
+                code: 401,
+                msg: 'Authentication failed',
+            };
+        }
+
         const body = await readBody<SearchBody>(event)
         const searchTerm = body?.name?.trim()
        

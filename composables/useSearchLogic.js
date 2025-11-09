@@ -29,10 +29,20 @@ export const useSearchLogic = () => {
   const fetchWithRetry = async (url, options = {}, maxRetries = 3) => {
     let lastError;
 
+    // 获取用户token
+    const token = useCookie('token').value;
+
     for (let i = 0; i < maxRetries; i++) {
       try {
+        const headers = { ...options.headers };
+        // 如果有token，添加到请求头
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+
         const response = await $fetch(url, {
           ...options,
+          headers,
           timeout: 15000,
         });
         return response;
