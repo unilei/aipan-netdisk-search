@@ -29,7 +29,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
         // Verify password
         const decoded = simpleDecode(musicAuth.value)
-        if (!decoded || decoded !== (currentPassword || 'aipan.me2025')) {
+        if (!decoded || decoded !== (currentPassword || 'aipan.me2026')) {
             return navigateTo('/music/auth')
         }
     } catch (error) {
