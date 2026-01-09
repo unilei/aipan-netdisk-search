@@ -5,8 +5,12 @@
       <div class="admin-card-bg rounded-lg p-6 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">系统配置</h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-1">管理系统相关配置信息</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+              系统配置
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">
+              管理系统相关配置信息
+            </p>
           </div>
         </div>
       </div>
@@ -15,7 +19,9 @@
       <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <h2 class="text-lg font-semibold dark:text-gray-200">群二维码配置</h2>
+            <h2 class="text-lg font-semibold dark:text-gray-200">
+              群二维码配置
+            </h2>
             <el-tag v-if="groupQrForm.enabled" type="success" size="small"
               >已启用</el-tag
             >
@@ -93,7 +99,9 @@
                 搜索结果首条
               </el-checkbox>
             </div>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">选择二维码显示的位置</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              选择二维码显示的位置
+            </div>
           </el-form-item>
 
           <el-form-item>
@@ -121,7 +129,9 @@
       <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
-            <h2 class="text-lg font-semibold dark:text-gray-200">音乐验证码配置</h2>
+            <h2 class="text-lg font-semibold dark:text-gray-200">
+              音乐验证码配置
+            </h2>
             <el-tag v-if="musicForm.enabled" type="success" size="small"
               >已启用</el-tag
             >
@@ -156,7 +166,9 @@
                 <el-button @click="resetMusicPassword"> 重置 </el-button>
               </template>
             </el-input>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">默认密码：aipan.me2025</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              默认密码：aipan.me2026
+            </div>
           </el-form-item>
 
           <el-form-item>
@@ -241,7 +253,9 @@
                 :value="type.id"
               />
             </el-select>
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">选择转存资源的默认分类</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              选择转存资源的默认分类
+            </div>
           </el-form-item>
 
           <el-divider></el-divider>
@@ -319,7 +333,7 @@ const resourceTypes = ref([]);
 
 const musicForm = reactive({
   enabled: true,
-  password: "aipan.me2025",
+  password: "aipan.me2026",
 });
 
 const groupQrForm = reactive({
@@ -642,7 +656,7 @@ const handleMusicEnabledChange = (value) => {
 };
 
 const resetMusicPassword = () => {
-  musicForm.password = "aipan.me2025";
+  musicForm.password = "aipan.me2026";
   // 调用API保存到数据库
   handleMusicSubmit();
 };
@@ -654,7 +668,7 @@ const resetMusicForm = () => {
     type: "warning",
   }).then(() => {
     musicFormRef.value?.resetFields();
-    musicForm.password = "aipan.me2025";
+    musicForm.password = "aipan.me2026";
     // 调用API保存到数据库
     handleMusicSubmit();
   });
@@ -704,7 +718,7 @@ const getMusicConfig = async () => {
     });
     if (res.code === 200) {
       musicForm.enabled = res.data.enabled ?? true;
-      musicForm.password = res.data.password || "aipan.me2025";
+      musicForm.password = res.data.password || "aipan.me2026";
     }
   } catch (error) {
     console.error("获取音乐验证码配置失败:", error);
