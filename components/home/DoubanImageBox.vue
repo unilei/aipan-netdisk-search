@@ -18,17 +18,32 @@ const emit = defineEmits(["goDouban"]);
 const imageLoadStatus = ref({});
 const loadedImages = ref(new Set());
 const imageCache = ref(new Map());
+const imageFallbackCache = ref(new Map()); // 存储已尝试过主代理失败的图片
 
-const getProxyImageUrl = (url) => {
+const getProxyImageUrl = (url, useFallback = false) => {
   if (!url) return placeHolderImage;
+  
+  const fallbackUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
+  
+  // 如果已知主代理失败，直接返回 fallback
+  if (useFallback || imageFallbackCache.value.has(url)) {
+    return fallbackUrl;
+  }
+  
   const cacheKey = url;
   if (imageCache.value.has(cacheKey)) {
     return imageCache.value.get(cacheKey);
   }
-  const proxyUrl = `//wsrv.nl/?url=${encodeURIComponent(url)}`;
-  const fallbackUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
+  
+  const proxyUrl = `https://wsrv.link0.me/?url=${encodeURIComponent(url)}`;
   imageCache.value.set(cacheKey, proxyUrl);
   return proxyUrl;
+};
+
+// 标记某个 URL 需要使用 fallback
+const markNeedsFallback = (url) => {
+  imageFallbackCache.value.set(url, true);
+  imageCache.value.delete(url); // 清除旧缓存
 };
 
 const preloadImage = (url) => {
@@ -47,20 +62,25 @@ const handleImageLoad = (movieId) => {
 
 const handleImageError = (movieId, event) => {
   imageLoadStatus.value[movieId] = "error";
+  const originalSrc = event.target.dataset.originalSrc;
+  
   if (!event.target.dataset.retried) {
+    // 第一次失败，标记需要 fallback 并重试
     event.target.dataset.retried = "true";
-    const originalSrc = event.target.dataset.originalSrc;
+    markNeedsFallback(originalSrc);
+    
     setTimeout(async () => {
       try {
-        const proxyUrl = getProxyImageUrl(originalSrc);
-        await preloadImage(proxyUrl);
+        const fallbackUrl = getProxyImageUrl(originalSrc, true);
+        await preloadImage(fallbackUrl);
         if (event.target) {
-          event.target.src = proxyUrl;
+          event.target.src = fallbackUrl;
+          imageLoadStatus.value[movieId] = "loaded";
         }
       } catch (error) {
         console.error("Image reload failed:", error);
       }
-    }, 1000);
+    }, 500);
   }
 };
 
