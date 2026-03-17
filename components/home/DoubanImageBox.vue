@@ -1,10 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { useColorMode } from "@vueuse/core";
+import { ref } from "vue";
 import placeHolderImage from "~/assets/placeholder.webp";
-import { useI18n } from "vue-i18n";
-
-const { t } = useI18n();
 
 defineProps({
   doubanData: {
@@ -16,135 +12,57 @@ defineProps({
 const emit = defineEmits(["goDouban"]);
 
 const imageLoadStatus = ref({});
-const loadedImages = ref(new Set());
-const imageCache = ref(new Map());
-const imageFallbackCache = ref(new Map()); // 存储已尝试过主代理失败的图片
 
-const getProxyImageUrl = (url, useFallback = false) => {
+const getMovieKey = (sectionName, index) => `${sectionName}-${index}`;
+
+const getProxyImageUrl = (url) => {
   if (!url) return placeHolderImage;
-  
-  const fallbackUrl = `/api/image-proxy?url=${encodeURIComponent(url)}`;
-  
-  // 如果已知主代理失败，直接返回 fallback
-  if (useFallback || imageFallbackCache.value.has(url)) {
-    return fallbackUrl;
-  }
-  
-  const cacheKey = url;
-  if (imageCache.value.has(cacheKey)) {
-    return imageCache.value.get(cacheKey);
-  }
-  
-  const proxyUrl = `https://wsrv.link0.me/?url=${encodeURIComponent(url)}`;
-  imageCache.value.set(cacheKey, proxyUrl);
-  return proxyUrl;
+  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
 };
 
-// 标记某个 URL 需要使用 fallback
-const markNeedsFallback = (url) => {
-  imageFallbackCache.value.set(url, true);
-  imageCache.value.delete(url); // 清除旧缓存
-};
+const getImageStatus = (movieId, hasCover = true) => {
+  if (!hasCover) {
+    return "loaded";
+  }
 
-const preloadImage = (url) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(url);
-    img.onerror = reject;
-    img.src = url;
-  });
+  return imageLoadStatus.value[movieId] || "loading";
 };
 
 const handleImageLoad = (movieId) => {
   imageLoadStatus.value[movieId] = "loaded";
-  loadedImages.value.add(movieId);
 };
 
-const handleImageError = (movieId, event) => {
+const handleImageError = (movieId) => {
   imageLoadStatus.value[movieId] = "error";
-  const originalSrc = event.target.dataset.originalSrc;
-  
-  if (!event.target.dataset.retried) {
-    // 第一次失败，标记需要 fallback 并重试
-    event.target.dataset.retried = "true";
-    markNeedsFallback(originalSrc);
-    
-    setTimeout(async () => {
-      try {
-        const fallbackUrl = getProxyImageUrl(originalSrc, true);
-        await preloadImage(fallbackUrl);
-        if (event.target) {
-          event.target.src = fallbackUrl;
-          imageLoadStatus.value[movieId] = "loaded";
-        }
-      } catch (error) {
-        console.error("Image reload failed:", error);
-      }
-    }, 500);
-  }
 };
-
-const imageObserver = ref(null);
-const imageRefs = ref({});
-
-onMounted(() => {
-  imageObserver.value = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(async (entry) => {
-        if (entry.isIntersecting) {
-          const movieId = entry.target.dataset.movieId;
-          const originalSrc = entry.target.dataset.originalSrc;
-
-          if (!loadedImages.value.has(movieId)) {
-            try {
-              const proxyUrl = getProxyImageUrl(originalSrc);
-              await preloadImage(proxyUrl);
-              if (entry.target) {
-                entry.target.src = proxyUrl;
-              }
-            } catch (error) {
-              console.error("Image load failed:", error);
-              handleImageError(movieId, { target: entry.target });
-            }
-          } else {
-            entry.target.src = getProxyImageUrl(originalSrc);
-          }
-          imageObserver.value.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      rootMargin: "200px 0px",
-      threshold: 0.01,
-    }
-  );
-});
-
-onUnmounted(() => {
-  if (imageObserver.value) {
-    imageObserver.value.disconnect();
-  }
-  imageCache.value.clear();
-  loadedImages.value.clear();
-  imageRefs.value = {};
-});
 
 const setImageRef = (el, movieId, originalSrc) => {
-  if (el && imageObserver.value) {
-    imageRefs.value[movieId] = el;
-    el.dataset.movieId = movieId;
-    el.dataset.originalSrc = originalSrc;
+  if (!el) {
+    return;
+  }
 
-    if (loadedImages.value.has(movieId)) {
-      el.src = getProxyImageUrl(originalSrc);
-    } else {
-      el.src = placeHolderImage;
-      imageObserver.value.observe(el);
-    }
+  if (!originalSrc) {
+    imageLoadStatus.value[movieId] = "loaded";
+    return;
+  }
+
+  if (el.complete) {
+    imageLoadStatus.value[movieId] = el.naturalWidth > 0 ? "loaded" : "error";
+    return;
+  }
+
+  if (!imageLoadStatus.value[movieId]) {
+    imageLoadStatus.value[movieId] = "loading";
   }
 };
 
-const colorMode = useColorMode();
+const getImageLoadingMode = (sectionIndex, movieIndex) => {
+  return sectionIndex === 0 && movieIndex < 8 ? "eager" : "lazy";
+};
+
+const getImageFetchPriority = (sectionIndex, movieIndex) => {
+  return sectionIndex === 0 && movieIndex < 8 ? "high" : "auto";
+};
 
 const goDouban = (movie) => {
   emit("goDouban", movie);
@@ -170,8 +88,9 @@ const goDouban = (movie) => {
         class="group cursor-default md:cursor-pointer bg-white dark:bg-gray-700 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 md:hover:-translate-y-1"
         @click="goDouban(movie)">
         <div class="relative overflow-hidden bg-gray-100 dark:bg-gray-600">
-          <div v-if="!imageLoadStatus[`${item.name}-${index}`]"
-            class="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-600">
+          <div
+            v-if="getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'loading'"
+            class="absolute inset-0 pointer-events-none animate-pulse bg-gray-200/60 dark:bg-gray-600/60 backdrop-blur-[1px]">
             <div class="flex items-center justify-center h-full">
               <el-icon class="animate-spin text-gray-400" :size="24">
                 <Loading />
@@ -179,16 +98,21 @@ const goDouban = (movie) => {
             </div>
           </div>
 
-          <img :ref="(el) => setImageRef(el, `${item.name}-${index}`, movie.cover)" :src="placeHolderImage"
+          <img
+            :ref="(el) => setImageRef(el, getMovieKey(item.name, index), movie.cover)"
+            :src="getProxyImageUrl(movie.cover)"
             class="w-full aspect-[270/405] object-cover transition-all duration-300 md:group-hover:scale-[1.8]" :class="{
-              'opacity-0': !imageLoadStatus[`${item.name}-${index}`],
-              'opacity-100 blur-0':
-                imageLoadStatus[`${item.name}-${index}`] === 'loaded',
-              'blur-sm': imageLoadStatus[`${item.name}-${index}`] === 'loading',
-            }" loading="lazy" decoding="async" @load="handleImageLoad(`${item.name}-${index}`)"
-            @error="handleImageError(`${item.name}-${index}`, $event)" :alt="movie.title"
+              'opacity-100': getImageStatus(getMovieKey(item.name, index), !!movie.cover) !== 'error',
+              'blur-[2px] scale-[1.01]': getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'loading',
+              'blur-0 scale-100': getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'loaded',
+            }"
+            :loading="getImageLoadingMode(i, index)"
+            :fetchpriority="getImageFetchPriority(i, index)"
+            decoding="async"
+            @load="handleImageLoad(getMovieKey(item.name, index))"
+            @error="handleImageError(getMovieKey(item.name, index))" :alt="movie.title"
             referrerpolicy="no-referrer" />
-          <div v-if="imageLoadStatus[`${item.name}-${index}`] === 'error'"
+          <div v-if="getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'error'"
             class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
             <div class="text-center p-3">
               <el-icon class="text-gray-400 mb-2" :size="24">

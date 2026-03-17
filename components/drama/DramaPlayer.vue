@@ -353,7 +353,7 @@ const closePlayer = () => {
 
 // 格式化剧集标题
 const formatEpisodeTitle = (title) => {
-  // 如果标题是日期格式（如20250516），转换为更友好的格式
+  // 如果标题是日期格式（如20260516），转换为更友好的格式
   const datePattern = /^(\d{4})(\d{2})(\d{2})(.*)$/
   const match = title.match(datePattern)
 
