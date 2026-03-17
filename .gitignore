@@ -30,3 +30,6 @@ package-lock.json
 ecosystem.config.cjs.me
 
 public/image-cache/*
+
+.agent
+.shared

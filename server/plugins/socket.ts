@@ -14,6 +14,8 @@ interface ChatRoom {
 }
 
 let io: Server | null = null;
+const normalizeRedisUrl = (value?: string) => value?.trim().replace(/^['"]|['"]$/g, '') || '';
+const REDIS_CONNECT_TIMEOUT_MS = 1000;
 
 export default defineNitroPlugin((nitroApp) => {
   const config = useRuntimeConfig();
@@ -37,29 +39,52 @@ export default defineNitroPlugin((nitroApp) => {
     });
 
     // 配置Redis适配器
-    const REDIS_URL = process.env.REDIS_URL || 'redis://localhost:6379';
-    const pubClient = createClient({ url: REDIS_URL });
-    const subClient = pubClient.duplicate();
+    const REDIS_URL = normalizeRedisUrl(process.env.REDIS_URL);
 
-    // 处理Redis连接错误
-    pubClient.on('error', (err) => {
-      console.error('Redis Pub Client Error:', err);
-    });
-    
-    subClient.on('error', (err) => {
-      console.error('Redis Sub Client Error:', err);
-    });
-
-    // 连接Redis并设置适配器
-    Promise.all([pubClient.connect(), subClient.connect()])
-      .then(() => {
-        console.log('Redis adapter connected successfully');
-        io?.adapter(createAdapter(pubClient, subClient));
-      })
-      .catch((err) => {
-        console.error('Redis connection failed:', err);
-        console.log('Continuing with default in-memory adapter');
+    if (REDIS_URL) {
+      const pubClient = createClient({
+        url: REDIS_URL,
+        socket: {
+          connectTimeout: REDIS_CONNECT_TIMEOUT_MS,
+          reconnectStrategy: false,
+        },
       });
+      const subClient = pubClient.duplicate();
+
+      let hasLoggedRedisPubError = false;
+      let hasLoggedRedisSubError = false;
+
+      // 处理Redis连接错误
+      pubClient.on('error', (err) => {
+        if (hasLoggedRedisPubError) {
+          return;
+        }
+
+        hasLoggedRedisPubError = true;
+        console.warn('Redis Pub Client Error:', err);
+      });
+
+      subClient.on('error', (err) => {
+        if (hasLoggedRedisSubError) {
+          return;
+        }
+
+        hasLoggedRedisSubError = true;
+        console.warn('Redis Sub Client Error:', err);
+      });
+
+      // 连接Redis并设置适配器
+      Promise.all([pubClient.connect(), subClient.connect()])
+        .then(() => {
+          console.log('Redis adapter connected successfully');
+          io?.adapter(createAdapter(pubClient, subClient));
+        })
+        .catch((err) => {
+          console.warn(`Redis connection failed for Socket.IO adapter (${REDIS_URL}). Continuing with default in-memory adapter.`, err);
+        });
+    } else {
+      console.log('REDIS_URL is not configured. Continuing with default in-memory adapter.');
+    }
 
     // 在独立端口上启动WebSocket服务器
     const WS_PORT = parseInt(process.env.WS_PORT || '3002', 10);

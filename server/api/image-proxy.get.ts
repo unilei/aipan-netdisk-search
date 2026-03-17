@@ -1,41 +1,83 @@
-export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  const url = query.url as string;
+import { createHash } from 'crypto';
+import { promises as fs } from 'fs';
+import { join } from 'path';
+import { createError, defineEventHandler, getQuery } from 'h3';
+import axios from 'axios';
+import sharp from 'sharp';
 
-  if (!url) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Missing url parameter'
-    });
-  }
+const CACHE_DIR = join(process.cwd(), 'public', 'image-cache');
+const CACHE_MAX_AGE = 31536000;
 
+async function ensureCacheDir() {
   try {
-    // 解码 URL
-    const decodedUrl = decodeURIComponent(url);
-    
-    // 获取图片
-    const response = await $fetch.raw(decodedUrl, {
+    await fs.access(CACHE_DIR);
+  } catch {
+    await fs.mkdir(CACHE_DIR, { recursive: true });
+  }
+}
+
+function getCacheFileName(url: string) {
+  const hash = createHash('md5').update(url).digest('hex');
+  return `${hash}.webp`;
+}
+
+export default defineEventHandler(async (event) => {
+  try {
+    const query = getQuery(event);
+    const imageUrl = query.url as string;
+
+    if (!imageUrl) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Missing url parameter',
+      });
+    }
+
+    await ensureCacheDir();
+    const cacheFile = join(CACHE_DIR, getCacheFileName(imageUrl));
+
+    try {
+      const cachedImage = await fs.readFile(cacheFile);
+
+      event.node.res.setHeader('Content-Type', 'image/webp');
+      event.node.res.setHeader('Cache-Control', `public, max-age=${CACHE_MAX_AGE}`);
+      event.node.res.setHeader('X-Cache', 'HIT');
+
+      return cachedImage;
+    } catch {
+      // Cache miss. Continue with the upstream fetch below.
+    }
+
+    const response = await axios.get<ArrayBuffer>(imageUrl, {
+      responseType: 'arraybuffer',
       headers: {
-        'Referer': 'https://movie.douban.com/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        Referer: 'https://movie.douban.com/',
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
-      responseType: 'arrayBuffer'
+      timeout: 5000,
     });
 
-    // 获取内容类型
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    
-    // 设置响应头
-    setHeader(event, 'Content-Type', contentType);
-    setHeader(event, 'Cache-Control', 'public, max-age=86400'); // 缓存1天
-    setHeader(event, 'Access-Control-Allow-Origin', '*');
-    
-    return response._data;
+    const optimizedImage = await sharp(Buffer.from(response.data))
+      .webp({ quality: 80 })
+      .resize(300, 400, {
+        fit: 'cover',
+        position: 'center',
+      })
+      .toBuffer();
+
+    await fs.writeFile(cacheFile, optimizedImage);
+
+    event.node.res.setHeader('Content-Type', 'image/webp');
+    event.node.res.setHeader('Cache-Control', `public, max-age=${CACHE_MAX_AGE}`);
+    event.node.res.setHeader('X-Cache', 'MISS');
+
+    return optimizedImage;
   } catch (error: any) {
     console.error('Image proxy error:', error?.message || error);
     throw createError({
       statusCode: 500,
-      statusMessage: 'Failed to fetch image'
+      statusMessage: 'Failed to fetch image',
     });
   }
 });

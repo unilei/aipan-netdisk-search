@@ -232,5 +232,5 @@ export default defineNuxtConfig({
     description:
       '爱盼迷是一站式资源聚合平台！集网盘搜索、在线音乐、电影电视、休闲游戏、直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，满足你的所有数字娱乐需求。',
   },
-  compatibilityDate: '2025-07-12',
+  compatibilityDate: '2026-03-06',
 })
