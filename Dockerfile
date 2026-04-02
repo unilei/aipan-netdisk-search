@@ -90,5 +90,5 @@ ENV NUXT_PUBLIC_WS_PORT=3002
 EXPOSE 3000
 EXPOSE 3002
 
-# 使用 PM2 启动应用
-CMD ["pm2-runtime", "start", "ecosystem.config.js"]
+# 使用 PM2 以 production 配置启动应用
+CMD ["pm2-runtime", "start", "ecosystem.config.js", "--env", "production"]

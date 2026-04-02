@@ -11,7 +11,9 @@
 部署目标：
 
 - 服务器：`209.54.106.114`
-- 部署目录：`/opt/aipan-netdisk-search`
+- 部署目录：`/www/wwwroot/aipan-docker`
+- Compose project：`aipan-docker`
+- 应用服务名：`aipan-netdisk-search`
 
 ## 一、必填 Secrets
 
@@ -64,7 +66,7 @@
 
 - 这个用户能登录 `209.54.106.114`
 - 这个用户能执行 Docker
-- 这个用户对 `/opt/aipan-netdisk-search` 有写权限
+- 这个用户对 `/www/wwwroot/aipan-docker` 有写权限
 
 ### 4. `DEPLOY_SSH_KEY`
 
@@ -339,7 +341,7 @@ openssl rand -base64 48
 
 ```bash
 ssh root@209.54.106.114
-mkdir -p /opt/aipan-netdisk-search
+mkdir -p /www/wwwroot/aipan-docker
 ```
 
 如果你使用 `deploy` 用户：
@@ -347,8 +349,8 @@ mkdir -p /opt/aipan-netdisk-search
 ```bash
 useradd -m -s /bin/bash deploy || true
 usermod -aG docker deploy
-mkdir -p /opt/aipan-netdisk-search
-chown -R deploy:deploy /opt/aipan-netdisk-search
+mkdir -p /www/wwwroot/aipan-docker
+chown -R deploy:deploy /www/wwwroot/aipan-docker
 ```
 
 验证：
@@ -429,9 +431,9 @@ gh variable set NUXT_PUBLIC_GITHUB_BRANCH -b"main"
 
 ```bash
 ssh deploy@209.54.106.114
-cd /opt/aipan-netdisk-search
-docker compose -p aipan --env-file .env -f docker-compose.prod.yml ps
-docker compose -p aipan --env-file .env -f docker-compose.prod.yml logs -f app
+cd /www/wwwroot/aipan-docker
+docker compose -p aipan-docker --env-file .env -f docker-compose.prod.yml ps
+docker compose -p aipan-docker --env-file .env -f docker-compose.prod.yml logs -f aipan-netdisk-search
 ```
 
 ## 七、我建议你按这个顺序做
