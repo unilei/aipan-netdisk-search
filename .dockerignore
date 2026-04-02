@@ -39,6 +39,9 @@ docker-compose*
 # CI/CD
 .github
 .gitlab-ci.yml
+.agent
+.shared
+.history
 
 # IDE
 .vscode
@@ -69,6 +72,8 @@ tests
 *.bak
 *.backup
 *.old
+backup_*.sql
+.env copy*
 
 # Lock files (keep package-lock.json)
 yarn.lock
