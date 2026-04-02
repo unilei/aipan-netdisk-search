@@ -3,7 +3,7 @@ import type { H3Event } from 'h3'
 /**
  * Pansou API 搜索源
  * 
- * 基于 https://github.com/leixuuu/pansou 提供的搜索 API
+ * 基于 https://github.com/fish2018/pansou 提供的搜索 API
  * 支持搜索多个网盘平台的资源链接
  * 
  * 支持的网盘类型：
@@ -196,9 +196,20 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
         }
 
         const searchTerm = body.name.trim()
+        const config = useRuntimeConfig(event)
+        const apiUrls = String(config.pansouApiUrls || '')
+            .split(',')
+            .map(url => url.trim())
+            .filter(Boolean)
 
-        // 调用pansou API
-        const apiUrl = 'https://pansou.aipan.me/api/search'
+        if (apiUrls.length === 0) {
+            return {
+                list: [],
+                code: 500,
+                msg: 'Pansou API 未配置'
+            }
+        }
+
         const params = new URLSearchParams({
             kw: searchTerm,
             refresh: 'false',    // 不强制刷新缓存，提高响应速度
@@ -209,50 +220,58 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
         // 可选：指定要搜索的网盘类型（不指定则返回所有类型）
         // params.append('cloud_types', 'baidu,aliyun,quark,tianyi,uc,mobile,115,pikpak,xunlei,123')
 
-        try {
-            const responseData = await $fetch<PansouApiResponse>(`${apiUrl}?${params.toString()}`, {
-                method: 'GET',
-                timeout: 15000, // 15秒超时（API可能需要更多时间）
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Accept': 'application/json'
+        const errors: Array<{ apiUrl: string, message: string }> = []
+
+        for (const apiUrl of apiUrls) {
+            try {
+                const responseData = await $fetch<PansouApiResponse>(`${apiUrl}?${params.toString()}`, {
+                    method: 'GET',
+                    timeout: 15000, // 15秒超时（API可能需要更多时间）
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                        'Accept': 'application/json'
+                    }
+                })
+
+                // API 成功响应码为 0
+                if (responseData.code !== 0) {
+                    console.error(`[Pansou API] 错误响应: code=${responseData.code}, message=${responseData.message}, apiUrl=${apiUrl}`)
+                    return {
+                        list: [],
+                        code: 500,
+                        msg: responseData.message || 'API返回错误状态'
+                    }
                 }
-            })
 
-            // API 成功响应码为 0
-            if (responseData.code !== 0) {
-                console.error(`[Pansou API] 错误响应: code=${responseData.code}, message=${responseData.message}`)
-                return {
-                    list: [],
-                    code: 500,
-                    msg: responseData.message || 'API返回错误状态'
+                // 检查是否有数据
+                if (!responseData.data || !responseData.data.merged_by_type) {
+                    console.warn(`[Pansou API] 无搜索结果: ${searchTerm}, apiUrl=${apiUrl}`)
+                    return {
+                        list: [],
+                        code: 200,
+                        msg: '未找到相关资源'
+                    }
                 }
-            }
 
-            // 检查是否有数据
-            if (!responseData.data || !responseData.data.merged_by_type) {
-                console.warn(`[Pansou API] 无搜索结果: ${searchTerm}`)
-                return {
-                    list: [],
-                    code: 200,
-                    msg: '未找到相关资源'
-                }
-            }
+                console.log(`[Pansou API] 搜索成功: ${searchTerm}, 总数=${responseData.data.total || 0}, apiUrl=${apiUrl}`)
+                return processApiResponse(responseData, searchTerm)
 
-            console.log(`[Pansou API] 搜索成功: ${searchTerm}, 总数=${responseData.data.total || 0}`)
-            return processApiResponse(responseData, searchTerm)
-
-        } catch (error: any) {
-            console.error(`[Pansou API] 请求失败:`, {
-                error: error.message || error,
-                searchTerm,
-                timestamp: new Date().toISOString()
-            })
-            return {
-                list: [],
-                code: 500,
-                msg: error.message || 'API请求失败'
+            } catch (error: any) {
+                const message = error.message || String(error)
+                errors.push({ apiUrl, message })
+                console.error(`[Pansou API] 请求失败:`, {
+                    apiUrl,
+                    error: message,
+                    searchTerm,
+                    timestamp: new Date().toISOString()
+                })
             }
+        }
+
+        return {
+            list: [],
+            code: 500,
+            msg: errors[0]?.message || 'API请求失败'
         }
 
     } catch (error: any) {
