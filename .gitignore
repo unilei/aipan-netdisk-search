@@ -23,9 +23,6 @@ logs
 # .env.*
 # !.env.example
 
-# package
-package-lock.json
-
 #pm2
 ecosystem.config.cjs.me
 
