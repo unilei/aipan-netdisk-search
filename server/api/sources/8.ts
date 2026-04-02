@@ -221,6 +221,7 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
         // params.append('cloud_types', 'baidu,aliyun,quark,tianyi,uc,mobile,115,pikpak,xunlei,123')
 
         const errors: Array<{ apiUrl: string, message: string }> = []
+        let sawEmptyResult = false
 
         for (const apiUrl of apiUrls) {
             try {
@@ -235,26 +236,28 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
 
                 // API 成功响应码为 0
                 if (responseData.code !== 0) {
-                    console.error(`[Pansou API] 错误响应: code=${responseData.code}, message=${responseData.message}, apiUrl=${apiUrl}`)
-                    return {
-                        list: [],
-                        code: 500,
-                        msg: responseData.message || 'API返回错误状态'
-                    }
+                    const message = responseData.message || 'API返回错误状态'
+                    errors.push({ apiUrl, message })
+                    console.error(`[Pansou API] 错误响应: code=${responseData.code}, message=${message}, apiUrl=${apiUrl}`)
+                    continue
                 }
 
                 // 检查是否有数据
                 if (!responseData.data || !responseData.data.merged_by_type) {
+                    sawEmptyResult = true
                     console.warn(`[Pansou API] 无搜索结果: ${searchTerm}, apiUrl=${apiUrl}`)
-                    return {
-                        list: [],
-                        code: 200,
-                        msg: '未找到相关资源'
-                    }
+                    continue
+                }
+
+                const result = processApiResponse(responseData, searchTerm)
+                if (result.list.length === 0) {
+                    sawEmptyResult = true
+                    console.warn(`[Pansou API] 过滤后无结果: ${searchTerm}, apiUrl=${apiUrl}`)
+                    continue
                 }
 
                 console.log(`[Pansou API] 搜索成功: ${searchTerm}, 总数=${responseData.data.total || 0}, apiUrl=${apiUrl}`)
-                return processApiResponse(responseData, searchTerm)
+                return result
 
             } catch (error: any) {
                 const message = error.message || String(error)
@@ -265,6 +268,14 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
                     searchTerm,
                     timestamp: new Date().toISOString()
                 })
+            }
+        }
+
+        if (sawEmptyResult) {
+            return {
+                list: [],
+                code: 200,
+                msg: '未找到相关资源'
             }
         }
 
