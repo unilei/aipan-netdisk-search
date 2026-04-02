@@ -124,7 +124,7 @@ docker volume inspect postgres-data  # 查看数据库卷的详细信息
 - 推送到 `main` 后自动构建并推送 Docker 镜像到 Docker Hub
 - 然后通过 SSH 登录 `209.54.106.114`
 - 同步生产 compose、远端部署脚本和 `.env`
-- 拉取新镜像，执行 Prisma 迁移，最后重启应用
+- 在服务器现有 `aipan-docker` compose 项目上拉取新镜像、执行 Prisma 迁移，最后重启应用
 
 ### 需要配置的 GitHub Secrets
 
@@ -157,6 +157,12 @@ docker volume inspect postgres-data  # 查看数据库卷的详细信息
 - 生产 compose：[`docker-compose.prod.yml`](/Users/lei/workspace/aipan-netdisk-search/deploy/docker-compose.prod.yml)
 - 远端部署脚本：[`remote-deploy.sh`](/Users/lei/workspace/aipan-netdisk-search/deploy/remote-deploy.sh)
 - 环境模板：[`deploy/.env.production.example`](/Users/lei/workspace/aipan-netdisk-search/deploy/.env.production.example)
+
+当前线上约定：
+
+- 部署目录：`/www/wwwroot/aipan-docker`
+- Compose project：`aipan-docker`
+- 应用服务名：`aipan-netdisk-search`
 
 ## 获取帮助
 
