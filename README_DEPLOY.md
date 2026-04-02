@@ -117,6 +117,47 @@ docker volume ls  # 列出所有卷
 docker volume inspect postgres-data  # 查看数据库卷的详细信息
 ```
 
+## GitHub Actions 自动部署
+
+仓库里已经补好了 `main` 分支的自动部署工作流：
+
+- 推送到 `main` 后自动构建并推送 Docker 镜像到 Docker Hub
+- 然后通过 SSH 登录 `209.54.106.114`
+- 同步生产 compose、远端部署脚本和 `.env`
+- 拉取新镜像，执行 Prisma 迁移，最后重启应用
+
+### 需要配置的 GitHub Secrets
+
+- `DOCKERHUB_USERNAME`
+- `DOCKERHUB_TOKEN`
+- `DEPLOY_SSH_USER`
+- `DEPLOY_SSH_KEY`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`
+- `ADMIN_USER`
+- `ADMIN_PASSWORD`
+- `ADMIN_EMAIL`
+- `JWT_SECRET`
+- `NUXT_PUBLIC_GITHUB_TOKEN`，可选
+- `NUXT_PUBLIC_QUARK_COOKIE`，可选
+
+### 可选的 GitHub Variables
+
+- `APP_PORT`，默认 `3000`
+- `WS_PORT`，默认 `3002`
+- `DATABASE_SCHEMA`，默认 `public`
+- `NUXT_PUBLIC_GITHUB_OWNER`
+- `NUXT_PUBLIC_GITHUB_REPO`
+- `NUXT_PUBLIC_GITHUB_BRANCH`，默认 `main`
+
+### 生产部署文件
+
+- 工作流：[`deploy.yml`](/Users/lei/workspace/aipan-netdisk-search/.github/workflows/deploy.yml)
+- 生产 compose：[`docker-compose.prod.yml`](/Users/lei/workspace/aipan-netdisk-search/deploy/docker-compose.prod.yml)
+- 远端部署脚本：[`remote-deploy.sh`](/Users/lei/workspace/aipan-netdisk-search/deploy/remote-deploy.sh)
+- 环境模板：[`deploy/.env.production.example`](/Users/lei/workspace/aipan-netdisk-search/deploy/.env.production.example)
+
 ## 获取帮助
 
 如有任何问题，请联系技术支持团队。

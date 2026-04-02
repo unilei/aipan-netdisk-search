@@ -77,8 +77,8 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/generated ./generated
 COPY --from=builder /app/ecosystem.config.js ./ecosystem.config.js
 
-# 安装 PM2 和必要的依赖
-RUN npm install pm2 -g
+# 安装 PM2 和 Prisma CLI，供运行时和迁移容器使用
+RUN npm install -g pm2 prisma
 
 # 设置环境变量
 ENV NUXT_HOST=0.0.0.0
