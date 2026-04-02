@@ -19,8 +19,9 @@ jobs:
 
     env:
       SERVER_HOST: 209.54.106.114
-      DEPLOY_DIR: /opt/aipan-netdisk-search
-      COMPOSE_PROJECT_NAME: aipan
+      DEPLOY_DIR: /www/wwwroot/aipan-docker
+      COMPOSE_PROJECT_NAME: aipan-docker
+      APP_SERVICE_NAME: aipan-netdisk-search
 
     steps:
       - name: Checkout code
@@ -138,13 +139,14 @@ jobs:
         env:
           DEPLOY_DIR: ${{ env.DEPLOY_DIR }}
           COMPOSE_PROJECT_NAME: ${{ env.COMPOSE_PROJECT_NAME }}
+          APP_SERVICE_NAME: ${{ env.APP_SERVICE_NAME }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         with:
           host: ${{ env.SERVER_HOST }}
           username: ${{ secrets.DEPLOY_SSH_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: DEPLOY_DIR,COMPOSE_PROJECT_NAME,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: DEPLOY_DIR,COMPOSE_PROJECT_NAME,APP_SERVICE_NAME,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
           script: |
             chmod +x "${DEPLOY_DIR}/remote-deploy.sh"
             "${DEPLOY_DIR}/remote-deploy.sh"

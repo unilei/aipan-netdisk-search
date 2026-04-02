@@ -1,11 +1,12 @@
 #!/bin/sh
 set -eu
 
-DEPLOY_DIR="${DEPLOY_DIR:-/opt/aipan-netdisk-search}"
+DEPLOY_DIR="${DEPLOY_DIR:-/www/wwwroot/aipan-docker}"
 COMPOSE_FILE="${DEPLOY_DIR}/docker-compose.prod.yml"
 ENV_SOURCE_FILE="${DEPLOY_DIR}/.env.production"
 ENV_FILE="${DEPLOY_DIR}/.env"
-COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-aipan}"
+COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-aipan-docker}"
+APP_SERVICE_NAME="${APP_SERVICE_NAME:-aipan-netdisk-search}"
 
 require_file() {
   if [ ! -f "$1" ]; then
@@ -47,8 +48,8 @@ cd "${DEPLOY_DIR}"
 
 echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
 
-compose pull app prisma-migrate
+compose pull "${APP_SERVICE_NAME}" prisma-migrate
 compose up -d postgres redis
 compose up --abort-on-container-exit --exit-code-from prisma-migrate prisma-migrate
-compose up -d app
+compose up -d --remove-orphans "${APP_SERVICE_NAME}"
 compose ps
