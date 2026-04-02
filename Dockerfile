@@ -26,11 +26,11 @@ RUN apk add --no-cache \
   fontconfig-dev \
   ttf-dejavu
 
-# 复制 package.json  
-COPY package.json ./
+# 复制依赖清单
+COPY package.json package-lock.json ./
 
 # 安装依赖
-RUN npm install
+RUN npm ci
 
 # 复制源代码
 COPY . .
