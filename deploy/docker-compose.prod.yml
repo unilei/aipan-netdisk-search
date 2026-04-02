@@ -1,0 +1,102 @@
+x-app-env: &app-env
+  NODE_ENV: production
+  NUXT_HOST: 0.0.0.0
+  NUXT_PORT: "3000"
+  WS_PORT: ${WS_PORT:-3002}
+  NUXT_PUBLIC_WS_PORT: ${WS_PORT:-3002}
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+  DATABASE_SCHEMA: ${DATABASE_SCHEMA:-public}
+  DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA:-public}
+  NUXT_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA:-public}
+  NUXT_DATABASE_SCHEMA: ${DATABASE_SCHEMA:-public}
+  ADMIN_USER: ${ADMIN_USER}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  ADMIN_EMAIL: ${ADMIN_EMAIL}
+  NUXT_ADMIN_USER: ${ADMIN_USER}
+  NUXT_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  NUXT_ADMIN_EMAIL: ${ADMIN_EMAIL}
+  JWT_SECRET: ${JWT_SECRET}
+  NUXT_JWT_SECRET: ${JWT_SECRET}
+  NUXT_PUBLIC_GITHUB_OWNER: ${NUXT_PUBLIC_GITHUB_OWNER:-}
+  NUXT_PUBLIC_GITHUB_REPO: ${NUXT_PUBLIC_GITHUB_REPO:-}
+  NUXT_PUBLIC_GITHUB_TOKEN: ${NUXT_PUBLIC_GITHUB_TOKEN:-}
+  NUXT_PUBLIC_GITHUB_BRANCH: ${NUXT_PUBLIC_GITHUB_BRANCH:-main}
+  NUXT_PUBLIC_QUARK_COOKIE: ${NUXT_PUBLIC_QUARK_COOKIE:-}
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: aipan-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - aipan-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: aipan-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - aipan-network
+
+  prisma-migrate:
+    image: ${APP_IMAGE:-unilei/aipan-netdisk-search:latest}
+    container_name: aipan-prisma-migrate
+    restart: "no"
+    environment:
+      <<: *app-env
+      SHADOW_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA:-public}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["prisma", "migrate", "deploy", "--schema=/app/prisma/schema.prisma"]
+    networks:
+      - aipan-network
+
+  app:
+    image: ${APP_IMAGE:-unilei/aipan-netdisk-search:latest}
+    container_name: aipan-netdisk-search-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3000}:3000"
+      - "${WS_PORT:-3002}:3002"
+    environment:
+      <<: *app-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aipan-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  aipan-network:
+    driver: bridge

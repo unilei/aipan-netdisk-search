@@ -1,82 +1,150 @@
-name: Build and Push Docker Image
+name: Build And Deploy Production
 
 on:
   push:
     branches:
-      - dev-hotfix-xxx
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
 
 jobs:
-  docker:
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
+    permissions:
+      contents: read
+
+    env:
+      SERVER_HOST: 209.54.106.114
+      DEPLOY_DIR: /opt/aipan-netdisk-search
+      COMPOSE_PROJECT_NAME: aipan
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "20.18.0"
-
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Generate Prisma Client
-        run: npx prisma generate
+      - name: Prepare image metadata
+        id: image
         env:
-          DATABASE_URL: "postgresql://dummy:dummy@dummy:5432/dummy?schema=public"
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          if [ -z "${DOCKERHUB_USERNAME}" ]; then
+            echo "DOCKERHUB_USERNAME is required." >&2
+            exit 1
+          fi
 
-      - name: Build application
-        run: npm run build
+          IMAGE_NAME="${DOCKERHUB_USERNAME}/aipan-netdisk-search"
+          IMAGE_TAG="sha-${GITHUB_SHA::7}"
+
+          echo "image_name=${IMAGE_NAME}" >> "${GITHUB_OUTPUT}"
+          echo "image_tag=${IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
+          echo "app_image=${IMAGE_NAME}:${IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push multi-platform image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            unilei/aipan-netdisk-search:latest
-            unilei/aipan-netdisk-search:${{ github.sha }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          build-args: |
-            NODE_OPTIONS=--max-old-space-size=8192
+            ${{ steps.image.outputs.image_name }}:latest
+            ${{ steps.image.outputs.app_image }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           labels: |
-            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.created=${{ github.event.repository.updated_at }}
 
-      - name: Move cache
+      - name: Build production env file
+        env:
+          APP_IMAGE: ${{ steps.image.outputs.app_image }}
+          APP_PORT: ${{ vars.APP_PORT }}
+          WS_PORT: ${{ vars.WS_PORT }}
+          DATABASE_SCHEMA: ${{ vars.DATABASE_SCHEMA }}
+          NUXT_PUBLIC_GITHUB_OWNER: ${{ vars.NUXT_PUBLIC_GITHUB_OWNER }}
+          NUXT_PUBLIC_GITHUB_REPO: ${{ vars.NUXT_PUBLIC_GITHUB_REPO }}
+          NUXT_PUBLIC_GITHUB_BRANCH: ${{ vars.NUXT_PUBLIC_GITHUB_BRANCH }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          ADMIN_USER: ${{ secrets.ADMIN_USER }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          NUXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.NUXT_PUBLIC_GITHUB_TOKEN }}
+          NUXT_PUBLIC_QUARK_COOKIE: ${{ secrets.NUXT_PUBLIC_QUARK_COOKIE }}
         run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          : "${APP_PORT:=3000}"
+          : "${WS_PORT:=3002}"
+          : "${DATABASE_SCHEMA:=public}"
+          : "${NUXT_PUBLIC_GITHUB_BRANCH:=main}"
+
+          for name in POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB ADMIN_USER ADMIN_PASSWORD ADMIN_EMAIL JWT_SECRET; do
+            if [ -z "$(eval "printf '%s' \"\${$name:-}\"")" ]; then
+              echo "$name is required." >&2
+              exit 1
+            fi
+          done
+
+          mkdir -p .deploy-workdir
+
+          cat > .deploy-workdir/.env.production <<EOF
+          APP_IMAGE=${APP_IMAGE}
+          APP_PORT=${APP_PORT}
+          WS_PORT=${WS_PORT}
+          POSTGRES_USER=${POSTGRES_USER}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          POSTGRES_DB=${POSTGRES_DB}
+          DATABASE_SCHEMA=${DATABASE_SCHEMA}
+          ADMIN_USER=${ADMIN_USER}
+          ADMIN_PASSWORD=${ADMIN_PASSWORD}
+          ADMIN_EMAIL=${ADMIN_EMAIL}
+          JWT_SECRET=${JWT_SECRET}
+          REDIS_URL=redis://redis:6379
+          NUXT_PUBLIC_GITHUB_OWNER=${NUXT_PUBLIC_GITHUB_OWNER}
+          NUXT_PUBLIC_GITHUB_REPO=${NUXT_PUBLIC_GITHUB_REPO}
+          NUXT_PUBLIC_GITHUB_TOKEN=${NUXT_PUBLIC_GITHUB_TOKEN}
+          NUXT_PUBLIC_GITHUB_BRANCH=${NUXT_PUBLIC_GITHUB_BRANCH}
+          NUXT_PUBLIC_QUARK_COOKIE=${NUXT_PUBLIC_QUARK_COOKIE}
+          EOF
+
+      - name: Copy deployment files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.SERVER_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          target: ${{ env.DEPLOY_DIR }}
+          source: "deploy/docker-compose.prod.yml,deploy/remote-deploy.sh,.deploy-workdir/.env.production"
+          strip_components: 1
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DEPLOY_DIR: ${{ env.DEPLOY_DIR }}
+          COMPOSE_PROJECT_NAME: ${{ env.COMPOSE_PROJECT_NAME }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        with:
+          host: ${{ env.SERVER_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: DEPLOY_DIR,COMPOSE_PROJECT_NAME,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          script: |
+            chmod +x "${DEPLOY_DIR}/remote-deploy.sh"
+            "${DEPLOY_DIR}/remote-deploy.sh"
