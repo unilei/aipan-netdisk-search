@@ -132,7 +132,7 @@ jobs:
           username: ${{ secrets.DEPLOY_SSH_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           target: ${{ env.DEPLOY_DIR }}
-          source: "deploy/docker-compose.prod.yml,deploy/remote-deploy.sh,.deploy-workdir/.env.production"
+          source: "deploy/docker-compose.prod.yml,deploy/remote-deploy.sh,deploy/clean_docker_resources.sh,.deploy-workdir/.env.production"
           strip_components: 1
 
       - name: Deploy on server
