@@ -39,6 +39,9 @@ fi
 require_file "${COMPOSE_FILE}"
 require_file "${ENV_FILE}"
 
+# Keep the default compose filename in sync for manual server operations.
+cp "${COMPOSE_FILE}" "${DEPLOY_DIR}/docker-compose.yml"
+
 if [ -z "${DOCKERHUB_USERNAME:-}" ] || [ -z "${DOCKERHUB_TOKEN:-}" ]; then
   echo "DOCKERHUB_USERNAME and DOCKERHUB_TOKEN must be provided." >&2
   exit 1
