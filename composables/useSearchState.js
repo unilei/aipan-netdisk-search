@@ -1,4 +1,6 @@
 // 搜索状态管理 composable
+import { getSingleQueryValue } from "~/utils/routeQuery";
+
 export const useSearchState = () => {
   // 基础状态
   const sources = ref([]);
@@ -18,7 +20,7 @@ export const useSearchState = () => {
   
   // 从URL读取初始分类
   const route = useRoute();
-  const initialCategory = route.query.category || "clouddrive";
+  const initialCategory = getSingleQueryValue(route.query.category) || "clouddrive";
   
   // 分类状态
   const category = ref(initialCategory);

@@ -98,7 +98,7 @@ const debouncedSearch = useDebounceFn((keyword) => {
   }
   router.push({
     path: "/search",
-    query: { keyword: encodeURIComponent(keyword) },
+    query: { keyword },
   });
 }, 300);
 
@@ -116,7 +116,7 @@ const goDouban = useDebounceFn((movie) => {
   }
   router.push({
     path: "/search",
-    query: { keyword: encodeURIComponent(movie.title) },
+    query: { keyword: movie.title },
   });
 }, 300);
 
