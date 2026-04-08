@@ -1,6 +1,14 @@
 <script setup>
 import { ElMessage } from "element-plus";
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import {
+  detectLinkService,
+  getLinkCategoryName,
+  getLinkServiceName,
+  isCloudDriveService,
+  isDirectProtocolLink,
+} from "~/utils/linkTypes";
+import { openUrlWithNoOpener } from "~/utils/externalNavigation";
 
 const props = defineProps({
   sources: {
@@ -46,31 +54,54 @@ const diskIcons = {
 };
 
 // 网盘名称映射
-const diskNames = {
-  ALIYUN: "阿里云盘",
-  QUARK: "夸克网盘",
-  BAIDU: "百度网盘",
-  XUNLEI: "迅雷网盘",
-  UC: "UC网盘",
-  115: "115网盘",
-  TIANYI: "天翼云盘",
-  MOBILE: "移动云盘",
-  PIKPAK: "PikPak",
-  123: "123网盘",
-  MAGNET: "磁力链接",
-  ED2K: "电驴链接",
-  OTHER: "其他",
-};
-
 // 获取网盘图标
 const getDiskIcon = (service) => {
   return diskIcons[service] || diskIcons.OTHER;
 };
 
-// 获取网盘名称
+// 获取链接名称
 const getDiskName = (service) => {
-  return diskNames[service] || "其他";
+  return getLinkServiceName(service);
 };
+
+const getResolvedService = (link) => {
+  return detectLinkService(link?.link, link?.service);
+};
+
+const getServiceToneClass = (service) => {
+  const resolvedService = getResolvedService({ service });
+
+  const toneMap = {
+    BAIDU: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
+    QUARK: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+    ALIYUN: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
+    XUNLEI: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
+    UC: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+    TIANYI: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
+    MOBILE: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+    PIKPAK: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
+    MAGNET: "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300",
+    ED2K: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/40 dark:text-fuchsia-300",
+    OTHER: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
+  };
+
+  return toneMap[resolvedService] || toneMap.OTHER;
+};
+
+const getItemLinkHintText = (links = []) => {
+  const hasPassword = links.some((link) => Boolean(link?.pwd));
+  const categories = new Set(
+    links.map((link) => getLinkCategoryName(getResolvedService(link)))
+  );
+
+  if (categories.size === 1 && categories.has("下载协议")) {
+    return hasPassword ? "点击图标唤起 • 点击提取码复制" : "点击图标唤起下载器";
+  }
+
+  return hasPassword ? "点击图标打开 • 点击提取码复制" : "点击图标打开链接";
+};
+
+const getFilterServiceKey = (link) => getResolvedService(link);
 
 // 获取所有可用的网盘类型（增加数据验证）
 const availableServices = computed(() => {
@@ -83,8 +114,8 @@ const availableServices = computed(() => {
     props.sources.flat(Infinity).forEach((item) => {
       if (item && item.links && Array.isArray(item.links)) {
         item.links.forEach((link) => {
-          if (link && link.service) {
-            services.add(link.service);
+          if (link) {
+            services.add(getFilterServiceKey(link));
           }
         });
       }
@@ -112,7 +143,7 @@ const filteredSources = computed(() => {
 
     return flatSources.filter((item) => {
       return item.links && Array.isArray(item.links) && 
-             item.links.some((link) => link && selectedFilters.value.has(link.service));
+             item.links.some((link) => link && selectedFilters.value.has(getFilterServiceKey(link)));
     });
   } catch (error) {
     console.error('筛选数据时出错:', error);
@@ -131,8 +162,9 @@ const serviceStats = computed(() => {
     props.sources.flat(Infinity).forEach((item) => {
       if (item && item.links && Array.isArray(item.links)) {
         item.links.forEach((link) => {
-          if (link && link.service) {
-            stats[link.service] = (stats[link.service] || 0) + 1;
+          if (link) {
+            const service = getFilterServiceKey(link);
+            stats[service] = (stats[service] || 0) + 1;
           }
         });
       }
@@ -266,6 +298,29 @@ const copyPwd = async (pwd, event) => {
   }
 };
 
+// 复制链接
+const copyLink = async (linkUrl, event) => {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  try {
+    await navigator.clipboard.writeText(linkUrl);
+    ElMessage({
+      message: "链接已复制到剪贴板",
+      type: "success",
+      duration: 2000,
+    });
+  } catch (err) {
+    ElMessage({
+      message: "复制失败，请手动复制",
+      type: "error",
+      duration: 2000,
+    });
+  }
+};
+
 // 防抖和节流状态
 const clickingLinks = ref(new Set());
 
@@ -277,7 +332,7 @@ const isValidLink = (link) => {
   // 检查是否是有效的URL格式
   try {
     // 对于网盘链接和磁力链接的特殊处理
-    if (link.startsWith('magnet:') || link.startsWith('ed2k://')) {
+    if (isDirectProtocolLink(link)) {
       return true;
     }
     new URL(link);
@@ -317,10 +372,15 @@ const handleLinkClick = async (e, link) => {
       return;
     }
 
-    // 检查是否需要验证
-    if (
+    const resolvedService = getResolvedService(link);
+    const shouldUseCloudVerification =
       verificationConfig.value.isEnabled &&
-      !verificationConfig.value.isVerified
+      !verificationConfig.value.isVerified &&
+      isCloudDriveService(resolvedService);
+
+    // 只有网盘类型才走网盘验证
+    if (
+      shouldUseCloudVerification
     ) {
       // 显示加载提示
       const loadingMessage = ElMessage({
@@ -364,48 +424,56 @@ const handleLinkClick = async (e, link) => {
     }
 
     // 不需要验证或已验证，直接访问链接
-    let targetUrl = link.link;
-    let openMethod = '_blank';
-    
-    // 根据链接类型和配置决定打开方式
-    if (props.redirectStatus && !link.link.startsWith('magnet:') && !link.link.startsWith('ed2k://')) {
-      targetUrl = `/redirect?url=${encodeURIComponent(link.link)}`;
+
+    // 磁力/电驴等协议链接：通过临时 <a> 元素触发系统协议处理器
+    if (isDirectProtocolLink(link.link)) {
+      const anchor = document.createElement('a');
+      anchor.href = link.link;
+      anchor.style.display = 'none';
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+
+      ElMessage({
+        message: '正在唤起下载器...',
+        type: 'success',
+        duration: 2000
+      });
+      return;
     }
 
-    // 显示打开提示
+    // 普通链接：走跳转中间页
+    let targetUrl = link.link;
+    if (props.redirectStatus) {
+      targetUrl = `/redirect?url=${encodeURIComponent(link.link)}&service=${encodeURIComponent(resolvedService)}`;
+    }
+
+    const opened = openUrlWithNoOpener(targetUrl);
+    if (!opened) {
+      ElMessage({
+        message: '弹窗被浏览器阻止，请允许弹窗后重试',
+        type: 'warning',
+        duration: 4000,
+        showClose: true,
+      });
+
+      navigator.clipboard.writeText(link.link).then(() => {
+        ElMessage({
+          message: '链接已复制到剪贴板，可手动粘贴访问',
+          type: 'info',
+          duration: 3000
+        });
+      }).catch(() => {
+        console.log('目标链接:', link.link);
+      });
+      return;
+    }
+
     ElMessage({
       message: '正在打开链接...',
       type: 'success',
       duration: 1500
     });
-
-    // 尝试打开窗口
-    const newWindow = window.open(targetUrl, openMethod, 'noopener,noreferrer');
-    
-    // 检测弹窗是否被阻止
-    setTimeout(() => {
-      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-        ElMessage({
-          message: '弹窗被浏览器阻止，请允许弹窗后重试',
-          type: 'warning',
-          duration: 4000,
-          showClose: true,
-          customClass: 'popup-blocked-message'
-        });
-        
-        // 提供备用方案：复制链接
-        navigator.clipboard.writeText(link.link).then(() => {
-          ElMessage({
-            message: '链接已复制到剪贴板，可手动粘贴访问',
-            type: 'info',
-            duration: 3000
-          });
-        }).catch(() => {
-          // 如果复制也失败，显示链接
-          console.log('目标链接:', link.link);
-        });
-      }
-    }, 100);
 
   } catch (error) {
     console.error('打开链接时发生错误:', error);
@@ -436,7 +504,7 @@ const handleLinkClick = async (e, link) => {
         <div class="flex items-center gap-2">
           <i class="fas fa-filter text-gray-500"></i>
           <span class="text-sm font-medium text-gray-700 dark:text-gray-300"
-            >网盘筛选</span
+            >资源类型筛选</span
           >
           <span class="text-xs text-gray-500"
             >({{ filteredSources.length }}/{{
@@ -529,8 +597,8 @@ const handleLinkClick = async (e, link) => {
         <div
           class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
         >
-          <span>共 {{ item.links.length }} 个网盘链接</span>
-          <span>点击图标访问 • 点击提取码复制</span>
+          <span>共 {{ item.links.length }} 个资源链接</span>
+          <span>{{ getItemLinkHintText(item.links) }}</span>
         </div>
 
         <!-- 网盘链接网格 -->
@@ -546,20 +614,23 @@ const handleLinkClick = async (e, link) => {
               <!-- 左侧：网盘图标和名称 -->
               <div class="flex items-center gap-2 flex-1 min-w-0">
                 <img
-                  :src="getDiskIcon(link.service)"
-                  :alt="link.service"
+                  :src="getDiskIcon(getResolvedService(link))"
+                  :alt="getResolvedService(link)"
                   class="w-6 h-6 shrink-0"
                   @error="handleImageError"
                 />
                 <span
-                  class="text-xs font-medium text-gray-600 dark:text-gray-300 truncate"
+                  :class="[
+                    'text-xs font-medium px-2 py-1 rounded-md truncate',
+                    getServiceToneClass(getResolvedService(link)),
+                  ]"
                 >
-                  {{ getDiskName(link.service) }}
+                  {{ getDiskName(getResolvedService(link)) }}
                 </span>
               </div>
 
-              <!-- 右侧：提取码或访问按钮 -->
-              <div class="flex items-center gap-2">
+              <!-- 右侧：提取码、复制、访问 -->
+              <div class="flex items-center gap-1.5">
                 <span
                   v-if="link.pwd"
                   class="px-2 py-1 text-xs font-mono rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors duration-200"
@@ -568,6 +639,14 @@ const handleLinkClick = async (e, link) => {
                 >
                   {{ link.pwd }}
                 </span>
+                <button
+                  type="button"
+                  class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200"
+                  @click="copyLink(link.link, $event)"
+                  title="复制链接"
+                >
+                  <i class="fas fa-copy text-xs"></i>
+                </button>
                 <i
                   class="fas fa-external-link-alt text-xs text-gray-400 group-hover/link:text-gray-600 dark:group-hover/link:text-gray-300 transition-colors"
                 ></i>
