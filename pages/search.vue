@@ -55,6 +55,7 @@ import { useSearchLogic } from "~/composables/useSearchLogic";
 import { useQuarkConfig } from "~/composables/useQuarkConfig";
 import { useSearchQueue } from "~/composables/useSearchQueue";
 import { useGroupQrConfig } from "~/composables/useGroupQrConfig";
+import { getLegacyDecodedQueryValue } from "~/utils/routeQuery";
 
 definePageMeta({
   layout: "custom",
@@ -85,7 +86,7 @@ const { shouldShowInSearchResults, getConfig: getGroupQrConfig } =
   useGroupQrConfig();
 
 // 关键词
-const keyword = ref(route.query.keyword ? decodeURIComponent(route.query.keyword) : '');
+const keyword = ref(getLegacyDecodedQueryValue(route.query.keyword));
 
 // 根据登录状态选择搜索源
 const sourcesApiEndpoints = computed(() => {
@@ -171,8 +172,10 @@ onUnmounted(() => {
 watch(
   () => route.query.keyword,
   (newKeyword) => {
-    if (newKeyword) {
-      keyword.value = decodeURIComponent(newKeyword);
+    const normalizedKeyword = getLegacyDecodedQueryValue(newKeyword);
+
+    if (normalizedKeyword) {
+      keyword.value = normalizedKeyword;
       searchByKeyword();
     } else {
       keyword.value = '';
