@@ -110,6 +110,9 @@
 </template>
 
 <script setup>
+import { openUrlWithNoOpener } from "~/utils/externalNavigation";
+import { getSingleQueryValue } from "~/utils/routeQuery";
+
 definePageMeta({
   layout: false,
   middleware: [] // 跳过验证中间件
@@ -129,12 +132,15 @@ const router = useRouter();
 // 解码加密的链接
 const decodeTargetLink = async () => {
   try {
-    if (route.query.token) {
+    const token = getSingleQueryValue(route.query.token);
+    const link = getSingleQueryValue(route.query.link);
+
+    if (token) {
       // 使用服务器端解密API
       const decryptRes = await $fetch('/api/quark/decrypt-link', {
         method: 'POST',
         body: {
-          token: decodeURIComponent(route.query.token)
+          token
         }
       });
       
@@ -144,9 +150,9 @@ const decodeTargetLink = async () => {
         console.error('解密失败:', decryptRes.msg);
         return null;
       }
-    } else if (route.query.link) {
+    } else if (link) {
       // 兼容旧版本（直接传递链接）
-      return decodeURIComponent(route.query.link);
+      return link;
     }
     return null;
   } catch (error) {
@@ -254,7 +260,10 @@ const copyShareLink = async () => {
 // 打开分享链接
 const openShareLink = () => {
   if (shareConfig.value.shareLink) {
-    window.open(shareConfig.value.shareLink, '_blank');
+    const opened = openUrlWithNoOpener(shareConfig.value.shareLink);
+    if (!opened) {
+      ElMessage.warning('弹窗被浏览器阻止，请允许弹窗后重试');
+    }
   }
 };
 
@@ -269,6 +278,11 @@ const submitVerification = async () => {
   verificationForm.error = '';
 
   try {
+    const from = getSingleQueryValue(route.query.from);
+    const token = getSingleQueryValue(route.query.token);
+    const legacyLink = getSingleQueryValue(route.query.link);
+    const redirectPath = getSingleQueryValue(route.query.redirect);
+
     const res = await $fetch('/api/quark/validate', {
       method: 'POST',
       body: {
@@ -283,11 +297,15 @@ const submitVerification = async () => {
       ElMessage.success('验证成功，正在跳转...');
       
       // 判断跳转逻辑
-      if (route.query.from === 'netdisk' && (route.query.token || route.query.link)) {
+      if (from === 'netdisk' && (token || legacyLink)) {
         // 从网盘链接点击过来的，解码并打开链接
         const targetLink = await decodeTargetLink();
         if (targetLink) {
-          window.open(targetLink, '_blank', 'noopener,noreferrer');
+          const opened = openUrlWithNoOpener(targetLink);
+          if (!opened) {
+            ElMessage.warning('弹窗被浏览器阻止，请允许弹窗后重试');
+            return;
+          }
         } else {
           ElMessage.error('链接解码失败或已过期');
         }
@@ -300,8 +318,7 @@ const submitVerification = async () => {
         }
       } else {
         // 跳转到原始页面，保留完整的URL路径和参数
-        const redirectPath = route.query.redirect ? decodeURIComponent(route.query.redirect) : '/search';
-        await router.push(redirectPath);
+        await router.push(redirectPath || '/search');
       }
     } else {
       verificationForm.error = res.msg || '验证失败，请检查您的分享链接';
