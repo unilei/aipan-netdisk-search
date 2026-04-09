@@ -1,6 +1,8 @@
 import prisma from "~/lib/prisma";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { sendVerificationEmail } from "~/server/services/email/emailVerification";
+import { getEmailServiceConfig } from "~/server/services/email/resend";
+import { hashPassword } from "~/server/utils/password";
 
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
@@ -51,8 +53,13 @@ export default defineEventHandler(async (event) => {
             password === config.adminPassword &&
             username === config.adminUser;
 
+        const emailConfig = await getEmailServiceConfig();
+        const requiresEmailVerification = !isAdminRegistration &&
+            emailConfig.enabled &&
+            emailConfig.requireVerificationForNewUsers;
+
         // 加密密码
-        const hashedPassword = await bcrypt.hash(password, 12);
+        const hashedPassword = await hashPassword(password);
 
         // 创建用户
         const user = await prisma.user.create({
@@ -61,9 +68,38 @@ export default defineEventHandler(async (event) => {
                 email,
                 password: hashedPassword,
                 role: isAdminRegistration ? 'admin' : 'user',
-                isVerified: isAdminRegistration // 管理员账户自动验证
+                isVerified: isAdminRegistration || !requiresEmailVerification,
+                emailVerifiedAt: isAdminRegistration || !requiresEmailVerification ? new Date() : null,
+                emailVerificationRequired: requiresEmailVerification
             }
         });
+
+        if (requiresEmailVerification) {
+            try {
+                await sendVerificationEmail({
+                    id: user.id,
+                    username: user.username,
+                    email: user.email,
+                    isVerified: user.isVerified
+                });
+            } catch (error) {
+                await prisma.user.delete({
+                    where: {
+                        id: user.id
+                    }
+                });
+                throw error;
+            }
+
+            return {
+                code: 200,
+                msg: '注册成功，请前往邮箱完成激活',
+                data: {
+                    requiresEmailActivation: true,
+                    email: user.email
+                }
+            }
+        }
 
         // 生成 JWT token
         const token = jwt.sign(
@@ -81,7 +117,9 @@ export default defineEventHandler(async (event) => {
                     id: user.id,
                     username: user.username,
                     email: user.email,
-                    role: user.role
+                    role: user.role,
+                    isVerified: user.isVerified,
+                    emailVerificationRequired: user.emailVerificationRequired
                 }
             }
         }

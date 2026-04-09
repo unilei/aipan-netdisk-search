@@ -10,6 +10,8 @@ export interface UserState {
         role?: string;
         avatarStyle?: string;
         points?: number;
+        isVerified?: boolean;
+        emailVerificationRequired?: boolean;
     } | null;
 }
 
@@ -23,6 +25,8 @@ interface UserResponse {
         role: string;
         avatarStyle?: string;
         points?: number;
+        isVerified?: boolean;
+        emailVerificationRequired?: boolean;
     };
     error?: unknown;
 }

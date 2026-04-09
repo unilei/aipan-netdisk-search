@@ -48,6 +48,8 @@ export type UserMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   isVerified: boolean | null
+  emailVerifiedAt: Date | null
+  emailVerificationRequired: boolean | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -63,6 +65,8 @@ export type UserMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   isVerified: boolean | null
+  emailVerifiedAt: Date | null
+  emailVerificationRequired: boolean | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -78,6 +82,8 @@ export type UserCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   isVerified: number
+  emailVerifiedAt: number
+  emailVerificationRequired: number
   _all: number
 }
 
@@ -105,6 +111,8 @@ export type UserMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   isVerified?: true
+  emailVerifiedAt?: true
+  emailVerificationRequired?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -120,6 +128,8 @@ export type UserMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   isVerified?: true
+  emailVerifiedAt?: true
+  emailVerificationRequired?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -135,6 +145,8 @@ export type UserCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   isVerified?: true
+  emailVerifiedAt?: true
+  emailVerificationRequired?: true
   _all?: true
 }
 
@@ -237,6 +249,8 @@ export type UserGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   isVerified: boolean
+  emailVerifiedAt: Date | null
+  emailVerificationRequired: boolean
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -275,6 +289,8 @@ export type UserWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   isVerified?: Prisma.BoolFilter<"User"> | boolean
+  emailVerifiedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFilter<"User"> | boolean
   resources?: Prisma.ResourceListRelationFilter
   resourceTypes?: Prisma.ResourceTypeListRelationFilter
   posts?: Prisma.PostListRelationFilter
@@ -290,6 +306,7 @@ export type UserWhereInput = {
   createdRooms?: Prisma.ChatRoomListRelationFilter
   checkIns?: Prisma.CheckInListRelationFilter
   pointsHistory?: Prisma.PointsHistoryListRelationFilter
+  emailVerificationTokens?: Prisma.EmailVerificationTokenListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -305,6 +322,8 @@ export type UserOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
+  emailVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailVerificationRequired?: Prisma.SortOrder
   resources?: Prisma.ResourceOrderByRelationAggregateInput
   resourceTypes?: Prisma.ResourceTypeOrderByRelationAggregateInput
   posts?: Prisma.PostOrderByRelationAggregateInput
@@ -320,6 +339,7 @@ export type UserOrderByWithRelationInput = {
   createdRooms?: Prisma.ChatRoomOrderByRelationAggregateInput
   checkIns?: Prisma.CheckInOrderByRelationAggregateInput
   pointsHistory?: Prisma.PointsHistoryOrderByRelationAggregateInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -338,6 +358,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
   isVerified?: Prisma.BoolFilter<"User"> | boolean
+  emailVerifiedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFilter<"User"> | boolean
   resources?: Prisma.ResourceListRelationFilter
   resourceTypes?: Prisma.ResourceTypeListRelationFilter
   posts?: Prisma.PostListRelationFilter
@@ -353,6 +375,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   createdRooms?: Prisma.ChatRoomListRelationFilter
   checkIns?: Prisma.CheckInListRelationFilter
   pointsHistory?: Prisma.PointsHistoryListRelationFilter
+  emailVerificationTokens?: Prisma.EmailVerificationTokenListRelationFilter
 }, "id" | "username" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -368,6 +391,8 @@ export type UserOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
+  emailVerifiedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  emailVerificationRequired?: Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -391,6 +416,8 @@ export type UserScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
   isVerified?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  emailVerifiedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  emailVerificationRequired?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
 }
 
 export type UserCreateInput = {
@@ -405,6 +432,8 @@ export type UserCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -420,6 +449,7 @@ export type UserCreateInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -435,6 +465,8 @@ export type UserUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -450,6 +482,7 @@ export type UserUncheckedCreateInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -464,6 +497,8 @@ export type UserUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -479,6 +514,7 @@ export type UserUpdateInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -494,6 +530,8 @@ export type UserUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -509,6 +547,7 @@ export type UserUncheckedUpdateInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -524,6 +563,8 @@ export type UserCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
 }
 
 export type UserUpdateManyMutationInput = {
@@ -538,6 +579,8 @@ export type UserUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -553,6 +596,8 @@ export type UserUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -568,6 +613,8 @@ export type UserCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
+  emailVerifiedAt?: Prisma.SortOrder
+  emailVerificationRequired?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -588,6 +635,8 @@ export type UserMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
+  emailVerifiedAt?: Prisma.SortOrder
+  emailVerificationRequired?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -603,6 +652,8 @@ export type UserMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   isVerified?: Prisma.SortOrder
+  emailVerifiedAt?: Prisma.SortOrder
+  emailVerificationRequired?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -637,6 +688,10 @@ export type DateTimeFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type UserCreateNestedOneWithoutResourceTypesInput = {
@@ -735,6 +790,20 @@ export type UserUpdateOneRequiredWithoutVodConfigsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutVodConfigsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutVodConfigsInput, Prisma.UserUpdateWithoutVodConfigsInput>, Prisma.UserUncheckedUpdateWithoutVodConfigsInput>
+}
+
+export type UserCreateNestedOneWithoutEmailVerificationTokensInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmailVerificationTokensInput, Prisma.UserUncheckedCreateWithoutEmailVerificationTokensInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmailVerificationTokensInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutEmailVerificationTokensNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutEmailVerificationTokensInput, Prisma.UserUncheckedCreateWithoutEmailVerificationTokensInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmailVerificationTokensInput
+  upsert?: Prisma.UserUpsertWithoutEmailVerificationTokensInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmailVerificationTokensInput, Prisma.UserUpdateWithoutEmailVerificationTokensInput>, Prisma.UserUncheckedUpdateWithoutEmailVerificationTokensInput>
 }
 
 export type UserCreateNestedOneWithoutForumTopicsInput = {
@@ -861,6 +930,8 @@ export type UserCreateWithoutResourceTypesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
   alist?: Prisma.AlistCreateNestedManyWithoutCreatorInput
@@ -875,6 +946,7 @@ export type UserCreateWithoutResourceTypesInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutResourceTypesInput = {
@@ -890,6 +962,8 @@ export type UserUncheckedCreateWithoutResourceTypesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
   alist?: Prisma.AlistUncheckedCreateNestedManyWithoutCreatorInput
@@ -904,6 +978,7 @@ export type UserUncheckedCreateWithoutResourceTypesInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutResourceTypesInput = {
@@ -934,6 +1009,8 @@ export type UserUpdateWithoutResourceTypesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
   alist?: Prisma.AlistUpdateManyWithoutCreatorNestedInput
@@ -948,6 +1025,7 @@ export type UserUpdateWithoutResourceTypesInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResourceTypesInput = {
@@ -963,6 +1041,8 @@ export type UserUncheckedUpdateWithoutResourceTypesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
   alist?: Prisma.AlistUncheckedUpdateManyWithoutCreatorNestedInput
@@ -977,6 +1057,7 @@ export type UserUncheckedUpdateWithoutResourceTypesInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutResourcesInput = {
@@ -991,6 +1072,8 @@ export type UserCreateWithoutResourcesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
   alist?: Prisma.AlistCreateNestedManyWithoutCreatorInput
@@ -1005,6 +1088,7 @@ export type UserCreateWithoutResourcesInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutResourcesInput = {
@@ -1020,6 +1104,8 @@ export type UserUncheckedCreateWithoutResourcesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
   alist?: Prisma.AlistUncheckedCreateNestedManyWithoutCreatorInput
@@ -1034,6 +1120,7 @@ export type UserUncheckedCreateWithoutResourcesInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutResourcesInput = {
@@ -1064,6 +1151,8 @@ export type UserUpdateWithoutResourcesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
   alist?: Prisma.AlistUpdateManyWithoutCreatorNestedInput
@@ -1078,6 +1167,7 @@ export type UserUpdateWithoutResourcesInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResourcesInput = {
@@ -1093,6 +1183,8 @@ export type UserUncheckedUpdateWithoutResourcesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
   alist?: Prisma.AlistUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1107,6 +1199,7 @@ export type UserUncheckedUpdateWithoutResourcesInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPostsInput = {
@@ -1121,6 +1214,8 @@ export type UserCreateWithoutPostsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   alist?: Prisma.AlistCreateNestedManyWithoutCreatorInput
@@ -1135,6 +1230,7 @@ export type UserCreateWithoutPostsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPostsInput = {
@@ -1150,6 +1246,8 @@ export type UserUncheckedCreateWithoutPostsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   alist?: Prisma.AlistUncheckedCreateNestedManyWithoutCreatorInput
@@ -1164,6 +1262,7 @@ export type UserUncheckedCreateWithoutPostsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPostsInput = {
@@ -1194,6 +1293,8 @@ export type UserUpdateWithoutPostsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   alist?: Prisma.AlistUpdateManyWithoutCreatorNestedInput
@@ -1208,6 +1309,7 @@ export type UserUpdateWithoutPostsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPostsInput = {
@@ -1223,6 +1325,8 @@ export type UserUncheckedUpdateWithoutPostsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   alist?: Prisma.AlistUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1237,6 +1341,7 @@ export type UserUncheckedUpdateWithoutPostsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAlistInput = {
@@ -1251,6 +1356,8 @@ export type UserCreateWithoutAlistInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -1265,6 +1372,7 @@ export type UserCreateWithoutAlistInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAlistInput = {
@@ -1280,6 +1388,8 @@ export type UserUncheckedCreateWithoutAlistInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -1294,6 +1404,7 @@ export type UserUncheckedCreateWithoutAlistInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAlistInput = {
@@ -1324,6 +1435,8 @@ export type UserUpdateWithoutAlistInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -1338,6 +1451,7 @@ export type UserUpdateWithoutAlistInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAlistInput = {
@@ -1353,6 +1467,8 @@ export type UserUncheckedUpdateWithoutAlistInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1367,6 +1483,7 @@ export type UserUncheckedUpdateWithoutAlistInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBlogPostsInput = {
@@ -1381,6 +1498,8 @@ export type UserCreateWithoutBlogPostsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -1395,6 +1514,7 @@ export type UserCreateWithoutBlogPostsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBlogPostsInput = {
@@ -1410,6 +1530,8 @@ export type UserUncheckedCreateWithoutBlogPostsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -1424,6 +1546,7 @@ export type UserUncheckedCreateWithoutBlogPostsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBlogPostsInput = {
@@ -1454,6 +1577,8 @@ export type UserUpdateWithoutBlogPostsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -1468,6 +1593,7 @@ export type UserUpdateWithoutBlogPostsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlogPostsInput = {
@@ -1483,6 +1609,8 @@ export type UserUncheckedUpdateWithoutBlogPostsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1497,6 +1625,7 @@ export type UserUncheckedUpdateWithoutBlogPostsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUserResourcesInput = {
@@ -1511,6 +1640,8 @@ export type UserCreateWithoutUserResourcesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -1525,6 +1656,7 @@ export type UserCreateWithoutUserResourcesInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUserResourcesInput = {
@@ -1540,6 +1672,8 @@ export type UserUncheckedCreateWithoutUserResourcesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -1554,6 +1688,7 @@ export type UserUncheckedCreateWithoutUserResourcesInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUserResourcesInput = {
@@ -1584,6 +1719,8 @@ export type UserUpdateWithoutUserResourcesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -1598,6 +1735,7 @@ export type UserUpdateWithoutUserResourcesInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserResourcesInput = {
@@ -1613,6 +1751,8 @@ export type UserUncheckedUpdateWithoutUserResourcesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1627,6 +1767,7 @@ export type UserUncheckedUpdateWithoutUserResourcesInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutVodConfigsInput = {
@@ -1641,6 +1782,8 @@ export type UserCreateWithoutVodConfigsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -1655,6 +1798,7 @@ export type UserCreateWithoutVodConfigsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutVodConfigsInput = {
@@ -1670,6 +1814,8 @@ export type UserUncheckedCreateWithoutVodConfigsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -1684,6 +1830,7 @@ export type UserUncheckedCreateWithoutVodConfigsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutVodConfigsInput = {
@@ -1714,6 +1861,8 @@ export type UserUpdateWithoutVodConfigsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -1728,6 +1877,7 @@ export type UserUpdateWithoutVodConfigsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVodConfigsInput = {
@@ -1743,12 +1893,157 @@ export type UserUncheckedUpdateWithoutVodConfigsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
   alist?: Prisma.AlistUncheckedUpdateManyWithoutCreatorNestedInput
   blogPosts?: Prisma.BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
   userResources?: Prisma.UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+  chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
+  createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+  checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
+  pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutEmailVerificationTokensInput = {
+  username: string
+  email: string
+  password: string
+  role?: string
+  status?: string
+  avatarStyle?: string
+  salt?: string | null
+  points?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
+  resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
+  resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
+  posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
+  alist?: Prisma.AlistCreateNestedManyWithoutCreatorInput
+  blogPosts?: Prisma.BlogPostCreateNestedManyWithoutAuthorInput
+  userResources?: Prisma.UserResourceCreateNestedManyWithoutCreatorInput
+  vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
+  forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
+  chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
+  createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
+  checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
+  pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutEmailVerificationTokensInput = {
+  id?: number
+  username: string
+  email: string
+  password: string
+  role?: string
+  status?: string
+  avatarStyle?: string
+  salt?: string | null
+  points?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
+  resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
+  alist?: Prisma.AlistUncheckedCreateNestedManyWithoutCreatorInput
+  blogPosts?: Prisma.BlogPostUncheckedCreateNestedManyWithoutAuthorInput
+  userResources?: Prisma.UserResourceUncheckedCreateNestedManyWithoutCreatorInput
+  vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
+  forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
+  chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
+  createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+  checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
+  pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutEmailVerificationTokensInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmailVerificationTokensInput, Prisma.UserUncheckedCreateWithoutEmailVerificationTokensInput>
+}
+
+export type UserUpsertWithoutEmailVerificationTokensInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutEmailVerificationTokensInput, Prisma.UserUncheckedUpdateWithoutEmailVerificationTokensInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutEmailVerificationTokensInput, Prisma.UserUncheckedCreateWithoutEmailVerificationTokensInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutEmailVerificationTokensInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutEmailVerificationTokensInput, Prisma.UserUncheckedUpdateWithoutEmailVerificationTokensInput>
+}
+
+export type UserUpdateWithoutEmailVerificationTokensInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarStyle?: Prisma.StringFieldUpdateOperationsInput | string
+  salt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
+  resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
+  alist?: Prisma.AlistUpdateManyWithoutCreatorNestedInput
+  blogPosts?: Prisma.BlogPostUpdateManyWithoutAuthorNestedInput
+  userResources?: Prisma.UserResourceUpdateManyWithoutCreatorNestedInput
+  vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
+  forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
+  chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
+  createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
+  checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
+  pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarStyle?: Prisma.StringFieldUpdateOperationsInput | string
+  salt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
+  alist?: Prisma.AlistUncheckedUpdateManyWithoutCreatorNestedInput
+  blogPosts?: Prisma.BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
+  userResources?: Prisma.UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
@@ -1771,6 +2066,8 @@ export type UserCreateWithoutForumTopicsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -1785,6 +2082,7 @@ export type UserCreateWithoutForumTopicsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumTopicsInput = {
@@ -1800,6 +2098,8 @@ export type UserUncheckedCreateWithoutForumTopicsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -1814,6 +2114,7 @@ export type UserUncheckedCreateWithoutForumTopicsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumTopicsInput = {
@@ -1844,6 +2145,8 @@ export type UserUpdateWithoutForumTopicsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -1858,6 +2161,7 @@ export type UserUpdateWithoutForumTopicsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumTopicsInput = {
@@ -1873,6 +2177,8 @@ export type UserUncheckedUpdateWithoutForumTopicsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1887,6 +2193,7 @@ export type UserUncheckedUpdateWithoutForumTopicsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumPostsInput = {
@@ -1901,6 +2208,8 @@ export type UserCreateWithoutForumPostsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -1915,6 +2224,7 @@ export type UserCreateWithoutForumPostsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumPostsInput = {
@@ -1930,6 +2240,8 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -1944,6 +2256,7 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumPostsInput = {
@@ -1974,6 +2287,8 @@ export type UserUpdateWithoutForumPostsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -1988,6 +2303,7 @@ export type UserUpdateWithoutForumPostsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumPostsInput = {
@@ -2003,6 +2319,8 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2017,6 +2335,7 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -2031,6 +2350,8 @@ export type UserCreateWithoutNotificationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -2045,6 +2366,7 @@ export type UserCreateWithoutNotificationsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -2060,6 +2382,8 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -2074,6 +2398,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -2104,6 +2429,8 @@ export type UserUpdateWithoutNotificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -2118,6 +2445,7 @@ export type UserUpdateWithoutNotificationsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -2133,6 +2461,8 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2147,6 +2477,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedRoomsInput = {
@@ -2161,6 +2492,8 @@ export type UserCreateWithoutCreatedRoomsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -2175,6 +2508,7 @@ export type UserCreateWithoutCreatedRoomsInput = {
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedRoomsInput = {
@@ -2190,6 +2524,8 @@ export type UserUncheckedCreateWithoutCreatedRoomsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -2204,6 +2540,7 @@ export type UserUncheckedCreateWithoutCreatedRoomsInput = {
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedRoomsInput = {
@@ -2234,6 +2571,8 @@ export type UserUpdateWithoutCreatedRoomsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -2248,6 +2587,7 @@ export type UserUpdateWithoutCreatedRoomsInput = {
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedRoomsInput = {
@@ -2263,6 +2603,8 @@ export type UserUncheckedUpdateWithoutCreatedRoomsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2277,6 +2619,7 @@ export type UserUncheckedUpdateWithoutCreatedRoomsInput = {
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutChatRoomsInput = {
@@ -2291,6 +2634,8 @@ export type UserCreateWithoutChatRoomsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -2305,6 +2650,7 @@ export type UserCreateWithoutChatRoomsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutChatRoomsInput = {
@@ -2320,6 +2666,8 @@ export type UserUncheckedCreateWithoutChatRoomsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -2334,6 +2682,7 @@ export type UserUncheckedCreateWithoutChatRoomsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutChatRoomsInput = {
@@ -2364,6 +2713,8 @@ export type UserUpdateWithoutChatRoomsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -2378,6 +2729,7 @@ export type UserUpdateWithoutChatRoomsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChatRoomsInput = {
@@ -2393,6 +2745,8 @@ export type UserUncheckedUpdateWithoutChatRoomsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2407,6 +2761,7 @@ export type UserUncheckedUpdateWithoutChatRoomsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -2421,6 +2776,8 @@ export type UserCreateWithoutMessagesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -2435,6 +2792,7 @@ export type UserCreateWithoutMessagesInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -2450,6 +2808,8 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -2464,6 +2824,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -2494,6 +2855,8 @@ export type UserUpdateWithoutMessagesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -2508,6 +2871,7 @@ export type UserUpdateWithoutMessagesInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -2523,6 +2887,8 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2537,6 +2903,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCheckInsInput = {
@@ -2551,6 +2918,8 @@ export type UserCreateWithoutCheckInsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -2565,6 +2934,7 @@ export type UserCreateWithoutCheckInsInput = {
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCheckInsInput = {
@@ -2580,6 +2950,8 @@ export type UserUncheckedCreateWithoutCheckInsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -2594,6 +2966,7 @@ export type UserUncheckedCreateWithoutCheckInsInput = {
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCheckInsInput = {
@@ -2624,6 +2997,8 @@ export type UserUpdateWithoutCheckInsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -2638,6 +3013,7 @@ export type UserUpdateWithoutCheckInsInput = {
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCheckInsInput = {
@@ -2653,6 +3029,8 @@ export type UserUncheckedUpdateWithoutCheckInsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2667,6 +3045,7 @@ export type UserUncheckedUpdateWithoutCheckInsInput = {
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPointsHistoryInput = {
@@ -2681,6 +3060,8 @@ export type UserCreateWithoutPointsHistoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
@@ -2695,6 +3076,7 @@ export type UserCreateWithoutPointsHistoryInput = {
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPointsHistoryInput = {
@@ -2710,6 +3092,8 @@ export type UserUncheckedCreateWithoutPointsHistoryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
   resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
   resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
   posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
@@ -2724,6 +3108,7 @@ export type UserUncheckedCreateWithoutPointsHistoryInput = {
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPointsHistoryInput = {
@@ -2754,6 +3139,8 @@ export type UserUpdateWithoutPointsHistoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
@@ -2768,6 +3155,7 @@ export type UserUpdateWithoutPointsHistoryInput = {
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPointsHistoryInput = {
@@ -2783,6 +3171,8 @@ export type UserUncheckedUpdateWithoutPointsHistoryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
   resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
   resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
   posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2797,6 +3187,7 @@ export type UserUncheckedUpdateWithoutPointsHistoryInput = {
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -2820,6 +3211,7 @@ export type UserCountOutputType = {
   createdRooms: number
   checkIns: number
   pointsHistory: number
+  emailVerificationTokens: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2838,6 +3230,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   createdRooms?: boolean | UserCountOutputTypeCountCreatedRoomsArgs
   checkIns?: boolean | UserCountOutputTypeCountCheckInsArgs
   pointsHistory?: boolean | UserCountOutputTypeCountPointsHistoryArgs
+  emailVerificationTokens?: boolean | UserCountOutputTypeCountEmailVerificationTokensArgs
 }
 
 /**
@@ -2955,6 +3348,13 @@ export type UserCountOutputTypeCountPointsHistoryArgs<ExtArgs extends runtime.Ty
   where?: Prisma.PointsHistoryWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountEmailVerificationTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EmailVerificationTokenWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2969,6 +3369,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   isVerified?: boolean
+  emailVerifiedAt?: boolean
+  emailVerificationRequired?: boolean
   resources?: boolean | Prisma.User$resourcesArgs<ExtArgs>
   resourceTypes?: boolean | Prisma.User$resourceTypesArgs<ExtArgs>
   posts?: boolean | Prisma.User$postsArgs<ExtArgs>
@@ -2984,6 +3386,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdRooms?: boolean | Prisma.User$createdRoomsArgs<ExtArgs>
   checkIns?: boolean | Prisma.User$checkInsArgs<ExtArgs>
   pointsHistory?: boolean | Prisma.User$pointsHistoryArgs<ExtArgs>
+  emailVerificationTokens?: boolean | Prisma.User$emailVerificationTokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3000,6 +3403,8 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   isVerified?: boolean
+  emailVerifiedAt?: boolean
+  emailVerificationRequired?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -3015,6 +3420,8 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   isVerified?: boolean
+  emailVerifiedAt?: boolean
+  emailVerificationRequired?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -3030,9 +3437,11 @@ export type UserSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   isVerified?: boolean
+  emailVerifiedAt?: boolean
+  emailVerificationRequired?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "password" | "role" | "status" | "avatarStyle" | "salt" | "points" | "createdAt" | "updatedAt" | "isVerified", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "email" | "password" | "role" | "status" | "avatarStyle" | "salt" | "points" | "createdAt" | "updatedAt" | "isVerified" | "emailVerifiedAt" | "emailVerificationRequired", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   resources?: boolean | Prisma.User$resourcesArgs<ExtArgs>
   resourceTypes?: boolean | Prisma.User$resourceTypesArgs<ExtArgs>
@@ -3049,6 +3458,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdRooms?: boolean | Prisma.User$createdRoomsArgs<ExtArgs>
   checkIns?: boolean | Prisma.User$checkInsArgs<ExtArgs>
   pointsHistory?: boolean | Prisma.User$pointsHistoryArgs<ExtArgs>
+  emailVerificationTokens?: boolean | Prisma.User$emailVerificationTokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3072,6 +3482,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdRooms: Prisma.$ChatRoomPayload<ExtArgs>[]
     checkIns: Prisma.$CheckInPayload<ExtArgs>[]
     pointsHistory: Prisma.$PointsHistoryPayload<ExtArgs>[]
+    emailVerificationTokens: Prisma.$EmailVerificationTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -3086,6 +3497,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdAt: Date
     updatedAt: Date
     isVerified: boolean
+    emailVerifiedAt: Date | null
+    emailVerificationRequired: boolean
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -3495,6 +3908,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   createdRooms<T extends Prisma.User$createdRoomsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdRoomsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatRoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   checkIns<T extends Prisma.User$checkInsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$checkInsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pointsHistory<T extends Prisma.User$pointsHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pointsHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  emailVerificationTokens<T extends Prisma.User$emailVerificationTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailVerificationTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3536,6 +3950,8 @@ export interface UserFieldRefs {
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"User", 'DateTime'>
   readonly isVerified: Prisma.FieldRef<"User", 'Boolean'>
+  readonly emailVerifiedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly emailVerificationRequired: Prisma.FieldRef<"User", 'Boolean'>
 }
     
 
@@ -4281,6 +4697,30 @@ export type User$pointsHistoryArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.PointsHistoryScalarFieldEnum | Prisma.PointsHistoryScalarFieldEnum[]
+}
+
+/**
+ * User.emailVerificationTokens
+ */
+export type User$emailVerificationTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the EmailVerificationToken
+   */
+  select?: Prisma.EmailVerificationTokenSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the EmailVerificationToken
+   */
+  omit?: Prisma.EmailVerificationTokenOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EmailVerificationTokenInclude<ExtArgs> | null
+  where?: Prisma.EmailVerificationTokenWhereInput
+  orderBy?: Prisma.EmailVerificationTokenOrderByWithRelationInput | Prisma.EmailVerificationTokenOrderByWithRelationInput[]
+  cursor?: Prisma.EmailVerificationTokenWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EmailVerificationTokenScalarFieldEnum | Prisma.EmailVerificationTokenScalarFieldEnum[]
 }
 
 /**

@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
+import { useRuntimeConfig } from "#imports";
 import prisma from "~/lib/prisma";
-import bcrypt from "bcryptjs";
 import type { JwtPayload } from "jsonwebtoken";
+import { hashPassword, verifyAndUpgradePassword } from "~/server/utils/password";
 
 const config = useRuntimeConfig();
 const JWT_SECRET = config.jwtSecret; // 从环境变量中读取 JWT 密钥
@@ -11,13 +12,15 @@ export const registerUser = async () => {
   const email = config.adminEmail;
   const password = config.adminPassword;
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = await hashPassword(password);
   const user = await prisma.user.create({
     data: {
       username,
       email,
       password: hashedPassword,
       role: 'admin',
+      isVerified: true,
+      emailVerifiedAt: new Date(),
     },
   });
 
@@ -34,8 +37,8 @@ export const loginUser = async (email: string, password: string) => {
   if (!user) {
     return null;
   }
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
+  const passwordResult = await verifyAndUpgradePassword(user, password);
+  if (!passwordResult.isValid) {
     return null;
   }
   const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1d" });

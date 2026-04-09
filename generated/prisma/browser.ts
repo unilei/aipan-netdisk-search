@@ -97,6 +97,11 @@ export type DailySearchStats = Prisma.DailySearchStatsModel
  */
 export type UserVodConfig = Prisma.UserVodConfigModel
 /**
+ * Model EmailVerificationToken
+ * 
+ */
+export type EmailVerificationToken = Prisma.EmailVerificationTokenModel
+/**
  * Model ForumCategory
  * 
  */

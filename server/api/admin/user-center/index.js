@@ -1,6 +1,8 @@
 // 处理用户列表请求和创建新用户
 import prisma from "~/lib/prisma";
-import crypto from "crypto";
+import { sendVerificationEmail } from "~/server/services/email/emailVerification";
+import { getEmailServiceConfig } from "~/server/services/email/resend";
+import { hashPassword } from "~/server/utils/password";
 
 export default defineEventHandler(async (event) => {
   // 检查认证和权限
@@ -60,6 +62,9 @@ export default defineEventHandler(async (event) => {
           createdAt: true,
           updatedAt: true,
           avatarStyle: true,
+          isVerified: true,
+          emailVerifiedAt: true,
+          emailVerificationRequired: true,
         },
       });
 
@@ -109,11 +114,13 @@ export default defineEventHandler(async (event) => {
         });
       }
 
-      // 生成盐值和密码哈希
-      const salt = crypto.randomBytes(16).toString("hex");
-      const hash = crypto
-        .pbkdf2Sync(password, salt, 1000, 64, "sha512")
-        .toString("hex");
+      const emailConfig = await getEmailServiceConfig();
+      const normalizedRole = role || "user";
+      const shouldRequireVerification =
+        normalizedRole !== "admin" &&
+        emailConfig.enabled &&
+        emailConfig.requireVerificationForNewUsers;
+      const hash = await hashPassword(password);
 
       // 创建新用户
       const newUser = await prisma.user.create({
@@ -121,9 +128,14 @@ export default defineEventHandler(async (event) => {
           username,
           email,
           password: hash,
-          salt,
-          role: role || "user",
+          role: normalizedRole,
           status: status || "active",
+          isVerified: normalizedRole === "admin" || !shouldRequireVerification,
+          emailVerifiedAt:
+            normalizedRole === "admin" || !shouldRequireVerification
+              ? new Date()
+              : null,
+          emailVerificationRequired: shouldRequireVerification,
         },
         select: {
           id: true,
@@ -132,12 +144,36 @@ export default defineEventHandler(async (event) => {
           role: true,
           status: true,
           createdAt: true,
+          isVerified: true,
+          emailVerifiedAt: true,
+          emailVerificationRequired: true,
         },
       });
 
+      if (shouldRequireVerification) {
+        try {
+          await sendVerificationEmail({
+            id: newUser.id,
+            username: newUser.username,
+            email: newUser.email,
+            isVerified: newUser.isVerified,
+          });
+        } catch (error) {
+          await prisma.user.delete({
+            where: {
+              id: newUser.id,
+            },
+          });
+
+          throw error;
+        }
+      }
+
       return {
         code: 201,
-        message: "用户创建成功",
+        message: shouldRequireVerification
+          ? "用户创建成功，验证邮件已发送"
+          : "用户创建成功",
         data: newUser,
       };
     } catch (error) {

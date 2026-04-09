@@ -88,6 +88,7 @@ jobs:
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          SETTINGS_ENCRYPTION_KEY: ${{ secrets.SETTINGS_ENCRYPTION_KEY }}
           NUXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.NUXT_PUBLIC_GITHUB_TOKEN }}
           NUXT_PUBLIC_QUARK_COOKIE: ${{ secrets.NUXT_PUBLIC_QUARK_COOKIE }}
         run: |
@@ -96,7 +97,7 @@ jobs:
           : "${DATABASE_SCHEMA:=public}"
           : "${NUXT_PUBLIC_GITHUB_BRANCH:=main}"
 
-          for name in POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB ADMIN_USER ADMIN_PASSWORD ADMIN_EMAIL JWT_SECRET; do
+          for name in POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB ADMIN_USER ADMIN_PASSWORD ADMIN_EMAIL JWT_SECRET SETTINGS_ENCRYPTION_KEY; do
             if [ -z "$(eval "printf '%s' \"\${$name:-}\"")" ]; then
               echo "$name is required." >&2
               exit 1
@@ -117,6 +118,7 @@ jobs:
           ADMIN_PASSWORD=${ADMIN_PASSWORD}
           ADMIN_EMAIL=${ADMIN_EMAIL}
           JWT_SECRET=${JWT_SECRET}
+          SETTINGS_ENCRYPTION_KEY=${SETTINGS_ENCRYPTION_KEY}
           REDIS_URL=redis://redis:6379
           NUXT_PUBLIC_GITHUB_OWNER=${NUXT_PUBLIC_GITHUB_OWNER}
           NUXT_PUBLIC_GITHUB_REPO=${NUXT_PUBLIC_GITHUB_REPO}

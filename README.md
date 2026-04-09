@@ -92,6 +92,9 @@ pnpm install
 # 2. 配置环境变量
 cp .env.example .env
 
+# 必填：用于加密后台保存的邮箱服务密钥
+# SETTINGS_ENCRYPTION_KEY=请设置一个随机长字符串
+
 # 3. 数据库设置
 npx prisma generate
 npx prisma migrate deploy
@@ -105,7 +108,14 @@ pnpm run dev
 后台管理 API 路径：
 - 登录：`/login`
 - 仪表盘：`/admin/dashboard`
+- 系统配置：`/admin/settings`
 - 网盘管理：`/admin/clouddrive`
+
+### 邮箱验证配置
+
+- 在后台 `系统配置` 页面配置 Resend API Key、发件邮箱、站点地址和验证有效期
+- Resend 的 API Key 不需要放入 `.env`，由管理员在后台保存
+- `SETTINGS_ENCRYPTION_KEY` 用于加密数据库里的邮箱服务密钥，生产环境请单独配置，不要复用默认值
 
 ## 注意事项
 
