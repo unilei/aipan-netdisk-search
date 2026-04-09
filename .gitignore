@@ -19,9 +19,8 @@ logs
 .idea
 
 # Local env files
-# .env
-# .env.*
-# !.env.example
+.env*
+!.env.example
 
 #pm2
 ecosystem.config.cjs.me
