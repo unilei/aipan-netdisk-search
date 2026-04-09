@@ -64,6 +64,7 @@ export const ModelName = {
   SearchRecord: 'SearchRecord',
   DailySearchStats: 'DailySearchStats',
   UserVodConfig: 'UserVodConfig',
+  EmailVerificationToken: 'EmailVerificationToken',
   ForumCategory: 'ForumCategory',
   ForumTopic: 'ForumTopic',
   ForumPost: 'ForumPost',
@@ -106,7 +107,9 @@ export const UserScalarFieldEnum = {
   points: 'points',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  isVerified: 'isVerified'
+  isVerified: 'isVerified',
+  emailVerifiedAt: 'emailVerifiedAt',
+  emailVerificationRequired: 'emailVerificationRequired'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -295,6 +298,19 @@ export const UserVodConfigScalarFieldEnum = {
 } as const
 
 export type UserVodConfigScalarFieldEnum = (typeof UserVodConfigScalarFieldEnum)[keyof typeof UserVodConfigScalarFieldEnum]
+
+
+export const EmailVerificationTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  emailSnapshot: 'emailSnapshot',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  consumedAt: 'consumedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EmailVerificationTokenScalarFieldEnum = (typeof EmailVerificationTokenScalarFieldEnum)[keyof typeof EmailVerificationTokenScalarFieldEnum]
 
 
 export const ForumCategoryScalarFieldEnum = {

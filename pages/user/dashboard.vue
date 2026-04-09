@@ -37,6 +37,28 @@
         </div>
       </div>
 
+      <div
+        v-if="userStore.user && !userStore.user.isVerified"
+        id="email-activation"
+        class="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-5 text-amber-900 shadow-sm dark:border-amber-700/60 dark:bg-amber-900/20 dark:text-amber-100"
+      >
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 class="text-base font-semibold">邮箱尚未激活</h2>
+            <p class="mt-1 text-sm">
+              当前邮箱 {{ userStore.user?.email }} 还没有完成验证，请尽快激活。
+            </p>
+          </div>
+          <el-button
+            type="warning"
+            :loading="emailResendLoading"
+            @click="handleResendEmailActivation"
+          >
+            重发激活邮件
+          </el-button>
+        </div>
+      </div>
+
       <!-- 数据统计 -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
@@ -201,6 +223,7 @@ definePageMeta({
 const stats = ref(null)
 const activities = ref([])
 const musicPasswordLoading = ref(false)
+const emailResendLoading = ref(false)
 
 // 获取统计数据
 const fetchStats = async () => {
@@ -291,6 +314,31 @@ const getMusicPassword = async () => {
     ElMessage.error('获取验证码失败')
   } finally {
     musicPasswordLoading.value = false
+  }
+}
+
+const handleResendEmailActivation = async () => {
+  emailResendLoading.value = true
+
+  try {
+    const res = await $fetch('/api/user/email/resend', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${userStore.token}`
+      }
+    })
+
+    if (res.code === 200) {
+      ElMessage.success(res.msg)
+      return
+    }
+
+    ElMessage.error(res.msg || '重发激活邮件失败')
+  } catch (error) {
+    console.error('重发激活邮件失败:', error)
+    ElMessage.error('重发激活邮件失败')
+  } finally {
+    emailResendLoading.value = false
   }
 }
 

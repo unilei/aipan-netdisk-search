@@ -107,6 +107,15 @@ onBeforeUnmount(() => {
               <i class="fa-solid fa-gear mr-2 text-purple-500"></i>
               {{ $t("header.user.profile") }}
             </nuxt-link>
+            <nuxt-link
+              v-if="userStore.user && !userStore.user.isVerified"
+              to="/user/dashboard#email-activation"
+              class="flex items-center px-4 py-2 text-sm text-amber-600 dark:text-amber-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              @click="dropdownVisible = false"
+            >
+              <i class="fa-solid fa-envelope-circle-check mr-2"></i>
+              激活邮箱
+            </nuxt-link>
             <div
               class="flex items-center px-4 py-2 text-sm text-red-600 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               @click="handleLogout"

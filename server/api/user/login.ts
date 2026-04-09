@@ -1,6 +1,6 @@
 import prisma from "~/lib/prisma";
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { verifyAndUpgradePassword } from "~/server/utils/password";
 
 export default defineEventHandler(async (event) => {
     const config = useRuntimeConfig();
@@ -28,11 +28,22 @@ export default defineEventHandler(async (event) => {
         }
 
         // 验证密码
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) {
+        const passwordResult = await verifyAndUpgradePassword(user, password);
+        if (!passwordResult.isValid) {
             return {
                 code: 400,
                 msg: '密码错误'
+            }
+        }
+
+        if (user.emailVerificationRequired && !user.isVerified) {
+            return {
+                code: 403,
+                msg: '请先完成邮箱验证',
+                data: {
+                    requiresEmailActivation: true,
+                    email: user.email
+                }
             }
         }
 
@@ -52,8 +63,11 @@ export default defineEventHandler(async (event) => {
                     id: user.id,
                     username: user.username,
                     email: user.email,
-                    role: user.role
-                }
+                    role: user.role,
+                    isVerified: user.isVerified,
+                    emailVerificationRequired: user.emailVerificationRequired
+                },
+                showEmailActivationPrompt: !user.isVerified
             }
         }
 

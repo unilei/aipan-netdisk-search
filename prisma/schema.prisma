@@ -29,6 +29,8 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   isVerified  Boolean  @default(false)
+  emailVerifiedAt DateTime?
+  emailVerificationRequired Boolean @default(false)
 
   resources     Resource[] // 一个用户可以有多个资源
   resourceTypes ResourceType[] // 一个用户可以创建多种资源类型
@@ -49,11 +51,13 @@ model User {
   // Check-in related
   checkIns      CheckIn[] // 用户的签到记录
   pointsHistory PointsHistory[] // 用户的积分历史
+  emailVerificationTokens EmailVerificationToken[]
 
   @@index([role])
   @@index([status])
   @@index([createdAt])
   @@index([isVerified])
+  @@index([emailVerificationRequired])
   @@index([points])
 }
 
@@ -287,6 +291,21 @@ model UserVodConfig {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model EmailVerificationToken {
+  id            Int       @id @default(autoincrement())
+  userId        Int
+  emailSnapshot String
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  consumedAt    DateTime?
+  createdAt     DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
 }
 
 // 论坛板块模型

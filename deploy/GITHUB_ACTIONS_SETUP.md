@@ -213,9 +213,27 @@ openssl rand -base64 24
 openssl rand -base64 48
 ```
 
+### 12. `SETTINGS_ENCRYPTION_KEY`
+
+用途：
+
+- 加密数据库中保存的后台邮箱服务密钥
+- 用于 Resend API Key 等敏感系统配置
+
+如何获取：
+
+- 如果已有生产环境，必须复用当前值，否则历史已保存的加密配置将无法解密
+- 如果是新部署，建议生成一个新的随机值
+
+生成方式：
+
+```bash
+openssl rand -base64 48
+```
+
 ## 二、可选 Secrets
 
-### 12. `NUXT_PUBLIC_GITHUB_TOKEN`
+### 13. `NUXT_PUBLIC_GITHUB_TOKEN`
 
 用途：
 
@@ -234,7 +252,7 @@ openssl rand -base64 48
 
 - 对目标仓库至少有 `Contents: Read and write`
 
-### 13. `NUXT_PUBLIC_QUARK_COOKIE`
+### 14. `NUXT_PUBLIC_QUARK_COOKIE`
 
 用途：
 

@@ -33,7 +33,8 @@ export default defineEventHandler(async (event) => {
                 avatarStyle: true,
                 points: true,
                 createdAt: false,
-                isVerified: true
+                isVerified: true,
+                emailVerificationRequired: true
             }
         });
 

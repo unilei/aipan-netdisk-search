@@ -213,6 +213,9 @@ export default defineNuxtConfig({
     adminPassword: process.env.NUXT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD,
     adminEmail: process.env.NUXT_ADMIN_EMAIL || process.env.ADMIN_EMAIL,
     jwtSecret: process.env.NUXT_JWT_SECRET || process.env.JWT_SECRET,
+    settingsEncryptionKey:
+      process.env.NUXT_SETTINGS_ENCRYPTION_KEY ||
+      process.env.SETTINGS_ENCRYPTION_KEY,
     pansouApiUrls: process.env.NUXT_PANSOU_API_URLS || process.env.PANSOU_API_URLS || 'https://so.252035.xyz/api/search,https://pansou.aipan.me/api/search',
     public: {
       GITHUB_OWNER: process.env.NUXT_PUBLIC_GITHUB_OWNER,

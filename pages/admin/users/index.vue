@@ -68,6 +68,13 @@
                     </el-table-column>
                     <el-table-column prop="username" label="用户名" min-width="120" />
                     <el-table-column prop="email" label="邮箱" min-width="180" />
+                    <el-table-column prop="isVerified" label="邮箱状态" width="140">
+                        <template #default="scope">
+                            <el-tag :type="scope.row.isVerified ? 'success' : 'warning'">
+                                {{ scope.row.isVerified ? '已激活' : '未激活' }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="role" label="角色" width="120">
                         <template #default="scope">
                             <el-tag
@@ -394,13 +401,13 @@ const submitForm = async () => {
                     // 刷新列表
                     fetchUsers()
 
-                    ElMessage.success('用户创建成功')
+                    ElMessage.success(res.message || '用户创建成功')
                 }
 
                 dialogVisible.value = false
             } catch (error) {
                 console.error('Failed to save user:', error)
-                ElMessage.error(error.message || '操作失败')
+                ElMessage.error(error?.data?.message || error?.message || '操作失败')
             }
         }
     })

@@ -15,6 +15,134 @@
         </div>
       </div>
 
+      <!-- 邮箱服务配置 -->
+      <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-semibold dark:text-gray-200">
+              邮箱服务配置
+            </h2>
+            <el-tag v-if="emailForm.enabled" type="success" size="small">
+              已启用
+            </el-tag>
+            <el-tag v-else type="info" size="small">已禁用</el-tag>
+          </div>
+          <div class="flex items-center gap-4">
+            <el-switch
+              v-model="emailForm.enabled"
+              active-text="启用验证"
+              inactive-text="关闭验证"
+              class="ml-2"
+            />
+          </div>
+        </div>
+
+        <el-form
+          ref="emailFormRef"
+          :model="emailForm"
+          :rules="emailRules"
+          label-width="140px"
+        >
+          <el-form-item label="邮件服务商">
+            <el-input value="Resend" disabled />
+          </el-form-item>
+
+          <el-form-item label="Resend API Key" prop="apiKey">
+            <el-input
+              v-model="emailForm.apiKey"
+              type="password"
+              show-password
+              :placeholder="
+                emailConfigMeta.hasApiKey
+                  ? `已配置：${emailConfigMeta.apiKeyMasked}`
+                  : '请输入 Resend API Key'
+              "
+            />
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              留空表示继续使用当前已保存的 API Key
+            </div>
+          </el-form-item>
+
+          <el-form-item label="发件邮箱" prop="fromEmail">
+            <el-input
+              v-model="emailForm.fromEmail"
+              placeholder="noreply@yourdomain.com"
+            />
+          </el-form-item>
+
+          <el-form-item label="发件人名称">
+            <el-input
+              v-model="emailForm.fromName"
+              placeholder="爱盼迷"
+            />
+          </el-form-item>
+
+          <el-form-item label="Reply-To" prop="replyTo">
+            <el-input
+              v-model="emailForm.replyTo"
+              placeholder="support@yourdomain.com"
+            />
+          </el-form-item>
+
+          <el-form-item label="站点地址" prop="siteUrl">
+            <el-input
+              v-model="emailForm.siteUrl"
+              placeholder="https://www.aipan.me"
+            />
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              邮件中的激活链接将指向该地址下的 /email-verify 页面
+            </div>
+          </el-form-item>
+
+          <el-form-item label="激活有效期(分钟)" prop="verificationExpireMinutes">
+            <el-input-number
+              v-model="emailForm.verificationExpireMinutes"
+              :min="5"
+              :max="1440"
+              :step="5"
+              class="w-full"
+            />
+          </el-form-item>
+
+          <el-form-item label="新用户验证">
+            <el-switch
+              v-model="emailForm.requireVerificationForNewUsers"
+              active-text="注册必须激活"
+              inactive-text="注册后直接可用"
+            />
+          </el-form-item>
+
+          <el-form-item label="测试邮箱">
+            <div class="w-full space-y-3">
+              <el-input
+                v-model="emailForm.testEmail"
+                placeholder="输入一个测试邮箱，发送测试邮件"
+              />
+              <el-button
+                type="warning"
+                :loading="emailTesting"
+                @click="handleEmailTest"
+              >
+                发送测试邮件
+              </el-button>
+            </div>
+          </el-form-item>
+
+          <el-form-item>
+            <div class="flex items-center gap-4">
+              <el-button
+                type="primary"
+                @click="handleEmailSubmit"
+                :loading="emailLoading"
+              >
+                保存配置
+              </el-button>
+              <el-button @click="resetEmailForm">重置表单</el-button>
+            </div>
+          </el-form-item>
+        </el-form>
+      </div>
+
       <!-- 群二维码配置 -->
       <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
         <div class="flex items-center justify-between mb-4">
@@ -326,7 +454,10 @@ definePageMeta({
 });
 
 const formRef = ref(null);
+const emailFormRef = ref(null);
 const loading = ref(false);
+const emailLoading = ref(false);
+const emailTesting = ref(false);
 const musicLoading = ref(false);
 const groupQrLoading = ref(false);
 const resourceTypes = ref([]);
@@ -343,6 +474,24 @@ const groupQrForm = reactive({
   qrCodeUrl: "",
   showInHeader: true,
   showInSearchResults: true,
+});
+
+const emailConfigMeta = reactive({
+  hasApiKey: false,
+  apiKeyMasked: "",
+});
+
+const emailForm = reactive({
+  enabled: false,
+  provider: "resend",
+  apiKey: "",
+  fromEmail: "",
+  fromName: "爱盼迷",
+  replyTo: "",
+  siteUrl: "",
+  verificationExpireMinutes: 60,
+  requireVerificationForNewUsers: true,
+  testEmail: "",
 });
 
 const DEFAULT_API_URL = "http://127.0.0.1:5000/api/quark/sharepage/save";
@@ -362,6 +511,97 @@ const musicRules = {
   password: [
     { required: true, message: "请输入访问密码", trigger: "blur" },
     { min: 6, message: "密码长度不能少于6位", trigger: "blur" },
+  ],
+};
+
+const validateEmailAddress = (_rule, value, callback) => {
+  if (!value) {
+    callback();
+    return;
+  }
+
+  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  if (!isValid) {
+    callback(new Error("请输入有效的邮箱地址"));
+    return;
+  }
+
+  callback();
+};
+
+const validateEmailApiKey = (_rule, value, callback) => {
+  if (!emailForm.enabled) {
+    callback();
+    return;
+  }
+
+  if (!value && !emailConfigMeta.hasApiKey) {
+    callback(new Error("启用邮箱验证时必须配置 API Key"));
+    return;
+  }
+
+  callback();
+};
+
+const validateEmailRequired = (message) => {
+  return (_rule, value, callback) => {
+    if (!emailForm.enabled) {
+      callback();
+      return;
+    }
+
+    if (!value || !String(value).trim()) {
+      callback(new Error(message));
+      return;
+    }
+
+    callback();
+  };
+};
+
+const validateEmailSiteUrl = (_rule, value, callback) => {
+  if (!emailForm.enabled) {
+    callback();
+    return;
+  }
+
+  if (!value || !String(value).trim()) {
+    callback(new Error("请输入站点地址"));
+    return;
+  }
+
+  try {
+    new URL(value);
+    callback();
+  } catch (error) {
+    callback(new Error("请输入有效的站点地址"));
+  }
+};
+
+const validateExpireMinutes = (_rule, value, callback) => {
+  if (!emailForm.enabled) {
+    callback();
+    return;
+  }
+
+  if (typeof value !== "number" || value < 5 || value > 1440) {
+    callback(new Error("激活有效期需要在 5 到 1440 分钟之间"));
+    return;
+  }
+
+  callback();
+};
+
+const emailRules = {
+  apiKey: [{ validator: validateEmailApiKey, trigger: "blur" }],
+  fromEmail: [
+    { validator: validateEmailRequired("请输入发件邮箱"), trigger: "blur" },
+    { validator: validateEmailAddress, trigger: "blur" },
+  ],
+  replyTo: [{ validator: validateEmailAddress, trigger: "blur" }],
+  siteUrl: [{ validator: validateEmailSiteUrl, trigger: "blur" }],
+  verificationExpireMinutes: [
+    { validator: validateExpireMinutes, trigger: ["change", "blur"] },
   ],
 };
 
@@ -551,6 +791,119 @@ const getResourceTypes = async () => {
     console.error("获取资源类型失败:", error);
     ElMessage.error("获取资源类型失败");
   }
+};
+
+const getEmailConfig = async () => {
+  try {
+    const res = await $fetch("/api/admin/settings/email", {
+      headers: {
+        Authorization: `Bearer ${useCookie("token").value}`,
+      },
+    });
+
+    if (res.code === 200) {
+      emailForm.enabled = res.data.enabled ?? false;
+      emailForm.provider = res.data.provider || "resend";
+      emailForm.apiKey = "";
+      emailForm.fromEmail = res.data.fromEmail || "";
+      emailForm.fromName = res.data.fromName || "爱盼迷";
+      emailForm.replyTo = res.data.replyTo || "";
+      emailForm.siteUrl = res.data.siteUrl || "";
+      emailForm.verificationExpireMinutes =
+        res.data.verificationExpireMinutes ?? 60;
+      emailForm.requireVerificationForNewUsers =
+        res.data.requireVerificationForNewUsers ?? true;
+      emailConfigMeta.hasApiKey = res.data.hasApiKey ?? false;
+      emailConfigMeta.apiKeyMasked = res.data.apiKeyMasked || "";
+    }
+  } catch (error) {
+    console.error("获取邮箱配置失败:", error);
+    ElMessage.error("获取邮箱配置失败");
+  }
+};
+
+const handleEmailSubmit = async () => {
+  if (!emailFormRef.value) return;
+
+  try {
+    const valid = await emailFormRef.value.validate();
+    if (!valid) return;
+
+    emailLoading.value = true;
+
+    const res = await $fetch("/api/admin/settings/email", {
+      method: "POST",
+      body: {
+        enabled: emailForm.enabled,
+        provider: emailForm.provider,
+        apiKey: emailForm.apiKey,
+        fromEmail: emailForm.fromEmail,
+        fromName: emailForm.fromName,
+        replyTo: emailForm.replyTo,
+        siteUrl: emailForm.siteUrl,
+        verificationExpireMinutes: emailForm.verificationExpireMinutes,
+        requireVerificationForNewUsers:
+          emailForm.requireVerificationForNewUsers,
+      },
+      headers: {
+        Authorization: `Bearer ${useCookie("token").value}`,
+      },
+    });
+
+    if (res.code === 200) {
+      ElMessage.success("邮箱配置保存成功");
+      await getEmailConfig();
+    } else {
+      ElMessage.error(res.msg || "保存失败");
+    }
+  } catch (error) {
+    console.error("保存邮箱配置失败:", error);
+    ElMessage.error(error?.data?.msg || "保存邮箱配置失败");
+  } finally {
+    emailLoading.value = false;
+  }
+};
+
+const handleEmailTest = async () => {
+  if (!emailForm.testEmail) {
+    ElMessage.error("请输入测试邮箱");
+    return;
+  }
+
+  emailTesting.value = true;
+
+  try {
+    const res = await $fetch("/api/admin/settings/email/test", {
+      method: "POST",
+      body: {
+        toEmail: emailForm.testEmail,
+      },
+      headers: {
+        Authorization: `Bearer ${useCookie("token").value}`,
+      },
+    });
+
+    if (res.code === 200) {
+      ElMessage.success(res.msg || "测试邮件发送成功");
+    } else {
+      ElMessage.error(res.msg || "测试邮件发送失败");
+    }
+  } catch (error) {
+    console.error("发送测试邮件失败:", error);
+    ElMessage.error(error?.data?.msg || "发送测试邮件失败");
+  } finally {
+    emailTesting.value = false;
+  }
+};
+
+const resetEmailForm = () => {
+  ElMessageBox.confirm("确定要重置邮箱配置表单吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    getEmailConfig();
+  });
 };
 
 // 获取配置
@@ -829,6 +1182,7 @@ const getGroupQrConfig = async () => {
 
 onMounted(() => {
   getResourceTypes();
+  getEmailConfig();
   getConfig();
   getMusicConfig();
   getGroupQrConfig();

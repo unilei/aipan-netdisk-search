@@ -1,4 +1,6 @@
 import prisma from "~/lib/prisma";
+import { sendVerificationEmail } from "~/server/services/email/emailVerification";
+import { getEmailServiceConfig } from "~/server/services/email/resend";
 
 export default defineEventHandler(async (event) => {
     const userId = event.context.user.userId;
@@ -30,13 +32,40 @@ export default defineEventHandler(async (event) => {
             });
         }
 
+        const currentUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                id: true,
+                username: true,
+                email: true,
+                isVerified: true,
+                emailVerificationRequired: true
+            }
+        });
+
+        if (!currentUser) {
+            throw createError({
+                statusCode: 404,
+                message: '用户不存在'
+            });
+        }
+
+        const emailChanged = currentUser.email !== email;
+        const emailConfig = await getEmailServiceConfig();
+        const shouldRequireReverification = emailChanged && emailConfig.enabled;
+
         // 更新用户信息
         const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
                 username,
                 email,
-                avatarStyle: avatarStyle || 'avataaars'
+                avatarStyle: avatarStyle || 'avataaars',
+                isVerified: shouldRequireReverification ? false : currentUser.isVerified,
+                emailVerifiedAt: shouldRequireReverification ? null : undefined,
+                emailVerificationRequired: shouldRequireReverification
+                    ? true
+                    : currentUser.emailVerificationRequired
             },
             select: {
                 id: true,
@@ -45,13 +74,31 @@ export default defineEventHandler(async (event) => {
                 role: true,
                 avatarStyle: true,
                 createdAt: true,
-                isVerified: true
+                isVerified: true,
+                emailVerificationRequired: true
             }
         });
 
+        let message = '更新成功';
+
+        if (shouldRequireReverification) {
+            try {
+                await sendVerificationEmail({
+                    id: updatedUser.id,
+                    username: updatedUser.username,
+                    email: updatedUser.email,
+                    isVerified: updatedUser.isVerified
+                });
+                message = '邮箱已更新，请重新激活';
+            } catch (error) {
+                console.error('邮箱变更后发送验证邮件失败:', error);
+                message = '邮箱已更新，但验证邮件发送失败，请稍后重试';
+            }
+        }
+
         return {
             code: 200,
-            msg: '更新成功',
+            msg: message,
             data: updatedUser
         };
     } catch (error: any) {

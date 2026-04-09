@@ -3,6 +3,7 @@ import { onMounted } from 'vue';
 import { useUserStore } from '~/stores/user';
 
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 
 const form = reactive({
@@ -15,6 +16,8 @@ const form = reactive({
 const formMode = ref('login');
 const formRef = ref();
 const btnLoading = ref(false);
+const pendingActivationEmail = ref('');
+const resendLoading = ref(false);
 
 // 动态表单验证规则
 const formRules = computed(() => ({
@@ -44,9 +47,39 @@ const resetForm = () => {
 const toggleMode = (e) => {
   e.preventDefault();
   formMode.value = formMode.value === 'login' ? 'register' : 'login';
+  pendingActivationEmail.value = '';
   nextTick(() => {
     resetForm();
   });
+};
+
+const handleResendActivation = async () => {
+  if (!pendingActivationEmail.value) {
+    return;
+  }
+
+  resendLoading.value = true;
+
+  try {
+    const res = await $fetch('/api/user/email/resend', {
+      method: 'POST',
+      body: {
+        email: pendingActivationEmail.value,
+      },
+    });
+
+    if (res?.code === 200) {
+      ElMessage.success(res.msg);
+      return;
+    }
+
+    ElMessage.error(res?.msg || '重发激活邮件失败');
+  } catch (error) {
+    console.error('重发激活邮件失败:', error);
+    ElMessage.error('重发激活邮件失败');
+  } finally {
+    resendLoading.value = false;
+  }
 };
 
 // 表单提交处理
@@ -85,7 +118,18 @@ const handleSubmit = async () => {
     });
 
     if (!res || res.code !== 200) {
+      if (res?.data?.requiresEmailActivation) {
+        pendingActivationEmail.value = res.data.email || form.email;
+      }
       ElMessage.error(res?.msg || `${formMode.value === 'login' ? '登录' : '注册'}失败`);
+      return;
+    }
+
+    if (res.data?.requiresEmailActivation) {
+      pendingActivationEmail.value = res.data.email || form.email;
+      ElMessage.success(res.msg);
+      formMode.value = 'login';
+      form.password = '';
       return;
     }
 
@@ -93,6 +137,10 @@ const handleSubmit = async () => {
     userStore.clearUser();
     await nextTick(); // 确保清除操作完成
     userStore.setUser(res.data.user, res.data.token);
+
+    if (res.data?.showEmailActivationPrompt) {
+      pendingActivationEmail.value = res.data.user?.email || '';
+    }
 
     ElMessage.success(res.msg);
 
@@ -123,6 +171,10 @@ const handleKeyPress = (e) => {
 
 // 添加登录状态检查
 onMounted(async () => {
+  if (route.query.verified === '1') {
+    ElMessage.success('邮箱激活成功，请登录');
+  }
+
   if (userStore.loggedIn) {
     // 根据用户角色跳转
     const redirectPath = userStore.isAdmin ? '/admin/dashboard' : '/user/dashboard';
@@ -143,6 +195,22 @@ onMounted(async () => {
         <p class="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
           {{ formMode === 'login' ? '登录您的账号以访问全部功能' : '注册新账号加入我们的社区' }}
         </p>
+
+        <div
+          v-if="pendingActivationEmail"
+          class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-700/60 dark:bg-amber-900/20 dark:text-amber-200"
+        >
+          <p>邮箱 {{ pendingActivationEmail }} 尚未激活，请先完成邮箱验证。</p>
+          <button
+            type="button"
+            class="mt-3 inline-flex items-center rounded-md bg-amber-500 px-3 py-2 text-xs font-medium text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-70"
+            :disabled="resendLoading"
+            @click="handleResendActivation"
+          >
+            <i v-if="resendLoading" class="fa-solid fa-circle-notch fa-spin mr-2"></i>
+            重发激活邮件
+          </button>
+        </div>
 
         <!-- 表单 -->
         <el-form ref="formRef" :model="form" :rules="formRules" label-position="top" class="space-y-5"
