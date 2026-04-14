@@ -58,10 +58,13 @@ const currentChannelName = computed(() => {
 
 const getTvSources = async () => {
   try {
-    const res = await $fetch("https://r2cf.aipan.me/tv.json");
+    const res = await $fetch("/api/tv/sources");
     if (videoSrc.value === "") videoSrc.value = res[0]?.url ?? "";
     tvSources.value = res;
-  } catch (e) { console.error("Error fetching TV sources:", e); }
+  } catch (e) {
+    console.error("Error fetching TV sources:", e);
+    ElMessage.error("直播源加载失败，请稍后重试");
+  }
 };
 
 const loadHLS = (url) => {

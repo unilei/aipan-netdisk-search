@@ -209,6 +209,22 @@ const router = useRouter();
 const userStore = useUserStore();
 const user = computed(() => userStore.user);
 const slug = route.params.slug;
+
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  headerIds: true,
+  langPrefix: "hljs language-",
+  highlight: function (code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(code, { language: lang }).value;
+      } catch (__) { }
+    }
+    return hljs.highlightAuto(code).value;
+  },
+});
+
 const {
   data,
   pending: loading,
@@ -226,6 +242,51 @@ const posts = computed(() => {
   return data.value.data.posts;
 });
 
+const topicDescription = computed(() => {
+  if (!topic.value?.content) {
+    return "浏览 AIPAN 论坛主题详情与回复讨论。";
+  }
+
+  const plainText = topic.value.content
+    .replace(/#+\s/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[*_`>-]/g, "")
+    .replace(/\n/g, " ")
+    .trim();
+
+  return plainText.length > 160 ? `${plainText.slice(0, 160)}...` : plainText;
+});
+
+useHead({
+  title: computed(() =>
+    topic.value?.title ? `${topic.value.title} - AIPAN论坛` : "AIPAN论坛主题"
+  ),
+  meta: [
+    {
+      name: "description",
+      content: topicDescription,
+    },
+    { name: "robots", content: "index,follow" },
+    { property: "og:type", content: "article" },
+    {
+      property: "og:title",
+      content: computed(() =>
+        topic.value?.title ? `${topic.value.title} - AIPAN论坛` : "AIPAN论坛主题"
+      ),
+    },
+    {
+      property: "og:description",
+      content: topicDescription,
+    },
+  ],
+  link: [
+    {
+      rel: "canonical",
+      href: computed(() => `https://www.aipan.me/forum/topic/${slug}`),
+    },
+  ],
+});
+
 // 检查用户是否有权限管理该主题（管理员或版主）
 const canModerate = computed(() => {
   if (!user.value) return false;
@@ -237,32 +298,9 @@ const submitting = ref(false);
 const replyingTo = ref(null); // 添加一个变量来跟踪回复的父评论ID
 const mdEditorRef = ref(null); // 更改编辑器引用名称
 
-const mounted = ref(false);
-
-// 配置 marked.js
-onMounted(() => {
-  mounted.value = true;
-
-  // 配置 marked.js
-  marked.setOptions({
-    gfm: true,
-    breaks: true,
-    headerIds: true,
-    langPrefix: "hljs language-",
-    highlight: function (code, lang) {
-      if (lang && hljs.getLanguage(lang)) {
-        try {
-          return hljs.highlight(code, { language: lang }).value;
-        } catch (__) { }
-      }
-      return hljs.highlightAuto(code).value;
-    },
-  });
-});
-
 // Computed property to safely parse the topic content
 const parsedContent = computed(() => {
-  if (!topic.value?.content || !mounted.value) return "";
+  if (!topic.value?.content) return "";
   return marked.parse(topic.value.content);
 });
 

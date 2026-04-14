@@ -69,69 +69,63 @@ const formatDate = (date) => {
     return moment(date).format('YYYY-MM-DD')
 }
 
-const postsData = ref([])
 const page = ref(1)
 const pageSize = ref(16)
-const totalCount = ref(0)
 const categoryId = ref(undefined)
-const loading = ref(true)
 
-const getCategories = async () => {
-    const res = await $fetch('/api/blog/category/get', {
-        method: 'GET',
-        headers: {
-            "authorization": "Bearer " + useCookie('token').value
-        }
-    })
-    return res.data;
-}
-
-const getPosts = async () => {
-    loading.value = true
-    try {
-        let queryJson = {
-            page: page.value,
-            pageSize: pageSize.value
-        }
-        if (categoryId.value) {
-            queryJson.categoryId = categoryId.value
-        }
-        const res = await $fetch('/api/blog/posts/get', {
-            method: 'GET',
-            query: queryJson,
-        })
-        totalCount.value = res.totalCount;
-        postsData.value = res.posts || [];
-    } catch (error) {
-        console.error('Failed to fetch posts:', error)
-    } finally {
-        loading.value = false
+const buildPostsQuery = () => {
+    const queryJson = {
+        page: page.value,
+        pageSize: pageSize.value
     }
+
+    if (categoryId.value) {
+        queryJson.categoryId = categoryId.value
+    }
+
+    return queryJson
 }
+
+const { data: categoriesResponse } = await useAsyncData('blog-categories', async () => {
+    return await $fetch('/api/blog/category/get', {
+        method: 'GET',
+    })
+})
+
+const categoriesData = computed(() => categoriesResponse.value?.data || [])
+
+const {
+    data: postsResponse,
+    pending: loading,
+} = await useAsyncData(
+    'blog-posts',
+    async () => {
+        return await $fetch('/api/blog/posts/get', {
+            method: 'GET',
+            query: buildPostsQuery(),
+        })
+    },
+    {
+        watch: [page, pageSize, categoryId]
+    }
+)
+
+const postsData = computed(() => postsResponse.value?.posts || [])
+const totalCount = computed(() => postsResponse.value?.totalCount || 0)
 
 const handleCurrentChange = async (val) => {
     page.value = val
-    await getPosts()
 }
 
 const handleSizeChange = async (val) => {
     pageSize.value = val
-    await getPosts()
+    page.value = 1
 }
 
 const handleSelectCategory = (val) => {
     categoryId.value = val
-    getPosts()
+    page.value = 1
 }
-
-
-const { data: categoriesData } = await useAsyncData('categories', async () => {
-    return await getCategories()
-})
-
-onMounted(async () => {
-    await getPosts()
-})
 </script>
 
 <template>
