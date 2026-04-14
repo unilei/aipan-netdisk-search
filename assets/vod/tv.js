@@ -5,6 +5,7 @@ export const weishiSources = [];
 export const guojiSources = [];
 
 export const tiyuSources = [];
+export const gangtaiSources = [];
 export const sourcesAipan = [
   {
     label: "央视",
