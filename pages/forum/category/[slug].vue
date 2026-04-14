@@ -237,12 +237,11 @@ const page = ref(parseInt(route.query.page || "1"));
 const pageSize = 20;
 const categoryId = ref(null);
 
-// 先获取分类信息，移除 await 使其异步加载
 const {
   data: categoryData,
   pending: categoryLoading,
   refresh: refreshCategory,
-} = useFetch(`/api/forum/categories`);
+} = await useFetch(`/api/forum/categories`);
 
 const category = computed(() => {
   if (!categoryData.value?.success) return null;
@@ -253,12 +252,50 @@ const category = computed(() => {
   return foundCategory;
 });
 
-// 异步获取主题列表，移除 await
+useHead({
+  title: computed(() =>
+    category.value?.name
+      ? `${category.value.name} - AIPAN论坛`
+      : "AIPAN论坛分类"
+  ),
+  meta: [
+    {
+      name: "description",
+      content: computed(() =>
+        category.value?.description ||
+        "浏览 AIPAN 论坛分类下的最新主题讨论。"
+      ),
+    },
+    { name: "robots", content: "index,follow" },
+    {
+      property: "og:title",
+      content: computed(() =>
+        category.value?.name
+          ? `${category.value.name} - AIPAN论坛`
+          : "AIPAN论坛分类"
+      ),
+    },
+    {
+      property: "og:description",
+      content: computed(() =>
+        category.value?.description ||
+        "浏览 AIPAN 论坛分类下的最新主题讨论。"
+      ),
+    },
+  ],
+  link: [
+    {
+      rel: "canonical",
+      href: computed(() => `https://www.aipan.me/forum/category/${slug}`),
+    },
+  ],
+});
+
 const {
   data,
   pending: topicsLoading,
   refresh: refreshTopics,
-} = useFetch(`/api/forum/topics`, {
+} = await useFetch(`/api/forum/topics`, {
   query: {
     categoryId: computed(() => categoryId.value),
     page: page,
@@ -322,11 +359,6 @@ const navigateToLogin = () => {
     router.push("/login?redirect=/forum/create");
   }
 };
-
-onMounted(() => {
-  refreshTopics();
-  refreshCategory();
-});
 
 watch(
   () => route.query.page,

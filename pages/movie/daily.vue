@@ -1,78 +1,6 @@
 <script setup>
 const { data: movieData } = await useFetch('https://netdisk.aipan.me/api/movie/daily')
 
-onMounted(() => {
-    console.log(movieData.value)
-    // SEO配置
-    useHead({
-        title: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐 | AIPAN.ME` : '每日电影推荐 | AIPAN.ME'),
-        meta: [
-            {
-                name: 'description',
-                content: computed(() =>
-                    movieInfo.value?.剧情简介
-                        ? `${movieInfo.value.剧情简介.slice(0, 150)}...`
-                        : '每日精选优质电影推荐，发现值得一看的电影，包含影片简介、评分、影评等详细信息。'
-                )
-            },
-            {
-                name: 'keywords',
-                content: computed(() =>
-                    movieInfo.value
-                        ? `${movieInfo.value.电影名称},${movieInfo.value.导演},${movieInfo.value.主演},电影推荐,影评,电影评分`
-                        : '每日电影,电影推荐,电影评分,电影资讯,电影点评'
-                )
-            },
-            // Open Graph / Facebook
-            { property: 'og:type', content: 'article' },
-            {
-                property: 'og:title',
-                content: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐` : '每日电影推荐 | AIPAN.ME')
-            },
-            {
-                property: 'og:description',
-                content: computed(() =>
-                    movieInfo.value?.剧情简介
-                        ? `${movieInfo.value.剧情简介.slice(0, 150)}...`
-                        : '每日精选优质电影推荐，发现值得一看的电影。'
-                )
-            },
-            {
-                property: 'og:image',
-                content: computed(() => movieData.value?.data?.poster_url)
-            },
-            // Twitter
-            { name: 'twitter:card', content: 'summary_large_image' },
-            {
-                name: 'twitter:title',
-                content: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐` : '每日电影推荐 | AIPAN.ME')
-            },
-            {
-                name: 'twitter:description',
-                content: computed(() =>
-                    movieInfo.value?.剧情简介
-                        ? `${movieInfo.value.剧情简介.slice(0, 150)}...`
-                        : '每日精选优质电影推荐，发现值得一看的电影。'
-                )
-            },
-            {
-                name: 'twitter:image',
-                content: computed(() => movieData.value?.data?.poster_url)
-            },
-            // 其他重要的meta标签
-            { name: 'robots', content: 'index,follow' },
-            { name: 'author', content: 'AIPAN.ME' },
-            {
-                name: 'article:published_time',
-                content: computed(() => movieInfo.value?.上映日期 || new Date().toISOString())
-            },
-        ],
-        link: [
-            { rel: 'canonical', href: 'https://www.aipan.me/movie/daily' }
-        ]
-    })
-})
-
 // 解析电影信息字符串为对象
 const movieInfo = computed(() => {
     if (!movieData.value?.data?.movie_info) return null
@@ -89,6 +17,75 @@ const movieInfo = computed(() => {
     })
 
     return info
+})
+
+// SEO配置
+useHead({
+    title: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐 | AIPAN.ME` : '每日电影推荐 | AIPAN.ME'),
+    meta: [
+        {
+            name: 'description',
+            content: computed(() =>
+                movieInfo.value?.剧情简介
+                    ? `${movieInfo.value.剧情简介.slice(0, 150)}...`
+                    : '每日精选优质电影推荐，发现值得一看的电影，包含影片简介、评分、影评等详细信息。'
+            )
+        },
+        {
+            name: 'keywords',
+            content: computed(() =>
+                movieInfo.value
+                    ? `${movieInfo.value.电影名称},${movieInfo.value.导演},${movieInfo.value.主演},电影推荐,影评,电影评分`
+                    : '每日电影,电影推荐,电影评分,电影资讯,电影点评'
+            )
+        },
+        // Open Graph / Facebook
+        { property: 'og:type', content: 'article' },
+        {
+            property: 'og:title',
+            content: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐` : '每日电影推荐 | AIPAN.ME')
+        },
+        {
+            property: 'og:description',
+            content: computed(() =>
+                movieInfo.value?.剧情简介
+                    ? `${movieInfo.value.剧情简介.slice(0, 150)}...`
+                    : '每日精选优质电影推荐，发现值得一看的电影。'
+            )
+        },
+        {
+            property: 'og:image',
+            content: computed(() => movieData.value?.data?.poster_url)
+        },
+        // Twitter
+        { name: 'twitter:card', content: 'summary_large_image' },
+        {
+            name: 'twitter:title',
+            content: computed(() => movieInfo.value?.电影名称 ? `${movieInfo.value.电影名称} - 每日电影推荐` : '每日电影推荐 | AIPAN.ME')
+        },
+        {
+            name: 'twitter:description',
+            content: computed(() =>
+                movieInfo.value?.剧情简介
+                    ? `${movieInfo.value.剧情简介.slice(0, 150)}...`
+                    : '每日精选优质电影推荐，发现值得一看的电影。'
+            )
+        },
+        {
+            name: 'twitter:image',
+            content: computed(() => movieData.value?.data?.poster_url)
+        },
+        // 其他重要的meta标签
+        { name: 'robots', content: 'index,follow' },
+        { name: 'author', content: 'AIPAN.ME' },
+        {
+            name: 'article:published_time',
+            content: computed(() => movieInfo.value?.上映日期 || new Date().toISOString())
+        },
+    ],
+    link: [
+        { rel: 'canonical', href: 'https://www.aipan.me/movie/daily' }
+    ]
 })
 
 // 解析影评信息

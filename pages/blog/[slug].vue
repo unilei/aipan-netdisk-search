@@ -6,7 +6,7 @@ import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 
 const route = useRoute();
-const loading = ref(true);
+const slug = computed(() => String(route.params.slug || ""));
 const mounted = ref(false);
 const showToc = ref(false);
 const activeHeading = ref("");
@@ -14,21 +14,46 @@ const headings = ref([]);
 const showShareMenu = ref(false);
 const copySuccess = ref(false);
 
-const { data: blog } = await useAsyncData(
-  "blog",
-  async () => {
-    loading.value = true;
-    try {
-      const res = await $fetch(`/api/blog/posts/${route.params.slug}`, {
-        method: "GET",
-      });
-      return res.data;
-    } finally {
-      loading.value = false;
+marked.setOptions({
+  gfm: true,
+  breaks: true,
+  headerIds: true,
+  langPrefix: "hljs language-",
+  highlight: function (code, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(code, { language: lang }).value;
+      } catch (__) { }
     }
+    return hljs.highlightAuto(code).value;
+  },
+});
+
+const { data: blog, pending: loading } = await useAsyncData(
+  "blog-detail",
+  async () => {
+    if (!slug.value) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "文章不存在",
+      });
+    }
+
+    const res = await $fetch(`/api/blog/posts/${slug.value}`, {
+      method: "GET",
+    });
+
+    if (!res?.data) {
+      throw createError({
+        statusCode: 404,
+        statusMessage: "文章不存在",
+      });
+    }
+
+    return res.data;
   },
   {
-    server: false,
+    watch: [slug],
   }
 );
 
@@ -133,7 +158,7 @@ useHead({
     { name: "robots", content: "index,follow" },
     {
       name: "author",
-      content: computed(() => blog.value?.author || "AIPAN.ME"),
+      content: computed(() => blog.value?.creator?.username || "AIPAN.ME"),
     },
     {
       name: "article:published_time",
@@ -177,7 +202,7 @@ useHead({
           image: blog.value.cover || "/blog-default-og.jpg",
           author: {
             "@type": "Person",
-            name: blog.value.author || "AIPAN.ME",
+            name: blog.value.creator?.username || "AIPAN.ME",
           },
           publisher: {
             "@type": "Organization",
@@ -201,7 +226,7 @@ useHead({
 
 // Computed property to safely parse the blog content
 const parsedContent = computed(() => {
-  if (!blog.value?.content || !mounted.value) return "";
+  if (!blog.value?.content) return "";
   return marked.parse(blog.value.content);
 });
 
@@ -385,22 +410,6 @@ const handleResize = () => {
 
 onMounted(() => {
   mounted.value = true;
-  // 配置 marked.js
-  marked.setOptions({
-    gfm: true,
-    breaks: true,
-    headerIds: true,
-    langPrefix: "hljs language-",
-    highlight: function (code, lang) {
-      if (lang && hljs.getLanguage(lang)) {
-        try {
-          return hljs.highlight(code, { language: lang }).value;
-        } catch (__) { }
-      }
-      return hljs.highlightAuto(code).value;
-    },
-  });
-
   // 添加事件监听
   window.addEventListener("scroll", handleScroll, { passive: true });
   window.addEventListener("resize", handleResize, { passive: true });
