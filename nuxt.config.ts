@@ -216,7 +216,7 @@ export default defineNuxtConfig({
     settingsEncryptionKey:
       process.env.NUXT_SETTINGS_ENCRYPTION_KEY ||
       process.env.SETTINGS_ENCRYPTION_KEY,
-    pansouApiUrls: process.env.NUXT_PANSOU_API_URLS || process.env.PANSOU_API_URLS || 'https://so.252035.xyz/api/search,https://pansou.aipan.me/api/search',
+    pansouApiUrls: process.env.NUXT_PANSOU_API_URLS || process.env.PANSOU_API_URLS || 'https://so.252035.xyz/api/search,https://pansou.aipan.me/api/search,https://pansou.app/api/search',
     public: {
       GITHUB_OWNER: process.env.NUXT_PUBLIC_GITHUB_OWNER,
       GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
