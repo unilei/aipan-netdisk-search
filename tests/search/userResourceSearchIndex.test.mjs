@@ -5,6 +5,7 @@ import {
   buildUserResourceAdminListQuery,
   buildUserResourceIndexDocument,
   buildUserResourceSearchQuery,
+  buildUserResourceStrictKeywordQuery,
 } from "../../server/services/search/userResourceSearchIndex.js";
 
 test("buildUserResourceIndexDocument maps published user resources into ES documents", () => {
@@ -45,11 +46,31 @@ test("buildUserResourceSearchQuery uses the fixed weighted fields and ordering",
   assert.deepEqual(buildUserResourceSearchQuery("资源", 25), {
     size: 25,
     sort: [{ _score: "desc" }, { updatedAt: "desc" }],
-    query: {
-      multi_match: {
-        query: "资源",
-        fields: ["name^5", "description^2", "typeName^2"],
-      },
+    query: buildUserResourceStrictKeywordQuery("资源"),
+  });
+});
+
+test("buildUserResourceStrictKeywordQuery avoids single-token OR matches", () => {
+  assert.deepEqual(buildUserResourceStrictKeywordQuery("一站再战"), {
+    bool: {
+      should: [
+        {
+          multi_match: {
+            query: "一站再战",
+            fields: ["name^5", "description^2", "typeName^2"],
+            type: "phrase",
+            boost: 8,
+          },
+        },
+        {
+          multi_match: {
+            query: "一站再战",
+            fields: ["name^5", "description^2", "typeName^2"],
+            operator: "and",
+          },
+        },
+      ],
+      minimum_should_match: 1,
     },
   });
 });
@@ -81,12 +102,7 @@ test("buildUserResourceAdminListQuery searches the same indexed fields", () => {
       size: 100,
       track_total_hits: true,
       sort: [{ _score: "desc" }, { updatedAt: "desc" }],
-      query: {
-        multi_match: {
-          query: "纪录片",
-          fields: ["name^5", "description^2", "typeName^2"],
-        },
-      },
+      query: buildUserResourceStrictKeywordQuery("纪录片"),
     }
   );
 });
