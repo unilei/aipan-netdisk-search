@@ -3,6 +3,7 @@ import {
     mapStoredResourceToSourceItem,
     mapUserResourceDocumentToSourceItem,
     mergeSourceItems,
+    normalizeSource1SearchName,
 } from "~/server/services/search/source1Results.js";
 import { searchPublishedUserResources } from "~/server/services/search/elasticsearchClient.js";
 interface Body {
@@ -27,7 +28,7 @@ export default defineEventHandler(async (event) => {
     const body: Body = await readBody(event);
 
     try {
-        const nameFilter = body.name ? String(body.name).trim() : undefined;
+        const nameFilter = normalizeSource1SearchName(body);
 
         if (!nameFilter) {
             return {

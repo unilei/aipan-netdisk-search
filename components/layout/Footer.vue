@@ -9,6 +9,7 @@ const footerLinks = [
   { name: 'footer.links.privacy', path: '/privacy-policy' },
   { name: 'footer.links.disclaimer', path: '/disclaimer' },
   { name: 'footer.links.copyright', path: '/copyright' },
+  { name: 'footer.links.releases', path: '/releases' },
 ];
 </script>
 

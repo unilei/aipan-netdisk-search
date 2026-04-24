@@ -21,6 +21,11 @@ const normalizeWhitespace = (value) =>
 
 export const normalizeSourceName = normalizeWhitespace;
 
+export function normalizeSource1SearchName(body) {
+  const normalizedName = normalizeWhitespace(body?.name);
+  return normalizedName || undefined;
+}
+
 export function detectLinkService(value) {
   const normalizedValue = String(value || "").trim().toLowerCase();
 

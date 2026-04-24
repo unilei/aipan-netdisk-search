@@ -17,6 +17,14 @@
               自动审核
             </el-button>
             <el-button
+              type="success"
+              plain
+              :loading="autoReviewQueueLoading"
+              @click="handleEnqueueAutoReview"
+            >
+              历史投稿入队
+            </el-button>
+            <el-button
               type="primary"
               @click="() => navigateTo('/admin/dashboard')"
               class="flex items-center"
@@ -195,7 +203,7 @@
           show-icon
           :closable="false"
           title="自动审核只处理待审核资源"
-          description="会检查名称/描述/类型、链接格式、重复资源和可选的网盘链接可访问性；无法确认的链接会跳过并保留人工复核。"
+          description="新提交或编辑的资源会自动加入后台队列；此处适合预检查或手动批量处理历史待审核资源。"
         />
 
         <el-form label-width="150px">
@@ -290,6 +298,7 @@ const dialogVisible = ref(false);
 const selectedResource = ref(null);
 const autoReviewDialogVisible = ref(false);
 const autoReviewLoading = ref(false);
+const autoReviewQueueLoading = ref(false);
 const autoReviewResult = ref(null);
 const autoReviewForm = reactive({
   limit: 20,
@@ -378,6 +387,49 @@ const handleAutoReview = async (dryRun) => {
     }
   } finally {
     autoReviewLoading.value = false;
+  }
+};
+
+const handleEnqueueAutoReview = async () => {
+  try {
+    await ElMessageBox.confirm(
+      "确定要把当前历史待审核资源加入自动审核队列吗？系统会按队列并发上限后台处理，并通过站内通知/邮件告知用户结果。",
+      "确认历史投稿入队",
+      {
+        confirmButtonText: "加入队列",
+        cancelButtonText: "取消",
+        type: "success",
+      }
+    );
+
+    autoReviewQueueLoading.value = true;
+    const response = await $fetch("/api/admin/user-resources/auto-review/enqueue", {
+      method: "POST",
+      body: {
+        limit: 5000,
+        notifyUser: true,
+        emailEnabled: true,
+        approveValid: true,
+        rejectInvalid: autoReviewForm.rejectInvalid,
+        requireReachable: autoReviewForm.requireReachable,
+      },
+      headers: {
+        authorization: "Bearer " + useCookie("token").value,
+      },
+    });
+
+    const data = response.data || {};
+    ElMessage.success(
+      `已入队 ${data.queued || 0} 条，重复跳过 ${data.duplicate || 0} 条，失败 ${data.failed || 0} 条`
+    );
+    await fetchResources();
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to enqueue historical user resources:", error);
+      ElMessage.error(error?.data?.message || "历史投稿入队失败");
+    }
+  } finally {
+    autoReviewQueueLoading.value = false;
   }
 };
 

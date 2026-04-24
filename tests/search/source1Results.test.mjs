@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   mergeSourceItems,
   normalizeLinks,
+  normalizeSource1SearchName,
 } from "../../server/services/search/source1Results.js";
 
 test("normalizeLinks maps stored JSON links into source links", () => {
@@ -83,4 +84,12 @@ test("mergeSourceItems keeps primary results ahead of secondary results", () => 
       links: [{ link: "https://pan.quark.cn/s/remote", pwd: "", service: "QUARK" }],
     },
   ]);
+});
+
+test("normalizeSource1SearchName tolerates empty request bodies", () => {
+  assert.equal(normalizeSource1SearchName(undefined), undefined);
+  assert.equal(normalizeSource1SearchName(null), undefined);
+  assert.equal(normalizeSource1SearchName({}), undefined);
+  assert.equal(normalizeSource1SearchName({ name: "   " }), undefined);
+  assert.equal(normalizeSource1SearchName({ name: " 一站再战 " }), "一站再战");
 });
