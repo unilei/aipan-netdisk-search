@@ -164,6 +164,34 @@ docker volume inspect postgres-data  # 查看数据库卷的详细信息
 - Compose project：`aipan-docker`
 - 应用服务名：`aipan-netdisk-search`
 
+## 独立 Elasticsearch VPS
+
+用户投稿搜索索引支持部署在独立 VPS 上，应用服务器通过 HTTPS 连接远端 Elasticsearch。
+
+需要新增的应用环境变量：
+
+- `ELASTICSEARCH_NODE`
+- `ELASTICSEARCH_USERNAME`
+- `ELASTICSEARCH_PASSWORD`
+- `ELASTICSEARCH_CA_FINGERPRINT`
+- `ELASTICSEARCH_USER_RESOURCE_INDEX`
+
+GitHub Actions 推荐配置：
+
+- GitHub Secrets:
+  - `ELASTICSEARCH_USERNAME`
+  - `ELASTICSEARCH_PASSWORD`
+- GitHub Variables:
+  - `ELASTICSEARCH_NODE`
+  - `ELASTICSEARCH_CA_FINGERPRINT`
+  - `ELASTICSEARCH_USER_RESOURCE_INDEX`
+
+Elasticsearch VPS 的部署文件和说明位于：
+
+- [`deploy/elasticsearch/docker-compose.yml`](/Users/lei/.config/superpowers/worktrees/aipan-netdisk-search/codex/es-userresource-sync/deploy/elasticsearch/docker-compose.yml)
+- [`deploy/elasticsearch/.env.example`](/Users/lei/.config/superpowers/worktrees/aipan-netdisk-search/codex/es-userresource-sync/deploy/elasticsearch/.env.example)
+- [`deploy/elasticsearch/README.md`](/Users/lei/.config/superpowers/worktrees/aipan-netdisk-search/codex/es-userresource-sync/deploy/elasticsearch/README.md)
+
 ## 获取帮助
 
 如有任何问题，请联系技术支持团队。
