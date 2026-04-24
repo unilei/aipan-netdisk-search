@@ -1,0 +1,21 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTICSEARCH_VERSION:-8.19.12}
+    container_name: aipan-elasticsearch
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ES_JAVA_OPTS: ${ES_JAVA_OPTS}
+      bootstrap.memory_lock: "true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "${ELASTICSEARCH_PORT:-9200}:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+volumes:
+  elasticsearch-data:

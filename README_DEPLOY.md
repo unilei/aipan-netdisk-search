@@ -1,132 +1,41 @@
-# AIPan网盘搜索应用部署指南
+# 生产部署指南
 
-本文档提供了如何在服务器上部署AIPan网盘搜索应用的简易指南，适合非技术人员使用。
+本文档描述当前项目最新生产部署方式。应用服务部署在应用机，Elasticsearch 单独部署在另一台 VPS，二者不在同一个 compose 内。
 
-## 前置条件
+## 生产架构
 
-- 一台安装了Docker的服务器（Linux、Windows或macOS均可）
-- 服务器上已安装Docker和Docker Compose
-- 服务器开放了3000和3002端口
+- 应用服务器：`209.54.106.114`
+- 应用部署目录：`/www/wwwroot/aipan-docker`
+- Compose project：`aipan-docker`
+- 应用服务名：`aipan-netdisk-search`
+- 应用容器名：`aipan-netdisk-search-app`
+- PostgreSQL/Redis：随应用服务器 compose 启动
+- Elasticsearch VPS：`66.103.211.214`
+- Elasticsearch 访问方式：`HTTPS + Basic Auth + CA fingerprint`
+- Elasticsearch 端口：`9200`，只允许应用服务器 IP `209.54.106.114` 访问
+- 用户投稿索引：`user-resources`
 
-## 快速部署步骤
+## 部署方式
 
-### 1. 下载部署脚本
+生产发布通过 GitHub Actions：
 
-将`deploy.sh`脚本下载到服务器上的任意目录。
+- 工作流：`.github/workflows/deploy.yml`
+- push 到 `main` 自动部署
+- 也支持在 GitHub Actions 页面手动运行 `workflow_dispatch`
+- 镜像会推送到 Docker Hub，标签包含 `latest` 和 `sha-<commit>`
+- 服务器会拉取新镜像、执行 Prisma migration，然后重启应用容器
 
-### 2. 给脚本添加执行权限
+相关文件：
 
-```bash
-chmod +x deploy.sh
-```
+- `.github/workflows/deploy.yml`
+- `deploy/docker-compose.prod.yml`
+- `deploy/remote-deploy.sh`
+- `deploy/.env.production.example`
+- `deploy/bootstrap-github-actions.sh`
 
-### 3. 运行部署脚本
+## GitHub Actions Secrets
 
-```bash
-./deploy.sh
-```
-
-脚本会显示一个菜单，提供以下选项：
-
-1. **完整部署**（首次部署或重新部署）
-   - 检查Docker和Docker Compose是否已安装
-   - 创建必要的配置文件
-   - 生成随机管理员凭据
-   - 拉取所需的Docker镜像
-   - 启动所有服务
-
-2. **更新配置**（仅修改配置并重启服务）
-   - 编辑现有的`.env`文件
-   - 重启服务以应用新配置
-
-3. **退出**
-
-### 4. 访问应用
-
-部署完成后，您可以通过以下地址访问应用：
-- Web应用: http://服务器IP:3000
-- WebSocket: ws://服务器IP:3002
-
-## 配置管理
-
-### 首次部署
-
-首次部署时，脚本会自动生成随机的管理员凭据（用户名、密码和JWT密钥）。这些凭据会显示在控制台中，并保存在`admin_credentials.txt`文件中。请妥善保管这些信息！
-
-### 更新配置
-
-如果您需要修改配置（例如更改管理员密码或其他设置），可以再次运行脚本并选择选项 2（更新配置）。脚本会帮助您编辑`.env`文件，并在编辑完成后自动重启服务以应用新配置。
-
-主要配置项包括：
-- 数据库用户名和密码
-- 管理员账户信息
-- JWT密钥（用于安全认证）
-- GitHub配置
-- Quark配置
-
-## 常见操作
-
-### 停止服务
-
-```bash
-docker-compose down
-```
-
-### 重启服务
-
-```bash
-docker-compose restart
-```
-
-### 查看日志
-
-```bash
-docker-compose logs -f
-```
-
-### 更新到最新版本
-
-```bash
-docker pull unilei/aipan-netdisk-search:latest
-docker-compose down
-docker-compose up -d
-```
-
-## 常见问题
-
-### 端口冲突
-
-如果遇到端口冲突（3000或3002端口已被占用），请编辑`docker-compose.yml`文件，修改端口映射：
-
-```yaml
-ports:
-  - "新端口:3000"  # 例如 "8080:3000"
-  - "新端口:3002"  # 例如 "8082:3002"
-```
-
-### 数据库连接问题
-
-如果应用无法连接到数据库，请检查`.env`文件中的数据库配置是否正确。
-
-### 数据备份
-
-数据存储在Docker卷中，如需备份，请使用以下命令：
-
-```bash
-docker volume ls  # 列出所有卷
-docker volume inspect postgres-data  # 查看数据库卷的详细信息
-```
-
-## GitHub Actions 自动部署
-
-仓库里已经补好了 `main` 分支的自动部署工作流：
-
-- 推送到 `main` 后自动构建并推送 Docker 镜像到 Docker Hub
-- 然后通过 SSH 登录 `209.54.106.114`
-- 同步生产 compose、远端部署脚本和 `.env`
-- 在服务器现有 `aipan-docker` compose 项目上拉取新镜像、执行 Prisma 迁移，最后重启应用
-
-### 需要配置的 GitHub Secrets
+必填 Secrets：
 
 - `DOCKERHUB_USERNAME`
 - `DOCKERHUB_TOKEN`
@@ -139,31 +48,183 @@ docker volume inspect postgres-data  # 查看数据库卷的详细信息
 - `ADMIN_PASSWORD`
 - `ADMIN_EMAIL`
 - `JWT_SECRET`
-- `NUXT_PUBLIC_GITHUB_TOKEN`，可选
-- `NUXT_PUBLIC_QUARK_COOKIE`，可选
+- `SETTINGS_ENCRYPTION_KEY`
+- `ELASTICSEARCH_USERNAME`
+- `ELASTICSEARCH_PASSWORD`
 
-### 可选的 GitHub Variables
+可选 Secrets：
+
+- `NUXT_PUBLIC_GITHUB_TOKEN`
+- `NUXT_PUBLIC_QUARK_COOKIE`
+
+## GitHub Actions Variables
+
+推荐配置 Variables：
 
 - `APP_PORT`，默认 `3000`
 - `WS_PORT`，默认 `3002`
 - `DATABASE_SCHEMA`，默认 `public`
+- `ELASTICSEARCH_NODE`，生产值形如 `https://66.103.211.214:9200`
+- `ELASTICSEARCH_CA_FINGERPRINT`
+- `ELASTICSEARCH_USER_RESOURCE_INDEX`，当前为 `user-resources`
 - `NUXT_PUBLIC_GITHUB_OWNER`
 - `NUXT_PUBLIC_GITHUB_REPO`
 - `NUXT_PUBLIC_GITHUB_BRANCH`，默认 `main`
 
-### 生产部署文件
+可以用脚本从当前生产容器同步大部分 GitHub 配置：
 
-- 工作流：[`deploy.yml`](/Users/lei/workspace/aipan-netdisk-search/.github/workflows/deploy.yml)
-- 生产 compose：[`docker-compose.prod.yml`](/Users/lei/workspace/aipan-netdisk-search/deploy/docker-compose.prod.yml)
-- 远端部署脚本：[`remote-deploy.sh`](/Users/lei/workspace/aipan-netdisk-search/deploy/remote-deploy.sh)
-- 环境模板：[`deploy/.env.production.example`](/Users/lei/workspace/aipan-netdisk-search/deploy/.env.production.example)
+```bash
+./deploy/bootstrap-github-actions.sh
+```
 
-当前线上约定：
+脚本会读取生产容器环境变量，并写入 GitHub Secrets/Variables。它不会生成 ES 密码；ES 用户名、密码、节点地址和 CA 指纹需要生产环境中已经存在。
 
-- 部署目录：`/www/wwwroot/aipan-docker`
-- Compose project：`aipan-docker`
-- 应用服务名：`aipan-netdisk-search`
+## 应用环境变量
 
-## 获取帮助
+生产 compose 使用 `deploy/.env.production.example` 作为模板。核心变量如下：
 
-如有任何问题，请联系技术支持团队。
+```bash
+APP_IMAGE=unilei/aipan-netdisk-search:latest
+APP_PORT=3000
+WS_PORT=3002
+
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=change-me
+POSTGRES_DB=aipan
+DATABASE_SCHEMA=public
+
+ADMIN_USER=admin
+ADMIN_PASSWORD=change-me
+ADMIN_EMAIL=admin@example.com
+
+JWT_SECRET=change-me
+SETTINGS_ENCRYPTION_KEY=change-me
+REDIS_URL=redis://redis:6379
+
+ELASTICSEARCH_NODE=https://your-es-host:9200
+ELASTICSEARCH_USERNAME=elastic
+ELASTICSEARCH_PASSWORD=change-me
+ELASTICSEARCH_CA_FINGERPRINT=AA:BB:CC:DD
+ELASTICSEARCH_USER_RESOURCE_INDEX=user-resources
+```
+
+注意：
+
+- `SETTINGS_ENCRYPTION_KEY` 用于解密后台系统配置，已有生产环境必须复用原值。
+- `JWT_SECRET` 变更会导致已有登录 token 失效。
+- ES 变量不完整时，`/api/sources/1` 会降级为只返回本地 `Resource`，但审核同步和 ES 索引页面会不可用。
+
+## Elasticsearch VPS
+
+ES 不在应用服务器 compose 内启动。部署说明见 `deploy/elasticsearch/README.md`。
+
+应用侧需要：
+
+- `ELASTICSEARCH_NODE=https://66.103.211.214:9200`
+- `ELASTICSEARCH_USERNAME=elastic`
+- `ELASTICSEARCH_PASSWORD=<ES 密码>`
+- `ELASTICSEARCH_CA_FINGERPRINT=<HTTP CA SHA256 指纹>`
+- `ELASTICSEARCH_USER_RESOURCE_INDEX=user-resources`
+
+ES VPS 侧必须：
+
+- 设置 `vm.max_map_count=262144`
+- 使用 Elasticsearch 8 单节点 Docker Compose
+- 开启 HTTPS
+- `9200` 只对白名单应用服务器 IP `209.54.106.114` 开放
+
+## 用户投稿和搜索索引
+
+后台页面：
+
+- 用户资源审核：`/admin/user-resources`
+- ES 索引内容：`/admin/search-index/user-resources`
+
+行为规则：
+
+- 用户投稿只索引 `status = published` 的 `UserResource`
+- 待审核和已拒绝投稿不会进入 ES，也不会出现在前台搜索
+- 审核通过会 upsert ES 文档
+- 改回 `pending` 或 `rejected` 会删除 ES 文档
+- ES 文档 id 固定为 `user-resource-<id>`
+- ES 索引内容页支持查看和重建索引
+
+前台搜索：
+
+- 前台仍然请求 `POST /api/sources/1`
+- 不新增独立搜索来源
+- `/api/sources/1` 会先查本地 `Resource`，再查 ES 中已发布 `UserResource`
+- 本地结果在前，用户投稿结果在后
+- 同名和重复链接会合并去重
+- 最多返回 100 条
+- ES 故障时降级为本地结果
+
+## 自动审核
+
+入口：`/admin/user-resources`
+
+自动审核支持：
+
+- 仅预检查，不修改数据库
+- 执行自动审核
+- 可选检查分享链接可达性
+- 可选自动拒绝不合格资源
+
+当前检查条件：
+
+- 标题、描述、资源类型完整
+- 至少包含一个链接
+- 链接服务和域名在支持范围内
+- 不与本地 `Resource` 或现有 `UserResource` 重复
+- 可选网络可达性检查
+
+无法安全判断的资源会跳过，保留人工审核。
+
+## 常用生产验证
+
+查看容器状态：
+
+```bash
+ssh root@209.54.106.114
+cd /www/wwwroot/aipan-docker
+docker compose -p aipan-docker --env-file .env -f docker-compose.prod.yml ps
+```
+
+查看应用镜像：
+
+```bash
+docker ps --filter name=aipan-netdisk-search-app --format '{{.Image}} {{.Status}}'
+```
+
+查看应用日志：
+
+```bash
+docker logs -f aipan-netdisk-search-app
+```
+
+验证 ES 健康状态：
+
+```bash
+curl --cacert ./http_ca.crt -u "elastic:<ES_PASSWORD>" https://66.103.211.214:9200/_cluster/health
+```
+
+验证前台站内搜索：
+
+```bash
+curl -s http://127.0.0.1:3000/api/sources/1 \
+  -H 'content-type: application/json' \
+  -d '{"keyword":"测试关键词"}'
+```
+
+## 回滚
+
+GitHub Actions 镜像会带 `sha-<commit>` 标签。如果需要回滚：
+
+1. 在 Docker Hub 找到上一个可用镜像标签。
+2. 修改服务器 `/www/wwwroot/aipan-docker/.env` 中的 `APP_IMAGE`。
+3. 执行：
+
+```bash
+cd /www/wwwroot/aipan-docker
+docker compose -p aipan-docker --env-file .env -f docker-compose.prod.yml up -d aipan-netdisk-search
+```

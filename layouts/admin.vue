@@ -185,7 +185,8 @@ const menuGroups = [
     children: [
       { title: '网盘管理', path: '/admin/clouddrive', icon: 'fas fa-folder' },
       { title: 'Alist源', path: '/admin/alist', icon: 'fas fa-server' },
-      { title: '用户资源', path: '/admin/user-resources', icon: 'fas fa-folder-open' }
+      { title: '用户资源', path: '/admin/user-resources', icon: 'fas fa-folder-open' },
+      { title: 'ES索引内容', path: '/admin/search-index/user-resources', icon: 'fas fa-search' }
     ]
   },
   {
