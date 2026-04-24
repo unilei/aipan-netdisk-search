@@ -1,4 +1,10 @@
 import prisma from "~/lib/prisma";
+import {
+    mapStoredResourceToSourceItem,
+    mapUserResourceDocumentToSourceItem,
+    mergeSourceItems,
+} from "~/server/services/search/source1Results.js";
+import { searchPublishedUserResources } from "~/server/services/search/elasticsearchClient.js";
 interface Body {
     name: string
 }
@@ -30,48 +36,38 @@ export default defineEventHandler(async (event) => {
             };
         }
 
-        const res: Item[] = await prisma.resource.findMany({
-            where: {
-                name: {
-                    contains: nameFilter,
-                    mode: 'insensitive',
+        const [res, publishedUserResources] = await Promise.all([
+            prisma.resource.findMany({
+                where: {
+                    name: {
+                        contains: nameFilter,
+                        mode: 'insensitive',
+                    },
                 },
-            },
-            include: {
-                creator: {
-                    select: { username: true },
+                include: {
+                    creator: {
+                        select: { username: true },
+                    },
+                    type: {
+                        select: { name: true },
+                    },
                 },
-                type: {
-                    select: { name: true },
+                orderBy: {
+                    createdAt: 'desc',
                 },
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
-            take: 100,
-        });
+                take: 100,
+            }),
+            searchPublishedUserResources(nameFilter, 100).catch((error) => {
+                console.error("搜索用户投稿 ES 索引失败:", error);
+                return [];
+            }),
+        ]);
 
-        const result = res.map((item) => {
-            try {
-                const links = JSON.parse(item.links);
-                const linksArr = links.map((link: any) => {
-                    let service = 'OTHER';
-                    if (link.value) {
-                        if (link.value.includes('pan.baidu.com')) service = 'BAIDU';
-                        else if (link.value.includes('pan.xunlei.com')) service = 'XUNLEI';
-                        else if (link.value.includes('pan.quark.cn')) service = 'QUARK';
-                        else if (link.value.includes('aliyundrive.com')) service = 'ALIYUN';
-                        else if (link.value.includes('pan.uc.cn')) service = 'UC';
-                        else if (link.value.includes('alipan.com')) service = 'ALIYUN';
-                    }
-                    return { pwd: "", link: link.value, service };
-                });
-                return { name: item.name, links: linksArr };
-            } catch (e) {
-
-                return { name: item.name, links: [] };
-            }
-        });
+        const localResults = res.map((item) => mapStoredResourceToSourceItem(item));
+        const userResourceResults = publishedUserResources.map((document: any) =>
+            mapUserResourceDocumentToSourceItem(document)
+        );
+        const result = mergeSourceItems(localResults, userResourceResults, 100);
 
         return {
             list: result,
@@ -79,6 +75,7 @@ export default defineEventHandler(async (event) => {
         };
 
     } catch (e) {
+        console.error("搜索资源失败:", e);
 
         return {
             code: 500,

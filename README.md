@@ -1,153 +1,130 @@
-# 爱盘-网盘资源搜索 Web
+# 爱盼迷网盘资源搜索
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/unilei/aipan-netdisk-search.git&project-name=aipan-netdisk-search&repository-name=aipan-netdisk-search)
+爱盼迷是一个基于 Nuxt 4 的资源聚合搜索平台，包含网盘资源搜索、用户投稿、后台审核、论坛/博客、Alist 源、视频在线播放等功能。
 
-🔥 爱盘-网盘资源搜索是一个开源的网盘资源聚合搜索平台。
+## 当前核心能力
 
-## 功能特点
-
-- 🎯 多源聚合搜索
-- 📺 在线视频播放
-- 🗄️ Alist 源聚合
-- 📝 博客系统
-- 🔐 后台管理系统
-- 📊 资源管理
-- 🚀 批量导入导出
+- 多源网盘资源搜索，前台搜索继续使用现有来源配置。
+- `/api/sources/1` 是站内统一搜索源：先查本地 `Resource`，再查 Elasticsearch 中已发布的 `UserResource`，合并去重后最多返回 100 条。
+- 用户投稿只在审核通过后进入 Elasticsearch；待审核和已拒绝资源不会进入前台搜索。
+- 后台 `用户资源` 页面用于人工审核和自动审核。
+- 后台 `ES索引内容` 页面用于查看 Elasticsearch 中的已发布用户投稿索引，并支持重建索引。
+- GitHub Actions 自动构建 Docker 镜像并部署到生产应用服务器。
+- Elasticsearch 独立部署在单独 VPS，应用通过 HTTPS + Basic Auth + CA 指纹校验连接。
 
 ## 技术栈
 
-- 💻 Frontend
-  - Nuxt.js 3
-  - Vue 3
-  - TailwindCSS
-  - Element Plus
+- Nuxt 4 / Vue 3 / Element Plus / Tailwind CSS
+- Nitro Server API
+- PostgreSQL / Prisma
+- Redis / Socket.IO
+- Elasticsearch 8
+- Docker / Docker Compose
+- GitHub Actions
 
-- 🛠 Backend
-  - Node.js v20.18.0
-  - PostgreSQL
-  - Prisma ORM
-    - 连接池优化
-    - 共享客户端实例
-  - JWT Authentication
+## 重要后台页面
 
-## 在线演示
+- 登录：`/login`
+- 管理后台：`/admin/dashboard`
+- 网盘管理：`/admin/clouddrive`
+- 用户资源审核：`/admin/user-resources`
+- ES 索引内容：`/admin/search-index/user-resources`
 
-- 👉 [爱盘-网盘资源搜索](https://www.aipan.me)
-- 💝 [欢迎打赏](https://www.aipan.me/donate)
+## 环境变量
 
-## 快速开始
-
-### 环境要求
-
-- Node.js v20.18.0
-- PostgreSQL 12+
-- pnpm 包管理器
-
-### 部署方式
-
-1. **Vercel 部署**（推荐）
-   - 查看 [Vercel 部署文档](/README_VERCEL.md)
-   - 点击上方 "Deploy with Vercel" 按钮一键部署
-
-2. **Docker 部署**（推荐）
-   - 查看 [Docker 部署文档](/DEPLOY.md#docker-部署推荐)
-
-3. **传统部署**
-   - 查看 [传统部署文档](/DEPLOY.md#传统部署)
-
-## 最新更新
-
-- ✨ TV 播放功能
-- 🔄 Alist 源聚合播放
-- 🗑️ 批量删除功能
-- 📝 博客功能
-- 📤 批量上传数据
-  - [CSV 示例](/assets/readme/demo/demo-multi.csv)
-  - [XLSX 示例](https://r2cf.aipan.me/readme/demo/demo-multi.xls)
-- 🔐 后台管理系统
-  - 访问路径：`/login`、`/admin/dashboard`、`/admin/clouddrive`
-  - 支持自定义网盘资源管理
-
-## 项目结构
-
-```
-aipan-netdisk-search/
-├── assets/          # 静态资源
-├── components/      # Vue 组件
-├── layouts/         # 布局组件
-├── pages/          # 页面组件
-├── prisma/         # 数据库模型和迁移
-├── public/         # 公共文件
-├── server/         # 服务端 API
-├── stores/         # Pinia 状态管理
-└── utils/          # 工具函数
-```
-
-## 开发指南
+本地开发从示例文件复制：
 
 ```bash
-# 1. 安装依赖
-pnpm install
-
-# 2. 配置环境变量
 cp .env.example .env
-
-# 必填：用于加密后台保存的邮箱服务密钥
-# SETTINGS_ENCRYPTION_KEY=请设置一个随机长字符串
-
-# 3. 数据库设置
-npx prisma generate
-npx prisma migrate deploy
-
-# 4. 启动开发服务器
-pnpm run dev
 ```
 
-## API 说明
+必填项：
 
-后台管理 API 路径：
-- 登录：`/login`
-- 仪表盘：`/admin/dashboard`
-- 系统配置：`/admin/settings`
-- 网盘管理：`/admin/clouddrive`
+- `DATABASE_URL`
+- `SHADOW_DATABASE_URL`
+- `ADMIN_USER`
+- `ADMIN_PASSWORD`
+- `ADMIN_EMAIL`
+- `JWT_SECRET`
+- `SETTINGS_ENCRYPTION_KEY`
 
-### 邮箱验证配置
+用户投稿搜索相关变量：
 
-- 在后台 `系统配置` 页面配置 Resend API Key、发件邮箱、站点地址和验证有效期
-- Resend 的 API Key 不需要放入 `.env`，由管理员在后台保存
-- `SETTINGS_ENCRYPTION_KEY` 用于加密数据库里的邮箱服务密钥，生产环境请单独配置，不要复用默认值
+- `ELASTICSEARCH_NODE`
+- `ELASTICSEARCH_USERNAME`
+- `ELASTICSEARCH_PASSWORD`
+- `ELASTICSEARCH_CA_FINGERPRINT`
+- `ELASTICSEARCH_USER_RESOURCE_INDEX`
 
-## 注意事项
+本地如果不需要调试 ES，可暂时留空 ES 变量；前台 `/api/sources/1` 会自动降级为只返回本地 `Resource` 结果。生产环境必须配置完整 ES 变量。
 
-- 项目使用第三方 API，对 IP 有访问限制
-- 建议自行部署使用
-- 确保数据库配置正确
-- 定期备份重要数据
+## 本地开发
 
-## 贡献指南
+```bash
+npm install
+npx prisma generate
+npx prisma migrate deploy
+npm run dev
+```
 
-1. 创建特性分支：`git checkout -b feature/AmazingFeature`
-2. 提交更改：`git commit -m 'Add some AmazingFeature'`
-3. 推送分支：`git push origin feature/AmazingFeature`
-4. 提交 Pull Request
+默认开发端口由 `package.json` 控制为 `3001`。
 
-## 许可证
+## 生产部署
 
-本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+当前生产部署由 GitHub Actions 执行：
 
-## 截图展示
+- 工作流：`.github/workflows/deploy.yml`
+- 触发方式：push 到 `main` 或手动 `workflow_dispatch`
+- 应用服务器：`209.54.106.114`
+- 部署目录：`/www/wwwroot/aipan-docker`
+- 应用容器：`aipan-netdisk-search-app`
+- ES VPS：`66.103.211.214`
+- ES 索引：`user-resources`
 
-![部署成功截图](https://r2cf.aipan.me/readme/screen-6.png)
+详细部署说明见 `README_DEPLOY.md`。ES VPS 单独部署说明见 `deploy/elasticsearch/README.md`。
 
-## 支持项目
+## 用户投稿搜索链路
 
-如果这个项目对你有帮助，欢迎：
+1. 用户提交资源后进入 `pending` 状态，只写 PostgreSQL。
+2. 管理员在 `/admin/user-resources` 人工通过，或使用自动审核通过。
+3. 状态变为 `published` 后，同步 upsert 到 Elasticsearch，文档 id 为 `user-resource-<id>`。
+4. 前台 `/api/sources/1` 同时返回本地 `Resource` 和 ES 中的已发布 `UserResource`。
+5. 如果资源改回 `pending` 或 `rejected`，对应 ES 文档会被删除。
+6. 如果出现索引漂移，可在 `/admin/search-index/user-resources` 执行重建索引。
 
-1. 🌟 给项目点个 Star
-2. 💝 [打赏支持](https://www.aipan.me/donate)
+## 自动审核规则
 
-## 联系方式
+自动审核入口在 `/admin/user-resources`。默认建议先执行“仅预检查”，确认结果后再执行审核。
 
-- 项目地址：[GitHub](https://github.com/unilei/aipan-netdisk-search)
-- 问题反馈：[Issues](https://github.com/unilei/aipan-netdisk-search/issues)
-- 功能建议：[Discussions](https://github.com/unilei/aipan-netdisk-search/discussions)
+当前自动审核会检查：
+
+- 标题、描述、资源类型是否完整。
+- 链接是否为空。
+- 链接服务和域名是否在支持范围内。
+- 是否和本地 `Resource` 或已发布/待审核 `UserResource` 重复。
+- 可选检查分享链接是否可访问。
+
+不确定可达性或无法安全判断的资源会跳过，保留人工审核；不会盲目自动通过。
+
+## 关键 API
+
+- 前台站内搜索：`POST /api/sources/1`
+- 用户投稿列表：`GET /api/admin/user-resources/get`
+- 更新投稿状态：`PUT /api/admin/user-resources/[id]/status`
+- 自动审核：`POST /api/admin/user-resources/auto-review`
+- 查看 ES 索引内容：`GET /api/admin/user-resources/search`
+- 重建 ES 索引：`POST /api/admin/user-resources/search/reindex`
+
+## 验证命令
+
+```bash
+npm run build
+node --test tests/search/source1Results.test.mjs tests/search/userResourceSearchIndex.test.mjs tests/userResources/autoReview.test.mjs
+```
+
+## 更多文档
+
+- Docker/生产部署：`README_DEPLOY.md`
+- ES VPS 部署：`deploy/elasticsearch/README.md`
+- Docker 本地说明：`README_DOCKER.md`
+- 旧版迁移说明：`README_MIGRATE.md`

@@ -7,6 +7,7 @@
 工作流触发条件：
 
 - push 到 `main`
+- 手动运行 `workflow_dispatch`
 
 部署目标：
 
@@ -231,9 +232,32 @@ openssl rand -base64 48
 openssl rand -base64 48
 ```
 
+### 13. `ELASTICSEARCH_USERNAME`
+
+用途：
+
+- 应用连接独立 Elasticsearch VPS
+- 当前通常为 `elastic`
+
+如何获取：
+
+- 使用 ES 首次启动时配置的用户
+- 生产环境当前由 GitHub Secret 注入，不要写入仓库
+
+### 14. `ELASTICSEARCH_PASSWORD`
+
+用途：
+
+- 应用连接独立 Elasticsearch VPS
+
+如何获取：
+
+- 使用 ES VPS 上 `.env` 中的 `ELASTIC_PASSWORD`
+- 如果重置 ES 密码，需要同步更新这个 Secret
+
 ## 二、可选 Secrets
 
-### 13. `NUXT_PUBLIC_GITHUB_TOKEN`
+### 15. `NUXT_PUBLIC_GITHUB_TOKEN`
 
 用途：
 
@@ -252,7 +276,7 @@ openssl rand -base64 48
 
 - 对目标仓库至少有 `Contents: Read and write`
 
-### 14. `NUXT_PUBLIC_QUARK_COOKIE`
+### 16. `NUXT_PUBLIC_QUARK_COOKIE`
 
 用途：
 
@@ -315,7 +339,40 @@ openssl rand -base64 48
 - 看你当前 Prisma 连接串末尾是否带 `?schema=...`
 - 大多数情况用 `public`
 
-### 4. `NUXT_PUBLIC_GITHUB_OWNER`
+### 4. `ELASTICSEARCH_NODE`
+
+用途：
+
+- 应用连接独立 ES VPS 的 HTTPS 地址
+
+当前生产值形如：
+
+- `https://66.103.211.214:9200`
+
+### 5. `ELASTICSEARCH_CA_FINGERPRINT`
+
+用途：
+
+- 应用使用官方 ES 客户端进行 TLS CA 指纹校验
+
+如何获取：
+
+```bash
+openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/null 2>/dev/null \
+  | openssl x509 -fingerprint -sha256 -noout -in /dev/stdin
+```
+
+### 6. `ELASTICSEARCH_USER_RESOURCE_INDEX`
+
+用途：
+
+- 已发布用户投稿写入的 ES 索引名
+
+当前值：
+
+- `user-resources`
+
+### 7. `NUXT_PUBLIC_GITHUB_OWNER`
 
 用途：
 
@@ -327,7 +384,7 @@ openssl rand -base64 48
 - 例如 `https://github.com/unilei-github/aipan-images`
 - 则 owner 是 `unilei-github`
 
-### 5. `NUXT_PUBLIC_GITHUB_REPO`
+### 8. `NUXT_PUBLIC_GITHUB_REPO`
 
 用途：
 
@@ -339,7 +396,7 @@ openssl rand -base64 48
 - 例如 `https://github.com/unilei-github/aipan-images`
 - 则 repo 是 `aipan-images`
 
-### 6. `NUXT_PUBLIC_GITHUB_BRANCH`
+### 9. `NUXT_PUBLIC_GITHUB_BRANCH`
 
 用途：
 
@@ -417,6 +474,9 @@ gh secret set ADMIN_USER -b"admin"
 gh secret set ADMIN_PASSWORD -b"你的管理员密码"
 gh secret set ADMIN_EMAIL -b"你的邮箱"
 gh secret set JWT_SECRET -b"你的JWT密钥"
+gh secret set SETTINGS_ENCRYPTION_KEY -b"你的系统配置加密密钥"
+gh secret set ELASTICSEARCH_USERNAME -b"elastic"
+gh secret set ELASTICSEARCH_PASSWORD -b"你的ES密码"
 ```
 
 可选 Secrets：
@@ -432,10 +492,21 @@ gh secret set NUXT_PUBLIC_QUARK_COOKIE -b"你的Quark Cookie"
 gh variable set APP_PORT -b"3000"
 gh variable set WS_PORT -b"3002"
 gh variable set DATABASE_SCHEMA -b"public"
+gh variable set ELASTICSEARCH_NODE -b"https://66.103.211.214:9200"
+gh variable set ELASTICSEARCH_CA_FINGERPRINT -b"你的ES HTTP CA SHA256指纹"
+gh variable set ELASTICSEARCH_USER_RESOURCE_INDEX -b"user-resources"
 gh variable set NUXT_PUBLIC_GITHUB_OWNER -b"unilei-github"
 gh variable set NUXT_PUBLIC_GITHUB_REPO -b"aipan-images"
 gh variable set NUXT_PUBLIC_GITHUB_BRANCH -b"main"
 ```
+
+如果当前生产容器已经有完整环境变量，也可以直接运行：
+
+```bash
+./deploy/bootstrap-github-actions.sh
+```
+
+脚本会从生产容器读取数据库、管理员、ES、GitHub 和 Quark 配置，并写入 GitHub Actions。
 
 ## 六、第一次发布流程
 

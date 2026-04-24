@@ -10,6 +10,13 @@
           </div>
           <div class="flex items-center space-x-4">
             <el-button
+              type="warning"
+              plain
+              @click="autoReviewDialogVisible = true"
+            >
+              自动审核
+            </el-button>
+            <el-button
               type="primary"
               @click="() => navigateTo('/admin/dashboard')"
               class="flex items-center"
@@ -179,6 +186,86 @@
         </div>
       </div>
     </el-dialog>
+
+    <!-- 自动审核对话框 -->
+    <el-dialog v-model="autoReviewDialogVisible" title="自动审核用户资源" width="860px">
+      <div class="space-y-4">
+        <el-alert
+          type="warning"
+          show-icon
+          :closable="false"
+          title="自动审核只处理待审核资源"
+          description="会检查名称/描述/类型、链接格式、重复资源和可选的网盘链接可访问性；无法确认的链接会跳过并保留人工复核。"
+        />
+
+        <el-form label-width="150px">
+          <el-form-item label="单次处理数量">
+            <el-input-number
+              v-model="autoReviewForm.limit"
+              :min="1"
+              :max="100"
+              :step="5"
+            />
+          </el-form-item>
+          <el-form-item label="检查链接是否存在">
+            <el-switch v-model="autoReviewForm.requireReachable" />
+            <span class="ml-3 text-sm text-gray-500">
+              网盘拒绝自动访问或超时时会进入人工复核，不会自动通过。
+            </span>
+          </el-form-item>
+          <el-form-item label="拒绝不合格资源">
+            <el-switch v-model="autoReviewForm.rejectInvalid" />
+            <span class="ml-3 text-sm text-gray-500">
+              关闭时只自动通过合格资源，不合格资源保持待审核。
+            </span>
+          </el-form-item>
+        </el-form>
+
+        <div class="flex justify-end gap-3">
+          <el-button :loading="autoReviewLoading" @click="handleAutoReview(true)">
+            仅预检查
+          </el-button>
+          <el-button
+            type="primary"
+            :loading="autoReviewLoading"
+            @click="handleAutoReview(false)"
+          >
+            执行自动审核
+          </el-button>
+        </div>
+
+        <div v-if="autoReviewResult" class="rounded border border-gray-200 p-4">
+          <div class="mb-3 flex flex-wrap gap-4 text-sm text-gray-700">
+            <span>检查：{{ autoReviewResult.checked }}</span>
+            <span>通过：{{ autoReviewResult.approved }}</span>
+            <span>拒绝：{{ autoReviewResult.rejected }}</span>
+            <span>跳过：{{ autoReviewResult.skipped }}</span>
+            <span>失败：{{ autoReviewResult.failed }}</span>
+          </div>
+
+          <el-table
+            :data="autoReviewResult.results || []"
+            max-height="360"
+            style="width: 100%"
+          >
+            <el-table-column label="资源ID" prop="resourceId" width="90" />
+            <el-table-column label="资源名称" prop="name" min-width="220" show-overflow-tooltip />
+            <el-table-column label="动作" width="120">
+              <template #default="{ row }">
+                <el-tag :type="getAutoReviewActionType(row.action)">
+                  {{ getAutoReviewActionText(row.action) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="原因" min-width="320" show-overflow-tooltip>
+              <template #default="{ row }">
+                {{ getAutoReviewIssueText(row) }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -201,6 +288,14 @@ const searchQuery = ref("");
 const statusFilter = ref("");
 const dialogVisible = ref(false);
 const selectedResource = ref(null);
+const autoReviewDialogVisible = ref(false);
+const autoReviewLoading = ref(false);
+const autoReviewResult = ref(null);
+const autoReviewForm = reactive({
+  limit: 20,
+  requireReachable: true,
+  rejectInvalid: false,
+});
 
 // 获取资源列表
 const fetchResources = async () => {
@@ -236,6 +331,53 @@ const fetchResources = async () => {
     ElMessage.error("获取资源列表失败");
   } finally {
     loading.value = false;
+  }
+};
+
+const handleAutoReview = async (dryRun) => {
+  try {
+    if (!dryRun) {
+      await ElMessageBox.confirm(
+        autoReviewForm.rejectInvalid
+          ? "确定要执行自动审核吗？合格资源会通过，不合格资源会被拒绝。"
+          : "确定要执行自动审核吗？合格资源会通过，其它资源保持待审核。",
+        "确认自动审核",
+        {
+          confirmButtonText: "确定执行",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      );
+    }
+
+    autoReviewLoading.value = true;
+    const response = await $fetch("/api/admin/user-resources/auto-review", {
+      method: "POST",
+      body: {
+        dryRun,
+        approveValid: true,
+        rejectInvalid: autoReviewForm.rejectInvalid,
+        requireReachable: autoReviewForm.requireReachable,
+        limit: autoReviewForm.limit,
+      },
+      headers: {
+        authorization: "Bearer " + useCookie("token").value,
+      },
+    });
+
+    autoReviewResult.value = response.data;
+    ElMessage.success(response.msg || (dryRun ? "预检查完成" : "自动审核完成"));
+
+    if (!dryRun) {
+      await fetchResources();
+    }
+  } catch (error) {
+    if (error !== "cancel") {
+      console.error("Failed to auto review user resources:", error);
+      ElMessage.error(error?.data?.message || "自动审核失败");
+    }
+  } finally {
+    autoReviewLoading.value = false;
   }
 };
 
@@ -325,6 +467,53 @@ const getStatusText = (status) => {
     default:
       return "待审核";
   }
+};
+
+const getAutoReviewActionType = (action) => {
+  switch (action) {
+    case "approved":
+    case "would_approve":
+      return "success";
+    case "rejected":
+    case "would_reject":
+      return "danger";
+    case "failed":
+      return "danger";
+    default:
+      return "warning";
+  }
+};
+
+const getAutoReviewActionText = (action) => {
+  switch (action) {
+    case "approved":
+      return "已通过";
+    case "rejected":
+      return "已拒绝";
+    case "would_approve":
+      return "将通过";
+    case "would_reject":
+      return "将拒绝";
+    case "failed":
+      return "失败";
+    case "would_skip":
+      return "将跳过";
+    default:
+      return "已跳过";
+  }
+};
+
+const getAutoReviewIssueText = (row) => {
+  if (row.error) {
+    return row.error;
+  }
+
+  const failedChecks = (row.checks || []).filter((check) => !check.passed);
+  if (!failedChecks.length) {
+    return row.canAutoApprove ? "符合自动通过条件" : "无异常";
+  }
+
+  return failedChecks.map((check) => check.message).join("；");
 };
 
 const formatDate = (date) => {
