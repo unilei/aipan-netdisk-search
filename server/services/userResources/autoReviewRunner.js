@@ -2,6 +2,7 @@ import {
   buildUserResourceAuditContext,
   evaluateUserResourceForAutoReview,
 } from "./autoReview.js";
+import { enqueueUserResourceAutoReview } from "./autoReviewQueue.js";
 import { notifyUserResourceReviewResult } from "./reviewNotifications.js";
 
 export const includeUserResourceReviewRelations = {
@@ -331,20 +332,12 @@ export function scheduleUserResourceAutoReview(resourceId, options = {}) {
     return false;
   }
 
-  const run = () => {
-    autoReviewUserResource(resourceId, runtimeOptions).catch((error) => {
-      console.error("调度用户资源自动审核失败:", {
-        resourceId,
-        error,
-      });
+  enqueueUserResourceAutoReview(resourceId, runtimeOptions).catch((error) => {
+    console.error("用户资源自动审核入队失败:", {
+      resourceId,
+      error,
     });
-  };
-
-  if (typeof setImmediate === "function") {
-    setImmediate(run);
-  } else {
-    Promise.resolve().then(run);
-  }
+  });
 
   return true;
 }

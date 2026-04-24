@@ -107,6 +107,11 @@ onBeforeUnmount(() => {
               @click="aboutDropdownVisible = false">
               <i class="fa-solid fa-copyright mr-2"></i> {{ $t('header.about.copyright') }}
             </nuxt-link>
+            <nuxt-link to="/releases"
+              class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              @click="aboutDropdownVisible = false">
+              <i class="fa-solid fa-bullhorn mr-2"></i> {{ $t('header.about.releases') }}
+            </nuxt-link>
           </div>
         </div>
       </div>
@@ -159,6 +164,11 @@ onBeforeUnmount(() => {
             class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
             @click="isMenuOpen = false">
             <i class="fa-solid fa-copyright"></i> {{ $t('header.about.copyright') }}
+          </nuxt-link>
+          <nuxt-link to="/releases"
+            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
+            @click="isMenuOpen = false">
+            <i class="fa-solid fa-bullhorn"></i> {{ $t('header.about.releases') }}
           </nuxt-link>
 
           <!-- 移动端语言切换按钮 -->

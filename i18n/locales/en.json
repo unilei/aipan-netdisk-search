@@ -40,6 +40,7 @@
       "disclaimer": "Disclaimer",
       "about": "About",
       "copyright": "Copyright",
+      "releases": "Releases",
       "about_title": "About"
     }
   },
@@ -50,7 +51,8 @@
       "userAgreement": "User Agreement",
       "privacy": "Privacy Policy",
       "disclaimer": "Disclaimer",
-      "copyright": "Copyright"
+      "copyright": "Copyright",
+      "releases": "Releases"
     },
     "statement": "Disclaimer: All content on this site comes from public online resources. This site does not store, copy, or transmit any files, does not make any profit, and is only for personal non-profit learning. Please do not distribute illegally or commercially."
   },
@@ -59,4 +61,4 @@
     "no_image": "No image",
     "loading": "Loading"
   }
-} 
+}

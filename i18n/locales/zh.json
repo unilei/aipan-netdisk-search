@@ -40,6 +40,7 @@
       "disclaimer": "免责声明",
       "about": "关于网站",
       "copyright": "侵权投诉",
+      "releases": "发布日志",
       "about_title": "关于"
     }
   },
@@ -50,7 +51,8 @@
       "userAgreement": "用户协议",
       "privacy": "隐私政策",
       "disclaimer": "免责声明",
-      "copyright": "侵权投诉"
+      "copyright": "侵权投诉",
+      "releases": "发布日志"
     },
     "statement": "声明：本站内容皆来自网络公开资源。本站不储存、复制、传播任何文件，不做任何盈利，仅作个人公益学习，请勿非法&商业传播。"
   },
@@ -59,4 +61,4 @@
     "no_image": "暂无图片",
     "loading": "加载中"
   }
-} 
+}
