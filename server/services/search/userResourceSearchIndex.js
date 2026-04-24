@@ -22,6 +22,15 @@ export const USER_RESOURCE_INDEX_MAPPINGS = {
 const getCountValue = (response) =>
   response?.count ?? response?.body?.count ?? 0;
 
+const getTotalValue = (response) => {
+  const total = response?.hits?.total ?? response?.body?.hits?.total;
+  if (typeof total === "number") {
+    return total;
+  }
+
+  return total?.value ?? 0;
+};
+
 const getHits = (response) =>
   response?.hits?.hits ?? response?.body?.hits?.hits ?? [];
 
@@ -63,6 +72,34 @@ export function buildUserResourceSearchQuery(keyword, size = 100) {
         fields: ["name^5", "description^2", "typeName^2"],
       },
     },
+  };
+}
+
+export function buildUserResourceAdminListQuery(options = {}) {
+  const page = Math.max(Number.parseInt(options.page, 10) || 1, 1);
+  const pageSize = Math.min(
+    Math.max(Number.parseInt(options.pageSize, 10) || 20, 1),
+    100
+  );
+  const search = String(options.search || "").trim();
+
+  return {
+    from: (page - 1) * pageSize,
+    size: pageSize,
+    track_total_hits: true,
+    sort: search
+      ? [{ _score: "desc" }, { updatedAt: "desc" }]
+      : [{ updatedAt: "desc" }],
+    query: search
+      ? {
+          multi_match: {
+            query: search,
+            fields: ["name^5", "description^2", "typeName^2"],
+          },
+        }
+      : {
+          match_all: {},
+        },
   };
 }
 
@@ -133,6 +170,35 @@ export async function searchUserResourceDocuments(
   return getHits(response)
     .map((hit) => hit?._source)
     .filter(Boolean);
+}
+
+export async function listUserResourceDocuments(
+  client,
+  indexName,
+  options = {}
+) {
+  if (!(await indexExists(client, indexName))) {
+    return {
+      documents: [],
+      total: 0,
+    };
+  }
+
+  const response = await client.search({
+    index: indexName,
+    ...buildUserResourceAdminListQuery(options),
+  });
+
+  return {
+    documents: getHits(response)
+      .map((hit) => ({
+        documentId: hit?._id,
+        score: hit?._score ?? null,
+        document: hit?._source,
+      }))
+      .filter((item) => item.document),
+    total: getTotalValue(response),
+  };
 }
 
 export async function reindexUserResourceDocuments(

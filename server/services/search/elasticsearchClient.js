@@ -2,6 +2,7 @@ import { useRuntimeConfig } from "#imports";
 import { Client } from "@elastic/elasticsearch";
 import {
   deleteUserResourceDocument,
+  listUserResourceDocuments,
   reindexUserResourceDocuments,
   searchUserResourceDocuments,
   upsertUserResourceDocument,
@@ -106,6 +107,14 @@ export async function searchPublishedUserResources(keyword, size = 100) {
     getUserResourceSearchIndexName(),
     keyword,
     size
+  );
+}
+
+export async function listIndexedUserResources(options = {}) {
+  return listUserResourceDocuments(
+    getRequiredUserResourceSearchClient(),
+    getUserResourceSearchIndexName(),
+    options
   );
 }
 
