@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma";
+import { scheduleUserResourceAutoReview } from "~/server/services/userResources/autoReviewRunner.js";
 
 export default defineEventHandler(async (event) => {
     // 确保用户已登录
@@ -44,13 +45,32 @@ export default defineEventHandler(async (event) => {
                 description,
                 creatorId: userId,
                 status: 'pending',  // 默认状态为待审核
+            },
+            include: {
+                type: true,
+                creator: {
+                    select: {
+                        id: true,
+                        username: true,
+                        email: true
+                    }
+                }
             }
+        })
+
+        const autoReviewScheduled = scheduleUserResourceAutoReview(resource.id, {
+            notifyUser: true
         })
 
         return {
             code: 200,
-            msg: '创建成功',
-            data: resource
+            msg: autoReviewScheduled
+                ? '创建成功，系统将自动审核并通过站内通知和邮件告知结果'
+                : '创建成功，等待管理员审核',
+            data: {
+                ...resource,
+                autoReviewScheduled
+            }
         }
     } catch (error: any) {
         console.error('创建资源失败:', error)

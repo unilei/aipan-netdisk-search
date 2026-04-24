@@ -9,6 +9,7 @@
 - 用户投稿只在审核通过后进入 Elasticsearch；待审核和已拒绝资源不会进入前台搜索。
 - 后台 `用户资源` 页面用于人工审核和自动审核。
 - 后台 `ES索引内容` 页面用于查看 Elasticsearch 中的已发布用户投稿索引，并支持重建索引。
+- 用户在个人中心提交或编辑资源后，服务端会自动触发单资源审核，并通过站内通知和邮件告知结果。
 - GitHub Actions 自动构建 Docker 镜像并部署到生产应用服务器。
 - Elasticsearch 独立部署在单独 VPS，应用通过 HTTPS + Basic Auth + CA 指纹校验连接。
 
@@ -56,6 +57,16 @@ cp .env.example .env
 - `ELASTICSEARCH_CA_FINGERPRINT`
 - `ELASTICSEARCH_USER_RESOURCE_INDEX`
 
+自动审核相关变量：
+
+- `USER_RESOURCE_AUTO_REVIEW_ENABLED`
+- `USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID`
+- `USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID`
+- `USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE`
+- `USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER`
+- `USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL`
+- `USER_RESOURCE_AUTO_REVIEW_MAX_LINKS`
+
 本地如果不需要调试 ES，可暂时留空 ES 变量；前台 `/api/sources/1` 会自动降级为只返回本地 `Resource` 结果。生产环境必须配置完整 ES 变量。
 
 ## 本地开发
@@ -85,16 +96,17 @@ npm run dev
 
 ## 用户投稿搜索链路
 
-1. 用户提交资源后进入 `pending` 状态，只写 PostgreSQL。
-2. 管理员在 `/admin/user-resources` 人工通过，或使用自动审核通过。
-3. 状态变为 `published` 后，同步 upsert 到 Elasticsearch，文档 id 为 `user-resource-<id>`。
-4. 前台 `/api/sources/1` 同时返回本地 `Resource` 和 ES 中的已发布 `UserResource`。
-5. 如果资源改回 `pending` 或 `rejected`，对应 ES 文档会被删除。
-6. 如果出现索引漂移，可在 `/admin/search-index/user-resources` 执行重建索引。
+1. 用户提交或编辑资源后进入 `pending` 状态。
+2. 服务端立即调度单资源自动审核，不需要管理员手动点击“自动审核”。
+3. 可自动通过的资源会变为 `published` 并同步 upsert 到 Elasticsearch，文档 id 为 `user-resource-<id>`。
+4. 明确不合格的资源会自动变为 `rejected`；无法安全判断的资源保留 `pending` 进入人工审核。
+5. 审核处理完成后会创建站内通知，并在邮箱服务可用时发送邮件。
+6. 前台 `/api/sources/1` 同时返回本地 `Resource` 和 ES 中的已发布 `UserResource`。
+7. 如果出现索引漂移，可在 `/admin/search-index/user-resources` 执行重建索引。
 
 ## 自动审核规则
 
-自动审核入口在 `/admin/user-resources`。默认建议先执行“仅预检查”，确认结果后再执行审核。
+自动审核有两条入口：用户提交/编辑资源后会自动触发单资源审核；管理员也可以在 `/admin/user-resources` 手动执行批量自动审核。批量操作默认建议先执行“仅预检查”。
 
 当前自动审核会检查：
 

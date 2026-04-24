@@ -6,6 +6,12 @@ import {
   evaluateUserResourceForAutoReview,
   isSafeShareUrl,
 } from "../../server/services/userResources/autoReview.js";
+import {
+  buildUserResourceReviewNotification,
+} from "../../server/services/userResources/reviewNotifications.js";
+import {
+  resolveUserResourceAutoReviewAction,
+} from "../../server/services/userResources/autoReviewRunner.js";
 
 const buildResource = (overrides = {}) => ({
   id: 100,
@@ -102,4 +108,88 @@ test("isSafeShareUrl only allows supported share hosts", () => {
     }),
     false
   );
+});
+
+test("resolveUserResourceAutoReviewAction approves valid resources", () => {
+  assert.equal(
+    resolveUserResourceAutoReviewAction(
+      {
+        canAutoApprove: true,
+        shouldReject: false,
+        needsManualReview: false,
+      },
+      {
+        approveValid: true,
+        rejectInvalid: true,
+      }
+    ),
+    "approve"
+  );
+});
+
+test("resolveUserResourceAutoReviewAction rejects invalid resources when enabled", () => {
+  assert.equal(
+    resolveUserResourceAutoReviewAction(
+      {
+        canAutoApprove: false,
+        shouldReject: true,
+        needsManualReview: false,
+      },
+      {
+        approveValid: true,
+        rejectInvalid: true,
+      }
+    ),
+    "reject"
+  );
+});
+
+test("resolveUserResourceAutoReviewAction skips uncertain resources for manual review", () => {
+  assert.equal(
+    resolveUserResourceAutoReviewAction(
+      {
+        canAutoApprove: false,
+        shouldReject: false,
+        needsManualReview: true,
+      },
+      {
+        approveValid: true,
+        rejectInvalid: true,
+      }
+    ),
+    "skip"
+  );
+});
+
+test("buildUserResourceReviewNotification builds approved messages", () => {
+  const notification = buildUserResourceReviewNotification({
+    resource: buildResource({ id: 101, name: "北京中轴线" }),
+    action: "approved",
+  });
+
+  assert.equal(notification.type, "user_resource_review");
+  assert.equal(notification.relatedId, 101);
+  assert.equal(notification.title, "资源投稿已通过审核");
+  assert.match(notification.content, /北京中轴线/);
+  assert.match(notification.emailSubject, /资源投稿已通过审核/);
+});
+
+test("buildUserResourceReviewNotification includes review reasons for manual review", () => {
+  const notification = buildUserResourceReviewNotification({
+    resource: buildResource({ id: 102, name: "待复核资源" }),
+    action: "skipped",
+    review: {
+      checks: [
+        {
+          passed: false,
+          severity: "warning",
+          message: "目标网盘拒绝自动访问，需要人工复核",
+        },
+      ],
+    },
+  });
+
+  assert.equal(notification.title, "资源投稿已进入人工审核");
+  assert.match(notification.content, /目标网盘拒绝自动访问/);
+  assert.match(notification.emailText, /待复核资源/);
 });

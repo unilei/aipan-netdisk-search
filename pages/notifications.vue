@@ -145,7 +145,9 @@ const handleNotificationClick = async (notification) => {
   }
 
   // 根据通知类型跳转到相应页面
-  if (notification.type === "reply" || notification.type === "topic") {
+  if (notification.type === "user_resource_review") {
+    navigateTo("/user/resources/list");
+  } else if (notification.type === "reply" || notification.type === "topic") {
     try {
       // 先获取帖子信息，从中获取所属主题的slug
       const response = await fetch(

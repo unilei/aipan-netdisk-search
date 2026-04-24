@@ -18,11 +18,25 @@ export default defineEventHandler(async (event) => {
             })
         }
 
+        const userId = user.userId || user.id
+        const existingNotification = await prisma.notification.findFirst({
+            where: {
+                id,
+                userId
+            }
+        })
+
+        if (!existingNotification) {
+            throw createError({
+                statusCode: 404,
+                message: '通知不存在'
+            })
+        }
+
         // 更新通知状态
         const notification = await prisma.notification.update({
             where: {
-                id,
-                userId: user.id // 确保只能更新自己的通知
+                id
             },
             data: {
                 isRead: true
@@ -40,4 +54,4 @@ export default defineEventHandler(async (event) => {
             message: '标记通知为已读失败'
         }
     }
-}) 
+})

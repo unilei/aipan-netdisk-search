@@ -372,7 +372,65 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - `user-resources`
 
-### 7. `NUXT_PUBLIC_GITHUB_OWNER`
+### 7. `USER_RESOURCE_AUTO_REVIEW_ENABLED`
+
+用途：
+
+- 控制用户提交或编辑资源后是否自动触发审核
+
+默认值：
+
+- `true`
+
+### 8. `USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE`
+
+用途：
+
+- 控制自动审核是否请求网盘分享页检查可达性
+
+默认值：
+
+- `false`
+
+说明：
+
+- 设为 `true` 时，无法确认可达性的资源会进入人工审核，不会自动通过。
+
+### 9. `USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID`
+
+用途：
+
+- 控制明确不合格资源是否自动拒绝
+
+默认值：
+
+- `true`
+
+### 10. `USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL`
+
+用途：
+
+- 控制自动审核完成后是否尝试发送邮件
+
+默认值：
+
+- `true`
+
+说明：
+
+- 邮件仍依赖后台邮箱服务配置；邮箱未启用时只发送站内通知。
+
+### 11. `USER_RESOURCE_AUTO_REVIEW_MAX_LINKS`
+
+用途：
+
+- 控制单个用户投稿允许的最大链接数量
+
+默认值：
+
+- `5`
+
+### 12. `NUXT_PUBLIC_GITHUB_OWNER`
 
 用途：
 
@@ -384,7 +442,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 - 例如 `https://github.com/unilei-github/aipan-images`
 - 则 owner 是 `unilei-github`
 
-### 8. `NUXT_PUBLIC_GITHUB_REPO`
+### 13. `NUXT_PUBLIC_GITHUB_REPO`
 
 用途：
 
@@ -396,7 +454,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 - 例如 `https://github.com/unilei-github/aipan-images`
 - 则 repo 是 `aipan-images`
 
-### 9. `NUXT_PUBLIC_GITHUB_BRANCH`
+### 14. `NUXT_PUBLIC_GITHUB_BRANCH`
 
 用途：
 
@@ -495,6 +553,13 @@ gh variable set DATABASE_SCHEMA -b"public"
 gh variable set ELASTICSEARCH_NODE -b"https://66.103.211.214:9200"
 gh variable set ELASTICSEARCH_CA_FINGERPRINT -b"你的ES HTTP CA SHA256指纹"
 gh variable set ELASTICSEARCH_USER_RESOURCE_INDEX -b"user-resources"
+gh variable set USER_RESOURCE_AUTO_REVIEW_ENABLED -b"true"
+gh variable set USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID -b"true"
+gh variable set USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE -b"false"
+gh variable set USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID -b"true"
+gh variable set USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER -b"true"
+gh variable set USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL -b"true"
+gh variable set USER_RESOURCE_AUTO_REVIEW_MAX_LINKS -b"5"
 gh variable set NUXT_PUBLIC_GITHUB_OWNER -b"unilei-github"
 gh variable set NUXT_PUBLIC_GITHUB_REPO -b"aipan-images"
 gh variable set NUXT_PUBLIC_GITHUB_BRANCH -b"main"
