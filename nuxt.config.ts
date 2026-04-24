@@ -217,6 +217,21 @@ export default defineNuxtConfig({
       process.env.NUXT_SETTINGS_ENCRYPTION_KEY ||
       process.env.SETTINGS_ENCRYPTION_KEY,
     pansouApiUrls: process.env.NUXT_PANSOU_API_URLS || process.env.PANSOU_API_URLS || 'https://so.252035.xyz/api/search,https://pansou.aipan.me/api/search,https://pansou.app/api/search',
+    elasticsearchNode:
+      process.env.NUXT_ELASTICSEARCH_NODE || process.env.ELASTICSEARCH_NODE,
+    elasticsearchUsername:
+      process.env.NUXT_ELASTICSEARCH_USERNAME ||
+      process.env.ELASTICSEARCH_USERNAME,
+    elasticsearchPassword:
+      process.env.NUXT_ELASTICSEARCH_PASSWORD ||
+      process.env.ELASTICSEARCH_PASSWORD,
+    elasticsearchCaFingerprint:
+      process.env.NUXT_ELASTICSEARCH_CA_FINGERPRINT ||
+      process.env.ELASTICSEARCH_CA_FINGERPRINT,
+    elasticsearchUserResourceIndex:
+      process.env.NUXT_ELASTICSEARCH_USER_RESOURCE_INDEX ||
+      process.env.ELASTICSEARCH_USER_RESOURCE_INDEX ||
+      'user-resources',
     public: {
       GITHUB_OWNER: process.env.NUXT_PUBLIC_GITHUB_OWNER,
       GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
