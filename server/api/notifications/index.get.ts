@@ -16,8 +16,9 @@ export default defineEventHandler(async (event) => {
         const isRead = query.isRead ? query.isRead === 'true' : undefined
 
         // 构建查询条件
+        const userId = user.userId || user.id
         const where = {
-            userId: user.id,
+            userId,
             ...(isRead !== undefined ? { isRead } : {})
         }
 
@@ -53,4 +54,4 @@ export default defineEventHandler(async (event) => {
             message: '获取通知列表失败'
         }
     }
-}) 
+})

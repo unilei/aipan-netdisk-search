@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma";
+import { scheduleUserResourceAutoReview } from "~/server/services/userResources/autoReviewRunner.js";
 
 export default defineEventHandler(async (event) => {
     const { id } = getRouterParams(event)
@@ -62,10 +63,19 @@ export default defineEventHandler(async (event) => {
             }
         })
 
+        const autoReviewScheduled = scheduleUserResourceAutoReview(updatedResource.id, {
+            notifyUser: true
+        })
+
         return {
             code: 200,
-            msg: '更新成功，等待重新审核',
-            data: updatedResource
+            msg: autoReviewScheduled
+                ? '更新成功，系统将自动重新审核并通知你结果'
+                : '更新成功，等待重新审核',
+            data: {
+                ...updatedResource,
+                autoReviewScheduled
+            }
         }
     } catch (error: any) {
         console.error('更新资源失败:', error)

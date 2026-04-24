@@ -11,9 +11,10 @@ export default defineEventHandler(async (event) => {
         }
 
         // 获取未读通知数量
+        const userId = user.userId || user.id
         const count = await prisma.notification.count({
             where: {
-                userId: user.id,
+                userId,
                 isRead: false
             }
         })
@@ -31,4 +32,4 @@ export default defineEventHandler(async (event) => {
             message: '获取未读通知数量失败'
         }
     }
-}) 
+})

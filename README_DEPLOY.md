@@ -161,7 +161,10 @@ ES VPS 侧必须：
 
 ## 自动审核
 
-入口：`/admin/user-resources`
+入口：
+
+- 用户个人中心提交或编辑资源后，服务端自动触发单资源审核
+- 管理员后台 `/admin/user-resources` 可手动执行批量自动审核
 
 自动审核支持：
 
@@ -178,7 +181,25 @@ ES VPS 侧必须：
 - 不与本地 `Resource` 或现有 `UserResource` 重复
 - 可选网络可达性检查
 
-无法安全判断的资源会跳过，保留人工审核。
+无法安全判断的资源会跳过，保留人工审核。自动处理完成后会创建站内通知，并在邮箱服务启用时发送邮件。
+
+自动审核运行时变量：
+
+```bash
+USER_RESOURCE_AUTO_REVIEW_ENABLED=true
+USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID=true
+USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID=true
+USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE=false
+USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER=true
+USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL=true
+USER_RESOURCE_AUTO_REVIEW_MAX_LINKS=5
+```
+
+说明：
+
+- `USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE=false` 是默认值，避免网盘反爬导致大量投稿进入人工审核。
+- 如果要强制检查分享页是否可访问，把它设为 `true`；无法确认可达性的资源会保留 `pending` 并通知用户进入人工审核。
+- 邮件发送复用后台 `系统配置 -> 邮箱服务` 的 Resend 配置，未启用时只发送站内通知。
 
 ## 常用生产验证
 

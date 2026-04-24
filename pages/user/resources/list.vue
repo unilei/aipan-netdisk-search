@@ -801,7 +801,7 @@ const handleSubmitAddClouddrive = async () => {
         ),
         description: form.description.trim(),
       });
-      ElMessage.success("资源更新成功");
+      ElMessage.success("资源更新成功，系统将自动重新审核并通知你结果");
     } else {
       await api.addResource({
         name: form.name.trim(),
@@ -814,7 +814,7 @@ const handleSubmitAddClouddrive = async () => {
         ),
         description: form.description.trim(),
       });
-      ElMessage.success("资源添加成功");
+      ElMessage.success("资源提交成功，系统将自动审核并通知你结果");
     }
     dialogs.resource = false;
     resetForm();
@@ -1050,10 +1050,14 @@ const multiRequests = async (data) => {
 
     // 显示最终结果
     if (failed > 0) {
-      ElMessage.warning(`批量上传完成，成功: ${completed}，失败: ${failed}`);
+      ElMessage.warning(
+        `批量上传完成，成功: ${completed}，失败: ${failed}；成功项将自动审核并通知结果`
+      );
       console.error("失败项目：", failedItems);
     } else {
-      ElMessage.success(`批量上传完成，共上传 ${completed} 个资源`);
+      ElMessage.success(
+        `批量上传完成，共上传 ${completed} 个资源，系统将自动审核并通知结果`
+      );
     }
 
     dialogs.multiUpload = false;
@@ -1075,7 +1079,7 @@ const handleSubmitMultiUpload = async () => {
   pageState.multiUploading = true;
   try {
     await multiRequests(uploadData.value);
-    ElMessage.success("批量上传成功");
+    ElMessage.success("批量上传成功，系统将自动审核并通知结果");
     dialogs.multiUpload = false;
     uploadData.value = [];
     multiProgress.value = 0;
