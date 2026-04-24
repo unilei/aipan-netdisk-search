@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  buildUserResourceAdminListQuery,
   buildUserResourceIndexDocument,
   buildUserResourceSearchQuery,
 } from "../../server/services/search/userResourceSearchIndex.js";
@@ -51,4 +52,41 @@ test("buildUserResourceSearchQuery uses the fixed weighted fields and ordering",
       },
     },
   });
+});
+
+test("buildUserResourceAdminListQuery supports paged ES browsing", () => {
+  assert.deepEqual(
+    buildUserResourceAdminListQuery({ page: 3, pageSize: 10 }),
+    {
+      from: 20,
+      size: 10,
+      track_total_hits: true,
+      sort: [{ updatedAt: "desc" }],
+      query: {
+        match_all: {},
+      },
+    }
+  );
+});
+
+test("buildUserResourceAdminListQuery searches the same indexed fields", () => {
+  assert.deepEqual(
+    buildUserResourceAdminListQuery({
+      page: 1,
+      pageSize: 250,
+      search: "纪录片",
+    }),
+    {
+      from: 0,
+      size: 100,
+      track_total_hits: true,
+      sort: [{ _score: "desc" }, { updatedAt: "desc" }],
+      query: {
+        multi_match: {
+          query: "纪录片",
+          fields: ["name^5", "description^2", "typeName^2"],
+        },
+      },
+    }
+  );
 });
