@@ -10,11 +10,11 @@
           </div>
           <div class="flex items-center space-x-4">
             <el-button
-              type="success"
+              type="warning"
               plain
-              @click="handleOpenSearchIndexDialog"
+              @click="autoReviewDialogVisible = true"
             >
-              ES索引内容
+              自动审核
             </el-button>
             <el-button
               type="primary"
@@ -187,186 +187,82 @@
       </div>
     </el-dialog>
 
-    <!-- ES索引内容对话框 -->
-    <el-dialog
-      v-model="searchIndexDialogVisible"
-      title="用户资源 ES 索引内容"
-      width="90%"
-      destroy-on-close
-      @open="fetchSearchIndexResources"
-    >
+    <!-- 自动审核对话框 -->
+    <el-dialog v-model="autoReviewDialogVisible" title="自动审核用户资源" width="860px">
       <div class="space-y-4">
         <el-alert
-          type="info"
+          type="warning"
           show-icon
           :closable="false"
-          title="这里展示的是 Elasticsearch 中已发布用户投稿的索引文档"
-          description="ES 只索引 UserResource 且 status=published 的投稿；网盘管理中的 Resource 不在这里展示。"
+          title="自动审核只处理待审核资源"
+          description="会检查名称/描述/类型、链接格式、重复资源和可选的网盘链接可访问性；无法确认的链接会跳过并保留人工复核。"
         />
 
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex flex-wrap items-center gap-3">
-            <el-input
-              v-model="searchIndexQuery"
-              placeholder="搜索ES文档名称、描述或类型"
-              class="w-80"
-              clearable
-              @clear="handleSearchIndexSearch"
-              @keyup.enter="handleSearchIndexSearch"
-            >
-              <template #prefix>
-                <el-icon>
-                  <Search />
-                </el-icon>
-              </template>
-            </el-input>
-            <el-button type="primary" @click="handleSearchIndexSearch">
-              搜索
-            </el-button>
-            <el-button @click="fetchSearchIndexResources">刷新</el-button>
-          </div>
+        <el-form label-width="150px">
+          <el-form-item label="单次处理数量">
+            <el-input-number
+              v-model="autoReviewForm.limit"
+              :min="1"
+              :max="100"
+              :step="5"
+            />
+          </el-form-item>
+          <el-form-item label="检查链接是否存在">
+            <el-switch v-model="autoReviewForm.requireReachable" />
+            <span class="ml-3 text-sm text-gray-500">
+              网盘拒绝自动访问或超时时会进入人工复核，不会自动通过。
+            </span>
+          </el-form-item>
+          <el-form-item label="拒绝不合格资源">
+            <el-switch v-model="autoReviewForm.rejectInvalid" />
+            <span class="ml-3 text-sm text-gray-500">
+              关闭时只自动通过合格资源，不合格资源保持待审核。
+            </span>
+          </el-form-item>
+        </el-form>
+
+        <div class="flex justify-end gap-3">
+          <el-button :loading="autoReviewLoading" @click="handleAutoReview(true)">
+            仅预检查
+          </el-button>
           <el-button
-            type="warning"
-            :loading="reindexing"
-            @click="handleReindexSearchIndex"
+            type="primary"
+            :loading="autoReviewLoading"
+            @click="handleAutoReview(false)"
           >
-            reset=true 重建索引
+            执行自动审核
           </el-button>
         </div>
 
-        <el-table
-          :data="searchIndexResources"
-          v-loading="searchIndexLoading"
-          max-height="520"
-          style="width: 100%"
-        >
-          <el-table-column label="ES文档ID" prop="documentId" width="180" />
-          <el-table-column label="资源ID" prop="resourceId" width="90" />
-          <el-table-column
-            label="资源名称"
-            prop="name"
-            min-width="260"
-            show-overflow-tooltip
-          />
-          <el-table-column label="类型" prop="typeName" width="120" />
-          <el-table-column label="投稿人" prop="creatorUsername" width="120" />
-          <el-table-column label="链接数" width="80">
-            <template #default="{ row }">
-              {{ Array.isArray(row.links) ? row.links.length : 0 }}
-            </template>
-          </el-table-column>
-          <el-table-column label="更新时间" width="180">
-            <template #default="{ row }">
-              {{ formatDate(row.updatedAt) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="100" fixed="right">
-            <template #default="{ row }">
-              <el-button
-                type="primary"
-                size="small"
-                @click="handleViewSearchIndexResource(row)"
-              >
-                详情
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div v-if="autoReviewResult" class="rounded border border-gray-200 p-4">
+          <div class="mb-3 flex flex-wrap gap-4 text-sm text-gray-700">
+            <span>检查：{{ autoReviewResult.checked }}</span>
+            <span>通过：{{ autoReviewResult.approved }}</span>
+            <span>拒绝：{{ autoReviewResult.rejected }}</span>
+            <span>跳过：{{ autoReviewResult.skipped }}</span>
+            <span>失败：{{ autoReviewResult.failed }}</span>
+          </div>
 
-        <div class="flex justify-end">
-          <el-pagination
-            v-model:current-page="searchIndexCurrentPage"
-            v-model:page-size="searchIndexPageSize"
-            :total="searchIndexTotal"
-            :page-sizes="[10, 20, 50, 100]"
-            layout="total, sizes, prev, pager, next"
-            @size-change="handleSearchIndexSizeChange"
-            @current-change="handleSearchIndexCurrentChange"
-          />
-        </div>
-      </div>
-    </el-dialog>
-
-    <!-- ES文档详情对话框 -->
-    <el-dialog
-      v-model="searchIndexDetailVisible"
-      title="ES文档详情"
-      width="680px"
-    >
-      <div v-if="selectedSearchIndexResource" class="space-y-4">
-        <div>
-          <label class="text-gray-500">ES文档ID</label>
-          <p class="text-gray-900 mt-1">
-            {{ selectedSearchIndexResource.documentId }}
-          </p>
-        </div>
-        <div>
-          <label class="text-gray-500">资源名称</label>
-          <p class="text-gray-900 mt-1">
-            {{ selectedSearchIndexResource.name }}
-          </p>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="text-gray-500">资源ID</label>
-            <p class="text-gray-900 mt-1">
-              {{ selectedSearchIndexResource.resourceId }}
-            </p>
-          </div>
-          <div>
-            <label class="text-gray-500">类型</label>
-            <p class="text-gray-900 mt-1">
-              {{ selectedSearchIndexResource.typeName || "-" }}
-            </p>
-          </div>
-          <div>
-            <label class="text-gray-500">投稿人</label>
-            <p class="text-gray-900 mt-1">
-              {{ selectedSearchIndexResource.creatorUsername || "-" }}
-            </p>
-          </div>
-          <div>
-            <label class="text-gray-500">更新时间</label>
-            <p class="text-gray-900 mt-1">
-              {{ formatDate(selectedSearchIndexResource.updatedAt) }}
-            </p>
-          </div>
-        </div>
-        <div>
-          <label class="text-gray-500">资源描述</label>
-          <p class="text-gray-900 mt-1 whitespace-pre-wrap">
-            {{ selectedSearchIndexResource.description || "-" }}
-          </p>
-        </div>
-        <div>
-          <label class="text-gray-500">索引链接</label>
-          <div class="mt-2 space-y-2">
-            <div
-              v-for="(link, index) in selectedSearchIndexResource.links || []"
-              :key="`${link.service || 'UNKNOWN'}-${link.link}-${index}`"
-              class="rounded border border-gray-200 p-3"
-            >
-              <div class="text-sm text-gray-500">
-                {{ link.service || "UNKNOWN" }}
-              </div>
-              <el-link type="primary" :href="link.link" target="_blank">
-                {{ link.link }}
-              </el-link>
-              <div v-if="link.pwd" class="text-sm text-gray-500 mt-1">
-                提取码：{{ link.pwd }}
-              </div>
-            </div>
-            <el-empty
-              v-if="!selectedSearchIndexResource.links?.length"
-              description="暂无链接"
-            />
-          </div>
-        </div>
-        <div>
-          <label class="text-gray-500">原始ES文档</label>
-          <pre
-            class="mt-2 max-h-64 overflow-auto rounded bg-gray-50 p-3 text-xs text-gray-700"
-          >{{ JSON.stringify(selectedSearchIndexResource, null, 2) }}</pre>
+          <el-table
+            :data="autoReviewResult.results || []"
+            max-height="360"
+            style="width: 100%"
+          >
+            <el-table-column label="资源ID" prop="resourceId" width="90" />
+            <el-table-column label="资源名称" prop="name" min-width="220" show-overflow-tooltip />
+            <el-table-column label="动作" width="120">
+              <template #default="{ row }">
+                <el-tag :type="getAutoReviewActionType(row.action)">
+                  {{ getAutoReviewActionText(row.action) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="原因" min-width="320" show-overflow-tooltip>
+              <template #default="{ row }">
+                {{ getAutoReviewIssueText(row) }}
+              </template>
+            </el-table-column>
+          </el-table>
         </div>
       </div>
     </el-dialog>
@@ -392,16 +288,14 @@ const searchQuery = ref("");
 const statusFilter = ref("");
 const dialogVisible = ref(false);
 const selectedResource = ref(null);
-const searchIndexDialogVisible = ref(false);
-const searchIndexDetailVisible = ref(false);
-const searchIndexLoading = ref(false);
-const reindexing = ref(false);
-const searchIndexResources = ref([]);
-const searchIndexCurrentPage = ref(1);
-const searchIndexPageSize = ref(20);
-const searchIndexTotal = ref(0);
-const searchIndexQuery = ref("");
-const selectedSearchIndexResource = ref(null);
+const autoReviewDialogVisible = ref(false);
+const autoReviewLoading = ref(false);
+const autoReviewResult = ref(null);
+const autoReviewForm = reactive({
+  limit: 20,
+  requireReachable: true,
+  rejectInvalid: false,
+});
 
 // 获取资源列表
 const fetchResources = async () => {
@@ -440,100 +334,50 @@ const fetchResources = async () => {
   }
 };
 
-// 获取ES索引内容
-const fetchSearchIndexResources = async () => {
-  if (!searchIndexDialogVisible.value) {
-    return;
-  }
-
-  searchIndexLoading.value = true;
+const handleAutoReview = async (dryRun) => {
   try {
-    const params = new URLSearchParams({
-      page: searchIndexCurrentPage.value.toString(),
-      pageSize: searchIndexPageSize.value.toString(),
-    });
-
-    if (searchIndexQuery.value) {
-      params.append("search", searchIndexQuery.value);
+    if (!dryRun) {
+      await ElMessageBox.confirm(
+        autoReviewForm.rejectInvalid
+          ? "确定要执行自动审核吗？合格资源会通过，不合格资源会被拒绝。"
+          : "确定要执行自动审核吗？合格资源会通过，其它资源保持待审核。",
+        "确认自动审核",
+        {
+          confirmButtonText: "确定执行",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      );
     }
 
-    const response = await $fetch(
-      `/api/admin/user-resources/search?${params.toString()}`,
-      {
-        method: "GET",
-        headers: {
-          authorization: "Bearer " + useCookie("token").value,
-        },
-      }
-    );
-
-    searchIndexResources.value = response.data || [];
-    searchIndexTotal.value = response.pagination?.total || 0;
-  } catch (error) {
-    console.error("Failed to fetch search index resources:", error);
-    ElMessage.error(error?.data?.message || "获取ES索引内容失败");
-  } finally {
-    searchIndexLoading.value = false;
-  }
-};
-
-const handleOpenSearchIndexDialog = () => {
-  searchIndexDialogVisible.value = true;
-};
-
-const handleSearchIndexSearch = () => {
-  searchIndexCurrentPage.value = 1;
-  fetchSearchIndexResources();
-};
-
-const handleSearchIndexSizeChange = (val) => {
-  searchIndexPageSize.value = val;
-  fetchSearchIndexResources();
-};
-
-const handleSearchIndexCurrentChange = (val) => {
-  searchIndexCurrentPage.value = val;
-  fetchSearchIndexResources();
-};
-
-const handleViewSearchIndexResource = (resource) => {
-  selectedSearchIndexResource.value = resource;
-  searchIndexDetailVisible.value = true;
-};
-
-const handleReindexSearchIndex = async () => {
-  try {
-    await ElMessageBox.confirm(
-      "确定要删除并重建用户资源ES索引吗？该操作只处理已发布的用户投稿。",
-      "确认重建ES索引",
-      {
-        confirmButtonText: "确定重建",
-        cancelButtonText: "取消",
-        type: "warning",
-      }
-    );
-
-    reindexing.value = true;
-    const response = await $fetch("/api/admin/user-resources/search/reindex", {
+    autoReviewLoading.value = true;
+    const response = await $fetch("/api/admin/user-resources/auto-review", {
       method: "POST",
-      body: { reset: true },
+      body: {
+        dryRun,
+        approveValid: true,
+        rejectInvalid: autoReviewForm.rejectInvalid,
+        requireReachable: autoReviewForm.requireReachable,
+        limit: autoReviewForm.limit,
+      },
       headers: {
         authorization: "Bearer " + useCookie("token").value,
       },
     });
 
-    const result = response.data || {};
-    ElMessage.success(
-      `重建完成：indexed=${result.indexed || 0}, failed=${result.failed || 0}, total=${result.total || 0}`
-    );
-    await fetchSearchIndexResources();
+    autoReviewResult.value = response.data;
+    ElMessage.success(response.msg || (dryRun ? "预检查完成" : "自动审核完成"));
+
+    if (!dryRun) {
+      await fetchResources();
+    }
   } catch (error) {
     if (error !== "cancel") {
-      console.error("Failed to reindex search index:", error);
-      ElMessage.error(error?.data?.message || "重建ES索引失败");
+      console.error("Failed to auto review user resources:", error);
+      ElMessage.error(error?.data?.message || "自动审核失败");
     }
   } finally {
-    reindexing.value = false;
+    autoReviewLoading.value = false;
   }
 };
 
@@ -623,6 +467,53 @@ const getStatusText = (status) => {
     default:
       return "待审核";
   }
+};
+
+const getAutoReviewActionType = (action) => {
+  switch (action) {
+    case "approved":
+    case "would_approve":
+      return "success";
+    case "rejected":
+    case "would_reject":
+      return "danger";
+    case "failed":
+      return "danger";
+    default:
+      return "warning";
+  }
+};
+
+const getAutoReviewActionText = (action) => {
+  switch (action) {
+    case "approved":
+      return "已通过";
+    case "rejected":
+      return "已拒绝";
+    case "would_approve":
+      return "将通过";
+    case "would_reject":
+      return "将拒绝";
+    case "failed":
+      return "失败";
+    case "would_skip":
+      return "将跳过";
+    default:
+      return "已跳过";
+  }
+};
+
+const getAutoReviewIssueText = (row) => {
+  if (row.error) {
+    return row.error;
+  }
+
+  const failedChecks = (row.checks || []).filter((check) => !check.passed);
+  if (!failedChecks.length) {
+    return row.canAutoApprove ? "符合自动通过条件" : "无异常";
+  }
+
+  return failedChecks.map((check) => check.message).join("；");
 };
 
 const formatDate = (date) => {
