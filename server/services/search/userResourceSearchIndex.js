@@ -19,6 +19,8 @@ export const USER_RESOURCE_INDEX_MAPPINGS = {
   },
 };
 
+const USER_RESOURCE_SEARCH_FIELDS = ["name^5", "description^2", "typeName^2"];
+
 const getCountValue = (response) =>
   response?.count ?? response?.body?.count ?? 0;
 
@@ -66,11 +68,31 @@ export function buildUserResourceSearchQuery(keyword, size = 100) {
   return {
     size,
     sort: [{ _score: "desc" }, { updatedAt: "desc" }],
-    query: {
-      multi_match: {
-        query: keyword,
-        fields: ["name^5", "description^2", "typeName^2"],
-      },
+    query: buildUserResourceStrictKeywordQuery(keyword),
+  };
+}
+
+export function buildUserResourceStrictKeywordQuery(keyword) {
+  return {
+    bool: {
+      should: [
+        {
+          multi_match: {
+            query: keyword,
+            fields: USER_RESOURCE_SEARCH_FIELDS,
+            type: "phrase",
+            boost: 8,
+          },
+        },
+        {
+          multi_match: {
+            query: keyword,
+            fields: USER_RESOURCE_SEARCH_FIELDS,
+            operator: "and",
+          },
+        },
+      ],
+      minimum_should_match: 1,
     },
   };
 }
@@ -91,12 +113,7 @@ export function buildUserResourceAdminListQuery(options = {}) {
       ? [{ _score: "desc" }, { updatedAt: "desc" }]
       : [{ updatedAt: "desc" }],
     query: search
-      ? {
-          multi_match: {
-            query: search,
-            fields: ["name^5", "description^2", "typeName^2"],
-          },
-        }
+      ? buildUserResourceStrictKeywordQuery(search)
       : {
           match_all: {},
         },
