@@ -34,20 +34,6 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 打印调试信息，查看环境变量传递情况
-        console.log('[DEBUG] 注册用户检查：', {
-            提交的邮箱: email,
-            配置的管理员邮箱: config.adminEmail,
-            邮箱匹配: email === config.adminEmail,
-            提交的密码: password.substring(0, 3) + '***', // 出于安全考虑只显示密码前几位
-            配置的管理员密码长度: config.adminPassword?.length || 0,
-            密码匹配: password === config.adminPassword,
-            提交的用户名: username,
-            配置的管理员用户名: config.adminUser,
-            用户名匹配: username === config.adminUser,
-            全部配置项名称: Object.keys(config)
-        });
-        
         // 判断是否是管理员注册
         const isAdminRegistration = email === config.adminEmail &&
             password === config.adminPassword &&
@@ -128,8 +114,7 @@ export default defineEventHandler(async (event) => {
         console.error(e);
         return {
             code: 500,
-            msg: '服务器错误',
-            error: e
+            msg: '服务器错误'
         }
     }
 })

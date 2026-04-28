@@ -232,12 +232,12 @@ export default defineNuxtConfig({
       process.env.NUXT_ELASTICSEARCH_USER_RESOURCE_INDEX ||
       process.env.ELASTICSEARCH_USER_RESOURCE_INDEX ||
       'user-resources',
+    githubOwner: process.env.NUXT_PUBLIC_GITHUB_OWNER || process.env.GITHUB_OWNER,
+    githubRepo: process.env.NUXT_PUBLIC_GITHUB_REPO || process.env.GITHUB_REPO,
+    githubToken: process.env.NUXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN,
+    githubBranch: process.env.NUXT_PUBLIC_GITHUB_BRANCH || process.env.GITHUB_BRANCH,
+    quarkCookie: process.env.NUXT_PUBLIC_QUARK_COOKIE || process.env.QUARK_COOKIE,
     public: {
-      GITHUB_OWNER: process.env.NUXT_PUBLIC_GITHUB_OWNER,
-      GITHUB_REPO: process.env.NUXT_PUBLIC_GITHUB_REPO,
-      GITHUB_TOKEN: process.env.NUXT_PUBLIC_GITHUB_TOKEN,
-      GITHUB_BRANCH: process.env.NUXT_PUBLIC_GITHUB_BRANCH,
-      QUARK_COOKIE: process.env.NUXT_PUBLIC_QUARK_COOKIE,
       WS_PORT: process.env.NUXT_PUBLIC_WS_PORT || '3002'
     },
   },

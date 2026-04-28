@@ -111,15 +111,9 @@ const editorConfig = shallowRef({
 
 // 处理图片上传
 const onUploadImg = async (files, callback) => {
-    const config = useRuntimeConfig()
     try {
         uploadingCount.value += files.length
-        const result = await uploadImages(files, {
-            owner: config.public.GITHUB_OWNER,
-            repo: config.public.GITHUB_REPO,
-            token: config.public.GITHUB_TOKEN,
-            branch: config.public.GITHUB_BRANCH
-        })
+        const result = await uploadImages(files)
 
         // 显示错误信息
         result.errors.forEach(error => {

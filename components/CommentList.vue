@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue'
 import moment from 'moment'
 import { marked } from 'marked'
 import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
+import { sanitizeHtml } from '~/utils/sanitize'
 
 const props = defineProps({
     postId: {
@@ -24,7 +25,7 @@ const formatDate = (date) => {
 // 过滤并解析评论内容
 const parseContent = (content) => {
     const filteredContent = sensitiveWordFilter.filter(content)
-    return marked.parse(filteredContent)
+    return sanitizeHtml(marked.parse(filteredContent))
 }
 
 // 获取评论列表

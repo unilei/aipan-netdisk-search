@@ -1,11 +1,3 @@
-interface GithubConfig {
-    owner: string
-    repo: string
-    token: string
-    branch: string
-    cdnPrefix: string
-}
-
 interface UploadResult {
     url: string | null
     error?: string
@@ -63,68 +55,15 @@ const fileToBase64 = (file: File): Promise<string> => {
     })
 }
 
-// 上传单个文件到 GitHub
-const uploadSingleFile = async (file: File, config: GithubConfig): Promise<UploadResult> => {
-    try {
-        const fileName = generateUniqueFileName(file)
-        const base64 = await fileToBase64(file)
-
-        await $fetch(`https://api.github.com/repos/${config.owner}/${config.repo}/contents/images/${fileName}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${config.token}`,
-                'Content-Type': 'application/json',
-            },
-            body: {
-                message: `Upload image: ${fileName}`,
-                content: base64,
-                branch: config.branch
-            }
-        })
-
-        // 修改 CDN URL 的格式
-        const cdnUrl = `${config.cdnPrefix}/${config.owner}/${config.repo}@${config.branch}/images/${fileName}`
-        return { url: cdnUrl }
-    } catch (error) {
-        console.error('Single file upload failed:', error)
-        return {
-            url: null,
-            error: `图片 ${file.name} 上传失败: ${error instanceof Error ? error.message : '未知错误'}`
-        }
-    }
-}
-
-// 批量上传图片
+// 批量上传图片（通过服务端代理）
 export const uploadImages = async (
-    files: File[],
-    config: {
-        owner: string;
-        repo: string;
-        token: string;
-        branch?: string;
-    }
+    files: File[]
 ): Promise<{ urls: string[]; errors: string[] }> => {
-    const githubConfig: GithubConfig = {
-        owner: config.owner,
-        repo: config.repo,
-        token: config.token,
-        branch: config.branch || 'main',
-        cdnPrefix: 'https://cdn.jsdelivr.net/gh'
-    }
-
     try {
-        // 验证 GitHub 配置
-        if (!githubConfig.token || !githubConfig.owner || !githubConfig.repo) {
-            return {
-                urls: [],
-                errors: ['GitHub 配置不完整，请检查配置参数']
-            }
-        }
-
-        const results: UploadResult[] = []
         const errors: string[] = []
+        const validFiles: { fileName: string; base64: string }[] = []
 
-        // 验证并上传文件
+        // 验证并准备文件数据
         for (const file of files) {
             const validation = validateFile(file)
             if (!validation.valid) {
@@ -132,18 +71,30 @@ export const uploadImages = async (
                 continue
             }
 
-            const result = await uploadSingleFile(file, githubConfig)
-            if (result.url) {
-                results.push(result)
-            }
-            if (result.error) {
-                errors.push(result.error)
+            try {
+                const base64 = await fileToBase64(file)
+                const fileName = generateUniqueFileName(file)
+                validFiles.push({ fileName, base64 })
+            } catch (error) {
+                errors.push(`${file.name}: 文件读取失败`)
             }
         }
 
+        if (validFiles.length === 0) {
+            return { urls: [], errors }
+        }
+
+        // 调用服务端上传接口
+        const result: { code: number; urls: string[]; errors: string[] } = await ($fetch as Function)('/api/upload/image', {
+            method: 'POST',
+            body: {
+                files: validFiles
+            }
+        })
+
         return {
-            urls: results.map(r => r.url).filter((url): url is string => url !== null),
-            errors
+            urls: result.urls || [],
+            errors: [...errors, ...(result.errors || [])]
         }
     } catch (error) {
         console.error('Upload failed:', error)
@@ -156,15 +107,9 @@ export const uploadImages = async (
 
 // 单个图片上传（用于表单上传等场景）
 export const uploadSingleImage = async (
-    file: File,
-    config: {
-        owner: string;
-        repo: string;
-        token: string;
-        branch?: string;
-    }
+    file: File
 ): Promise<{ url: string | null; error?: string }> => {
-    const result = await uploadImages([file], config)
+    const result = await uploadImages([file])
     return {
         url: result.urls[0] || null,
         error: result.errors[0]

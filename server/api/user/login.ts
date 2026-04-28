@@ -75,8 +75,7 @@ export default defineEventHandler(async (event) => {
         console.error(e);
         return {
             code: 500,
-            msg: '服务器错误',
-            error: e
+            msg: '服务器错误'
         }
     }
 }) 

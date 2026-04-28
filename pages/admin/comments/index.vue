@@ -3,6 +3,7 @@
 import { Delete, Search } from "@element-plus/icons-vue";
 import { marked } from "marked";
 import moment from "moment";
+import { sanitizeHtml } from "~/utils/sanitize";
 
 definePageMeta({
   layout: "admin",
@@ -35,7 +36,7 @@ const formatDate = (date) => {
 
 // 解析评论内容
 const parseContent = (content) => {
-  return marked.parse(content);
+  return sanitizeHtml(marked.parse(content));
 };
 
 // 获取评论列表

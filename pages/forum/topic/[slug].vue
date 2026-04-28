@@ -203,6 +203,7 @@ import { marked } from "marked";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import MarkdownEditor from "~/components/MarkdownEditor.vue";
+import { sanitizeHtml } from "~/utils/sanitize";
 
 const route = useRoute();
 const router = useRouter();
@@ -301,7 +302,7 @@ const mdEditorRef = ref(null); // 更改编辑器引用名称
 // Computed property to safely parse the topic content
 const parsedContent = computed(() => {
   if (!topic.value?.content) return "";
-  return marked.parse(topic.value.content);
+  return sanitizeHtml(marked.parse(topic.value.content));
 });
 
 function formatDate(dateString) {

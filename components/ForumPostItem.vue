@@ -81,6 +81,7 @@ import { formatDistanceToNow } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { computed } from "vue";
 import { marked } from "marked";
+import { sanitizeHtml } from "~/utils/sanitize";
 
 const props = defineProps({
   post: {
@@ -110,7 +111,7 @@ const emit = defineEmits(['reply']);
 // 解析Markdown内容
 const parsedContent = computed(() => {
   if (!props.post.content) return "";
-  return marked.parse(props.post.content);
+  return sanitizeHtml(marked.parse(props.post.content));
 });
 
 // 格式化日期

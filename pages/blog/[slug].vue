@@ -4,6 +4,7 @@ import { computed, ref, nextTick, watch, onMounted, onUnmounted } from "vue";
 import moment from "moment";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
+import { sanitizeHtml } from "~/utils/sanitize";
 
 const route = useRoute();
 const slug = computed(() => String(route.params.slug || ""));
@@ -227,7 +228,7 @@ useHead({
 // Computed property to safely parse the blog content
 const parsedContent = computed(() => {
   if (!blog.value?.content) return "";
-  return marked.parse(blog.value.content);
+  return sanitizeHtml(marked.parse(blog.value.content));
 });
 
 // 预计阅读时间

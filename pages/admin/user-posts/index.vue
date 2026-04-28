@@ -193,7 +193,7 @@
         <div>
           <label class="text-gray-500">文章内容</label>
           <div class="mt-2 p-4 bg-gray-50 rounded-lg">
-            <div v-html="selectedPost.content" class="prose max-w-none"></div>
+            <div v-html="sanitizeHtml(marked.parse(selectedPost.content || ''))" class="prose max-w-none"></div>
           </div>
         </div>
       </div>
@@ -204,6 +204,8 @@
 <script setup>
 import { ArrowLeft, Search } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { marked } from "marked";
+import { sanitizeHtml } from "~/utils/sanitize";
 
 definePageMeta({
   layout: "admin",

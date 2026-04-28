@@ -4,6 +4,7 @@ import { ref, computed } from 'vue'
 import { marked } from 'marked'
 import 'highlight.js/styles/atom-one-dark.css'
 import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
+import { sanitizeHtml } from '~/utils/sanitize'
 
 const props = defineProps({
     postId: {
@@ -32,7 +33,7 @@ const isSubmitting = ref(false)
 // 预览内容
 const previewContent = computed(() => {
     if (!content.value) return ''
-    return marked.parse(content.value)
+    return sanitizeHtml(marked.parse(content.value))
 })
 
 // 提交评论

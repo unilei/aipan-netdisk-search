@@ -301,6 +301,7 @@ import {
 import { ElMessageBox, ElMessage } from 'element-plus'
 import { format } from 'date-fns'
 import { marked } from 'marked'
+import { sanitizeHtml } from '~/utils/sanitize'
 
 definePageMeta({
     layout: 'admin',
@@ -687,7 +688,7 @@ function formatDate(date) {
 function formatContent(content) {
     if (!content) return ''
     try {
-        return marked(content)
+        return sanitizeHtml(marked(content))
     } catch (e) {
         return content
     }
