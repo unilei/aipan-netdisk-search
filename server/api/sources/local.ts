@@ -5,25 +5,16 @@ import {
     mergeSourceItems,
     normalizeSource1SearchName,
 } from "~/server/services/search/source1Results.js";
-import { searchPublishedUserResources } from "~/server/services/search/elasticsearchClient.js";
+import {
+    searchPublishedUserResources,
+    getOptionalResourceSearchClient,
+    searchResources,
+} from "~/server/services/search/elasticsearchClient.js";
+
 interface Body {
     name: string
 }
 
-interface Item {
-    name: string
-    creator: {
-        username: string
-    }
-    type: {
-        name: string
-    },
-    typeId: number,
-    createdAt: Date,
-    updatedAt: Date,
-    id: number,
-    links: string
-}
 export default defineEventHandler(async (event) => {
     const body: Body = await readBody(event);
 
@@ -39,8 +30,33 @@ export default defineEventHandler(async (event) => {
 
         const maxResults = 50;
 
-        const [res, publishedUserResources] = await Promise.all([
-            prisma.resource.findMany({
+        // Determine whether ES is available for the resources index
+        const esResourceClient = getOptionalResourceSearchClient();
+
+        const [primaryResults, publishedUserResources] = await Promise.all([
+            // Main resource search: ES if available, Prisma as fallback
+            esResourceClient
+                ? searchResources(nameFilter, maxResults).catch((error) => {
+                    console.error("搜索资源 ES 索引失败，回退到 Prisma:", error);
+                    return null; // signal fallback
+                })
+                : null,
+            // User-contributed resources: always via ES (returns [] if not configured)
+            searchPublishedUserResources(nameFilter, maxResults).catch((error) => {
+                console.error("搜索用户投稿 ES 索引失败:", error);
+                return [];
+            }),
+        ]);
+
+        let localResults;
+        if (primaryResults !== null) {
+            // ES path succeeded
+            localResults = primaryResults.map((document: any) =>
+                mapUserResourceDocumentToSourceItem(document)
+            );
+        } else {
+            // Prisma fallback
+            const res = await prisma.resource.findMany({
                 where: {
                     name: {
                         contains: nameFilter,
@@ -65,15 +81,11 @@ export default defineEventHandler(async (event) => {
                     createdAt: 'desc',
                 },
                 take: maxResults,
-            }),
-            searchPublishedUserResources(nameFilter, maxResults).catch((error) => {
-                console.error("搜索用户投稿 ES 索引失败:", error);
-                return [];
-            }),
-        ]);
+            });
+            localResults = res.map((item) => mapStoredResourceToSourceItem(item));
+        }
 
-        const localResults = res.map((item) => mapStoredResourceToSourceItem(item));
-        const userResourceResults = publishedUserResources.map((document: any) =>
+        const userResourceResults = (publishedUserResources as any[]).map((document: any) =>
             mapUserResourceDocumentToSourceItem(document)
         );
         const result = mergeSourceItems(localResults, userResourceResults, maxResults);

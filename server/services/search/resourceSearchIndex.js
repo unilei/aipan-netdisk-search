@@ -3,12 +3,11 @@ import {
   normalizeSourceName,
 } from "./source1Results.js";
 
-export const USER_RESOURCE_INDEX_MAPPINGS = {
+export const RESOURCE_INDEX_MAPPINGS = {
   dynamic: "strict",
   properties: {
     resourceId: { type: "integer" },
     name: { type: "text", analyzer: "ik_max_word", search_analyzer: "ik_smart" },
-    description: { type: "text", analyzer: "ik_max_word", search_analyzer: "ik_smart" },
     typeId: { type: "integer" },
     typeName: { type: "text", analyzer: "ik_max_word", search_analyzer: "ik_smart" },
     creatorId: { type: "integer" },
@@ -19,7 +18,7 @@ export const USER_RESOURCE_INDEX_MAPPINGS = {
   },
 };
 
-const USER_RESOURCE_SEARCH_FIELDS = ["name^5", "description^2", "typeName^2"];
+const RESOURCE_SEARCH_FIELDS = ["name^5", "typeName^2"];
 
 const getCountValue = (response) =>
   response?.count ?? response?.body?.count ?? 0;
@@ -45,15 +44,14 @@ const indexExists = async (client, indexName) => {
   return Boolean(existsResponse?.body ?? existsResponse);
 };
 
-export function buildUserResourceDocumentId(resourceId) {
-  return `user-resource-${resourceId}`;
+export function buildResourceDocumentId(resourceId) {
+  return `resource-${resourceId}`;
 }
 
-export function buildUserResourceIndexDocument(resource) {
+export function buildResourceIndexDocument(resource) {
   return {
     resourceId: resource.id,
     name: normalizeSourceName(resource.name),
-    description: resource.description || "",
     typeId: resource.typeId,
     typeName: resource.type?.name || "",
     creatorId: resource.creatorId,
@@ -64,22 +62,22 @@ export function buildUserResourceIndexDocument(resource) {
   };
 }
 
-export function buildUserResourceSearchQuery(keyword, size = 100) {
+export function buildResourceSearchQuery(keyword, size = 100) {
   return {
     size,
     sort: [{ _score: "desc" }, { updatedAt: "desc" }],
-    query: buildUserResourceStrictKeywordQuery(keyword),
+    query: buildResourceStrictKeywordQuery(keyword),
   };
 }
 
-export function buildUserResourceStrictKeywordQuery(keyword) {
+export function buildResourceStrictKeywordQuery(keyword) {
   return {
     bool: {
       should: [
         {
           multi_match: {
             query: keyword,
-            fields: USER_RESOURCE_SEARCH_FIELDS,
+            fields: RESOURCE_SEARCH_FIELDS,
             type: "phrase",
             boost: 8,
           },
@@ -87,7 +85,7 @@ export function buildUserResourceStrictKeywordQuery(keyword) {
         {
           multi_match: {
             query: keyword,
-            fields: USER_RESOURCE_SEARCH_FIELDS,
+            fields: RESOURCE_SEARCH_FIELDS,
             operator: "and",
           },
         },
@@ -97,50 +95,27 @@ export function buildUserResourceStrictKeywordQuery(keyword) {
   };
 }
 
-export function buildUserResourceAdminListQuery(options = {}) {
-  const page = Math.max(Number.parseInt(options.page, 10) || 1, 1);
-  const pageSize = Math.min(
-    Math.max(Number.parseInt(options.pageSize, 10) || 20, 1),
-    100
-  );
-  const search = String(options.search || "").trim();
-
-  return {
-    from: (page - 1) * pageSize,
-    size: pageSize,
-    track_total_hits: true,
-    sort: search
-      ? [{ _score: "desc" }, { updatedAt: "desc" }]
-      : [{ updatedAt: "desc" }],
-    query: search
-      ? buildUserResourceStrictKeywordQuery(search)
-      : {
-          match_all: {},
-        },
-  };
-}
-
-export async function ensureUserResourceIndex(client, indexName) {
+export async function ensureResourceIndex(client, indexName) {
   if (await indexExists(client, indexName)) {
     return false;
   }
 
   await client.indices.create({
     index: indexName,
-    mappings: USER_RESOURCE_INDEX_MAPPINGS,
+    mappings: RESOURCE_INDEX_MAPPINGS,
   });
 
   return true;
 }
 
-export async function upsertUserResourceDocument(client, indexName, resource) {
-  await ensureUserResourceIndex(client, indexName);
+export async function upsertResourceDocument(client, indexName, resource) {
+  await ensureResourceIndex(client, indexName);
 
-  const document = buildUserResourceIndexDocument(resource);
+  const document = buildResourceIndexDocument(resource);
 
   await client.index({
     index: indexName,
-    id: buildUserResourceDocumentId(resource.id),
+    id: buildResourceDocumentId(resource.id),
     document,
     refresh: "wait_for",
   });
@@ -148,7 +123,7 @@ export async function upsertUserResourceDocument(client, indexName, resource) {
   return document;
 }
 
-export async function deleteUserResourceDocument(client, indexName, resourceId) {
+export async function deleteResourceDocument(client, indexName, resourceId) {
   if (!(await indexExists(client, indexName))) {
     return false;
   }
@@ -156,7 +131,7 @@ export async function deleteUserResourceDocument(client, indexName, resourceId) 
   try {
     await client.delete({
       index: indexName,
-      id: buildUserResourceDocumentId(resourceId),
+      id: buildResourceDocumentId(resourceId),
       refresh: "wait_for",
     });
     return true;
@@ -169,7 +144,7 @@ export async function deleteUserResourceDocument(client, indexName, resourceId) 
   }
 }
 
-export async function searchUserResourceDocuments(
+export async function searchResourceDocuments(
   client,
   indexName,
   keyword,
@@ -181,7 +156,7 @@ export async function searchUserResourceDocuments(
 
   const response = await client.search({
     index: indexName,
-    ...buildUserResourceSearchQuery(keyword, size),
+    ...buildResourceSearchQuery(keyword, size),
   });
 
   return getHits(response)
@@ -189,36 +164,7 @@ export async function searchUserResourceDocuments(
     .filter(Boolean);
 }
 
-export async function listUserResourceDocuments(
-  client,
-  indexName,
-  options = {}
-) {
-  if (!(await indexExists(client, indexName))) {
-    return {
-      documents: [],
-      total: 0,
-    };
-  }
-
-  const response = await client.search({
-    index: indexName,
-    ...buildUserResourceAdminListQuery(options),
-  });
-
-  return {
-    documents: getHits(response)
-      .map((hit) => ({
-        documentId: hit?._id,
-        score: hit?._score ?? null,
-        document: hit?._source,
-      }))
-      .filter((item) => item.document),
-    total: getTotalValue(response),
-  };
-}
-
-export async function reindexUserResourceDocuments(
+export async function reindexResourceDocuments(
   client,
   indexName,
   resources,
@@ -233,7 +179,7 @@ export async function reindexUserResourceDocuments(
     await client.indices.delete({ index: indexName });
   }
 
-  await ensureUserResourceIndex(client, indexName);
+  await ensureResourceIndex(client, indexName);
 
   if (!resources.length) {
     return {
@@ -248,10 +194,10 @@ export async function reindexUserResourceDocuments(
     {
       index: {
         _index: indexName,
-        _id: buildUserResourceDocumentId(resource.id),
+        _id: buildResourceDocumentId(resource.id),
       },
     },
-    buildUserResourceIndexDocument(resource),
+    buildResourceIndexDocument(resource),
   ]);
 
   const response = await client.bulk({

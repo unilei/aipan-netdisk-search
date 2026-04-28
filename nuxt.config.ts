@@ -232,6 +232,10 @@ export default defineNuxtConfig({
       process.env.NUXT_ELASTICSEARCH_USER_RESOURCE_INDEX ||
       process.env.ELASTICSEARCH_USER_RESOURCE_INDEX ||
       'user-resources',
+    elasticsearchResourceIndex:
+      process.env.NUXT_ELASTICSEARCH_RESOURCE_INDEX ||
+      process.env.ELASTICSEARCH_RESOURCE_INDEX ||
+      'resources',
     githubOwner: process.env.NUXT_PUBLIC_GITHUB_OWNER || process.env.GITHUB_OWNER,
     githubRepo: process.env.NUXT_PUBLIC_GITHUB_REPO || process.env.GITHUB_REPO,
     githubToken: process.env.NUXT_PUBLIC_GITHUB_TOKEN || process.env.GITHUB_TOKEN,

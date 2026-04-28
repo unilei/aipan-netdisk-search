@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma";
+import { removeResource } from "~/server/services/search/elasticsearchClient.js";
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event); // 读取请求体
@@ -10,14 +11,25 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
+        const numericIds = ids.map(id => Number(id));
+
         // 使用 Prisma 的 deleteMany 方法删除多个资源
         await prisma.resource.deleteMany({
             where: {
                 id: {
-                    in: ids.map(id => Number(id)), // 将 ID 转换为数字
+                    in: numericIds,
                 },
             },
         });
+
+        // 逐条从 ES 删除，失败不阻断
+        for (const resourceId of numericIds) {
+            try {
+                await removeResource(resourceId);
+            } catch (esError) {
+                console.error(`从 ES 删除资源 ${resourceId} 失败:`, esError);
+            }
+        }
 
         return {
             code: 200,

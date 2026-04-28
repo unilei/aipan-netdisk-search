@@ -1,4 +1,6 @@
 import prisma from "~/lib/prisma";
+import { syncResource } from "~/server/services/search/elasticsearchClient.js";
+
 export default defineEventHandler(async (event) => {
     const { id } = getRouterParams(event);
     const userId = event.context.user.userId;
@@ -22,7 +24,17 @@ export default defineEventHandler(async (event) => {
             links,
             typeId,
         },
+        include: {
+            creator: { select: { username: true } },
+            type: { select: { name: true } },
+        }
     });
+
+    try {
+        await syncResource(updatedResource);
+    } catch (esError) {
+        console.error("同步资源到 ES 失败:", esError);
+    }
 
     return {
         code: 200,
