@@ -5,12 +5,9 @@ import type {
   TransformedResult,
   ApiEndpoint,
 } from "~/server/utils/aipan";
+import { createRateLimiter } from "~/server/utils/rateLimit";
 
-const RATE_LIMIT = {
-  windowMs: 60 * 1000,
-  maxRequests: 20,
-  requests: new Map<string, { count: number; resetTime: number }>(),
-};
+const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 20 });
 
 const WORKING_TOKEN = "i69";
 const BASE_URL = "http://m.kkqws.com";
@@ -38,26 +35,6 @@ const isAllowedDomain = (host: string, referer: string) =>
   referer.includes("aipan.me") ||
   host.includes("localhost");
 
-const isRateLimited = (clientIp: string) => {
-  const now = Date.now();
-  const current = RATE_LIMIT.requests.get(clientIp);
-
-  if (!current || now > current.resetTime) {
-    RATE_LIMIT.requests.set(clientIp, {
-      count: 1,
-      resetTime: now + RATE_LIMIT.windowMs,
-    });
-    return false;
-  }
-
-  if (current.count >= RATE_LIMIT.maxRequests) {
-    return true;
-  }
-
-  current.count += 1;
-  return false;
-};
-
 export default defineEventHandler(
   async (event: H3Event): Promise<TransformedResult> => {
     try {
@@ -73,7 +50,7 @@ export default defineEventHandler(
         };
       }
 
-      if (isRateLimited(clientIp)) {
+      if (rateLimiter.isLimited(clientIp)) {
         return {
           list: [],
           code: 429,

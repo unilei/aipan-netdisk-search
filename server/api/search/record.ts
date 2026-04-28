@@ -1,7 +1,18 @@
 import prisma from "~/lib/prisma";
+import { createRateLimiter } from "~/server/utils/rateLimit";
+
+const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
 
 export default defineEventHandler(async (event) => {
     if (event.method === 'POST') {
+        const clientIp = getRequestIP(event) || 'unknown';
+        if (rateLimiter.isLimited(clientIp)) {
+            return {
+                code: 429,
+                msg: '请求过于频繁，请稍后再试'
+            };
+        }
+
         try {
             const { keyword } = await readBody(event);
 

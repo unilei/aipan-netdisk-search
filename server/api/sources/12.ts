@@ -1,6 +1,7 @@
 import type { H3Event } from "h3";
 import { $fetch } from "ofetch";
 import * as cheerio from "cheerio";
+import { createRateLimiter } from "~/server/utils/rateLimit";
 
 interface SearchBody {
   name: string;
@@ -36,11 +37,7 @@ interface TransformedResult {
   msg?: string;
 }
 
-const RATE_LIMIT = {
-  windowMs: 60 * 1000,
-  maxRequests: 20,
-  requests: new Map<string, { count: number; resetTime: number }>(),
-};
+const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 20 });
 
 const SEARCH_URL = "https://so.slowread.net/search";
 
@@ -48,26 +45,6 @@ const isAllowedDomain = (host: string, referer: string) =>
   host.endsWith("aipan.me") ||
   referer.includes("aipan.me") ||
   host.includes("localhost");
-
-const isRateLimited = (clientIp: string) => {
-  const now = Date.now();
-  const current = RATE_LIMIT.requests.get(clientIp);
-
-  if (!current || now > current.resetTime) {
-    RATE_LIMIT.requests.set(clientIp, {
-      count: 1,
-      resetTime: now + RATE_LIMIT.windowMs,
-    });
-    return false;
-  }
-
-  if (current.count >= RATE_LIMIT.maxRequests) {
-    return true;
-  }
-
-  current.count += 1;
-  return false;
-};
 
 const normalizeLink = (url: string) =>
   url.replace(/&amp;/g, "&").trim().replace(/[.,，。；;]+$/, "");
@@ -207,7 +184,7 @@ export default defineEventHandler(
         };
       }
 
-      if (isRateLimited(clientIp)) {
+      if (rateLimiter.isLimited(clientIp)) {
         return {
           list: [],
           code: 429,

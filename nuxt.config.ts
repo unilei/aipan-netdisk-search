@@ -209,6 +209,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     // 兼容两种格式的环境变量，优先使用 NUXT_ 前缀的变量
+    corsAllowedOrigins: process.env.NUXT_CORS_ALLOWED_ORIGINS || process.env.CORS_ALLOWED_ORIGINS || 'https://aipan.me,https://www.aipan.me',
     adminUser: process.env.NUXT_ADMIN_USER || process.env.ADMIN_USER,
     adminPassword: process.env.NUXT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD,
     adminEmail: process.env.NUXT_ADMIN_EMAIL || process.env.ADMIN_EMAIL,
