@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
         return {
             code: 200,
             msg: autoReviewScheduled
-                ? '创建成功，系统将自动审核并通过站内通知和邮件告知结果'
+                ? '创建成功，系统将自动审核并通过站内通知告知结果，邮件按频率限制发送'
                 : '创建成功，等待管理员审核',
             data: {
                 ...resource,

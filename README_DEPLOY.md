@@ -67,6 +67,8 @@
 - `ELASTICSEARCH_NODE`，生产值形如 `https://66.103.211.214:9200`
 - `ELASTICSEARCH_CA_FINGERPRINT`
 - `ELASTICSEARCH_USER_RESOURCE_INDEX`，当前为 `user-resources`
+- `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED`，默认 `true`
+- `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS`，默认 `86400`
 - `NUXT_PUBLIC_GITHUB_OWNER`
 - `NUXT_PUBLIC_GITHUB_REPO`
 - `NUXT_PUBLIC_GITHUB_BRANCH`，默认 `main`
@@ -181,7 +183,7 @@ ES VPS 侧必须：
 - 不与本地 `Resource` 或现有 `UserResource` 重复
 - 可选网络可达性检查
 
-无法安全判断的资源会跳过，保留人工审核。自动处理完成后会创建站内通知，并在邮箱服务启用时发送邮件。
+无法安全判断的资源会跳过，保留人工审核。自动处理完成后会创建站内通知；邮箱服务启用时，审核结果邮件按用户邮箱限流发送。
 
 自动审核运行时变量：
 
@@ -192,6 +194,8 @@ USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID=true
 USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE=false
 USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER=true
 USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL=true
+USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED=true
+USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS=86400
 USER_RESOURCE_AUTO_REVIEW_MAX_LINKS=5
 USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED=true
 USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE=auto
@@ -208,6 +212,7 @@ USER_RESOURCE_AUTO_REVIEW_QUEUE_DEDUPE_TTL_SECONDS=3600
 - `USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE=false` 是默认值，避免网盘反爬导致大量投稿进入人工审核。
 - 如果要强制检查分享页是否可访问，把它设为 `true`；无法确认可达性的资源会保留 `pending` 并通知用户进入人工审核。
 - 邮件发送复用后台 `系统配置 -> 邮箱服务` 的 Resend 配置，未启用时只发送站内通知。
+- `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS=86400` 表示同一用户、同一邮箱 24 小时内最多发送一封审核结果邮件；每条审核结果仍会创建站内通知。
 - 自动审核队列默认 `auto` 模式：优先使用 `REDIS_URL` 指向的 Redis，Redis 不可用时降级为进程内队列。
 - `USER_RESOURCE_AUTO_REVIEW_WORKER_CONCURRENCY` 是每个应用进程的审核并发上限。PM2 cluster 有多个进程时，总并发约等于进程数乘以该值。
 - 处理历史投稿时，进入 `/admin/user-resources` 点击“历史投稿入队”，系统会把现有 `pending` 资源加入同一队列。

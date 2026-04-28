@@ -8,6 +8,8 @@ import {
 } from "../../server/services/userResources/autoReview.js";
 import {
   buildUserResourceReviewNotification,
+  buildUserResourceReviewEmailThrottleKey,
+  getUserResourceReviewEmailThrottleOptions,
 } from "../../server/services/userResources/reviewNotifications.js";
 import {
   resolveUserResourceAutoReviewAction,
@@ -172,6 +174,7 @@ test("buildUserResourceReviewNotification builds approved messages", () => {
   assert.equal(notification.title, "资源投稿已通过审核");
   assert.match(notification.content, /北京中轴线/);
   assert.match(notification.emailSubject, /资源投稿已通过审核/);
+  assert.match(notification.emailText, /通知中心/);
 });
 
 test("buildUserResourceReviewNotification includes review reasons for manual review", () => {
@@ -192,4 +195,39 @@ test("buildUserResourceReviewNotification includes review reasons for manual rev
   assert.equal(notification.title, "资源投稿已进入人工审核");
   assert.match(notification.content, /目标网盘拒绝自动访问/);
   assert.match(notification.emailText, /待复核资源/);
+});
+
+test("getUserResourceReviewEmailThrottleOptions defaults to one review email per day", () => {
+  assert.deepEqual(getUserResourceReviewEmailThrottleOptions({}), {
+    enabled: true,
+    windowSeconds: 86400,
+    keyPrefix: "aipan:user-resource-review-email",
+  });
+
+  assert.equal(
+    getUserResourceReviewEmailThrottleOptions({
+      USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS: "10",
+    }).windowSeconds,
+    60
+  );
+});
+
+test("buildUserResourceReviewEmailThrottleKey scopes by user and normalized email without exposing email", () => {
+  const firstKey = buildUserResourceReviewEmailThrottleKey({
+    id: 42,
+    email: " User@Example.COM ",
+  });
+  const secondKey = buildUserResourceReviewEmailThrottleKey({
+    id: 42,
+    email: "user@example.com",
+  });
+  const otherUserKey = buildUserResourceReviewEmailThrottleKey({
+    id: 43,
+    email: "user@example.com",
+  });
+
+  assert.equal(firstKey, secondKey);
+  assert.notEqual(firstKey, otherUserKey);
+  assert.match(firstKey, /^aipan:user-resource-review-email:42:/);
+  assert.doesNotMatch(firstKey, /user@example\.com/i);
 });

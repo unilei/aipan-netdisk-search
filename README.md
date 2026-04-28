@@ -9,7 +9,7 @@
 - 用户投稿只在审核通过后进入 Elasticsearch；待审核和已拒绝资源不会进入前台搜索。
 - 后台 `用户资源` 页面用于人工审核和自动审核。
 - 后台 `ES索引内容` 页面用于查看 Elasticsearch 中的已发布用户投稿索引，并支持重建索引。
-- 用户在个人中心提交或编辑资源后，服务端会自动加入审核队列，并通过站内通知和邮件告知结果。
+- 用户在个人中心提交或编辑资源后，服务端会自动加入审核队列；每条结果都会发站内通知，邮件按用户邮箱限流发送。
 - `/releases` 发布日志页面用于展示网站最近新增功能。
 - GitHub Actions 自动构建 Docker 镜像并部署到生产应用服务器。
 - Elasticsearch 独立部署在单独 VPS，应用通过 HTTPS + Basic Auth + CA 指纹校验连接。
@@ -67,6 +67,8 @@ cp .env.example .env
 - `USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE`
 - `USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER`
 - `USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL`
+- `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED`
+- `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS`
 - `USER_RESOURCE_AUTO_REVIEW_MAX_LINKS`
 - `USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED`
 - `USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE`
@@ -110,7 +112,7 @@ npm run dev
 2. 服务端立即把单资源审核任务加入后台队列，不需要管理员手动点击“自动审核”。
 3. 可自动通过的资源会变为 `published` 并同步 upsert 到 Elasticsearch，文档 id 为 `user-resource-<id>`。
 4. 明确不合格的资源会自动变为 `rejected`；无法安全判断的资源保留 `pending` 进入人工审核。
-5. 审核处理完成后会创建站内通知，并在邮箱服务可用时发送邮件。
+5. 审核处理完成后会创建站内通知；邮箱服务可用时，同一用户同一邮箱默认 24 小时内最多发送一封审核结果邮件。
 6. 前台 `/api/sources/1` 同时返回本地 `Resource` 和 ES 中的已发布 `UserResource`。
 7. 如果出现索引漂移，可在 `/admin/search-index/user-resources` 执行重建索引。
 8. 已经存在的历史待审核资源，可在 `/admin/user-resources` 点击“历史投稿入队”交给同一队列后台处理。

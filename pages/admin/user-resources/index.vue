@@ -393,7 +393,7 @@ const handleAutoReview = async (dryRun) => {
 const handleEnqueueAutoReview = async () => {
   try {
     await ElMessageBox.confirm(
-      "确定要把当前历史待审核资源加入自动审核队列吗？系统会按队列并发上限后台处理，并通过站内通知/邮件告知用户结果。",
+      "确定要把当前历史待审核资源加入自动审核队列吗？系统会按队列并发上限后台处理；每条结果都会发站内通知，邮件按用户邮箱限流发送。",
       "确认历史投稿入队",
       {
         confirmButtonText: "加入队列",

@@ -419,8 +419,33 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 说明：
 
 - 邮件仍依赖后台邮箱服务配置；邮箱未启用时只发送站内通知。
+- 邮件发送还会受 `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_*` 限流保护，避免同一用户同一邮箱被每条投稿重复发送邮件。
 
-### 11. `USER_RESOURCE_AUTO_REVIEW_MAX_LINKS`
+### 11. `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED`
+
+用途：
+
+- 控制用户资源审核结果邮件是否按用户邮箱限流
+
+默认值：
+
+- `true`
+
+### 12. `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS`
+
+用途：
+
+- 控制同一用户、同一邮箱两封审核结果邮件之间的最小间隔
+
+默认值：
+
+- `86400`
+
+说明：
+
+- 默认 24 小时内最多发送一封审核结果邮件；每条资源仍会创建站内通知。
+
+### 13. `USER_RESOURCE_AUTO_REVIEW_MAX_LINKS`
 
 用途：
 
@@ -430,7 +455,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - `5`
 
-### 12. `NUXT_PUBLIC_GITHUB_OWNER`
+### 14. `NUXT_PUBLIC_GITHUB_OWNER`
 
 用途：
 
@@ -442,7 +467,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 - 例如 `https://github.com/unilei-github/aipan-images`
 - 则 owner 是 `unilei-github`
 
-### 13. `NUXT_PUBLIC_GITHUB_REPO`
+### 15. `NUXT_PUBLIC_GITHUB_REPO`
 
 用途：
 
@@ -454,7 +479,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 - 例如 `https://github.com/unilei-github/aipan-images`
 - 则 repo 是 `aipan-images`
 
-### 14. `NUXT_PUBLIC_GITHUB_BRANCH`
+### 16. `NUXT_PUBLIC_GITHUB_BRANCH`
 
 用途：
 
@@ -559,6 +584,8 @@ gh variable set USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE -b"false"
 gh variable set USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID -b"true"
 gh variable set USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER -b"true"
 gh variable set USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL -b"true"
+gh variable set USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED -b"true"
+gh variable set USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS -b"86400"
 gh variable set USER_RESOURCE_AUTO_REVIEW_MAX_LINKS -b"5"
 gh variable set USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED -b"true"
 gh variable set USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE -b"auto"
