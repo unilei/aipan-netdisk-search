@@ -37,6 +37,8 @@ export default defineEventHandler(async (event) => {
             };
         }
 
+        const maxResults = 50;
+
         const [res, publishedUserResources] = await Promise.all([
             prisma.resource.findMany({
                 where: {
@@ -45,7 +47,13 @@ export default defineEventHandler(async (event) => {
                         mode: 'insensitive',
                     },
                 },
-                include: {
+                select: {
+                    id: true,
+                    name: true,
+                    links: true,
+                    typeId: true,
+                    createdAt: true,
+                    updatedAt: true,
                     creator: {
                         select: { username: true },
                     },
@@ -56,9 +64,9 @@ export default defineEventHandler(async (event) => {
                 orderBy: {
                     createdAt: 'desc',
                 },
-                take: 100,
+                take: maxResults,
             }),
-            searchPublishedUserResources(nameFilter, 100).catch((error) => {
+            searchPublishedUserResources(nameFilter, maxResults).catch((error) => {
                 console.error("搜索用户投稿 ES 索引失败:", error);
                 return [];
             }),
@@ -68,7 +76,7 @@ export default defineEventHandler(async (event) => {
         const userResourceResults = publishedUserResources.map((document: any) =>
             mapUserResourceDocumentToSourceItem(document)
         );
-        const result = mergeSourceItems(localResults, userResourceResults, 100);
+        const result = mergeSourceItems(localResults, userResourceResults, maxResults);
 
         return {
             list: result,

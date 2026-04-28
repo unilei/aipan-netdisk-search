@@ -180,11 +180,10 @@ export default defineNuxtConfig({
     download: false,
     base64: false,
     families: {
-      Inter: [100, 200, 300, 400, 500, 600, 700, 800, 900],
-      'Poetsen One': [100, 200, 300, 400, 500, 600, 700, 800, 900],
-      'Sedan SC': [100, 200, 300, 400, 500, 600, 700, 800, 900],
-      'Briem Hand': [100, 200, 300, 400, 500, 600, 700, 800, 900],
-      'Noto Sans Simplified Chinese': [100, 200, 300, 400, 500, 600, 700, 800, 900],
+      // Only load weights actually used in the project (400 normal, 500 medium, 600 semibold, 700 bold)
+      // Removed Noto Sans Simplified Chinese — CJK font files are too large; system font stack covers Chinese well
+      // Removed Poetsen One, Sedan SC, Briem Hand — not referenced in any font-family rule
+      Inter: [400, 500, 600, 700],
     },
   },
   plugins: [],
