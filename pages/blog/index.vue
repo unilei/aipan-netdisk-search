@@ -1,5 +1,5 @@
 <script setup>
-import moment from 'moment';
+import { format } from 'date-fns';
 
 // SEO优化
 useSeoMeta({
@@ -66,7 +66,7 @@ useHead({
 })
 
 const formatDate = (date) => {
-    return moment(date).format('YYYY-MM-DD')
+    return format(new Date(date), 'yyyy-MM-dd')
 }
 
 const page = ref(1)

@@ -1,26 +1,26 @@
 [
   {
-    "api": "/api/sources/1"
+    "api": "/api/sources/local"
   },
   {
-    "api": "/api/sources/10"
+    "api": "/api/sources/pansou"
   },
   {
-    "api": "/api/sources/9"
+    "api": "/api/sources/xiaokupan"
   },
   {
-    "api": "/api/sources/2"
+    "api": "/api/sources/kkqws"
   },
   {
-    "api": "/api/sources/4"
+    "api": "/api/sources/xccji"
   },
   {
-    "api": "/api/sources/11"
+    "api": "/api/sources/vipray"
   },
   {
-    "api": "/api/sources/12"
+    "api": "/api/sources/slowread"
   },
   {
-    "api": "/api/sources/13"
+    "api": "/api/sources/jso"
   }
 ]

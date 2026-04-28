@@ -73,7 +73,7 @@ export const useSearchLogic = () => {
         const cachedData = await smartCache.getWithStrategy(cacheKey);
 
         if (cachedData) {
-          if (item.api === "/api/sources/1") {
+          if (item.api === "/api/sources/local") {
             sources.value.unshift(...cachedData);
             if (cachedData.length === 0) {
               window._needProcessQuarkLinks = true;
@@ -95,7 +95,7 @@ export const useSearchLogic = () => {
           // 设置缓存
           await smartCache.setWithStrategy(cacheKey, res.list, "search");
 
-          if (item.api === "/api/sources/1") {
+          if (item.api === "/api/sources/local") {
             sources.value.unshift(...res.list);
             if (res.list.length === 0) {
               window._needProcessQuarkLinks = true;
@@ -291,10 +291,10 @@ export const useSearchLogic = () => {
 
     // 优先处理 1
     const aipanEndpoint = sourcesApiEndpoints.find(
-      (item) => item.api === "/api/sources/1"
+      (item) => item.api === "/api/sources/local"
     );
     const otherEndpoints = sourcesApiEndpoints.filter(
-      (item) => item.api !== "/api/sources/1"
+      (item) => item.api !== "/api/sources/local"
     );
 
     if (aipanEndpoint) {

@@ -1,7 +1,7 @@
 <!-- 评论列表组件 -->
 <script setup>
 import { ref, onMounted } from 'vue'
-import moment from 'moment'
+import { format } from 'date-fns'
 import { marked } from 'marked'
 import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
 import { sanitizeHtml } from '~/utils/sanitize'
@@ -19,7 +19,7 @@ const replyTo = ref(null)
 
 // 格式化日期
 const formatDate = (date) => {
-    return moment(date).format('YYYY-MM-DD HH:mm')
+    return format(new Date(date), 'yyyy-MM-dd HH:mm')
 }
 
 // 过滤并解析评论内容

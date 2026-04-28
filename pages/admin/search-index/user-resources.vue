@@ -39,7 +39,7 @@
           show-icon
           :closable="false"
           title="ES 只索引 UserResource 且 status=published 的投稿"
-          description="网盘管理中的 Resource 不在这里展示；这里用于排查前台 /api/sources/1 的用户投稿搜索结果。"
+          description="网盘管理中的 Resource 不在这里展示；这里用于排查前台 /api/sources/local 的用户投稿搜索结果。"
         />
 
         <div class="flex flex-wrap items-center gap-3">

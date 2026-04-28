@@ -2,7 +2,7 @@
 <script setup>
 import { Delete, Search } from "@element-plus/icons-vue";
 import { marked } from "marked";
-import moment from "moment";
+import { format } from "date-fns";
 import { sanitizeHtml } from "~/utils/sanitize";
 
 definePageMeta({
@@ -31,7 +31,7 @@ const searchTypeOptions = [
 
 // 格式化日期
 const formatDate = (date) => {
-  return moment(date).format("YYYY-MM-DD HH:mm:ss");
+  return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
 };
 
 // 解析评论内容

@@ -1,7 +1,7 @@
 <script setup>
 import { marked } from "marked";
 import { computed, ref, nextTick, watch, onMounted, onUnmounted } from "vue";
-import moment from "moment";
+import { format } from "date-fns";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import { sanitizeHtml } from "~/utils/sanitize";
@@ -343,7 +343,7 @@ const scrollToHeading = (headingId) => {
 };
 
 const formatDate = (date) => {
-  return moment(date).format("YYYY-MM-DD HH:mm:ss");
+  return format(new Date(date), "yyyy-MM-dd HH:mm:ss");
 };
 
 // 复制链接
