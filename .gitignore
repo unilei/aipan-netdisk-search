@@ -30,3 +30,7 @@ public/image-cache/*
 .agent
 .shared
 .gemini
+
+# Database backups
+*.sql
+!prisma/migrations/**/*.sql
