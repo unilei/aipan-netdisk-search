@@ -123,6 +123,7 @@ const searchByKeyword = async () => {
 
   if (category.value === "clouddrive") {
     // 立即设置加载状态
+    skeletonLoading.value = true;
     loadingProgress.value.isLoading = true;
     loadingProgress.value.total = sourcesApiEndpoints.value.length;
     loadingProgress.value.completed = 0;
@@ -167,6 +168,27 @@ onUnmounted(() => {
   stopQueueProcessing();
   cleanup();
 });
+
+// 监听搜索结果，第一批结果到达时关闭 skeleton
+watch(
+  sources,
+  (newSources) => {
+    if (skeletonLoading.value && newSources.length > 0) {
+      skeletonLoading.value = false;
+    }
+  },
+  { deep: true }
+);
+
+// 搜索完成时确保 skeleton 关闭
+watch(
+  () => loadingProgress.value.isLoading,
+  (isLoading) => {
+    if (!isLoading) {
+      skeletonLoading.value = false;
+    }
+  }
+);
 
 // 监听路由变化
 watch(

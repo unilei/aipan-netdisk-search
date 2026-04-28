@@ -5,7 +5,7 @@
       <transition name="fade" mode="out-in">
         <div class="p-4" v-if="category === 'clouddrive'">
           <div class="transition-all duration-300 space-y-2">
-            <disk-info-list :sources="sources" :skeleton-loading="skeletonLoading">
+            <disk-info-list :sources="sources" :skeleton-loading="skeletonLoading" :is-searching="loadingProgress.isLoading">
             </disk-info-list>
           </div>
         </div>

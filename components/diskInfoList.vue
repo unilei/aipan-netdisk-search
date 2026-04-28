@@ -1,6 +1,7 @@
 <script setup>
 import { ElMessage } from "element-plus";
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import DOMPurify from "dompurify";
 import {
   detectLinkService,
   getLinkCategoryName,
@@ -23,11 +24,55 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  isSearching: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+// 搜索关键词（从路由获取）
+const route = useRoute();
+const searchKeyword = computed(() => {
+  const kw = route.query.keyword;
+  if (!kw) return '';
+  return Array.isArray(kw) ? (kw[0] || '') : String(kw);
+});
+
+// DOMPurify 配置：只允许 <mark> 标签
+const sanitizeHighlight = (html) => {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['mark'],
+    ALLOWED_ATTR: [],
+  });
+};
+
+// 前端 fallback 高亮：对没有 highlightedName 的结果，用正则包裹关键词
+const applyFallbackHighlight = (name, keyword) => {
+  if (!keyword || !name) return name;
+  try {
+    const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    return name.replace(regex, '<mark>$1</mark>');
+  } catch {
+    return name;
+  }
+};
+
+// 获取最终高亮后的名称
+const getHighlightedName = (item) => {
+  if (item.highlightedName) {
+    return sanitizeHighlight(item.highlightedName);
+  }
+  const kw = searchKeyword.value;
+  if (kw) {
+    return sanitizeHighlight(applyFallbackHighlight(item.name, kw));
+  }
+  return item.name;
+};
 
 // 筛选相关状态
 const selectedFilters = ref(new Set());
-const showFilters = ref(false);
+const showFilters = ref(true);
 
 // 验证配置状态（页面加载时获取，避免每次点击都调用）
 const verificationConfig = ref({
@@ -494,11 +539,23 @@ const handleLinkClick = async (e, link) => {
 
 <template>
   <div class="space-y-3">
-    <!-- 筛选器 -->
+    <!-- 结果总数 + 筛选器 -->
     <div
       v-if="!skeletonLoading && sources.length > 0"
       class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-4 shadow-sm"
     >
+      <!-- 结果总数 -->
+      <div class="mb-3 text-sm text-gray-600 dark:text-gray-400">
+        <template v-if="isSearching">
+          <i class="fas fa-spinner fa-spin mr-1"></i>
+          已找到 <span class="font-semibold text-gray-800 dark:text-gray-200">{{ sources.flat(Infinity).length }}</span> 个结果，搜索中...
+        </template>
+        <template v-else>
+          找到 <span class="font-semibold text-gray-800 dark:text-gray-200">{{ filteredSources.length }}</span> 个结果
+          <span v-if="selectedFilters.size > 0" class="text-gray-500">（共 {{ sources.flat(Infinity).length }} 个）</span>
+        </template>
+      </div>
+
       <!-- 筛选器头部 -->
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-2">
@@ -587,7 +644,7 @@ const handleLinkClick = async (e, link) => {
       <div class="mb-4">
         <h3
           class="text-sm md:text-base font-medium text-gray-800 dark:text-gray-100 leading-relaxed line-clamp-2"
-          v-html="item.name"
+          v-html="getHighlightedName(item)"
         ></h3>
       </div>
 
@@ -681,4 +738,18 @@ const handleLinkClick = async (e, link) => {
 
 <style>
 @import "tailwindcss" reference;
+</style>
+
+<style scoped>
+:deep(mark) {
+  background-color: #fef08a;
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
+:global(.dark) :deep(mark) {
+  background-color: #854d0e;
+  color: #fef9c3;
+}
 </style>

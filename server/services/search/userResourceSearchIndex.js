@@ -69,6 +69,16 @@ export function buildUserResourceSearchQuery(keyword, size = 100) {
     size,
     sort: [{ _score: "desc" }, { updatedAt: "desc" }],
     query: buildUserResourceStrictKeywordQuery(keyword),
+    highlight: {
+      fields: {
+        name: {
+          pre_tags: ["<mark>"],
+          post_tags: ["</mark>"],
+          fragment_size: 0,
+          number_of_fragments: 0,
+        },
+      },
+    },
   };
 }
 
@@ -185,7 +195,15 @@ export async function searchUserResourceDocuments(
   });
 
   return getHits(response)
-    .map((hit) => hit?._source)
+    .map((hit) => {
+      const doc = hit?._source;
+      if (!doc) return null;
+      const highlightedName = hit?.highlight?.name?.[0] || null;
+      if (highlightedName) {
+        doc.highlightedName = highlightedName;
+      }
+      return doc;
+    })
     .filter(Boolean);
 }
 

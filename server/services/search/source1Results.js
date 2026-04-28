@@ -95,17 +95,25 @@ export function normalizeLinks(rawLinks) {
 }
 
 export function mapStoredResourceToSourceItem(item) {
-  return {
+  const result = {
     name: normalizeSourceName(item?.name),
     links: normalizeLinks(item?.links),
   };
+  if (item?.highlightedName) {
+    result.highlightedName = item.highlightedName;
+  }
+  return result;
 }
 
 export function mapUserResourceDocumentToSourceItem(document) {
-  return {
+  const result = {
     name: normalizeSourceName(document?.name),
     links: normalizeLinks(document?.links),
   };
+  if (document?.highlightedName) {
+    result.highlightedName = document.highlightedName;
+  }
+  return result;
 }
 
 export function mergeSourceItems(primaryItems = [], secondaryItems = [], limit = 100) {
@@ -120,11 +128,17 @@ export function mergeSourceItems(primaryItems = [], secondaryItems = [], limit =
       }
 
       if (!mergedItems.has(normalizedName)) {
-        mergedItems.set(normalizedName, {
+        const entry = {
           name: normalizedName,
           links: [],
-        });
+        };
+        if (item?.highlightedName) {
+          entry.highlightedName = item.highlightedName;
+        }
+        mergedItems.set(normalizedName, entry);
         orderedKeys.push(normalizedName);
+      } else if (item?.highlightedName && !mergedItems.get(normalizedName).highlightedName) {
+        mergedItems.get(normalizedName).highlightedName = item.highlightedName;
       }
 
       const currentItem = mergedItems.get(normalizedName);
