@@ -228,7 +228,6 @@ const stopRouteWatcher = watch(
         </div>
       </div>
 
-      <ClientOnly>
         <div class="max-w-[1240px] mx-auto mt-4 px-4">
           <!-- 导航分类标签 -->
           <div class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
@@ -263,7 +262,6 @@ const stopRouteWatcher = watch(
             </template>
           </div>
         </div>
-      </ClientOnly>
       <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
       <!-- Enhanced Backtop -->
       <el-backtop :right="24" :bottom="24"

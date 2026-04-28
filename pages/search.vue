@@ -63,6 +63,16 @@ definePageMeta({
 
 // 基础设置
 const route = useRoute();
+
+// SEO配置
+const seoKeyword = computed(() => String(route.query.keyword || ''));
+
+useHead({
+  title: computed(() => seoKeyword.value ? `${seoKeyword.value} - 搜索结果 - 爱盼迷` : '搜索 - 爱盼迷'),
+  meta: [
+    { name: 'description', content: computed(() => seoKeyword.value ? `在爱盼迷搜索“${seoKeyword.value}”的网盘资源结果，支持百度网盘、阿里云盘、夸克网盘等多源搜索。` : '爱盼迷网盘资源搜索，支持百度网盘、阿里云盘、夸克网盘等多源搜索。') }
+  ]
+});
 const userStore = useUserStore();
 
 // 使用 composables

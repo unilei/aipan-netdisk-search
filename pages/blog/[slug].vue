@@ -429,7 +429,6 @@ onUnmounted(() => {
 <template>
   <div
     class="min-h-screen bg-linear-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
-    <ClientOnly>
       <!-- 顶部导航栏 -->
       <nav
         class="bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
@@ -452,6 +451,7 @@ onUnmounted(() => {
 
             <!-- 右侧：操作按钮 -->
             <div class="flex items-center space-x-2">
+              <ClientOnly>
               <!-- 举报按钮 -->
               <CommonReportButton 
                 v-if="blog?.id"
@@ -517,6 +517,7 @@ onUnmounted(() => {
                   </div>
                 </Transition>
               </div>
+              </ClientOnly>
             </div>
           </div>
         </div>
@@ -614,6 +615,7 @@ onUnmounted(() => {
                       <i class="fas fa-heart text-red-500 mr-2"></i>
                       感谢阅读
                     </div>
+                    <ClientOnly>
                     <div class="flex items-center space-x-3">
                       <!-- 复制链接按钮 -->
                       <button @click="copyLink"
@@ -694,6 +696,7 @@ onUnmounted(() => {
                         </div>
                       </div>
                     </div>
+                    </ClientOnly>
                   </div>
                 </footer>
               </div>
@@ -716,6 +719,7 @@ onUnmounted(() => {
           </div>
 
           <!-- 侧边栏 - 目录 -->
+          <ClientOnly>
           <aside class="hidden lg:block lg:col-span-3">
             <div class="sticky top-24">
               <nav v-if="headings.length > 0"
@@ -745,8 +749,11 @@ onUnmounted(() => {
               </nav>
             </div>
           </aside>
+          </ClientOnly>
 
           <!-- 移动端目录抽屉 -->
+          <ClientOnly>
+          <Teleport to="body">
           <div v-show="showToc" class="fixed inset-0 z-50 lg:hidden">
             <div class="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity" @click="showToc = false">
             </div>
@@ -796,9 +803,10 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
+          </Teleport>
+          </ClientOnly>
         </div>
       </div>
-    </ClientOnly>
   </div>
 </template>
 

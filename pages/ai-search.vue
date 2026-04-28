@@ -227,6 +227,14 @@ import sourcesApiEndpoints from "~/assets/vod/clouddrive.json";
 import { badWords } from "~/utils/sensitiveWords";
 import { useGroupQrConfig } from "~/composables/useGroupQrConfig";
 
+// SEO配置
+useHead({
+  title: 'AI 搜索 - 爱盼迷',
+  meta: [
+    { name: 'description', content: '爱盼迷 AI 智能搜索助手，通过 AI 对话式搜索网盘资源，智能理解你的需求并返回精准结果。' },
+  ]
+})
+
 const colorMode = useColorMode()
 const { shouldShowInHeader, shouldShowInSearchResults, getConfig } = useGroupQrConfig()
 

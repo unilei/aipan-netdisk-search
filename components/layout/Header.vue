@@ -130,7 +130,6 @@ onBeforeUnmount(() => {
           </div>
 
           <!-- 导航和工具区域 -->
-          <client-only>
             <div class="flex items-center space-x-4">
               <!-- 导航菜单 -->
               <nav class="hidden sm:flex items-center space-x-4">
@@ -144,6 +143,7 @@ onBeforeUnmount(() => {
                 </nuxt-link>
               </nav>
 
+              <client-only>
               <!-- 语言切换按钮 -->
               <div class="hidden sm:flex items-center space-x-2">
                 <button v-for="loc in availableLocales" :key="loc.code"
@@ -166,8 +166,8 @@ onBeforeUnmount(() => {
               </button>
               <!-- 用户菜单 -->
               <UserMenu />
+              </client-only>
             </div>
-          </client-only>
         </div>
       </div>
     </header>
