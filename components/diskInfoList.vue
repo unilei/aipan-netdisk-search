@@ -11,6 +11,12 @@ import {
 } from "~/utils/linkTypes";
 import { openUrlWithNoOpener } from "~/utils/externalNavigation";
 
+// DOMPurify SSR 兼容：服务端跳过 sanitize
+const safeSanitize = (html, options) => {
+  if (import.meta.server) return html || '';
+  return options ? DOMPurify.sanitize(html, options) : DOMPurify.sanitize(html);
+};
+
 const props = defineProps({
   sources: {
     type: Array,
@@ -40,7 +46,7 @@ const searchKeyword = computed(() => {
 
 // DOMPurify 配置：只允许 <mark> 标签
 const sanitizeHighlight = (html) => {
-  return DOMPurify.sanitize(html, {
+  return safeSanitize(html, {
     ALLOWED_TAGS: ['mark'],
     ALLOWED_ATTR: [],
   });

@@ -35,13 +35,13 @@
         </div>
       </div>
 
-      <div v-else-if="error" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 text-center">
+      <div v-else-if="error || !topic" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 text-center">
         <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-3"></i>
         <h2 class="text-base font-medium text-gray-800 dark:text-gray-200 mb-2">
           加载失败
         </h2>
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          {{ error.message || "无法加载主题内容" }}
+          {{ error?.message || "无法加载主题内容" }}
         </p>
         <div class="flex justify-center space-x-3">
           <el-button @click="refresh" size="small" class="!text-xs">重试</el-button>

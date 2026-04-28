@@ -525,7 +525,6 @@ import {
 } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import Papa from "papaparse";
-import * as XLSX from "xlsx";
 
 definePageMeta({
   middleware: ["auth"],
@@ -928,7 +927,8 @@ const handleFileUpload = (e) => {
   }
 };
 
-const readExcel = (file) => {
+const readExcel = async (file) => {
+  const XLSX = await import("xlsx");
   const reader = new FileReader();
   reader.onload = (e) => {
     try {

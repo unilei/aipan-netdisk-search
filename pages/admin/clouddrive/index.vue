@@ -15,7 +15,6 @@ definePageMeta({
     middleware: ['auth']
 })
 import Papa from 'papaparse'
-import * as XLSX from 'xlsx'
 
 // 页面状态管理
 const pageState = reactive({
@@ -396,7 +395,8 @@ const handleFileUpload = (e) => {
     }
 }
 
-const readExcel = (file) => {
+const readExcel = async (file) => {
+    const XLSX = await import('xlsx')
     const reader = new FileReader()
     reader.onload = (e) => {
         try {
