@@ -147,12 +147,12 @@ const playEntirePlaylist = (playlistIndex) => {
 
 const searchLoading = ref(false);
 
-// ---- Deezer search ----
+// ---- FLAC search (via flacdownloader) ----
 const kwSearch = async () => {
   searchLoading.value = true;
   try {
     const index = (page.value - 1) * pageSize.value;
-    const res = await $fetch("/api/music/deezer-search", {
+    const res = await $fetch("/api/music/flac-search", {
       method: "GET",
       query: {
         q: keyword.value,
@@ -238,21 +238,25 @@ const handleCopySongName = (song) => {
 
 const downloadProgress = ref(0);
 const isDownloading = ref(false);
+const downloadFormat = ref('FLAC'); // 'FLAC' | 'MP3'
 
-const handleDownloadPreview = async (song) => {
+const handleFlacDownload = async (song, format = 'FLAC') => {
   try {
     if (isDownloading.value) return;
     isDownloading.value = true;
     downloadProgress.value = 0;
+    downloadFormat.value = format;
 
-    const fileName = `${song.name} - ${song.artist} (preview).mp3`;
-    const downloadUrl = getProxyUrl(song.preview);
-    if (!downloadUrl) {
-      isDownloading.value = false;
-      return;
-    }
+    const ext = format === 'FLAC' ? 'flac' : 'mp3';
+    const fileName = `${song.name} - ${song.artist}.${ext}`;
+    const downloadUrl = `/api/music/flac-download?t=${song.id}&f=${format}`;
 
     const response = await fetch(downloadUrl);
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.msg || 'Download failed');
+    }
+
     const reader = response.body.getReader();
     const contentLength = +response.headers.get('Content-Length') || 0;
     let receivedLength = 0;
@@ -266,7 +270,8 @@ const handleDownloadPreview = async (song) => {
       downloadProgress.value = contentLength > 0 ? (receivedLength / contentLength) * 100 : 50;
     }
 
-    const blob = new Blob(chunks, { type: 'audio/mpeg' });
+    const mimeType = format === 'FLAC' ? 'audio/flac' : 'audio/mpeg';
+    const blob = new Blob(chunks, { type: mimeType });
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -1061,23 +1066,33 @@ const formatPlayTime = (seconds) => {
               </div>
             </div>
 
-            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
-              <p class="text-sm text-amber-700 dark:text-amber-300">
-                ℹ️ Deezer 预览为 30 秒 MP3 试听片段
+            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-3">
+              <p class="text-sm text-green-700 dark:text-green-300">
+                🎵 FLAC 无损下载 · 完整歌曲
               </p>
             </div>
 
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-col gap-2">
+              <div class="flex gap-2">
+                <button
+                  class="flex-1 bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition-all duration-200 text-sm font-medium dark:bg-indigo-700 dark:hover:bg-indigo-600"
+                  :disabled="isDownloading" @click="handleFlacDownload(currentDownloadSong, 'FLAC')">
+                  <span v-if="!isDownloading || downloadFormat !== 'FLAC'">下载 FLAC (无损)</span>
+                  <span v-else>下载中 {{ Math.round(downloadProgress) }}%</span>
+                </button>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  class="flex-1 bg-gray-200 text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-300 transition-all duration-200 text-sm dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
+                  :disabled="isDownloading" @click="handleFlacDownload(currentDownloadSong, 'MP3')">
+                  <span v-if="!isDownloading || downloadFormat !== 'MP3'">下载 MP3</span>
+                  <span v-else>下载中 {{ Math.round(downloadProgress) }}%</span>
+                </button>
+              </div>
               <button
-                class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-200 text-sm dark:bg-indigo-700 dark:hover:bg-indigo-600"
+                class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-lg hover:bg-gray-200 transition-all duration-200 text-sm dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
                 @click="handleCopySongName(currentDownloadSong)">
                 复制歌曲名字
-              </button>
-              <button
-                class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-200 text-sm dark:bg-indigo-700 dark:hover:bg-indigo-600"
-                :disabled="isDownloading || !currentDownloadSong.preview" @click="handleDownloadPreview(currentDownloadSong)">
-                <span v-if="!isDownloading">下载预览（30秒）</span>
-                <span v-else>下载中 {{ Math.round(downloadProgress) }}%</span>
               </button>
             </div>
 
