@@ -9,6 +9,7 @@ import { sanitizeHtml } from "~/utils/sanitize";
 definePageMeta({
   layout: "admin",
   middleware: ["auth"],
+  ssr: false,
 });
 
 const comments = ref([]);
