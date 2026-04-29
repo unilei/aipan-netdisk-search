@@ -1,6 +1,7 @@
 # 评论管理页面
 <script setup>
 import { Delete, Search } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 import { marked } from "marked";
 import { format } from "date-fns";
 import { sanitizeHtml } from "~/utils/sanitize";
@@ -36,7 +37,11 @@ const formatDate = (date) => {
 
 // 解析评论内容
 const parseContent = (content) => {
-  return sanitizeHtml(marked.parse(content));
+  try {
+    return sanitizeHtml(marked.parse(content || ''));
+  } catch (e) {
+    return content || '';
+  }
 };
 
 // 获取评论列表
@@ -56,11 +61,18 @@ const fetchComments = async () => {
       },
     });
     if (response.code === 200) {
-      comments.value = response.data.comments;
-      totalCount.value = response.data.total;
+      comments.value = response.data.comments || [];
+      totalCount.value = response.data.total || 0;
+    } else {
+      ElMessage.error(response.message || "加载评论失败");
+      comments.value = [];
+      totalCount.value = 0;
     }
   } catch (error) {
     console.error("Error fetching comments:", error);
+    ElMessage.error("加载评论失败，请刷新重试");
+    comments.value = [];
+    totalCount.value = 0;
   } finally {
     loading.value = false;
   }
