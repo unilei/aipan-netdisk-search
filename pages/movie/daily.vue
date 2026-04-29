@@ -1,5 +1,5 @@
 <script setup>
-const { data: movieData } = await useFetch('https://netdisk.aipan.me/api/movie/daily')
+const { data: movieData } = await useFetch('/api/movie/daily')
 
 // 解析电影信息字符串为对象
 const movieInfo = computed(() => {

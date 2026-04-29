@@ -1,7 +1,7 @@
 <script setup>
 import { useRadioStore } from '~/stores/radio';
 
-const { data } = await useFetch('https://netdisk.aipan.me/api/radio/stations');
+const { data } = await useFetch('/api/radio/stations');
 const stations = ref(data.value.data.map(station => ({
   ...station,
   isPlaying: false
