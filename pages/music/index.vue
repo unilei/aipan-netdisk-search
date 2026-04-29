@@ -7,12 +7,12 @@ definePageMeta({
 // SEO优化
 useSeoMeta({
   title: 'AIPAN音乐 - 免费在线音乐搜索播放平台 | 高品质音乐下载',
-  description: 'AIPAN音乐提供免费的在线音乐搜索、播放和下载服务。支持无损音质，海量歌曲库，包含华语、欧美、日韩等各类音乐。在线播放器支持歌单管理、歌词显示等功能。',
-  keywords: '在线音乐,音乐搜索,音乐播放器,免费音乐,无损音乐,音乐下载,在线播放,歌单管理,AIPAN音乐',
+  description: 'AIPAN音乐提供免费的在线音乐搜索、播放和FLAC无损下载服务。海量歌曲库，支持 FLAC/MP3 完整下载，包含华语、欧美、日韩等各类音乐。在线播放器支持歌单管理等功能。',
+  keywords: '在线音乐,音乐搜索,音乐播放器,免费音乐,FLAC无损,音乐下载,在线播放,歌单管理,AIPAN音乐',
   ogTitle: 'AIPAN音乐 - 免费在线音乐搜索播放平台',
-  ogDescription: 'AIPAN音乐提供免费的在线音乐搜索、播放和下载服务，支持无损音质，海量歌曲库。',
+  ogDescription: 'AIPAN音乐提供免费的在线音乐搜索、播放和FLAC无损下载服务，海量歌曲库。',
   twitterTitle: 'AIPAN音乐 - 免费在线音乐搜索播放平台',
-  twitterDescription: '免费在线音乐搜索播放，支持无损音质，海量歌曲库，在线播放器功能丰富！'
+  twitterDescription: '免费在线音乐搜索播放，支持 FLAC 无损下载，海量歌曲库，在线播放器功能丰富！'
 });
 
 const keyword = ref("周杰伦");
@@ -170,7 +170,7 @@ const kwSearch = async () => {
   searchLoading.value = false;
 };
 
-// ---- Deezer chart ----
+// ---- 热门推荐 ----
 const loadChart = async () => {
   chartLoading.value = true;
   try {
@@ -186,7 +186,7 @@ const loadChart = async () => {
   chartLoading.value = false;
 };
 
-// Get proxy URL for a Deezer preview
+// Get proxy URL for audio preview
 const getProxyUrl = (previewUrl) => {
   if (!previewUrl) return '';
   return `/api/music/proxy-stream?url=${encodeURIComponent(previewUrl)}`;
@@ -215,7 +215,7 @@ const handlePrevPage = () => {
   }
 };
 
-// ---- Download (30s preview) ----
+// ---- Download (FLAC/MP3) ----
 const downloadVisible = ref(false);
 const currentDownloadSong = ref({});
 const handleDownloadVisible = (song) => {
@@ -309,7 +309,7 @@ const handlePlay = async (song) => {
     playlist.value.push(song);
   }
 
-  // Use Deezer preview URL directly via proxy
+  // Use preview URL via proxy
   const url = getProxyUrl(song.preview);
   if (!url) return;
   audioUrl.value = url;
@@ -531,7 +531,7 @@ const formatPlayTime = (seconds) => {
           </h1>
         </div>
         <p class="text-gray-500 dark:text-gray-400 text-sm max-w-lg text-center">
-          高品质音乐搜索与播放平台，支持歌单收藏和在线播放
+          高品质音乐搜索与播放平台，支持 FLAC 无损下载和歌单收藏
         </p>
       </div>
 
@@ -590,7 +590,7 @@ const formatPlayTime = (seconds) => {
             </svg>
             热门推荐
           </h2>
-          <span class="text-xs text-gray-400 dark:text-gray-500">Deezer 排行榜</span>
+          <span class="text-xs text-gray-400 dark:text-gray-500">热门排行榜</span>
         </div>
 
         <div v-if="chartLoading" class="flex items-center justify-center p-8">
@@ -794,7 +794,7 @@ const formatPlayTime = (seconds) => {
       </div>
 
       <p class="my-8 text-xs text-red-500 dark:text-red-400 text-center">
-        仅供个人学习使用，禁止商业用途，否则后果自负。音乐试听为30秒预览片段。
+        仅供个人学习使用，禁止商业用途，否则后果自负。
       </p>
 
       <!-- Show playlist button when it's not empty and player is not visible -->
@@ -1034,7 +1034,7 @@ const formatPlayTime = (seconds) => {
         </div>
       </Transition>
 
-      <!-- Download Modal (simplified for Deezer preview) -->
+      <!-- Download Modal -->
       <Transition name="modal">
         <div v-if="downloadVisible"
           class="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
