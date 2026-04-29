@@ -11,6 +11,21 @@ export default defineEventHandler(async (event) => {
             };
         }
 
+        // 安全检查：只代理允许的域名
+        const allowedDomains = [
+            'cdnt-preview.dzcdn.net',
+            'cdn-preview-',   // Deezer preview CDN variants
+            'dzcdn.net',
+        ];
+        const urlObj = new URL(url);
+        const isAllowed = allowedDomains.some(domain => urlObj.hostname.includes(domain));
+        if (!isAllowed) {
+            return {
+                code: 403,
+                msg: 'Domain not allowed',
+            };
+        }
+
         // 获取Response对象
         const response = await fetch(url);
 
@@ -30,6 +45,7 @@ export default defineEventHandler(async (event) => {
         setResponseHeaders(event, {
             'Content-Type': contentType,
             'Accept-Ranges': 'bytes',
+            'Access-Control-Allow-Origin': '*',
         });
 
         if (contentLengthStr) {
@@ -50,4 +66,4 @@ export default defineEventHandler(async (event) => {
             msg: 'Server error while proxying audio stream',
         };
     }
-}); 
+});
