@@ -79,6 +79,7 @@ const getHighlightedName = (item) => {
 // 筛选相关状态
 const selectedFilters = ref(new Set());
 const showFilters = ref(true);
+const hasActiveFilter = computed(() => selectedFilters.value.size > 0);
 
 // 验证配置状态（页面加载时获取，避免每次点击都调用）
 const verificationConfig = ref({
@@ -154,6 +155,20 @@ const getItemLinkHintText = (links = []) => {
 
 const getFilterServiceKey = (link) => getResolvedService(link);
 
+const getVisibleLinks = (item) => {
+  if (!item?.links || !Array.isArray(item.links)) {
+    return [];
+  }
+
+  if (!hasActiveFilter.value) {
+    return item.links;
+  }
+
+  return item.links.filter((link) => {
+    return link && selectedFilters.value.has(getFilterServiceKey(link));
+  });
+};
+
 // 获取所有可用的网盘类型（增加数据验证）
 const availableServices = computed(() => {
   if (!props.sources || !Array.isArray(props.sources)) {
@@ -192,10 +207,7 @@ const filteredSources = computed(() => {
       return flatSources;
     }
 
-    return flatSources.filter((item) => {
-      return item.links && Array.isArray(item.links) && 
-             item.links.some((link) => link && selectedFilters.value.has(getFilterServiceKey(link)));
-    });
+    return flatSources.filter((item) => getVisibleLinks(item).length > 0);
   } catch (error) {
     console.error('筛选数据时出错:', error);
     return [];
@@ -544,7 +556,7 @@ const handleLinkClick = async (e, link) => {
 </script>
 
 <template>
-  <div class="space-y-3">
+  <div class="space-y-3 search-result-list">
     <!-- 结果总数 + 筛选器 -->
     <div
       v-if="!skeletonLoading && sources.length > 0"
@@ -554,7 +566,7 @@ const handleLinkClick = async (e, link) => {
       <div class="mb-3 text-sm text-gray-600 dark:text-gray-400">
         <template v-if="isSearching">
           <i class="fas fa-spinner fa-spin mr-1"></i>
-          已找到 <span class="font-semibold text-gray-800 dark:text-gray-200">{{ sources.flat(Infinity).length }}</span> 个结果，搜索中...
+          已找到 <span class="font-semibold text-gray-800 dark:text-gray-200">{{ sources.flat(Infinity).length }}</span> 个结果，正在补充更多来源
         </template>
         <template v-else>
           找到 <span class="font-semibold text-gray-800 dark:text-gray-200">{{ filteredSources.length }}</span> 个结果
@@ -624,17 +636,42 @@ const handleLinkClick = async (e, link) => {
       </div>
     </div>
 
-    <!-- 骨架屏 -->
-    <div v-if="skeletonLoading" class="space-y-3">
+    <!-- 搜索中状态 -->
+    <div
+      v-if="skeletonLoading"
+      class="rounded-xl border border-gray-200/60 dark:border-gray-700/70 bg-white/85 dark:bg-gray-800/80 p-5 md:p-6 shadow-sm backdrop-blur-sm"
+    >
       <div
-        v-for="i in 3"
-        :key="i"
-        class="bg-white/60 dark:bg-gray-600/60 shadow p-4 rounded-lg animate-pulse"
+        class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
       >
-        <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-        <div class="mt-3 flex gap-2">
-          <div class="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          <div class="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        <div class="flex items-start gap-4">
+          <div
+            class="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-300"
+          >
+            <span
+              class="absolute inset-0 rounded-xl border border-blue-300/50 dark:border-blue-500/40 animate-ping"
+            ></span>
+            <i class="fas fa-search text-base"></i>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              正在搜索资源
+            </h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600 dark:text-gray-400">
+              正在为你聚合
+              <span v-if="searchKeyword" class="font-medium text-gray-800 dark:text-gray-200">
+                “{{ searchKeyword }}”
+              </span>
+              的网盘结果，找到后会立即显示。
+            </p>
+          </div>
+        </div>
+        <div
+          v-if="isSearching"
+          class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 dark:bg-gray-700/70 dark:text-gray-300"
+        >
+          <i class="fas fa-spinner fa-spin text-blue-500"></i>
+          <span>搜索中</span>
         </div>
       </div>
     </div>
@@ -644,12 +681,15 @@ const handleLinkClick = async (e, link) => {
       v-else
       v-for="(item, i) in filteredSources"
       :key="i"
-      class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-5 hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:border-gray-300/50 dark:hover:border-gray-600/50 transition-all duration-300 group"
+      :class="[
+        'bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-sm border border-gray-200/50 dark:border-gray-700/50 rounded-xl hover:bg-white dark:hover:bg-gray-800 hover:shadow-md hover:border-gray-300/50 dark:hover:border-gray-600/50 transition-all duration-300 group',
+        hasActiveFilter ? 'p-4' : 'p-5',
+      ]"
     >
       <!-- 资源标题 -->
       <div class="mb-4">
         <h3
-          class="text-sm md:text-base font-medium text-gray-800 dark:text-gray-100 leading-relaxed line-clamp-2"
+          class="search-result-title text-sm md:text-base font-medium text-gray-800 dark:text-gray-100 leading-relaxed line-clamp-2"
           v-html="getHighlightedName(item)"
         ></h3>
       </div>
@@ -660,22 +700,38 @@ const handleLinkClick = async (e, link) => {
         <div
           class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
         >
-          <span>共 {{ item.links.length }} 个资源链接</span>
-          <span>{{ getItemLinkHintText(item.links) }}</span>
+          <span>共 {{ getVisibleLinks(item).length }} 个资源链接</span>
+          <span v-if="!hasActiveFilter">{{ getItemLinkHintText(getVisibleLinks(item)) }}</span>
         </div>
 
         <!-- 网盘链接网格 -->
         <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3"
+          :class="[
+            'grid gap-3',
+            hasActiveFilter
+              ? 'grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8'
+              : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+          ]"
         >
-          <div v-for="(link, index) in item.links" :key="index">
+          <div v-for="(link, index) in getVisibleLinks(item)" :key="index">
             <a
               href="#"
-              class="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/70 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-sm transition-all duration-200 group/link"
+              :class="[
+                'rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-600/70 hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-sm transition-all duration-200 group/link',
+                hasActiveFilter
+                  ? 'min-h-11 px-3 py-2 inline-flex items-center justify-center gap-2 w-full'
+                  : 'flex items-center justify-between p-3',
+              ]"
               @click="(e) => handleLinkClick(e, link)"
+              :title="getDiskName(getResolvedService(link))"
             >
               <!-- 左侧：网盘图标和名称 -->
-              <div class="flex items-center gap-2 flex-1 min-w-0">
+              <div
+                :class="[
+                  'flex items-center min-w-0',
+                  hasActiveFilter ? 'gap-2 flex-none' : 'gap-2 flex-1',
+                ]"
+              >
                 <img
                   :src="getDiskIcon(getResolvedService(link))"
                   :alt="getResolvedService(link)"
@@ -683,6 +739,7 @@ const handleLinkClick = async (e, link) => {
                   @error="handleImageError"
                 />
                 <span
+                  v-if="!hasActiveFilter"
                   :class="[
                     'text-xs font-medium px-2 py-1 rounded-md truncate',
                     getServiceToneClass(getResolvedService(link)),
@@ -693,16 +750,20 @@ const handleLinkClick = async (e, link) => {
               </div>
 
               <!-- 右侧：提取码、复制、访问 -->
-              <div class="flex items-center gap-1.5">
+              <div :class="hasActiveFilter ? 'flex items-center' : 'flex items-center gap-1.5'">
                 <span
                   v-if="link.pwd"
-                  class="px-2 py-1 text-xs font-mono rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors duration-200"
+                  :class="[
+                    'text-xs font-mono rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700 cursor-pointer hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors duration-200',
+                    hasActiveFilter ? 'px-2 py-0.5' : 'px-2 py-1',
+                  ]"
                   @click="copyPwd(link.pwd, $event)"
                   :title="'点击复制提取码：' + link.pwd"
                 >
                   {{ link.pwd }}
                 </span>
                 <button
+                  v-if="!hasActiveFilter"
                   type="button"
                   class="w-7 h-7 flex items-center justify-center rounded-md text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200"
                   @click="copyLink(link.link, $event)"
@@ -711,6 +772,7 @@ const handleLinkClick = async (e, link) => {
                   <i class="fas fa-copy text-xs"></i>
                 </button>
                 <i
+                  v-if="!hasActiveFilter"
                   class="fas fa-external-link-alt text-xs text-gray-400 group-hover/link:text-gray-600 dark:group-hover/link:text-gray-300 transition-colors"
                 ></i>
               </div>
@@ -747,15 +809,25 @@ const handleLinkClick = async (e, link) => {
 </style>
 
 <style scoped>
-:deep(mark) {
-  background-color: #fef08a;
-  color: inherit;
-  padding: 0 1px;
-  border-radius: 2px;
+.search-result-list {
+  --search-highlight-bg: #fef3c7;
+  --search-highlight-text: #92400e;
+  --search-highlight-border: rgba(245, 158, 11, 0.35);
 }
 
-:global(.dark) :deep(mark) {
-  background-color: #854d0e;
-  color: #fef9c3;
+:global(.dark) .search-result-list {
+  --search-highlight-bg: rgba(245, 158, 11, 0.18);
+  --search-highlight-text: #fde68a;
+  --search-highlight-border: rgba(245, 158, 11, 0.28);
+}
+
+.search-result-title :deep(mark) {
+  background-color: var(--search-highlight-bg);
+  color: var(--search-highlight-text);
+  border: 1px solid var(--search-highlight-border);
+  padding: 0.02em 0.16em;
+  border-radius: 0.25rem;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 </style>

@@ -87,12 +87,6 @@
           "description": "B站视频平台",
           "icon": "fa-circle-play",
           "path": "https://www.bilibili.com"
-        },
-        {
-          "title": "壳儿",
-          "description": "免费观看热门影视剧集",
-          "icon": "fa-video",
-          "path": "/drama"
         }
       ]
     },
@@ -218,4 +212,4 @@
     }
 
   ]
-} 
+}

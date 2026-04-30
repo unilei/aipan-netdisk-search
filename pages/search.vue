@@ -8,20 +8,9 @@
       class="mb-2"
     />
 
-    <client-only>
-      <!-- Category Tabs -->
-      <CategoryTabs
-        :categories="categories"
-        :current-category="category"
-        :show-settings-button="!userStore.loggedIn"
-        :loading-progress="loadingProgress"
-        @switch-category="switchCategory"
-      />
-    </client-only>
-
     <!-- 群二维码显示在搜索结果前 -->
     <div
-      v-if="shouldShowInSearchResults && searchPerformed"
+      v-if="shouldShowInSearchResults && searchPerformed && !skeletonLoading"
       class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3"
     >
       <GroupQrCode variant="search-result" />
@@ -29,11 +18,8 @@
 
     <!-- Main Content Area -->
     <SearchContent
-      :category="category"
       :sources="sources"
       :skeleton-loading="skeletonLoading"
-      :vod-data="vodData"
-      :loading-status="loadingStatus"
       :loading-progress="loadingProgress"
       :search-performed="searchPerformed"
     />
@@ -42,14 +28,12 @@
 
 <script setup>
 import SearchHeader from "~/components/search/SearchHeader.vue";
-import CategoryTabs from "~/components/search/CategoryTabs.vue";
 import SearchContent from "~/components/search/SearchContent.vue";
 import GroupQrCode from "~/components/GroupQrCode.vue";
 import sourcesApiEndpointsGuest from "~/assets/vod/clouddrive.json";
 import sourcesApiEndpointsLoggedIn from "~/assets/vod/clouddrive-login.json";
 import { badWords } from "~/utils/sensitiveWords";
 import { useUserStore } from "~/stores/user";
-import { useVodSources } from "~/composables/useVodSources";
 import { useSearchState } from "~/composables/useSearchState";
 import { useSearchLogic } from "~/composables/useSearchLogic";
 import { useQuarkConfig } from "~/composables/useQuarkConfig";
@@ -76,20 +60,14 @@ useHead({
 const userStore = useUserStore();
 
 // 使用 composables
-const { sources: vodConfigSources, loadSources } = useVodSources();
 const {
   sources,
-  vodData,
   skeletonLoading,
   searchPerformed,
   loadingProgress,
-  loadingStatus,
-  category,
-  categories,
-  switchCategory,
 } = useSearchState();
 
-const { handleSearch, searchByVod, cleanup } = useSearchLogic();
+const { handleSearch, cleanup } = useSearchLogic();
 const { getQuarkConfig } = useQuarkConfig();
 const { stopQueueProcessing } = useSearchQueue();
 const { shouldShowInSearchResults, getConfig: getGroupQrConfig } =
@@ -111,6 +89,31 @@ const checkSensitiveWords = (text) => {
     text.toLowerCase().includes(word.toLowerCase())
   );
 };
+
+const resetLoadingState = () => {
+  skeletonLoading.value = false;
+  loadingProgress.value = {
+    total: 0,
+    completed: 0,
+    isLoading: false,
+  };
+};
+
+const startSearchLoadingState = () => {
+  sources.value = [];
+  searchPerformed.value = true;
+  skeletonLoading.value = true;
+  loadingProgress.value = {
+    total: sourcesApiEndpoints.value.length,
+    completed: 0,
+    isLoading: true,
+  };
+};
+
+if (keyword.value && keyword.value.trim() !== "" && !checkSensitiveWords(keyword.value)) {
+  startSearchLoadingState();
+}
+
 const search = (searchText) => {
   keyword.value = searchText;
   searchByKeyword();
@@ -119,41 +122,29 @@ const search = (searchText) => {
 // 搜索函数
 const searchByKeyword = async () => {
   if (!keyword.value || keyword.value.trim() === "") {
+    sources.value = [];
+    searchPerformed.value = false;
+    resetLoadingState();
     return;
   }
 
   // 敏感词检查
   if (checkSensitiveWords(keyword.value)) {
+    sources.value = [];
+    searchPerformed.value = false;
+    resetLoadingState();
     ElMessage.error("搜索内容包含敏感词，请修改后重试");
     return;
   }
 
-  // 立即设置搜索状态和加载状态，避免显示空状态
-  searchPerformed.value = true;
+  startSearchLoadingState();
 
-  if (category.value === "clouddrive") {
-    // 立即设置加载状态
-    skeletonLoading.value = true;
-    loadingProgress.value.isLoading = true;
-    loadingProgress.value.total = sourcesApiEndpoints.value.length;
-    loadingProgress.value.completed = 0;
-
-    await handleSearch(
-      keyword.value,
-      sources,
-      loadingProgress,
-      sourcesApiEndpoints.value
-    );
-  } else if (category.value === "onlineVod") {
-    // 立即设置VOD加载状态
-    loadingStatus.value.clear();
-    // 为每个VOD源设置加载状态
-    vodConfigSources.value.forEach((vodApi) => {
-      loadingStatus.value.set(vodApi.api, true);
-    });
-
-    await searchByVod(keyword.value, vodData, loadingStatus, vodConfigSources);
-  }
+  await handleSearch(
+    keyword.value,
+    sources,
+    loadingProgress,
+    sourcesApiEndpoints.value
+  );
 };
 
 // 初始化
@@ -161,8 +152,7 @@ onMounted(async () => {
   try {
     await Promise.all([
       getQuarkConfig(),
-      getGroupQrConfig(),
-      loadSources()
+      getGroupQrConfig()
     ]);
 
     if (keyword.value && keyword.value.trim() !== "") {
@@ -211,17 +201,13 @@ watch(
       searchByKeyword();
     } else {
       keyword.value = '';
+      sources.value = [];
+      searchPerformed.value = false;
+      resetLoadingState();
     }
   }
 );
 
-// 监听分类变化
-watch(category, async () => {
-  // 执行搜索
-  if (keyword.value && keyword.value.trim() !== "") {
-    await searchByKeyword();
-  }
-});
 </script>
 
 <style scoped>

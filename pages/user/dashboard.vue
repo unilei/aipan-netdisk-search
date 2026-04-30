@@ -151,19 +151,6 @@
         </div>
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">VOD 视频源</h2>
-            <el-icon class="text-2xl text-purple-500">
-              <i class="fas fa-film"></i>
-            </el-icon>
-          </div>
-          <p class="text-gray-500 dark:text-gray-400 mb-4">管理您的视频源配置</p>
-          <el-button type="warning" @click="() => navigateTo('/user/vod-settings')" class="w-full">
-            <i class="fas fa-cog mr-1"></i>
-            配置视频源
-          </el-button>
-        </div>
-        <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-all">
-          <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-200">音乐验证码</h2>
             <el-icon class="text-2xl text-orange-500">
               <i class="fas fa-music"></i>

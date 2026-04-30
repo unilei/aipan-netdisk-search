@@ -15,7 +15,6 @@ export default defineEventHandler(async (event: H3Event) => {
             event.node.req.url?.startsWith("/api/user/activities") ||
             event.node.req.url?.startsWith("/api/user/stats") ||
             event.node.req.url?.startsWith("/api/user/profile") ||
-            event.node.req.url?.startsWith("/api/user/vod-config") ||
             event.node.req.url?.startsWith("/api/forum/topics") && event.node.req.method === "POST" ||
             event.node.req.url?.startsWith("/api/user/forum") ||
             event.node.req.url?.startsWith("/api/notifications") ||
@@ -88,4 +87,4 @@ export default defineEventHandler(async (event: H3Event) => {
             message: "An unexpected error occurred"
         });
     }
-}); 
+});

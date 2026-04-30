@@ -13,7 +13,6 @@ export const useSmartCache = () => {
       this.useRedis = useRedis;
       this.ttlConfig = {
         search: 5 * 60 * 1000, // 搜索结果缓存5分钟
-        vod: 15 * 60 * 1000, // VOD结果缓存15分钟
         config: 24 * 60 * 60 * 1000, // 配置信息缓存24小时
         default: 60 * 60 * 1000, // 默认1小时
       };
@@ -129,34 +128,21 @@ export const useSmartCache = () => {
     }
 
     getCacheType(key) {
-      if (key.startsWith("vod-")) return "vod";
-      else if (key.includes("config") || key.includes("setting"))
+      if (key.includes("config") || key.includes("setting"))
         return "config";
       return "search";
     }
 
     parseCacheKey(key) {
       try {
-        if (key.startsWith("vod-")) {
-          const matches = key.match(/^vod-(.+?)-(.+)$/);
-          if (matches && matches.length === 3) {
-            const [, api, encodedKeyword] = matches;
-            return {
-              category: "vod",
-              source: api,
-              keyword: decodeURIComponent(encodedKeyword),
-            };
-          }
-        } else {
-          const matches = key.match(/^(.+?)-(.+)$/);
-          if (matches && matches.length === 3) {
-            const [, api, encodedKeyword] = matches;
-            return {
-              category: "search",
-              source: api,
-              keyword: decodeURIComponent(encodedKeyword),
-            };
-          }
+        const matches = key.match(/^(.+?)-(.+)$/);
+        if (matches && matches.length === 3) {
+          const [, api, encodedKeyword] = matches;
+          return {
+            category: "search",
+            source: api,
+            keyword: decodeURIComponent(encodedKeyword),
+          };
         }
       } catch (error) {
         console.error("Error parsing cache key:", error);

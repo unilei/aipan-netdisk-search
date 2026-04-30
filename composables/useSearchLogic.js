@@ -6,7 +6,6 @@ export const useSearchLogic = () => {
 
   // 请求去重管理
   let currentSearchController = null;
-  let currentVodSearches = new Map();
 
   // 队列管理
   let queue = [];
@@ -151,93 +150,6 @@ export const useSearchLogic = () => {
     runQueue();
   };
 
-  // 处理单个VOD搜索
-  const handleSingleVodSearch = async (
-    vodApi,
-    keyword,
-    vodData,
-    loadingStatus
-  ) => {
-    const encodedKeyword = encodeURIComponent(keyword.trim());
-    const cacheKey = `vod-${vodApi.api}-${
-      vodApi.type || "default"
-    }-${encodedKeyword}`;
-
-    // 取消之前的VOD搜索请求
-    if (currentVodSearches.has(vodApi.api)) {
-      currentVodSearches.get(vodApi.api).abort();
-    }
-
-    const controller = new AbortController();
-    currentVodSearches.set(vodApi.api, controller);
-    loadingStatus.value.set(vodApi.api, true);
-
-    try {
-      // 尝试从缓存获取
-      const cachedData = await smartCache.getWithStrategy(cacheKey);
-      if (cachedData) {
-        vodData.value = [...vodData.value, ...cachedData];
-        loadingStatus.value.set(vodApi.api, false);
-        return;
-      }
-
-      // 从API获取数据
-      const res = await fetchWithRetry("/api/vod/search", {
-        method: "get",
-        query: {
-          type: vodApi.type,
-          api: vodApi.api,
-          ac: "detail",
-          wd: keyword,
-        },
-        signal: controller.signal,
-      });
-
-      // 改进的响应验证和错误处理
-      if (res && typeof res === "object") {
-        if (res.list && Array.isArray(res.list) && res.list.length > 0) {
-          // 验证每个item的基本结构
-          const validItems = res.list.filter(
-            (item) =>
-              item && typeof item === "object" && (item.vod_name || item.title)
-          );
-
-          if (validItems.length > 0) {
-            const processedData = validItems.map((item) =>
-              Object.assign(
-                { playUrl: vodApi.playUrl, sourceName: vodApi.name },
-                item
-              )
-            );
-            // 设置缓存
-            await smartCache.setWithStrategy(cacheKey, processedData, "vod");
-            vodData.value = [...vodData.value, ...processedData];
-          }
-        } else if (res.code !== 200) {
-          console.warn(
-            `VOD API返回错误状态: ${vodApi.api}, code: ${res.code}, message: ${
-              res.msg || "未知错误"
-            }`
-          );
-        }
-      } else {
-        console.warn(`VOD API返回无效响应: ${vodApi.api}`);
-      }
-    } catch (err) {
-      if (err.name !== "AbortError") {
-        console.error(`VOD获取失败: ${vodApi.api}`, {
-          error: err.message || err,
-          vodApi: vodApi.name,
-          keyword: keyword,
-          timestamp: new Date().toISOString(),
-        });
-      }
-    } finally {
-      loadingStatus.value.set(vodApi.api, false);
-      currentVodSearches.delete(vodApi.api);
-    }
-  };
-
   // 处理搜索函数
   const handleSearch = async (
     keyword,
@@ -312,41 +224,6 @@ export const useSearchLogic = () => {
     });
   };
 
-  // 搜索VOD内容
-  const searchByVod = async (
-    keyword,
-    vodData,
-    loadingStatus,
-    vodConfigSources
-  ) => {
-    console.log(keyword);
-    if (!keyword || keyword.trim() === "") {
-      vodData.value = [];
-      return;
-    }
-
-    vodData.value = [];
-
-    // 确保加载状态已设置（如果外部没有设置的话）
-    if (loadingStatus.value.size === 0) {
-      vodConfigSources.value.forEach((vodApi) => {
-        loadingStatus.value.set(vodApi.api, true);
-      });
-    }
-
-    // console.log(vodConfigSources.value);
-    // 使用 Promise.allSettled 处理并发请求，避免竞态条件
-    const searchPromises = vodConfigSources.value.map((vodApi) => {
-      // 确保每个API的加载状态都已设置
-      if (!loadingStatus.value.has(vodApi.api)) {
-        loadingStatus.value.set(vodApi.api, true);
-      }
-      return handleSingleVodSearch(vodApi, keyword, vodData, loadingStatus);
-    });
-
-    await Promise.allSettled(searchPromises);
-  };
-
   // 清理函数
   const cleanup = () => {
     if (currentSearchController) {
@@ -354,18 +231,13 @@ export const useSearchLogic = () => {
       currentSearchController = null;
     }
 
-    currentVodSearches.forEach((controller) => controller.abort());
-    currentVodSearches.clear();
-
     queue.length = 0;
     running = 0;
   };
 
   return {
     handleSearch,
-    searchByVod,
     handleSingleSearch,
-    handleSingleVodSearch,
     cleanup,
   };
 };
