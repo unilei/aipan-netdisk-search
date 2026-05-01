@@ -6,7 +6,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-900 dark:text-white">用户管理</h1>
-                        <p class="text-gray-500 dark:text-gray-400 mt-1">管理网站用户、角色和权限</p>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">管理网站用户、角色、状态和积分</p>
                     </div>
                     <div class="flex items-center space-x-4">
                         <el-button type="primary" @click="handleAddUser" class="flex items-center">
@@ -93,14 +93,27 @@
                             </el-tag>
                         </template>
                     </el-table-column>
+                    <el-table-column prop="effectivePoints" label="积分" min-width="170">
+                        <template #default="scope">
+                            <div class="flex flex-col leading-5">
+                                <span class="font-semibold text-gray-900 dark:text-white">
+                                    {{ formatPoints(scope.row.effectivePoints ?? scope.row.points) }}
+                                </span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">
+                                    永久 {{ formatPoints(scope.row.permanentPoints) }} / 限时 {{ formatPoints(scope.row.temporaryPoints) }}
+                                </span>
+                            </div>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="createdAt" label="注册时间" min-width="180">
                         <template #default="scope">
                             {{ formatDate(scope.row.createdAt) }}
                         </template>
                     </el-table-column>
-                    <el-table-column label="操作" fixed="right" width="200">
+                    <el-table-column label="操作" fixed="right" width="260">
                         <template #default="scope">
-                            <div class="flex space-x-2">
+                            <div class="flex flex-wrap gap-2">
+                                <el-button size="small" type="primary" plain @click="handleViewPoints(scope.row)">积分</el-button>
                                 <el-button size="small" @click="handleEdit(scope.row)">编辑</el-button>
                                 <el-button size="small" :type="scope.row.status === 'active' ? 'danger' : 'success'"
                                     @click="handleToggleStatus(scope.row)">
@@ -161,6 +174,131 @@
                 <el-button type="danger" @click="confirmDelete">确认删除</el-button>
             </template>
         </el-dialog>
+
+        <!-- 积分详情对话框 -->
+        <el-dialog
+            v-model="pointsDialogVisible"
+            title="用户积分详情"
+            width="900px"
+            destroy-on-close
+        >
+            <div v-loading="pointsLoading" class="space-y-4">
+                <div v-if="pointsDetail.user" class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <div class="text-base font-semibold text-gray-900 dark:text-white">
+                                {{ pointsDetail.user.username }}
+                            </div>
+                            <div class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                {{ pointsDetail.user.email }}
+                            </div>
+                        </div>
+                        <el-tag :type="pointsDetail.user.status === 'active' ? 'success' : 'danger'">
+                            {{ pointsDetail.user.status === 'active' ? '活跃' : '禁用' }}
+                        </el-tag>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">有效积分</div>
+                        <div class="mt-1 text-xl font-semibold text-gray-900 dark:text-white">
+                            {{ formatPoints(pointsDetail.effectivePoints) }}
+                        </div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">永久积分</div>
+                        <div class="mt-1 text-xl font-semibold text-gray-900 dark:text-white">
+                            {{ formatPoints(pointsDetail.permanentPoints) }}
+                        </div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">限时积分</div>
+                        <div class="mt-1 text-xl font-semibold text-gray-900 dark:text-white">
+                            {{ formatPoints(pointsDetail.temporaryPoints) }}
+                        </div>
+                    </div>
+                    <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">最近过期</div>
+                        <div class="mt-1 text-sm font-semibold text-gray-900 dark:text-white">
+                            {{ pointsDetail.nextExpiringAt ? formatDate(pointsDetail.nextExpiringAt) : '暂无' }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">累计获得</div>
+                        <div class="mt-1 font-semibold text-emerald-600 dark:text-emerald-300">
+                            +{{ formatPoints(pointsDetail.stats?.totalEarned) }}
+                        </div>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">累计消费</div>
+                        <div class="mt-1 font-semibold text-red-600 dark:text-red-300">
+                            {{ pointsDetail.stats?.totalSpent ? '-' : '' }}{{ formatPoints(pointsDetail.stats?.totalSpent) }}
+                        </div>
+                    </div>
+                    <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
+                        <div class="text-xs text-gray-500 dark:text-gray-400">积分记录</div>
+                        <div class="mt-1 font-semibold text-gray-900 dark:text-white">
+                            {{ formatPoints(pointsDetail.stats?.recordCount) }} 条
+                        </div>
+                    </div>
+                </div>
+
+                <el-table
+                    :data="pointsDetail.history"
+                    border
+                    stripe
+                    size="small"
+                    empty-text="暂无积分记录"
+                >
+                    <el-table-column label="类型" width="130">
+                        <template #default="{ row }">
+                            <el-tag :type="getPointTypeTag(row.type)" size="small">
+                                {{ row.typeName || getPointTypeName(row.type) }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="说明" min-width="220">
+                        <template #default="{ row }">
+                            {{ row.description || '-' }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="有效期" min-width="170">
+                        <template #default="{ row }">
+                            <span v-if="row.expiresAt">
+                                {{ row.isExpired ? '已过期：' : '' }}{{ formatDate(row.expiresAt) }}
+                            </span>
+                            <span v-else>永久</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="时间" min-width="170">
+                        <template #default="{ row }">
+                            {{ formatDate(row.createdAt) }}
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="积分" width="110" align="right">
+                        <template #default="{ row }">
+                            <span :class="row.points >= 0 ? 'text-emerald-600 dark:text-emerald-300' : 'text-red-600 dark:text-red-300'">
+                                {{ formatSignedPoints(row.points) }}
+                            </span>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <div v-if="pointsDetail.pagination?.totalPages > 1" class="flex justify-end">
+                    <el-pagination
+                        v-model:current-page="pointsPage"
+                        :page-size="pointsPageSize"
+                        :total="pointsDetail.pagination.total"
+                        layout="total, prev, pager, next"
+                        @current-change="handlePointsPageChange"
+                    />
+                </div>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -189,8 +327,33 @@ const filterStatus = ref('')
 // 对话框控制
 const dialogVisible = ref(false)
 const deleteDialogVisible = ref(false)
+const pointsDialogVisible = ref(false)
+const pointsLoading = ref(false)
 const isEdit = ref(false)
 const selectedUser = ref(null)
+const selectedPointsUser = ref(null)
+const pointsPage = ref(1)
+const pointsPageSize = 20
+const pointsDetail = ref({
+    user: null,
+    currentPoints: 0,
+    permanentPoints: 0,
+    temporaryPoints: 0,
+    effectivePoints: 0,
+    nextExpiringAt: null,
+    stats: {
+        totalEarned: 0,
+        totalSpent: 0,
+        recordCount: 0
+    },
+    history: [],
+    pagination: {
+        page: 1,
+        limit: pointsPageSize,
+        total: 0,
+        totalPages: 0
+    }
+})
 
 // 表单数据
 const formRef = ref(null)
@@ -325,6 +488,59 @@ const handleDelete = (user) => {
     deleteDialogVisible.value = true
 }
 
+// 查看用户积分
+const handleViewPoints = async (user) => {
+    selectedPointsUser.value = user
+    pointsPage.value = 1
+    pointsDialogVisible.value = true
+    await fetchUserPoints()
+}
+
+const fetchUserPoints = async () => {
+    if (!selectedPointsUser.value?.id) return
+
+    pointsLoading.value = true
+    try {
+        const response = await $fetch(`/api/admin/user-center/${selectedPointsUser.value.id}/points`, {
+            method: 'GET',
+            query: {
+                page: pointsPage.value,
+                limit: pointsPageSize
+            },
+            headers: {
+                "authorization": "Bearer " + useCookie('token').value
+            }
+        })
+
+        if (response.code === 200) {
+            pointsDetail.value = response.data
+
+            const index = users.value.findIndex(u => u.id === selectedPointsUser.value.id)
+            if (index !== -1) {
+                users.value[index] = {
+                    ...users.value[index],
+                    points: response.data.effectivePoints,
+                    permanentPoints: response.data.permanentPoints,
+                    temporaryPoints: response.data.temporaryPoints,
+                    effectivePoints: response.data.effectivePoints,
+                    nextExpiringAt: response.data.nextExpiringAt,
+                    pointsBreakdown: response.data.breakdown
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Failed to fetch user points:', error)
+        ElMessage.error(error?.data?.message || '获取用户积分失败')
+    } finally {
+        pointsLoading.value = false
+    }
+}
+
+const handlePointsPageChange = (page) => {
+    pointsPage.value = page
+    fetchUserPoints()
+}
+
 // 确认删除
 const confirmDelete = async () => {
     try {
@@ -435,6 +651,41 @@ const formatDate = (dateString) => {
         hour: '2-digit',
         minute: '2-digit'
     }).format(date)
+}
+
+const formatPoints = (points) => {
+    return new Intl.NumberFormat('zh-CN').format(Number(points || 0))
+}
+
+const formatSignedPoints = (points) => {
+    const value = Number(points || 0)
+    return `${value > 0 ? '+' : ''}${formatPoints(value)}`
+}
+
+const getPointTypeName = (type) => {
+    const typeMap = {
+        checkin: '每日签到',
+        bonus: '连续签到奖励',
+        consume: '积分消费',
+        admin: '管理员调整',
+        activity: '活动奖励',
+        task: '任务奖励',
+        transfer: '转存奖励'
+    }
+    return typeMap[type] || type || '-'
+}
+
+const getPointTypeTag = (type) => {
+    const typeMap = {
+        checkin: 'success',
+        bonus: 'warning',
+        consume: 'danger',
+        admin: 'info',
+        activity: 'primary',
+        task: 'primary',
+        transfer: 'primary'
+    }
+    return typeMap[type] || 'info'
 }
 
 // 页面加载时获取用户列表

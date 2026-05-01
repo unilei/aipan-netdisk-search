@@ -2,6 +2,7 @@
 import prisma from "~/lib/prisma";
 import { sendVerificationEmail } from "~/server/services/email/emailVerification";
 import { getEmailServiceConfig } from "~/server/services/email/resend";
+import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
 import { hashPassword } from "~/server/utils/password";
 
 export default defineEventHandler(async (event) => {
@@ -65,13 +66,32 @@ export default defineEventHandler(async (event) => {
           isVerified: true,
           emailVerifiedAt: true,
           emailVerificationRequired: true,
+          points: true,
         },
       });
+
+      const usersWithPoints = await Promise.all(
+        users.map(async (user) => {
+          const pointsBreakdown = await getUserPointsBreakdown(user.id, {
+            permanentPoints: user.points,
+          });
+
+          return {
+            ...user,
+            points: pointsBreakdown.effectivePoints,
+            permanentPoints: pointsBreakdown.permanentPoints,
+            temporaryPoints: pointsBreakdown.temporaryPoints,
+            effectivePoints: pointsBreakdown.effectivePoints,
+            nextExpiringAt: pointsBreakdown.nextExpiringAt,
+            pointsBreakdown,
+          };
+        }),
+      );
 
       return {
         code: 200,
         data: {
-          users,
+          users: usersWithPoints,
           total,
           page,
           pageSize,

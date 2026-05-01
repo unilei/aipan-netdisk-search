@@ -5,6 +5,8 @@ import {
   buildTransferFingerprintFromShareDetail,
   calculateEffectivePoints,
   decoratePointsHistoryRecords,
+  getCheckInBonusReward,
+  getNextCheckInReward,
   normalizeTransferRewardConfig,
   resolveTransferRewardDecision,
 } from "../../server/services/points/pointsLedger.mjs";
@@ -15,6 +17,55 @@ import {
 } from "../../server/services/accessControl/featureAccessPolicy.mjs";
 
 const NOW = new Date("2026-05-01T08:00:00.000Z");
+
+test("getCheckInBonusReward grants milestone rewards only on milestone days", () => {
+  assert.deepEqual(getCheckInBonusReward(1), {
+    points: 0,
+    description: "",
+  });
+  assert.deepEqual(getCheckInBonusReward(3), {
+    points: 5,
+    description: "连续签到3天奖励",
+  });
+  assert.deepEqual(getCheckInBonusReward(7), {
+    points: 15,
+    description: "连续签到7天奖励",
+  });
+  assert.deepEqual(getCheckInBonusReward(15), {
+    points: 30,
+    description: "连续签到15天奖励",
+  });
+  assert.deepEqual(getCheckInBonusReward(30), {
+    points: 50,
+    description: "连续签到30天奖励",
+  });
+  assert.deepEqual(getCheckInBonusReward(31), {
+    points: 0,
+    description: "",
+  });
+  assert.deepEqual(getCheckInBonusReward(60), {
+    points: 50,
+    description: "连续签到60天奖励",
+  });
+});
+
+test("getNextCheckInReward points users to the next milestone", () => {
+  assert.deepEqual(getNextCheckInReward(0), {
+    days: 3,
+    points: 5,
+    description: "连续签到3天可获得额外5积分",
+  });
+  assert.deepEqual(getNextCheckInReward(30), {
+    days: 60,
+    points: 50,
+    description: "连续签到60天可获得额外50积分",
+  });
+  assert.deepEqual(getNextCheckInReward(212), {
+    days: 240,
+    points: 50,
+    description: "连续签到240天可获得额外50积分",
+  });
+});
 
 test("calculateEffectivePoints counts permanent points", () => {
   assert.deepEqual(

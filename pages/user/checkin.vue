@@ -111,10 +111,10 @@
 
         <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
           <div class="border-b border-gray-200 dark:border-gray-700">
-            <nav class="flex px-5" aria-label="Tabs">
+            <nav class="flex gap-8 overflow-x-auto px-5" aria-label="Tabs">
               <button
                 :class="[
-                  'mr-8 border-b-2 px-1 py-3.5 text-sm font-medium transition-colors duration-200',
+                  'shrink-0 border-b-2 px-1 py-3.5 text-sm font-medium transition-colors duration-200',
                   activeTab === 'checkin-history'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
@@ -130,7 +130,7 @@
 
               <button
                 :class="[
-                  'border-b-2 px-1 py-3.5 text-sm font-medium transition-colors duration-200',
+                  'shrink-0 border-b-2 px-1 py-3.5 text-sm font-medium transition-colors duration-200',
                   activeTab === 'points-history'
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
@@ -141,6 +141,22 @@
                 <span class="inline-flex items-center gap-2">
                   <i class="fa-solid fa-coins"></i>
                   积分记录
+                </span>
+              </button>
+
+              <button
+                :class="[
+                  'shrink-0 border-b-2 px-1 py-3.5 text-sm font-medium transition-colors duration-200',
+                  activeTab === 'leaderboard'
+                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                ]"
+                type="button"
+                @click="activeTab = 'leaderboard'"
+              >
+                <span class="inline-flex items-center gap-2">
+                  <i class="fa-solid fa-ranking-star"></i>
+                  积分排行
                 </span>
               </button>
             </nav>
@@ -323,6 +339,112 @@
                 />
               </div>
             </div>
+
+            <div v-if="activeTab === 'leaderboard'" class="p-5">
+              <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <h2 class="m-0 text-base font-semibold text-gray-950 dark:text-white">积分排行榜</h2>
+                  <p class="m-0 mt-1 text-sm text-gray-500 dark:text-gray-400">按有效积分排名，限时积分过期后会自动更新排名。</p>
+                </div>
+                <button
+                  class="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800"
+                  type="button"
+                  :disabled="leaderboardLoading"
+                  @click="fetchLeaderboard"
+                >
+                  <i :class="leaderboardLoading ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-rotate'"></i>
+                  刷新
+                </button>
+              </div>
+
+              <div
+                v-if="leaderboard.currentUser"
+                class="mb-5 rounded-lg border border-blue-100 bg-blue-50 p-4 dark:border-blue-900/50 dark:bg-blue-950/30"
+              >
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div class="text-sm text-blue-700 dark:text-blue-300">我的排名</div>
+                    <div class="mt-1 text-2xl font-semibold text-blue-950 dark:text-blue-100">
+                      第 {{ formatNumber(leaderboard.currentUser.rank) }} 名
+                    </div>
+                  </div>
+                  <div class="grid grid-cols-3 gap-3 text-center sm:min-w-[360px]">
+                    <div>
+                      <div class="text-xs text-blue-700/80 dark:text-blue-300/80">有效积分</div>
+                      <div class="mt-1 font-semibold text-blue-950 dark:text-blue-100">
+                        {{ formatNumber(leaderboard.currentUser.effectivePoints) }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-blue-700/80 dark:text-blue-300/80">永久积分</div>
+                      <div class="mt-1 font-semibold text-blue-950 dark:text-blue-100">
+                        {{ formatNumber(leaderboard.currentUser.permanentPoints) }}
+                      </div>
+                    </div>
+                    <div>
+                      <div class="text-xs text-blue-700/80 dark:text-blue-300/80">限时积分</div>
+                      <div class="mt-1 font-semibold text-blue-950 dark:text-blue-100">
+                        {{ formatNumber(leaderboard.currentUser.temporaryPoints) }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-loading="leaderboardLoading" class="space-y-2">
+                <div
+                  v-if="!leaderboardLoading && leaderboard.leaderboard.length === 0"
+                  class="rounded-lg border border-dashed border-gray-300 py-12 text-center dark:border-gray-700"
+                >
+                  <p class="m-0 text-gray-500 dark:text-gray-400">暂无排行数据</p>
+                </div>
+
+                <div
+                  v-for="entry in leaderboard.leaderboard"
+                  :key="entry.id"
+                  :class="[
+                    'flex items-center gap-3 rounded-lg border p-3 transition-colors',
+                    entry.isCurrentUser
+                      ? 'border-blue-200 bg-blue-50 dark:border-blue-900/50 dark:bg-blue-950/30'
+                      : 'border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900/40 dark:hover:bg-gray-800'
+                  ]"
+                >
+                  <div
+                    :class="[
+                      'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-bold',
+                      getRankClass(entry.rank)
+                    ]"
+                  >
+                    {{ entry.rank }}
+                  </div>
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-200 text-sm font-semibold text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+                    {{ getUsernameInitial(entry.username) }}
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="truncate font-semibold text-gray-950 dark:text-white">
+                        {{ entry.username }}
+                      </span>
+                      <span
+                        v-if="entry.isCurrentUser"
+                        class="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/50 dark:text-blue-200"
+                      >
+                        我
+                      </span>
+                    </div>
+                    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                      永久 {{ formatNumber(entry.permanentPoints) }} / 限时 {{ formatNumber(entry.temporaryPoints) }}
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-base font-semibold text-gray-950 dark:text-white">
+                      {{ formatNumber(entry.effectivePoints) }}
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">有效积分</div>
+                  </div>
+                </div>
+              </div>
+            </div>
         </section>
       </div>
     </div>
@@ -331,6 +453,7 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { ElMessage } from 'element-plus'
 
 import UserCheckInCard from '~/components/user/CheckInCard.vue'
 import UserPointsOverview from '~/components/user/PointsOverview.vue'
@@ -379,6 +502,13 @@ const pointsHistory = ref({
   history: [],
   pagination: null,
   stats: null
+})
+const leaderboardLoading = ref(false)
+const leaderboard = ref({
+  leaderboard: [],
+  currentUser: null,
+  totalUsers: 0,
+  limit: 50
 })
 
 const pointsFilter = ref({
@@ -440,11 +570,42 @@ const fetchPointsHistory = async () => {
   }
 }
 
+const fetchLeaderboard = async () => {
+  leaderboardLoading.value = true
+  try {
+    const response = await $fetch('/api/user/points/leaderboard', {
+      query: {
+        limit: 50
+      },
+      headers: {
+        Authorization: `Bearer ${useCookie('token').value}`
+      }
+    })
+
+    if (response.code === 200) {
+      leaderboard.value = {
+        leaderboard: response.data?.leaderboard || [],
+        currentUser: response.data?.currentUser || null,
+        totalUsers: response.data?.totalUsers || 0,
+        limit: response.data?.limit || 50
+      }
+    }
+  } catch (error) {
+    console.error('获取积分排行榜失败:', error)
+    ElMessage.error(error?.data?.message || '获取积分排行榜失败')
+  } finally {
+    leaderboardLoading.value = false
+  }
+}
+
 const handlePointsChanged = async () => {
   await pointsOverviewRef.value?.refresh?.()
   await fetchCheckInHistory()
   if (activeTab.value === 'points-history') {
     await fetchPointsHistory()
+  }
+  if (activeTab.value === 'leaderboard') {
+    await fetchLeaderboard()
   }
 }
 
@@ -495,6 +656,21 @@ const formatDateTime = (dateString) => {
   return date.toLocaleString()
 }
 
+const formatNumber = (value) => {
+  return new Intl.NumberFormat('zh-CN').format(Number(value || 0))
+}
+
+const getUsernameInitial = (username) => {
+  return String(username || '?').trim().charAt(0).toUpperCase() || '?'
+}
+
+const getRankClass = (rank) => {
+  if (rank === 1) return 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200'
+  if (rank === 2) return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'
+  if (rank === 3) return 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-200'
+  return 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200'
+}
+
 const getTypeName = (type) => {
   const typeNames = {
     checkin: '每日签到',
@@ -513,6 +689,8 @@ watch(activeTab, (newTab) => {
     fetchCheckInHistory()
   } else if (newTab === 'points-history') {
     fetchPointsHistory()
+  } else if (newTab === 'leaderboard') {
+    fetchLeaderboard()
   }
 })
 

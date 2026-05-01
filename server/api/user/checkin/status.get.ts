@@ -1,5 +1,6 @@
 import prisma from "~/lib/prisma";
 import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
+import { getNextCheckInReward } from "~/server/services/points/pointsLedger.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -97,7 +98,7 @@ export default defineEventHandler(async (event) => {
                 effectivePoints: pointsBreakdown.effectivePoints,
                 nextExpiringAt: pointsBreakdown.nextExpiringAt,
                 pointsBreakdown,
-                nextReward: getNextReward(currentConsecutiveDays)
+                nextReward: getNextCheckInReward(currentConsecutiveDays)
             }
         }
 
@@ -109,38 +110,3 @@ export default defineEventHandler(async (event) => {
         })
     }
 })
-
-// 获取下一个奖励信息
-function getNextReward(consecutiveDays: number) {
-    if (consecutiveDays < 3) {
-        return {
-            days: 3,
-            points: 5,
-            description: '连续签到3天可获得额外5积分'
-        }
-    } else if (consecutiveDays < 7) {
-        return {
-            days: 7,
-            points: 15,
-            description: '连续签到7天可获得额外15积分'
-        }
-    } else if (consecutiveDays < 15) {
-        return {
-            days: 15,
-            points: 30,
-            description: '连续签到15天可获得额外30积分'
-        }
-    } else if (consecutiveDays < 30) {
-        return {
-            days: 30,
-            points: 50,
-            description: '连续签到30天可获得额外50积分'
-        }
-    } else {
-        return {
-            days: 30,
-            points: 50,
-            description: '继续保持签到，每30天可获得额外50积分'
-        }
-    }
-}

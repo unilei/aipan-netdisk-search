@@ -12,7 +12,7 @@
             每日签到
           </h3>
           <p class="m-0 mt-1 max-w-[360px] text-sm leading-6 text-gray-500 dark:text-gray-400">
-            每天领取永久积分，连续签到会获得额外奖励。
+            每天领取永久积分，连续签到里程碑会获得额外奖励。
           </p>
         </div>
       </div>
@@ -46,7 +46,7 @@
     <div class="mt-auto flex flex-col gap-4 pt-5 sm:flex-row sm:items-end sm:justify-between">
       <div class="min-h-[40px] text-sm leading-6 text-gray-500 dark:text-gray-400">
         <template v-if="checkInStatus.nextReward">
-          连续签到 {{ checkInStatus.nextReward.days }} 天可额外获得 {{ checkInStatus.nextReward.points }} 积分。
+          {{ checkInStatus.nextReward.description }}
         </template>
         <template v-else>
           继续保持签到，永久积分会累计到账号余额。

@@ -1,5 +1,9 @@
 import prisma from "~/lib/prisma";
 import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
+import {
+    CHECK_IN_BASE_POINTS,
+    getCheckInBonusReward,
+} from "~/server/services/points/pointsLedger.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -52,25 +56,11 @@ export default defineEventHandler(async (event) => {
             consecutiveDays = yesterdayCheckIn.consecutiveDays + 1
         }
 
-        // 计算签到奖励积分
-        let points = 10 // 基础签到积分
-        let bonusPoints = 0
-        let bonusDescription = ''
-
-        // 连续签到奖励
-        if (consecutiveDays >= 30) {
-            bonusPoints = 50
-            bonusDescription = '连续签到30天奖励'
-        } else if (consecutiveDays >= 15) {
-            bonusPoints = 30
-            bonusDescription = '连续签到15天奖励'
-        } else if (consecutiveDays >= 7) {
-            bonusPoints = 15
-            bonusDescription = '连续签到7天奖励'
-        } else if (consecutiveDays >= 3) {
-            bonusPoints = 5
-            bonusDescription = '连续签到3天奖励'
-        }
+        // 计算签到奖励积分：基础分每天发放，连续奖励只在里程碑当天发放。
+        const points = CHECK_IN_BASE_POINTS
+        const bonusReward = getCheckInBonusReward(consecutiveDays)
+        const bonusPoints = bonusReward.points
+        const bonusDescription = bonusReward.description
 
         const totalPoints = points + bonusPoints
 

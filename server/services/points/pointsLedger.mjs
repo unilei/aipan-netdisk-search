@@ -16,6 +16,65 @@ export const DEFAULT_TRANSFER_REWARD_CONFIG = {
   transferRewardDurationMinutes: 1440,
 };
 
+export const CHECK_IN_BASE_POINTS = 10;
+
+const CHECK_IN_BONUS_MILESTONES = [
+  { days: 3, points: 5 },
+  { days: 7, points: 15 },
+  { days: 15, points: 30 },
+  { days: 30, points: 50 },
+];
+
+const normalizeConsecutiveDays = (value) => {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.max(0, Math.floor(parsed));
+};
+
+export const getCheckInBonusReward = (consecutiveDays) => {
+  const days = normalizeConsecutiveDays(consecutiveDays);
+  const milestone =
+    CHECK_IN_BONUS_MILESTONES.find((item) => item.days === days) ||
+    (days > 30 && days % 30 === 0
+      ? CHECK_IN_BONUS_MILESTONES[CHECK_IN_BONUS_MILESTONES.length - 1]
+      : null);
+
+  if (!milestone) {
+    return {
+      points: 0,
+      description: "",
+    };
+  }
+
+  return {
+    points: milestone.points,
+    description: `连续签到${days}天奖励`,
+  };
+};
+
+export const getNextCheckInReward = (consecutiveDays) => {
+  const days = normalizeConsecutiveDays(consecutiveDays);
+  const nextMilestone = CHECK_IN_BONUS_MILESTONES.find(
+    (item) => item.days > days,
+  );
+
+  if (nextMilestone) {
+    return {
+      days: nextMilestone.days,
+      points: nextMilestone.points,
+      description: `连续签到${nextMilestone.days}天可获得额外${nextMilestone.points}积分`,
+    };
+  }
+
+  const nextThirtyDayMilestone = Math.ceil((days + 1) / 30) * 30;
+
+  return {
+    days: nextThirtyDayMilestone,
+    points: 50,
+    description: `连续签到${nextThirtyDayMilestone}天可获得额外50积分`,
+  };
+};
+
 const toDateOrNull = (value) => {
   if (!value) return null;
   const date = value instanceof Date ? value : new Date(value);
