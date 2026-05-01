@@ -41,6 +41,16 @@ const channelCategoryData = [
   { id: 1, name: "直播频道" },
   { id: 3, name: "Alist" },
 ];
+const { accessStatus, ensureAccess } = useFeatureAccess("tvLive");
+const shouldShowAccessNotice = computed(() => {
+  return accessStatus.value.loading ||
+    (accessStatus.value.checked && !accessStatus.value.allowed);
+});
+
+const getAuthHeaders = () => {
+  const token = useCookie("token").value;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 const isM3u8 = (url) => /\.m3u8(\?.*)?$/.test(url);
 
@@ -56,9 +66,16 @@ const currentChannelName = computed(() => {
   return ch?.name ?? "自定义源";
 });
 
-const getTvSources = async () => {
+const getTvSources = async (skipAccessCheck = false) => {
   try {
-    const res = await $fetch("/api/tv/sources");
+    if (!skipAccessCheck) {
+      const access = await ensureAccess();
+      if (!access.allowed) return;
+    }
+
+    const res = await $fetch("/api/tv/sources", {
+      headers: getAuthHeaders(),
+    });
     if (videoSrc.value === "") videoSrc.value = res[0]?.url ?? "";
     tvSources.value = res;
   } catch (e) {
@@ -219,8 +236,11 @@ const handleHomeAlist = () => {
   getFsList({ page: 1, password: "", path: "/", per_page: 0, refresh: false });
 };
 
-onMounted(() => {
-  getTvSources(); getAlists();
+onMounted(async () => {
+  const access = await ensureAccess();
+  if (!access.allowed) return;
+
+  getTvSources(true); getAlists();
   if (tvStore.tvCategory) channelCategory.value = tvStore.tvCategory;
   if (tvStore.alistUrl) alistUrl.value = tvStore.alistUrl;
   if (tvStore.alistSettingShow) alistSettingShow.value = tvStore.alistSettingShow;
@@ -237,7 +257,6 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!-- Page Root -->
   <div class="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/40 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900 transition-colors duration-300">
     <Header />
 
@@ -246,7 +265,13 @@ onBeforeUnmount(() => {
     <div class="fixed bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-gradient-to-tl from-indigo-200/20 to-pink-200/15 blur-3xl pointer-events-none translate-x-1/3 translate-y-1/3 dark:from-indigo-900/10 dark:to-purple-900/10" aria-hidden="true"></div>
 
     <main class="relative z-10 flex-1 pt-20 pb-10 px-4 md:px-6 max-w-screen-xl mx-auto w-full">
-      <div class="flex gap-5 transition-all duration-300" :class="sidebarOpen ? 'flex-row' : 'flex-col'">
+      <FeatureAccessNotice
+        v-if="shouldShowAccessNotice"
+        :status="accessStatus"
+        feature-name="TV 直播"
+      />
+
+      <div v-else class="flex gap-5 transition-all duration-300" :class="sidebarOpen ? 'flex-row' : 'flex-col'">
         
         <!-- ═══ LEFT: Player Column ═══ -->
         <div class="flex flex-col gap-4 min-w-0" :class="sidebarOpen ? 'flex-1' : 'w-full'">

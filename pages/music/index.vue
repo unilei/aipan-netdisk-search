@@ -1,7 +1,7 @@
 <script setup>
 definePageMeta({
   layout: "custom",
-  middleware: ["music-auth"]
+  middleware: ["music-auth"],
 });
 
 useSeoMeta({
@@ -15,10 +15,12 @@ const kwData = ref([]);
 const totalResults = ref(0);
 const searchLoading = ref(false);
 const hasSearched = ref(false);
+const { accessStatus, ensureAccess } = useFeatureAccess("music");
 
 // Player state
 const currentPlayingSong = ref(null);
 const audioUrl = ref('');
+const audioObjectUrl = ref('');
 const isPlaying = ref(false);
 const audioElement = ref(null);
 const showPlayer = ref(false);
@@ -34,12 +36,20 @@ const isMuted = ref(false);
 const chartData = ref([]);
 const chartLoading = ref(false);
 
+const authHeaders = () => {
+  const token = useCookie("token").value;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const loadChart = async () => {
+  if (!accessStatus.value.allowed) return;
+
   chartLoading.value = true;
   try {
     const res = await $fetch("/api/music/deezer-chart", {
       method: "GET",
       query: { limit: 50 },
+      headers: authHeaders(),
     });
     chartData.value = res.data || [];
   } catch (e) {
@@ -53,11 +63,15 @@ const loadChart = async () => {
 // flacdownloader ignores limit/index, always returns ~25 results per query.
 // No pagination needed — show all results at once.
 const kwSearch = async () => {
+  const status = await ensureAccess();
+  if (!status.allowed) return;
+
   searchLoading.value = true;
   try {
     const res = await $fetch("/api/music/flac-search", {
       method: "GET",
       query: { q: keyword.value },
+      headers: authHeaders(),
     });
     kwData.value = res.data || [];
     totalResults.value = res.total || 0;
@@ -72,20 +86,47 @@ const kwSearch = async () => {
 };
 
 const handleSearch = () => {
-  if (!keyword.value.trim()) return;
+  if (!accessStatus.value.allowed || !keyword.value.trim()) return;
   kwData.value = [];
   totalResults.value = 0;
   kwSearch();
 };
 
-// Get proxy URL for audio preview
-const getProxyUrl = (previewUrl) => {
-  if (!previewUrl) return '';
-  return `/api/music/proxy-stream?url=${encodeURIComponent(previewUrl)}`;
+const revokeAudioObjectUrl = () => {
+  if (audioObjectUrl.value) {
+    URL.revokeObjectURL(audioObjectUrl.value);
+    audioObjectUrl.value = "";
+  }
+};
+
+// Fetch preview through the protected proxy so the API can enforce access.
+const getProtectedAudioUrl = async (previewUrl) => {
+  if (!previewUrl) return "";
+
+  revokeAudioObjectUrl();
+
+  const response = await fetch(
+    `/api/music/proxy-stream?url=${encodeURIComponent(previewUrl)}`,
+    {
+      headers: authHeaders(),
+    },
+  );
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.msg || "Preview failed");
+  }
+
+  const blob = await response.blob();
+  audioObjectUrl.value = URL.createObjectURL(blob);
+  return audioObjectUrl.value;
 };
 
 // ---- 播放功能 ----
 const handlePlay = async (song) => {
+  const status = await ensureAccess();
+  if (!status.allowed) return;
+
   if (currentPlayingSong.value && currentPlayingSong.value.id === song.id) {
     togglePlay();
     return;
@@ -99,9 +140,16 @@ const handlePlay = async (song) => {
     playlist.value.push(song);
   }
 
-  const url = getProxyUrl(song.preview);
-  if (!url) return;
-  audioUrl.value = url;
+  try {
+    const url = await getProtectedAudioUrl(song.preview);
+    if (!url) return;
+    audioUrl.value = url;
+  } catch (error) {
+    console.error('播放失败:', error);
+    tips.value = "播放失败";
+    setTimeout(() => { copyTipsMsg("reset"); }, 3000);
+    return;
+  }
 
   nextTick(() => {
     if (audioElement.value) {
@@ -143,6 +191,8 @@ const closePlayer = () => {
   isPlaying.value = false;
   showPlayer.value = false;
   currentPlayingSong.value = null;
+  audioUrl.value = "";
+  revokeAudioObjectUrl();
 };
 
 const togglePlaylist = () => { showPlaylist.value = !showPlaylist.value; };
@@ -247,6 +297,9 @@ const downloadFormat = ref('FLAC');
 
 const handleFlacDownload = async (song, format = 'FLAC') => {
   try {
+    const status = await ensureAccess();
+    if (!status.allowed) return;
+
     if (isDownloading.value) return;
     isDownloading.value = true;
     downloadProgress.value = 0;
@@ -256,7 +309,9 @@ const handleFlacDownload = async (song, format = 'FLAC') => {
     const fileName = `${song.name} - ${song.artist}.${ext}`;
     const downloadUrl = `/api/music/flac-download?t=${song.id}&f=${format}`;
 
-    const response = await fetch(downloadUrl);
+    const response = await fetch(downloadUrl, {
+      headers: authHeaders(),
+    });
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
       throw new Error(err.msg || 'Download failed');
@@ -298,8 +353,12 @@ const handleFlacDownload = async (song, format = 'FLAC') => {
   }
 };
 
-onMounted(() => {
-  loadChart();
+onMounted(async () => {
+  const status = await ensureAccess();
+  if (status.allowed) {
+    loadChart();
+  }
+
   if (audioElement.value) {
     audioElement.value.addEventListener('ended', () => {
       isPlaying.value = false;
@@ -318,6 +377,7 @@ onBeforeUnmount(() => {
     audioElement.value.removeEventListener('timeupdate', updateProgress);
     audioElement.value.removeEventListener('loadedmetadata', () => { });
   }
+  revokeAudioObjectUrl();
 });
 </script>
 <template>
@@ -339,8 +399,15 @@ onBeforeUnmount(() => {
         </p>
       </div>
 
+      <FeatureAccessNotice
+        v-if="!accessStatus.allowed"
+        :status="accessStatus"
+        feature-name="音乐"
+        class="mb-8"
+      />
+
       <!-- Search Bar -->
-      <div class="flex flex-row items-center gap-3 mb-8">
+      <div v-if="accessStatus.allowed" class="flex flex-row items-center gap-3 mb-8">
         <div class="relative flex-1">
           <div class="flex items-center w-full">
             <div class="relative flex-1">
@@ -354,11 +421,11 @@ onBeforeUnmount(() => {
               <input
                 class="w-full border border-gray-300 px-4 py-3 pl-12 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all duration-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:focus:ring-indigo-400"
                 :class="searchLoading ? 'opacity-50' : ''" type="text" v-model="keyword" placeholder="搜索你喜欢的音乐..."
-                @keydown.enter="handleSearch()" :disabled="searchLoading" />
+                @keydown.enter="handleSearch()" :disabled="searchLoading || !accessStatus.allowed" />
             </div>
             <button
               class="bg-indigo-600 text-white px-6 py-3 rounded-r-lg hover:bg-indigo-700 transition-all duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed dark:bg-indigo-700 dark:hover:bg-indigo-600"
-              @click="handleSearch()" :disabled="searchLoading || !keyword.trim()">
+              @click="handleSearch()" :disabled="searchLoading || !keyword.trim() || !accessStatus.allowed">
               <span v-if="!searchLoading">搜索</span>
               <span v-else class="flex items-center">
                 <svg class="animate-spin h-4 w-4 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -376,7 +443,7 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- Hot Chart / 热门推荐 -->
-      <div v-if="kwData.length === 0 && !searchLoading" class="space-y-4 mb-8">
+      <div v-if="accessStatus.allowed && kwData.length === 0 && !searchLoading" class="space-y-4 mb-8">
         <div class="flex items-center gap-2 p-2 border-b border-gray-200 dark:border-gray-700">
           <h2 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -452,7 +519,7 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- Results Section -->
-      <div class="space-y-4" v-if="kwData && kwData.length > 0">
+      <div class="space-y-4" v-if="accessStatus.allowed && kwData && kwData.length > 0">
         <div class="flex flex-row gap-2 items-center justify-between p-2 border-b border-gray-200 dark:border-gray-700">
           <h2 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24"
@@ -549,7 +616,7 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- Empty state -->
-      <div v-if="hasSearched && kwData.length === 0 && !searchLoading"
+      <div v-if="accessStatus.allowed && hasSearched && kwData.length === 0 && !searchLoading"
         class="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4 opacity-50" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
@@ -560,12 +627,12 @@ onBeforeUnmount(() => {
         <p class="text-sm mt-2">试试其他关键词</p>
       </div>
 
-      <p class="my-8 text-xs text-red-500 dark:text-red-400 text-center">
+      <p v-if="accessStatus.allowed" class="my-8 text-xs text-red-500 dark:text-red-400 text-center">
         仅供个人学习使用，禁止商业用途，否则后果自负。
       </p>
 
       <!-- Queue button (floating) -->
-      <div v-if="playlist.length > 0 && !showPlayer" class="fixed bottom-4 right-4 z-30">
+      <div v-if="accessStatus.allowed && playlist.length > 0 && !showPlayer" class="fixed bottom-4 right-4 z-30">
         <button @click="togglePlaylist"
           class="bg-indigo-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center hover:bg-indigo-700 transition-all duration-200 dark:bg-indigo-700 dark:hover:bg-indigo-600">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -580,7 +647,7 @@ onBeforeUnmount(() => {
 
       <!-- Player Bar -->
       <Transition name="slide-up">
-        <div v-if="showPlayer && currentPlayingSong"
+        <div v-if="accessStatus.allowed && showPlayer && currentPlayingSong"
           class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg z-40">
           <div class="max-w-3xl mx-auto">
             <!-- Progress bar -->
@@ -697,7 +764,7 @@ onBeforeUnmount(() => {
 
       <!-- Notification Toast -->
       <Transition name="fade">
-        <div v-if="tips"
+        <div v-if="accessStatus.allowed && tips"
           class="fixed top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg text-white z-50"
           :class="tips.includes('成功') || tips.includes('已添加') ? 'bg-green-500' : tips.includes('失败') ? 'bg-red-500' : 'bg-indigo-500'">
           {{ tips }}
@@ -706,7 +773,7 @@ onBeforeUnmount(() => {
 
       <!-- Queue Modal -->
       <Transition name="modal">
-        <div v-if="showPlaylist && playlist.length > 0"
+        <div v-if="accessStatus.allowed && showPlaylist && playlist.length > 0"
           class="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           @click="showPlaylist = false">
           <div
@@ -780,7 +847,7 @@ onBeforeUnmount(() => {
 
       <!-- Download Modal -->
       <Transition name="modal">
-        <div v-if="downloadVisible"
+        <div v-if="accessStatus.allowed && downloadVisible"
           class="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
           @click="downloadVisible = false">
           <div

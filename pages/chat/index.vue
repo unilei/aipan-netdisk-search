@@ -229,9 +229,9 @@ definePageMeta({
 
 // SEO配置
 useHead({
-  title: '在线聊天 - 爱盼迷',
+  title: '在线聊天 - 爱盼',
   meta: [
-    { name: 'description', content: '爱盼迷在线聊天室，支持创建群聊和私聊，与社区用户实时交流。' },
+    { name: 'description', content: '爱盼在线聊天室，支持创建群聊和私聊，与社区用户实时交流。' },
   ]
 })
 // 获取用户信息

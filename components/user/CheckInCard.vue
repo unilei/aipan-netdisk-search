@@ -2,16 +2,15 @@
   <div
     class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
     <!-- 卡片头部 -->
-    <div
-      class="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
       <div class="flex justify-between items-center">
         <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 m-0">
           <i class="fa-solid fa-calendar-days text-blue-600 dark:text-blue-400"></i>
           每日签到
         </h3>
         <div class="flex items-center gap-1">
-          <span class="text-sm text-gray-500 dark:text-gray-400">当前积分：</span>
-          <span class="text-lg font-bold text-orange-500 dark:text-orange-400">{{ userStore.user?.points || 0 }}</span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">有效积分：</span>
+          <span class="text-lg font-bold text-gray-900 dark:text-white">{{ displayCurrentPoints }}</span>
         </div>
       </div>
     </div>
@@ -26,7 +25,7 @@
         </div>
         <div v-else class="py-8">
           <el-button type="primary" size="large" :loading="isCheckingIn" @click="handleCheckIn"
-            class="mb-3 px-8 py-3 text-lg font-medium bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border-0 shadow-lg hover:shadow-xl transition-all duration-200">
+            class="mb-3 px-8 py-3 text-lg font-medium border-0 shadow-sm transition-all duration-200">
             <i class="fa-solid fa-star mr-2"></i>
             立即签到
           </el-button>
@@ -86,7 +85,7 @@
         </p>
         <div v-if="lastCheckInResult?.bonusPoints > 0"
           class="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg">
-          <p class="text-blue-600 dark:text-blue-400 font-semibold m-0 mb-2">🎉 {{ lastCheckInResult?.bonusDescription
+          <p class="text-blue-600 dark:text-blue-400 font-semibold m-0 mb-2">{{ lastCheckInResult?.bonusDescription
           }}</p>
           <p class="text-gray-600 dark:text-gray-400 m-0">
             额外奖励：<span class="text-orange-500 dark:text-orange-400 font-bold">+{{ lastCheckInResult?.bonusPoints
@@ -102,12 +101,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 
 import { useUserStore } from '~/stores/user'
 
 const userStore = useUserStore()
+const { refreshAccessControlConfig } = useAccessControlConfig()
+const emit = defineEmits(['checked-in'])
 
 // 响应式数据
 const checkInStatus = ref({
@@ -123,6 +124,18 @@ const checkInStatus = ref({
 const isCheckingIn = ref(false)
 const showSuccessDialog = ref(false)
 const lastCheckInResult = ref(null)
+const hasMounted = ref(false)
+const hasLoadedStatus = ref(false)
+
+const displayCurrentPoints = computed(() => {
+  if (hasLoadedStatus.value) {
+    return Number(checkInStatus.value.currentPoints || 0)
+  }
+  if (hasMounted.value && userStore.user?.points !== undefined) {
+    return Number(userStore.user.points || 0)
+  }
+  return '—'
+})
 
 // 获取签到状态
 const fetchCheckInStatus = async () => {
@@ -135,6 +148,7 @@ const fetchCheckInStatus = async () => {
 
     if (response.code === 200) {
       checkInStatus.value = response.data
+      hasLoadedStatus.value = true
     }
   } catch (error) {
     console.error('获取签到状态失败:', error)
@@ -162,10 +176,19 @@ const handleCheckIn = async () => {
       // 更新用户积分
       if (userStore.user) {
         userStore.user.points = response.data.totalPoints
+        userStore.user.permanentPoints = response.data.permanentPoints
+        userStore.user.temporaryPoints = response.data.temporaryPoints
+        userStore.user.effectivePoints = response.data.effectivePoints
+        userStore.user.nextExpiringAt = response.data.nextExpiringAt
+        userStore.user.pointsBreakdown = response.data.pointsBreakdown
       }
+      refreshAccessControlConfig().catch(error => {
+        console.warn('Failed to refresh access control config after points change:', error)
+      })
 
       // 刷新签到状态
       await fetchCheckInStatus()
+      emit('checked-in', response.data)
 
       ElMessage.success('签到成功！')
     } else {
@@ -181,6 +204,7 @@ const handleCheckIn = async () => {
 
 // 组件挂载时获取签到状态
 onMounted(() => {
+  hasMounted.value = true
   fetchCheckInStatus()
 })
 </script>

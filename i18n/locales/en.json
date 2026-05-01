@@ -1,14 +1,14 @@
 {
-  "welcome": "Welcome to AIPAN.MI",
+  "welcome": "Welcome to AIPAN.ME",
   "search": "Search",
-  "app_title": "AIPAN.MI - All-in-One Resource Aggregation Platform",
-  "subtitle": "Cloud Drive Search, Music, Movies, Games & Live TV",
+  "app_title": "AIPAN.ME - All-in-One Resource Aggregation Platform",
+  "subtitle": "Cloud Drive Search, Music, Daily Picks, Games & Live TV",
   "search_placeholder": "Enter keywords to search",
   "sensitive_word_alert": "Please do not enter sensitive words",
   "meta": {
-    "title": "AIPAN.MI - All-in-One Resource Aggregation Platform | Cloud Drive Search·Music·Movies·Games·Live TV",
-    "description": "AIPAN.MI is an all-in-one resource aggregation platform! Integrating cloud drive search, online music, movies & TV, casual games, and live streaming. Support Baidu Netdisk, Aliyun Drive, Quark Drive multi-source search. One platform for all your digital entertainment needs!",
-    "keywords": "AIPAN.MI,cloud drive search,resource aggregation,online music,movie streaming,live TV,FM radio,blog platform,forum community,casual games,entertainment platform,music player,TVBox,baidu netdisk,aliyun drive,quark drive,all-in-one"
+    "title": "AIPAN.ME - All-in-One Resource Aggregation Platform | Cloud Drive Search·Music·Daily Picks·Games·Live TV",
+    "description": "AIPAN.ME is an all-in-one resource aggregation platform for cloud drive search, online music, daily movie picks, live TV, TVBox, casual games, and FM radio.",
+    "keywords": "AIPAN.ME,cloud drive search,resource aggregation,online music,daily movie picks,live TV,FM radio,blog platform,forum community,casual games,entertainment platform,music player,TVBox,baidu netdisk,aliyun drive,quark drive,all-in-one"
   },
   "broadcast": {
     "message": "Bookmark our site: https://link0.me/aipan"
@@ -45,7 +45,7 @@
     }
   },
   "footer": {
-    "copyright": "© 2026 AIPAN.MI - All-in-One Resource Aggregation Platform",
+    "copyright": "© 2026 AIPAN.ME - All-in-One Resource Aggregation Platform",
     "links": {
       "about": "About Us",
       "userAgreement": "User Agreement",

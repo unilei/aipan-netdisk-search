@@ -29,9 +29,9 @@
 </template>
 <script setup>
 useHead({
-  title: '责任声明 - 爱盼迷',
+  title: '责任声明 - 爱盼',
   meta: [
-    { name: 'description', content: '爱盼迷责任声明，本站仅供个人学习和技术研究使用，严禁用于任何商业用途。' },
+    { name: 'description', content: '爱盼责任声明，本站仅供个人学习和技术研究使用，严禁用于任何商业用途。' },
   ]
 })
 </script>

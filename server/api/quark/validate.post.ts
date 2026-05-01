@@ -1,6 +1,15 @@
 import { ofetch } from 'ofetch';
-import { setResponseStatus } from 'h3';
+import { getHeader, setResponseStatus } from 'h3';
 import prisma from "~/lib/prisma";
+import { verifyToken } from "~/server/model/user";
+import { buildTransferFingerprintFromShareDetail } from "~/server/services/points/pointsLedger.mjs";
+import { grantTransferPointsForShare } from "~/server/services/points/userPoints";
+import {
+    QUARK_VERIFICATION_PURPOSES,
+    normalizeQuarkConfig,
+    normalizeQuarkVerificationPurpose,
+    resolveQuarkVerificationTarget
+} from "~/server/services/quark/quarkConfig.mjs";
 
 const SHARE_TOKEN_URL = 'https://drive-h.quark.cn/1/clouddrive/share/sharepage/token';
 const SHARE_DETAIL_URL = 'https://drive-h.quark.cn/1/clouddrive/share/sharepage/detail';
@@ -23,6 +32,26 @@ const extractShareId = (shareLink: string): string | null => {
 };
 
 type ShareDetail = Record<string, any> | null;
+
+const getOptionalUserId = (event: any): number | null => {
+    const authHeader = getHeader(event, 'authorization');
+    if (!authHeader) {
+        return null;
+    }
+
+    const [scheme, token] = authHeader.split(' ');
+    if (scheme?.toLowerCase() !== 'bearer' || !token) {
+        return null;
+    }
+
+    try {
+        const decoded = verifyToken(token);
+        return decoded?.userId ? Number(decoded.userId) : null;
+    } catch (error) {
+        console.warn('夸克转存验证携带了无效登录态，按游客验证处理');
+        return null;
+    }
+};
 
 const getShareToken = async (shareId: string): Promise<string> => {
     const query = createCommonParams();
@@ -133,9 +162,11 @@ export default defineEventHandler(async (event) => {
     try {
         const body = await readBody<{
             shareLink?: string;
+            purpose?: string;
         }>(event);
 
         const submittedLink = body?.shareLink?.trim();
+        const purpose = normalizeQuarkVerificationPurpose(body?.purpose);
 
         if (!submittedLink) {
             return {
@@ -157,17 +188,26 @@ export default defineEventHandler(async (event) => {
             };
         }
 
-        const config = JSON.parse(settings.value || '{}');
+        const config = normalizeQuarkConfig(JSON.parse(settings.value || '{}'));
+        const target = resolveQuarkVerificationTarget(config, purpose);
 
-        if (!config.verificationEnabled || !config.shareLink) {
+        if (!target.enabled || !target.shareLink) {
             return {
                 code: 400,
-                msg: '访问验证尚未启用'
+                msg: target.missingReason || '转存验证尚未启用'
+            };
+        }
+
+        const userId = getOptionalUserId(event);
+        if (purpose === QUARK_VERIFICATION_PURPOSES.points && !userId) {
+            return {
+                code: 401,
+                msg: '请先登录后领取积分'
             };
         }
 
         // 1. 检查用户输入的链接不能和配置的链接一样
-        if (submittedLink === config.shareLink) {
+        if (submittedLink === target.shareLink) {
             return {
                 code: 400,
                 msg: '不能使用原始分享链接进行验证，请使用您转存后的分享链接'
@@ -175,10 +215,10 @@ export default defineEventHandler(async (event) => {
         }
 
         // 提取分享ID进行比较，防止URL格式不同但实际是同一个分享
-        const configShareId = extractShareId(config.shareLink);
+        const configShareId = extractShareId(target.shareLink);
         const userShareId = extractShareId(submittedLink);
         
-        if (configShareId === userShareId) {
+        if (configShareId && userShareId && configShareId === userShareId) {
             return {
                 code: 400,
                 msg: '不能使用原始分享链接进行验证，请使用您转存后的分享链接'
@@ -186,7 +226,7 @@ export default defineEventHandler(async (event) => {
         }
 
         const [configuredDetail, userDetail] = await Promise.all([
-            fetchShareDetail(config.shareLink),
+            fetchShareDetail(target.shareLink),
             fetchShareDetail(submittedLink)
         ]);
 
@@ -209,9 +249,35 @@ export default defineEventHandler(async (event) => {
             };
         }
 
+        const transferFingerprint = purpose === QUARK_VERIFICATION_PURPOSES.points
+            ? buildTransferFingerprintFromShareDetail(userDetail)
+            : null;
+
+        if (purpose === QUARK_VERIFICATION_PURPOSES.points && !transferFingerprint) {
+            return {
+                code: 400,
+                msg: '无法识别转存内容，请确认分享链接内包含已转存的文件'
+            };
+        }
+
+        const reward = purpose === QUARK_VERIFICATION_PURPOSES.points && userId && userShareId
+            ? await grantTransferPointsForShare({
+                userId,
+                shareId: userShareId,
+                transferFingerprint,
+                config
+            })
+            : null;
+
         return {
             code: 200,
-            msg: '验证成功'
+            msg: '验证成功',
+            data: {
+                purpose,
+                reward
+            },
+            purpose,
+            reward
         };
     } catch (error: any) {
         if (error?.message === 'INVALID_SHARE_LINK') {

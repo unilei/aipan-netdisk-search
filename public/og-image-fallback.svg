@@ -18,7 +18,7 @@
   <text x="600" y="380" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">网盘搜索 · AI助手 · 音乐播放 · 游戏娱乐</text>
   
   <!-- Features line 2 -->
-  <text x="600" y="410" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">博客论坛 · 聊天社区 · 影视直播</text>
+  <text x="600" y="410" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">博客论坛 · 聊天社区 · TV直播</text>
   
   <!-- Decorative line -->
   <line x1="450" y1="430" x2="750" y2="430" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>

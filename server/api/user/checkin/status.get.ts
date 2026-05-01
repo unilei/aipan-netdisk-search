@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma";
+import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -77,6 +78,9 @@ export default defineEventHandler(async (event) => {
             where: { id: userId },
             select: { points: true }
         })
+        const pointsBreakdown = await getUserPointsBreakdown(userId, {
+            permanentPoints: user?.points || 0
+        })
 
         return {
             code: 200,
@@ -87,7 +91,12 @@ export default defineEventHandler(async (event) => {
                 currentConsecutiveDays: currentConsecutiveDays,
                 monthlyCheckInCount: monthlyCheckInCount,
                 totalCheckInCount: totalCheckInCount,
-                currentPoints: user?.points || 0,
+                currentPoints: pointsBreakdown.effectivePoints,
+                permanentPoints: pointsBreakdown.permanentPoints,
+                temporaryPoints: pointsBreakdown.temporaryPoints,
+                effectivePoints: pointsBreakdown.effectivePoints,
+                nextExpiringAt: pointsBreakdown.nextExpiringAt,
+                pointsBreakdown,
                 nextReward: getNextReward(currentConsecutiveDays)
             }
         }

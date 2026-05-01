@@ -130,11 +130,17 @@
 
             <!-- 聊天历史区域 -->
             <div class="flex-1 overflow-y-auto px-3 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6" id="chat-container">
+              <FeatureAccessNotice
+                v-if="shouldShowAccessNotice"
+                :status="accessStatus"
+                feature-name="AI 网盘搜索"
+              />
+
               <!-- 群二维码显示（在第一条AI消息前） -->
-              <GroupQrCode v-if="shouldShowInSearchResults && messages.length > 1" 
+              <GroupQrCode v-if="!shouldShowAccessNotice && shouldShowInSearchResults && messages.length > 1"
                            variant="search-result" />
               
-              <template v-for="(msg, index) in messages" :key="index">
+              <template v-if="!shouldShowAccessNotice" v-for="(msg, index) in messages" :key="index">
                 <!-- AI 消息 -->
                 <div v-if="msg.type === 'ai'" class="flex items-start space-x-2 md:space-x-4 w-full md:max-w-4xl">
                   <div
@@ -186,10 +192,10 @@
               <div class="max-w-5xl mx-auto">
                 <div class="relative">
                   <el-input v-model="message" type="textarea" :rows="2" placeholder="输入你的问题..." resize="none"
-                    class="chat-input" @keydown.enter.prevent="handleSend" />
+                    class="chat-input" :disabled="shouldShowAccessNotice" @keydown.enter.prevent="handleSend" />
                   <div class="absolute bottom-2 md:bottom-3 right-2 md:right-3 flex items-center space-x-2">
                     <el-button type="primary" :icon="Search" @click="handleSend" class="search-btn"
-                      :disabled="!message.trim()">
+                      :disabled="!message.trim() || shouldShowAccessNotice">
                       发送
                     </el-button>
                   </div>
@@ -229,14 +235,19 @@ import { useGroupQrConfig } from "~/composables/useGroupQrConfig";
 
 // SEO配置
 useHead({
-  title: 'AI 搜索 - 爱盼迷',
+  title: 'AI 搜索 - 爱盼',
   meta: [
-    { name: 'description', content: '爱盼迷 AI 智能搜索助手，通过 AI 对话式搜索网盘资源，智能理解你的需求并返回精准结果。' },
+    { name: 'description', content: '爱盼 AI 智能搜索助手，通过 AI 对话式搜索网盘资源，智能理解你的需求并返回精准结果。' },
   ]
 })
 
 const colorMode = useColorMode()
 const { shouldShowInHeader, shouldShowInSearchResults, getConfig } = useGroupQrConfig()
+const { accessStatus, ensureAccess } = useFeatureAccess("aiSearch")
+const shouldShowAccessNotice = computed(() => {
+  return accessStatus.value.loading ||
+    (accessStatus.value.checked && !accessStatus.value.allowed)
+})
 
 const message = ref("");
 const messages = ref([
@@ -319,10 +330,11 @@ const loadChatsFromStorage = () => {
 };
 
 // 在组件挂载时加载聊天记录
-onMounted(() => {
+onMounted(async () => {
   loadChatsFromStorage();
   // 初始化群二维码配置
   getConfig();
+  await ensureAccess();
 });
 
 // 搜索相关状态
@@ -337,8 +349,10 @@ const loadingProgress = ref({
 // 处理单个API的搜索
 const handleSingleSearch = async (item, messageValue) => {
   try {
+    const token = useCookie("token").value;
     const res = await $fetch(item.api, {
       method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: {
         name: messageValue,
       },
@@ -382,6 +396,11 @@ const handleSingleSearch = async (item, messageValue) => {
 
 // 处理搜索
 const handleSearch = async () => {
+  const access = await ensureAccess();
+  if (!access.allowed) {
+    return;
+  }
+
   if (badWords.includes(message.value.trim())) {
     ElMessage.error("请勿输入敏感词");
     return;

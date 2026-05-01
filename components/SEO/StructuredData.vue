@@ -63,10 +63,10 @@ const structuredData = computed(() => {
     return {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      "name": "爱盼迷",
-      "alternateName": "爱盼迷 - 一站式资源聚合平台",
+      "name": "爱盼",
+      "alternateName": "爱盼 - 一站式资源聚合平台",
       "url": "https://www.aipan.me",
-      "description": "爱盼迷是一站式资源聚合平台，集网盘搜索、在线音乐、电影电视、休闲游戏、直播电台于一体。",
+      "description": "爱盼是一站式资源聚合平台，集网盘搜索、在线音乐、每日电影推荐、TV直播、TVBox、休闲游戏和直播电台于一体。",
       "image": "https://www.aipan.me/default-og-image.png",
       "potentialAction": [
         {
@@ -80,7 +80,7 @@ const structuredData = computed(() => {
       ],
       "publisher": {
         "@type": "Organization",
-        "name": "爱盼迷",
+        "name": "爱盼",
         "url": "https://www.aipan.me",
         "logo": "https://www.aipan.me/favicon.ico"
       },
@@ -98,11 +98,11 @@ const structuredData = computed(() => {
       "image": props.image,
       "author": {
         "@type": "Person",
-        "name": props.author || "爱盼迷"
+        "name": props.author || "爱盼"
       },
       "publisher": {
         "@type": "Organization",
-        "name": "爱盼迷",
+        "name": "爱盼",
         "url": "https://www.aipan.me",
         "logo": {
           "@type": "ImageObject",

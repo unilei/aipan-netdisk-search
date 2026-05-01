@@ -50,48 +50,6 @@
         ]
       },
       {
-        "id": "movie",
-        "name": "影视",
-        "items": [
-          {
-            "title": "每日电影推荐",
-            "description": "发现精彩好片",
-            "icon": "fa-film",
-            "path": "/movie/daily"
-          },
-          {
-            "title": "爱奇艺",
-            "description": "爱奇艺视频平台",
-            "icon": "fa-play",
-            "path": "https://www.iqiyi.com"
-          },
-          {
-            "title": "腾讯视频",
-            "description": "腾讯视频平台",
-            "icon": "fa-tv",
-            "path": "https://v.qq.com"
-          },
-          {
-            "title": "优酷视频",
-            "description": "优酷视频平台",
-            "icon": "fa-video",
-            "path": "https://www.youku.com"
-          },
-          {
-            "title": "芒果TV",
-            "description": "芒果TV视频平台",
-            "icon": "fa-display",
-            "path": "https://www.mgtv.com"
-          },
-          {
-            "title": "哔哩哔哩",
-            "description": "B站视频平台",
-            "icon": "fa-circle-play",
-            "path": "https://www.bilibili.com"
-          }
-        ]
-      },
-      {
         "id": "music",
         "name": "音乐",
         "items": [
@@ -270,48 +228,6 @@
         ]
       },
       {
-        "id": "movie",
-        "name": "Movies & TV",
-        "items": [
-          {
-            "title": "Daily Movie Picks",
-            "description": "Discover amazing films",
-            "icon": "fa-film",
-            "path": "/movie/daily"
-          },
-          {
-            "title": "iQIYI",
-            "description": "iQIYI video platform",
-            "icon": "fa-play",
-            "path": "https://www.iqiyi.com"
-          },
-          {
-            "title": "Tencent Video",
-            "description": "Tencent video platform",
-            "icon": "fa-tv",
-            "path": "https://v.qq.com"
-          },
-          {
-            "title": "Youku",
-            "description": "Youku video platform",
-            "icon": "fa-video",
-            "path": "https://www.youku.com"
-          },
-          {
-            "title": "MangoTV",
-            "description": "MangoTV video platform",
-            "icon": "fa-display",
-            "path": "https://www.mgtv.com"
-          },
-          {
-            "title": "Bilibili",
-            "description": "Bilibili video platform",
-            "icon": "fa-circle-play",
-            "path": "https://www.bilibili.com"
-          }
-        ]
-      },
-      {
         "id": "music",
         "name": "Music",
         "items": [
@@ -433,4 +349,4 @@
       }
     ]
   }
-} 
+}

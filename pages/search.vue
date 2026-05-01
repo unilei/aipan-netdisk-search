@@ -10,14 +10,22 @@
 
     <!-- 群二维码显示在搜索结果前 -->
     <div
-      v-if="shouldShowInSearchResults && searchPerformed && !skeletonLoading"
+      v-if="shouldShowInSearchResults && searchPerformed && !skeletonLoading && !shouldShowAccessNotice"
       class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-3"
     >
       <GroupQrCode variant="search-result" />
     </div>
 
+    <div
+      v-if="shouldShowAccessNotice"
+      class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4"
+    >
+      <FeatureAccessNotice :status="accessStatus" feature-name="网盘搜索" />
+    </div>
+
     <!-- Main Content Area -->
     <SearchContent
+      v-else
       :sources="sources"
       :skeleton-loading="skeletonLoading"
       :loading-progress="loadingProgress"
@@ -52,9 +60,9 @@ const route = useRoute();
 const seoKeyword = computed(() => String(route.query.keyword || ''));
 
 useHead({
-  title: computed(() => seoKeyword.value ? `${seoKeyword.value} - 搜索结果 - 爱盼迷` : '搜索 - 爱盼迷'),
+  title: computed(() => seoKeyword.value ? `${seoKeyword.value} - 搜索结果 - 爱盼` : '搜索 - 爱盼'),
   meta: [
-    { name: 'description', content: computed(() => seoKeyword.value ? `在爱盼迷搜索“${seoKeyword.value}”的网盘资源结果，支持百度网盘、阿里云盘、夸克网盘等多源搜索。` : '爱盼迷网盘资源搜索，支持百度网盘、阿里云盘、夸克网盘等多源搜索。') }
+    { name: 'description', content: computed(() => seoKeyword.value ? `在爱盼搜索“${seoKeyword.value}”的网盘资源结果，支持百度网盘、阿里云盘、夸克网盘等多源搜索。` : '爱盼网盘资源搜索，支持百度网盘、阿里云盘、夸克网盘等多源搜索。') }
   ]
 });
 const userStore = useUserStore();
@@ -72,9 +80,14 @@ const { getQuarkConfig } = useQuarkConfig();
 const { stopQueueProcessing } = useSearchQueue();
 const { shouldShowInSearchResults, getConfig: getGroupQrConfig } =
   useGroupQrConfig();
+const { accessStatus, ensureAccess } = useFeatureAccess("netdiskSearch");
 
 // 关键词
 const keyword = ref(getLegacyDecodedQueryValue(route.query.keyword));
+const shouldShowAccessNotice = computed(() => {
+  return accessStatus.value.loading ||
+    (accessStatus.value.checked && !accessStatus.value.allowed);
+});
 
 // 根据登录状态选择搜索源
 const sourcesApiEndpoints = computed(() => {
@@ -110,10 +123,6 @@ const startSearchLoadingState = () => {
   };
 };
 
-if (keyword.value && keyword.value.trim() !== "" && !checkSensitiveWords(keyword.value)) {
-  startSearchLoadingState();
-}
-
 const search = (searchText) => {
   keyword.value = searchText;
   searchByKeyword();
@@ -137,6 +146,14 @@ const searchByKeyword = async () => {
     return;
   }
 
+  const access = await ensureAccess();
+  if (!access.allowed) {
+    sources.value = [];
+    searchPerformed.value = false;
+    resetLoadingState();
+    return;
+  }
+
   startSearchLoadingState();
 
   await handleSearch(
@@ -152,7 +169,8 @@ onMounted(async () => {
   try {
     await Promise.all([
       getQuarkConfig(),
-      getGroupQrConfig()
+      getGroupQrConfig(),
+      ensureAccess()
     ]);
 
     if (keyword.value && keyword.value.trim() !== "") {

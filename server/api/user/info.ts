@@ -1,5 +1,6 @@
 import prisma from "~/lib/prisma";
 import { verifyToken } from "~/server/model/user";
+import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -42,10 +43,22 @@ export default defineEventHandler(async (event) => {
             throw createError({ statusCode: 404, statusMessage: "User not found" });
         }
 
+        const pointsBreakdown = await getUserPointsBreakdown(decoded.userId, {
+            permanentPoints: user.points
+        });
+
         return {
             code: 200,
             msg: "success",
-            data: user
+            data: {
+                ...user,
+                points: pointsBreakdown.effectivePoints,
+                permanentPoints: pointsBreakdown.permanentPoints,
+                temporaryPoints: pointsBreakdown.temporaryPoints,
+                effectivePoints: pointsBreakdown.effectivePoints,
+                nextExpiringAt: pointsBreakdown.nextExpiringAt,
+                pointsBreakdown
+            }
         };
     } catch (error) {
         console.error(error);

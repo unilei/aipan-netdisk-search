@@ -297,11 +297,11 @@ useHead({
   meta: [
     {
       name: 'description',
-      content: 'AIPAN.ME网站导航，精选优质网站资源，包括常用工具、影视资源、音乐播放、AI工具等，一站式满足您的数字生活需求。'
+      content: 'AIPAN.ME网站导航，精选优质网站资源，包括常用工具、TV直播、音乐播放、AI工具等，一站式满足您的数字生活需求。'
     },
     {
       name: 'keywords',
-      content: '网站导航,AIPAN导航,常用工具,影视资源,音乐播放,AI工具,数字生活,一站式服务'
+      content: '网站导航,AIPAN导航,常用工具,TV直播,音乐播放,AI工具,数字生活,一站式服务'
     }
   ]
 })
@@ -339,7 +339,7 @@ const applyTheme = () => {
 const getCategoryIcon = (categoryName) => {
   const iconMap = {
     '常用': 'fas fa-star',
-    '影视': 'fas fa-film',
+    '每日电影': 'fas fa-film',
     '音乐': 'fas fa-music',
     'AI工具': 'fas fa-robot',
     '工具': 'fas fa-tools',

@@ -4,8 +4,8 @@
       <!-- Logo和标题 -->
       <div class="text-center mb-8">
         <img src="/logo.png" alt="Logo" class="w-16 h-16 mx-auto mb-4" />
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">网盘链接访问验证</h1>
-        <p class="text-gray-600 dark:text-gray-400">请完成验证以访问网盘资源</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">{{ pageTitle }}</h1>
+        <p class="text-gray-600 dark:text-gray-400">{{ pageSubtitle }}</p>
       </div>
 
       <!-- 验证卡片 -->
@@ -21,9 +21,12 @@
             <div class="text-sm text-blue-800 dark:text-blue-200">
               <p class="font-medium mb-2">验证说明</p>
               <div class="space-y-2">
-                <p>为防止资源滥用，请先转存到您的夸克网盘，再重新分享并提交您的分享链接，验证通过后即可访问站点。</p>
-                <p class="text-xs">验证后有效时间：{{ getAccessDurationText() }}。</p>
-                <p class="text-xs text-orange-600 dark:text-orange-400">注意：不同的浏览器需要分别验证。</p>
+                <p>{{ instructionText }}</p>
+                <p v-if="verificationPurpose === 'access'" class="text-xs">验证后有效时间：{{ getAccessDurationText() }}。</p>
+                <p v-if="verificationPurpose === 'points' && shareConfig.transferRewardEnabled" class="text-xs text-green-700 dark:text-green-300">
+                  验证成功可获得 {{ shareConfig.transferRewardPoints }} 限时积分，{{ getTransferRewardDurationText() }}内有效。
+                </p>
+                <p v-if="verificationPurpose === 'access'" class="text-xs text-orange-600 dark:text-orange-400">注意：不同的浏览器需要分别验证。</p>
               </div>
             </div>
           </div>
@@ -32,7 +35,7 @@
         <!-- 目标分享链接 -->
         <div class="mb-6">
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            目标分享链接
+            {{ targetLabel }}
           </label>
           <div class="relative">
             <input 
@@ -94,7 +97,7 @@
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            {{ verificationForm.loading ? '验证中...' : '验证并继续' }}
+            {{ verificationForm.loading ? '验证中...' : submitLabel }}
           </button>
         </div>
       </div>
@@ -110,6 +113,7 @@
 </template>
 
 <script setup>
+import { useUserStore } from "~/stores/user";
 import { openUrlWithNoOpener } from "~/utils/externalNavigation";
 import { getSingleQueryValue } from "~/utils/routeQuery";
 
@@ -128,6 +132,29 @@ useHead({
 
 const route = useRoute();
 const router = useRouter();
+const userStore = useUserStore();
+const { refreshAccessControlConfig } = useAccessControlConfig();
+
+const verificationPurpose = computed(() =>
+  getSingleQueryValue(route.query.purpose) === 'points' ? 'points' : 'access'
+);
+const pageTitle = computed(() =>
+  verificationPurpose.value === 'points' ? '转存获取积分' : '网盘链接访问验证'
+);
+const pageSubtitle = computed(() =>
+  verificationPurpose.value === 'points' ? '完成任务后获得限时积分' : '请完成验证以访问网盘资源'
+);
+const instructionText = computed(() =>
+  verificationPurpose.value === 'points'
+    ? '请先转存下方积分任务链接到您的夸克网盘，再重新分享并提交您的分享链接。'
+    : '为防止资源滥用，请先转存到您的夸克网盘，再重新分享并提交您的分享链接，验证通过后即可访问站点。'
+);
+const targetLabel = computed(() =>
+  verificationPurpose.value === 'points' ? '积分任务链接' : '目标分享链接'
+);
+const submitLabel = computed(() =>
+  verificationPurpose.value === 'points' ? '验证并领取积分' : '验证并继续'
+);
 
 // 解码加密的链接
 const decodeTargetLink = async () => {
@@ -172,7 +199,12 @@ const verificationForm = reactive({
 const shareConfig = ref({
   verificationEnabled: false,
   shareLink: '',
-  accessDurationMinutes: 1440 // 默认24小时
+  accessVerificationShareLink: '',
+  accessDurationMinutes: 1440, // 默认24小时
+  transferRewardEnabled: true,
+  transferRewardShareLink: '',
+  transferRewardPoints: 1000,
+  transferRewardDurationMinutes: 1440
 });
 
 const setAccessState = (value) => {
@@ -204,15 +236,44 @@ const loadShareConfig = async () => {
   try {
     const res = await $fetch('/api/quark/setting');
     if ((res.success || res.code === 200) && res.data) {
+      const accessVerificationShareLink = res.data.accessVerificationShareLink || res.data.shareLink || '';
+      const transferRewardShareLink = res.data.transferRewardShareLink || '';
       shareConfig.value = {
         verificationEnabled: Boolean(res.data.verificationEnabled),
-        shareLink: res.data.shareLink || '',
-        accessDurationMinutes: Number(res.data.accessDurationMinutes ?? 1440) || 1440
+        shareLink: verificationPurpose.value === 'points'
+          ? transferRewardShareLink
+          : accessVerificationShareLink,
+        accessVerificationShareLink,
+        accessDurationMinutes: Number(res.data.accessDurationMinutes ?? 1440) || 1440,
+        transferRewardEnabled: Boolean(res.data.transferRewardEnabled ?? true),
+        transferRewardShareLink,
+        transferRewardPoints: Number(res.data.transferRewardPoints ?? 1000) || 1000,
+        transferRewardDurationMinutes: Number(res.data.transferRewardDurationMinutes ?? 1440) || 1440
       };
     }
   } catch (error) {
     console.error('加载分享配置失败:', error);
   }
+};
+
+const formatDurationText = (minutes) => {
+  if (minutes >= 1440) {
+    const days = Math.floor(minutes / 1440);
+    const remainingHours = Math.floor((minutes % 1440) / 60);
+    return remainingHours ? `${days}天${remainingHours}小时` : `${days}天`;
+  }
+
+  if (minutes >= 60) {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return remainingMinutes ? `${hours}小时${remainingMinutes}分钟` : `${hours}小时`;
+  }
+
+  return `${minutes}分钟`;
+};
+
+const getTransferRewardDurationText = () => {
+  return formatDurationText(shareConfig.value.transferRewardDurationMinutes || 1440);
 };
 
 // 获取访问时长文本
@@ -283,18 +344,37 @@ const submitVerification = async () => {
     const legacyLink = getSingleQueryValue(route.query.link);
     const redirectPath = getSingleQueryValue(route.query.redirect);
 
+    const tokenCookie = useCookie('token');
+    const headers = tokenCookie.value
+      ? { Authorization: `Bearer ${tokenCookie.value}` }
+      : undefined;
+
     const res = await $fetch('/api/quark/validate', {
       method: 'POST',
+      headers,
       body: {
-        shareLink: verificationForm.shareLink.trim()
+        shareLink: verificationForm.shareLink.trim(),
+        purpose: verificationPurpose.value
       }
     });
 
     if (res.code === 200) {
-      // 设置验证状态
-      setAccessState(true);
+      if (verificationPurpose.value === 'access') {
+        setAccessState(true);
+      }
 
-      ElMessage.success('验证成功，正在跳转...');
+      const reward = res.reward || res.data?.reward;
+      if (reward?.granted) {
+        ElMessage.success(`验证成功，获得 ${reward.points} 限时积分`);
+        await Promise.allSettled([
+          userStore.safeRefreshUser(),
+          refreshAccessControlConfig()
+        ]);
+      } else if (reward?.alreadyGranted) {
+        ElMessage.success('验证成功，该链接已领取过积分');
+      } else {
+        ElMessage.success('验证成功，正在跳转...');
+      }
       
       // 判断跳转逻辑
       if (from === 'netdisk' && (token || legacyLink)) {

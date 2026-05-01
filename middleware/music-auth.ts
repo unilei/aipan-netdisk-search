@@ -1,4 +1,16 @@
 import { simpleDecode } from '~/utils/index.js'
+
+const shouldUseFeatureAccessControl = async () => {
+    try {
+        const { ensureAccessControlConfig } = useAccessControlConfig()
+        const config = await ensureAccessControlConfig()
+        return config.enabled && config.protectedFeatures?.music !== false
+    } catch (error) {
+        console.error('Failed to check music access control:', error)
+        return true
+    }
+}
+
 export default defineNuxtRouteMiddleware(async (to, from) => {
     // Only check password for music page
     if (!to.path.startsWith('/music')) {
@@ -7,6 +19,10 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
     // Don't check the auth page itself
     if (to.path === '/music/auth') {
+        return
+    }
+
+    if (await shouldUseFeatureAccessControl()) {
         return
     }
 

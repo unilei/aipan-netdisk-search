@@ -1,5 +1,16 @@
 <script setup>
+import DiskInfoList from "~/components/diskInfoList.vue";
+import sourcesApiEndpointsGuest from "~/assets/vod/clouddrive.json";
+import sourcesApiEndpointsLoggedIn from "~/assets/vod/clouddrive-login.json";
+import { useUserStore } from "~/stores/user";
+
 const { data: movieData } = await useFetch('/api/movie/daily')
+const userStore = useUserStore()
+const { accessStatus, ensureAccess } = useFeatureAccess("dailyMovieResources")
+const { sources, skeletonLoading, searchPerformed, loadingProgress } = useSearchState()
+const { handleSearch, cleanup } = useSearchLogic()
+const { getQuarkConfig } = useQuarkConfig()
+const { stopQueueProcessing } = useSearchQueue()
 
 // 解析电影信息字符串为对象
 const movieInfo = computed(() => {
@@ -17,6 +28,21 @@ const movieInfo = computed(() => {
     })
 
     return info
+})
+
+const movieSearchKeyword = computed(() => {
+    const movieName = movieInfo.value?.电影名称 || ''
+    const cleanedName = movieName.replace(/\s*[（(].*?[）)]\s*$/, '').trim()
+    return cleanedName || movieName.trim()
+})
+
+const sourcesApiEndpoints = computed(() => {
+    return userStore.loggedIn ? sourcesApiEndpointsLoggedIn : sourcesApiEndpointsGuest
+})
+
+const shouldShowAccessNotice = computed(() => {
+    return accessStatus.value.loading ||
+        (accessStatus.value.checked && !accessStatus.value.allowed)
 })
 
 // SEO配置
@@ -118,10 +144,89 @@ const reviews = computed(() => {
 
 // 添加加载状态
 const isLoading = ref(true)
-onMounted(() => {
+const lastLoadedMovieKeyword = ref('')
+
+const resetResourceSearchState = () => {
+    sources.value = []
+    skeletonLoading.value = false
+    searchPerformed.value = false
+    loadingProgress.value = {
+        total: 0,
+        completed: 0,
+        isLoading: false,
+    }
+}
+
+const startResourceSearchLoading = () => {
+    sources.value = []
+    searchPerformed.value = true
+    skeletonLoading.value = true
+    loadingProgress.value = {
+        total: sourcesApiEndpoints.value.length,
+        completed: 0,
+        isLoading: true,
+    }
+}
+
+const loadMovieResources = async () => {
+    const keyword = movieSearchKeyword.value
+    if (!keyword) {
+        resetResourceSearchState()
+        return
+    }
+
+    if (lastLoadedMovieKeyword.value === keyword && searchPerformed.value) {
+        return
+    }
+
+    const access = await ensureAccess()
+    if (!access.allowed) {
+        resetResourceSearchState()
+        return
+    }
+
+    await getQuarkConfig()
+    lastLoadedMovieKeyword.value = keyword
+    startResourceSearchLoading()
+    await handleSearch(keyword, sources, loadingProgress, sourcesApiEndpoints.value)
+}
+
+onMounted(async () => {
     setTimeout(() => {
         isLoading.value = false
     }, 500)
+
+    await loadMovieResources()
+})
+
+watch(movieSearchKeyword, async (newKeyword, oldKeyword) => {
+    if (newKeyword && newKeyword !== oldKeyword) {
+        await loadMovieResources()
+    }
+})
+
+watch(
+    sources,
+    (newSources) => {
+        if (skeletonLoading.value && newSources.length > 0) {
+            skeletonLoading.value = false
+        }
+    },
+    { deep: true }
+)
+
+watch(
+    () => loadingProgress.value.isLoading,
+    (isSearching) => {
+        if (!isSearching) {
+            skeletonLoading.value = false
+        }
+    }
+)
+
+onUnmounted(() => {
+    stopQueueProcessing()
+    cleanup()
 })
 
 // 格式化日期
@@ -231,6 +336,39 @@ definePageMeta({
                         class="text-gray-600 dark:text-gray-300 leading-relaxed bg-gray-50 dark:bg-gray-700/50 p-6 rounded-xl">
                         {{ movieInfo?.剧情简介 }}
                     </p>
+                </div>
+            </div>
+
+            <!-- 相关网盘资源 -->
+            <div class="mt-12 animate-fadeIn animation-delay-300">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center">
+                        <i class="fas fa-cloud mr-3 text-blue-500"></i>
+                        相关网盘资源
+                    </h2>
+                    <span v-if="movieSearchKeyword" class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ movieSearchKeyword }}
+                    </span>
+                </div>
+
+                <FeatureAccessNotice
+                    v-if="shouldShowAccessNotice"
+                    :status="accessStatus"
+                    feature-name="每日电影资源列表"
+                />
+
+                <div v-else class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-xl shadow-lg p-4">
+                    <DiskInfoList
+                        :sources="sources"
+                        :skeleton-loading="skeletonLoading"
+                        :is-searching="loadingProgress.isLoading"
+                    />
+                    <div
+                        v-if="searchPerformed && !skeletonLoading && !loadingProgress.isLoading && sources.length === 0"
+                        class="py-12 text-center text-sm text-gray-500 dark:text-gray-400"
+                    >
+                        暂未找到相关网盘资源
+                    </div>
                 </div>
             </div>
 

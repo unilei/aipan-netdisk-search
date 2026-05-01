@@ -39,7 +39,7 @@ const getDefaultEmailServiceConfig = (): EmailServiceConfig => ({
   provider: "resend",
   apiKey: "",
   fromEmail: "",
-  fromName: "爱盼迷",
+  fromName: "爱盼",
   replyTo: "",
   siteUrl: "",
   verificationExpireMinutes: DEFAULT_EXPIRE_MINUTES,

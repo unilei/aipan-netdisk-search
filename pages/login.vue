@@ -5,6 +5,7 @@ import { useUserStore } from '~/stores/user';
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const { refreshAccessControlConfig } = useAccessControlConfig();
 
 const form = reactive({
   email: "",
@@ -137,6 +138,9 @@ const handleSubmit = async () => {
     userStore.clearUser();
     await nextTick(); // 确保清除操作完成
     userStore.setUser(res.data.user, res.data.token);
+    refreshAccessControlConfig().catch(error => {
+      console.warn('Failed to refresh access control config after login:', error);
+    });
 
     if (res.data?.showEmailActivationPrompt) {
       pendingActivationEmail.value = res.data.user?.email || '';

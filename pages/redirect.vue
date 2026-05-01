@@ -532,7 +532,7 @@ const safetyTips = computed(() => {
 });
 
 useHead(() => ({
-  title: `${targetServiceName.value}跳转中 - 爱盼迷 - aipan.me`,
+  title: `${targetServiceName.value}跳转中 - 爱盼 - aipan.me`,
   meta: [
     {
       name: "description",

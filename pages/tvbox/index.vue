@@ -24,12 +24,23 @@ const searchQuery = ref("");
 const currentDate = ref("");
 const isLoading = ref(true);
 const cacheInfo = ref(null);
+const { accessStatus, ensureAccess } = useFeatureAccess("tvbox");
+const shouldShowAccessNotice = computed(() => {
+  return accessStatus.value.loading ||
+    (accessStatus.value.checked && !accessStatus.value.allowed);
+});
+
+const getAuthHeaders = () => {
+  const token = useCookie("token").value;
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
 
 // 从Redis缓存获取数据
 const getDataFromCache = async () => {
   try {
     const res = await $fetch("/api/cache/tvbox", {
       method: "GET",
+      headers: getAuthHeaders(),
       query: {
         action: "get",
       },
@@ -52,6 +63,7 @@ const saveDataToCache = async (data) => {
   try {
     await $fetch("/api/cache/tvbox", {
       method: "POST",
+      headers: getAuthHeaders(),
       query: {
         action: "set",
         ttl: 86400, // 1天的缓存时间
@@ -69,6 +81,7 @@ const getCacheInfo = async () => {
   try {
     const res = await $fetch("/api/cache/tvbox", {
       method: "GET",
+      headers: getAuthHeaders(),
       query: {
         action: "info",
       },
@@ -84,13 +97,20 @@ const getCacheInfo = async () => {
 
 const getData = async () => {
   isLoading.value = true;
+  const access = await ensureAccess();
+  if (!access.allowed) {
+    isLoading.value = false;
+    return;
+  }
 
   // 先尝试从缓存获取
   const cacheHit = await getDataFromCache();
 
   if (!cacheHit) {
     // 缓存未命中，从API获取数据
-    const res = await $fetch("/api/tvbox");
+    const res = await $fetch("/api/tvbox", {
+      headers: getAuthHeaders(),
+    });
     tvbox.value = res.list || [];
 
     // 将数据保存到缓存
@@ -170,10 +190,14 @@ const copy = async (text) => {
 
 // 手动刷新数据
 const refreshData = async () => {
+  const access = await ensureAccess();
+  if (!access.allowed) return;
+
   // 首先删除缓存
   try {
     await $fetch("/api/cache/tvbox", {
       method: "GET",
+      headers: getAuthHeaders(),
       query: {
         action: "delete",
       },
@@ -219,8 +243,15 @@ const refreshData = async () => {
         </div>
       </div>
 
+      <FeatureAccessNotice
+        v-if="shouldShowAccessNotice"
+        :status="accessStatus"
+        feature-name="TVBox"
+        class="mb-10"
+      />
+
       <!-- 搜索区域 -->
-      <div class="max-w-3xl mx-auto mb-10 space-y-6">
+      <div v-if="!shouldShowAccessNotice" class="max-w-3xl mx-auto mb-10 space-y-6">
         <div class="relative group w-full md:w-[700px] mx-auto">
           <input type="text" v-model="searchQuery" placeholder="搜索数据源..."
             class="w-full pl-6 pr-12 py-4 rounded-full text-sm bg-white dark:bg-gray-800/80 border-2 border-transparent focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all duration-300 shadow-lg dark:shadow-gray-900/30 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500" />
@@ -231,7 +262,7 @@ const refreshData = async () => {
       </div>
 
       <!-- 数据源列表 -->
-      <div v-if="isLoading" class="flex items-center justify-center py-16">
+      <div v-if="!shouldShowAccessNotice && isLoading" class="flex items-center justify-center py-16">
         <div class="text-center">
           <div class="relative w-16 h-16 mx-auto mb-4">
             <div class="absolute inset-0 border-4 border-blue-500/30 dark:border-blue-700/30 rounded-full"></div>
@@ -245,7 +276,7 @@ const refreshData = async () => {
         </div>
       </div>
 
-      <div v-else-if="filteredTvbox.length === 0" class="flex items-center justify-center py-16">
+      <div v-else-if="!shouldShowAccessNotice && filteredTvbox.length === 0" class="flex items-center justify-center py-16">
         <div class="text-center">
           <div class="w-20 h-20 mx-auto mb-4 text-gray-300 dark:text-gray-600">
             <i class="fas fa-search-minus text-5xl"></i>
@@ -256,7 +287,7 @@ const refreshData = async () => {
         </div>
       </div>
 
-      <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div v-else-if="!shouldShowAccessNotice" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <div v-for="(item, index) in filteredTvbox" :key="index"
           class="bg-white dark:bg-gray-800/90 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden transform hover:scale-[1.02] border border-gray-100 dark:border-gray-700/50">
           <div class="p-6">
