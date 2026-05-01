@@ -1,176 +1,134 @@
 <template>
-  <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
-    <div class="border-b border-gray-200 px-6 py-5 dark:border-gray-700">
-      <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-        <div>
-          <p class="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">有效积分</p>
-          <div class="flex items-end gap-3">
-            <div class="text-4xl font-semibold tracking-normal text-gray-950 dark:text-white">
-              {{ displayCurrentPoints }}
+  <section class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="grid gap-0 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div class="p-5">
+        <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p class="mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">有效积分</p>
+            <div class="flex flex-wrap items-end gap-3">
+              <div class="text-3xl font-semibold tracking-normal text-gray-950 dark:text-white md:text-4xl">
+                {{ displayCurrentPoints }}
+              </div>
+              <span class="pb-1 text-sm text-gray-500 dark:text-gray-400">永久积分 + 未过期限时积分</span>
             </div>
-            <span class="pb-1 text-sm text-gray-500 dark:text-gray-400">用于访问受限功能</span>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-if="isLoading"
+              class="inline-flex items-center rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-500 dark:bg-gray-900 dark:text-gray-400"
+            >
+              更新中
+            </span>
+            <button
+              class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
+              type="button"
+              :disabled="isLoading"
+              @click="fetchPointsData"
+            >
+              <i class="fa-solid fa-rotate-right text-xs"></i>
+              刷新
+            </button>
+            <button
+              class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              type="button"
+              @click="$emit('view-history')"
+            >
+              <i class="fa-solid fa-list text-xs"></i>
+              查看明细
+            </button>
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-if="isLoading"
-            class="inline-flex items-center rounded-lg bg-gray-100 px-3 py-2 text-sm font-medium text-gray-500 dark:bg-gray-900 dark:text-gray-400"
-          >
-            更新中
-          </span>
-          <button
-            class="inline-flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700"
-            type="button"
-            :disabled="isLoading"
-            @click="fetchPointsData"
-          >
-            <i class="fa-solid fa-rotate-right text-xs"></i>
-            刷新
-          </button>
-          <button
-            class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-            type="button"
-            @click="$emit('view-history')"
-          >
-            <i class="fa-solid fa-list text-xs"></i>
-            查看明细
-          </button>
+        <div class="mt-5 grid gap-3 md:grid-cols-3">
+          <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-950/40">
+            <div class="text-xs text-gray-500 dark:text-gray-400">永久积分</div>
+            <div class="mt-1 text-xl font-semibold text-gray-950 dark:text-white">
+              {{ displayBreakdown.permanentPoints }}
+            </div>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">签到、连续奖励、管理员调整</p>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-950/40">
+            <div class="text-xs text-gray-500 dark:text-gray-400">限时积分</div>
+            <div class="mt-1 text-xl font-semibold text-gray-950 dark:text-white">
+              {{ displayBreakdown.temporaryPoints }}
+            </div>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">未过期转存奖励自动计入</p>
+          </div>
+
+          <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-950/40">
+            <div class="text-xs text-gray-500 dark:text-gray-400">最近过期</div>
+            <div class="mt-1 text-sm font-semibold text-gray-950 dark:text-white">
+              {{ formatExpireTime(displayBreakdown.nextExpiringAt) }}
+            </div>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">过期后不再计入访问门槛</p>
+          </div>
         </div>
       </div>
 
-      <div class="mt-5 grid gap-3 md:grid-cols-3">
-        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/40">
-          <div class="text-sm text-gray-500 dark:text-gray-400">永久积分</div>
-          <div class="mt-2 text-2xl font-semibold text-gray-950 dark:text-white">
-            {{ displayBreakdown.permanentPoints }}
-          </div>
-          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">签到、连续奖励、管理员调整</p>
-        </div>
-
-        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/40">
-          <div class="text-sm text-gray-500 dark:text-gray-400">限时积分</div>
-          <div class="mt-2 text-2xl font-semibold text-gray-950 dark:text-white">
-            {{ displayBreakdown.temporaryPoints }}
-          </div>
-          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">未过期转存奖励自动计入</p>
-        </div>
-
-        <div class="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/40">
-          <div class="text-sm text-gray-500 dark:text-gray-400">最近过期</div>
-          <div class="mt-2 text-base font-semibold text-gray-950 dark:text-white">
-            {{ formatExpireTime(displayBreakdown.nextExpiringAt) }}
-          </div>
-          <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">过期后不再计入访问门槛</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid gap-0 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-      <div class="border-b border-gray-200 p-6 dark:border-gray-700 lg:border-b-0 lg:border-r">
-        <div class="mb-4 flex items-center justify-between">
-          <h3 class="m-0 text-base font-semibold text-gray-950 dark:text-white">获取积分</h3>
-          <span class="text-xs text-gray-500 dark:text-gray-400">签到为永久积分，转存为限时积分</span>
-        </div>
-
-        <div class="grid gap-3 md:grid-cols-2">
-          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-            <div class="flex items-start gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
-                <i class="fa-solid fa-calendar-check"></i>
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="font-semibold text-gray-950 dark:text-white">每日签到</div>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">每天获得永久积分，连续签到有额外奖励。</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-            <div class="flex items-start gap-3">
-              <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300">
-                <i class="fa-solid fa-cloud-arrow-up"></i>
-              </div>
-              <div class="min-w-0 flex-1">
-                <div class="flex flex-wrap items-center gap-2">
-                  <span class="font-semibold text-gray-950 dark:text-white">转存获取积分</span>
-                  <span
-                    v-if="transferTask.enabled"
-                    class="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200"
-                  >
-                    +{{ transferTask.rewardPoints }}
-                  </span>
-                </div>
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  {{ transferTaskDescription }}
-                </p>
-                <button
-                  class="mt-3 inline-flex items-center gap-2 rounded-lg border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 transition-colors hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-emerald-900/60 dark:text-emerald-200 dark:hover:bg-emerald-900/30"
-                  type="button"
-                  :disabled="!transferTask.enabled"
-                  @click="$emit('transfer')"
-                >
-                  <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
-                  去转存验证
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4">
-          <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-900/40">
+      <aside class="border-t border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-950/30 lg:border-l lg:border-t-0">
+        <h2 class="m-0 text-base font-semibold text-gray-950 dark:text-white">收支统计</h2>
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <div class="rounded-lg bg-white p-3 dark:bg-gray-900">
             <div class="text-xs text-gray-500 dark:text-gray-400">今日获得</div>
             <div class="mt-1 text-lg font-semibold text-gray-950 dark:text-white">
               {{ pointsData.stats?.dailyEarned || 0 }}
             </div>
           </div>
-          <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-900/40">
+          <div class="rounded-lg bg-white p-3 dark:bg-gray-900">
             <div class="text-xs text-gray-500 dark:text-gray-400">本月获得</div>
             <div class="mt-1 text-lg font-semibold text-gray-950 dark:text-white">
               {{ pointsData.stats?.monthlyEarned || 0 }}
             </div>
           </div>
-          <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-900/40">
+          <div class="rounded-lg bg-white p-3 dark:bg-gray-900">
             <div class="text-xs text-gray-500 dark:text-gray-400">累计获得</div>
             <div class="mt-1 text-lg font-semibold text-gray-950 dark:text-white">
               {{ pointsData.stats?.totalEarned || 0 }}
             </div>
           </div>
-          <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-900/40">
+          <div class="rounded-lg bg-white p-3 dark:bg-gray-900">
             <div class="text-xs text-gray-500 dark:text-gray-400">累计消费</div>
             <div class="mt-1 text-lg font-semibold text-gray-950 dark:text-white">
               {{ pointsData.stats?.totalSpent || 0 }}
             </div>
           </div>
         </div>
-      </div>
+      </aside>
+    </div>
 
-      <div class="p-6">
+    <div class="grid border-t border-gray-200 dark:border-gray-700 lg:grid-cols-[minmax(0,1fr)_320px]">
+      <div class="p-5">
         <div v-if="pointsData.stats?.weeklyTrend?.length">
-          <h3 class="m-0 mb-4 text-base font-semibold text-gray-950 dark:text-white">7天趋势</h3>
-          <div class="flex h-24 items-end justify-between gap-2 rounded-lg bg-gray-50 p-4 dark:bg-gray-900/40">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="m-0 text-base font-semibold text-gray-950 dark:text-white">7天趋势</h2>
+            <span class="text-xs text-gray-500 dark:text-gray-400">只统计获得积分</span>
+          </div>
+          <div class="flex h-24 items-end justify-between gap-2 rounded-lg bg-gray-50 p-3 dark:bg-gray-950/40">
             <div
               v-for="(day, index) in pointsData.stats.weeklyTrend"
               :key="day.date"
               class="flex h-full flex-1 flex-col items-center justify-end gap-2"
             >
               <div
-                class="w-5 rounded-t bg-blue-600"
+                class="w-5 rounded-t bg-blue-600 transition-all duration-300"
                 :style="{ height: getTrendBarHeight(day.points) }"
               ></div>
               <div class="text-xs text-gray-500 dark:text-gray-400">{{ formatTrendDate(day.date, index) }}</div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div v-if="pointsData.stats?.pointsByType?.length" class="mt-6">
-          <h3 class="m-0 mb-3 text-base font-semibold text-gray-950 dark:text-white">积分来源</h3>
+      <div class="border-t border-gray-200 p-5 dark:border-gray-700 lg:border-l lg:border-t-0">
+        <div v-if="pointsData.stats?.pointsByType?.length">
+          <h2 class="m-0 mb-3 text-base font-semibold text-gray-950 dark:text-white">积分来源</h2>
           <div class="space-y-2">
             <div
               v-for="source in pointsData.stats.pointsByType"
               :key="source.type"
-              class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-900/40"
+              class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-950/40"
             >
               <div class="min-w-0">
                 <div class="truncate text-sm font-medium text-gray-950 dark:text-white">
@@ -186,12 +144,12 @@
         </div>
 
         <div v-if="pointsData.recentHistory?.length" class="mt-6">
-          <h3 class="m-0 mb-3 text-base font-semibold text-gray-950 dark:text-white">最近记录</h3>
+          <h2 class="m-0 mb-3 text-base font-semibold text-gray-950 dark:text-white">最近记录</h2>
           <div class="space-y-2">
             <div
               v-for="record in pointsData.recentHistory.slice(0, 4)"
               :key="record.id"
-              class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-900/40"
+              class="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-950/40"
             >
               <div class="min-w-0">
                 <div class="truncate text-sm font-medium text-gray-950 dark:text-white">
@@ -215,7 +173,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup>
@@ -223,7 +181,7 @@ import { computed, onMounted, ref } from "vue";
 
 import { useUserStore } from "~/stores/user";
 
-defineEmits(["view-history", "transfer"]);
+const emit = defineEmits(["view-history", "points-loaded"]);
 
 const emptyBreakdown = {
   permanentPoints: 0,
@@ -290,20 +248,6 @@ const displayCurrentPoints = computed(() => (
     )
     : "—"
 ));
-const transferTask = computed(() => pointsData.value.transferTask || {
-  enabled: false,
-  rewardPoints: 1000,
-  durationMinutes: 1440,
-});
-const transferTaskDescription = computed(() => {
-  if (!hasLoaded.value && isLoading.value) {
-    return "正在读取转存任务配置。";
-  }
-  return transferTask.value.enabled
-    ? `${formatDuration(transferTask.value.durationMinutes)}内有效，同一分享链接只奖励一次。`
-    : "当前未开启转存积分奖励。";
-});
-
 const fetchPointsData = async () => {
   isLoading.value = true;
   try {
@@ -327,6 +271,7 @@ const fetchPointsData = async () => {
         userStore.user.nextExpiringAt = response.data.nextExpiringAt;
         userStore.user.pointsBreakdown = response.data.breakdown;
       }
+      emit("points-loaded", response.data);
     }
   } catch (error) {
     console.error("获取积分信息失败:", error);

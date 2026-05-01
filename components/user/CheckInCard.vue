@@ -1,69 +1,80 @@
 <template>
-  <div
-    class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-    <!-- 卡片头部 -->
-    <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-      <div class="flex justify-between items-center">
-        <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100 m-0">
-          <i class="fa-solid fa-calendar-days text-blue-600 dark:text-blue-400"></i>
-          每日签到
-        </h3>
-        <div class="flex items-center gap-1">
-          <span class="text-sm text-gray-500 dark:text-gray-400">有效积分：</span>
-          <span class="text-lg font-bold text-gray-900 dark:text-white">{{ displayCurrentPoints }}</span>
+  <article
+    class="flex min-h-[220px] flex-col rounded-xl border border-gray-200 bg-white p-5 transition-colors duration-200 hover:border-blue-200 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-blue-700"
+  >
+    <div class="flex items-start justify-between gap-4">
+      <div class="flex min-w-0 items-start gap-4">
+        <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-xl text-blue-600 dark:bg-blue-900/30 dark:text-blue-200">
+          <i class="fa-regular fa-calendar"></i>
         </div>
+        <div class="min-w-0">
+          <h3 class="m-0 text-base font-semibold leading-6 text-gray-950 dark:text-white">
+            每日签到
+          </h3>
+          <p class="m-0 mt-1 max-w-[360px] text-sm leading-6 text-gray-500 dark:text-gray-400">
+            每天领取永久积分，连续签到会获得额外奖励。
+          </p>
+        </div>
+      </div>
+      <span
+        :class="[
+          'shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold',
+          checkInStatus.hasCheckedInToday
+            ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200'
+            : 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-200'
+        ]"
+      >
+        {{ checkInStatus.hasCheckedInToday ? `已领取 ${checkInStatus.todayCheckIn?.points || 0} 积分` : `+${baseCheckInPoints} 积分` }}
+      </span>
+    </div>
+
+    <div class="mt-4 grid grid-cols-3 gap-3 text-sm">
+      <div>
+        <div class="font-semibold text-gray-950 dark:text-white">{{ checkInStatus.currentConsecutiveDays }} 天</div>
+        <div class="mt-1 text-gray-500 dark:text-gray-400">连续签到</div>
+      </div>
+      <div>
+        <div class="font-semibold text-gray-950 dark:text-white">{{ checkInStatus.monthlyCheckInCount }} 次</div>
+        <div class="mt-1 text-gray-500 dark:text-gray-400">本月完成</div>
+      </div>
+      <div>
+        <div class="font-semibold text-gray-950 dark:text-white">{{ displayCurrentPoints }}</div>
+        <div class="mt-1 text-gray-500 dark:text-gray-400">有效积分</div>
       </div>
     </div>
 
-    <div class="p-6">
-      <!-- 签到状态 -->
-      <div class="text-center mb-6">
-        <div v-if="checkInStatus.hasCheckedInToday" class="py-8">
-          <i class="fa-solid fa-circle-check text-green-500 dark:text-green-400 mb-4 text-5xl"></i>
-          <h4 class="text-xl font-semibold text-green-600 dark:text-green-400 mb-2 m-0">今日已签到</h4>
-          <p class="text-gray-500 dark:text-gray-400 m-0">获得了 {{ checkInStatus.todayCheckIn?.points || 0 }} 积分</p>
-        </div>
-        <div v-else class="py-8">
-          <el-button type="primary" size="large" :loading="isCheckingIn" @click="handleCheckIn"
-            class="mb-3 px-8 py-3 text-lg font-medium border-0 shadow-sm transition-all duration-200">
-            <i class="fa-solid fa-star mr-2"></i>
-            立即签到
-          </el-button>
-          <p class="text-gray-500 dark:text-gray-400 text-sm m-0">签到可获得积分奖励</p>
-        </div>
+    <div class="mt-auto flex flex-col gap-4 pt-5 sm:flex-row sm:items-end sm:justify-between">
+      <div class="min-h-[40px] text-sm leading-6 text-gray-500 dark:text-gray-400">
+        <template v-if="checkInStatus.nextReward">
+          连续签到 {{ checkInStatus.nextReward.days }} 天可额外获得 {{ checkInStatus.nextReward.points }} 积分。
+        </template>
+        <template v-else>
+          继续保持签到，永久积分会累计到账号余额。
+        </template>
       </div>
-
-      <!-- 签到统计 -->
-      <div class="grid grid-cols-3 gap-4 py-6 border-t border-b border-gray-200 dark:border-gray-700 mb-6">
-        <div class="text-center">
-          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">{{ checkInStatus.currentConsecutiveDays
-            }}</div>
-          <div class="text-sm text-gray-500 dark:text-gray-400">连续签到</div>
-        </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">{{ checkInStatus.monthlyCheckInCount }}
-          </div>
-          <div class="text-sm text-gray-500 dark:text-gray-400">本月签到</div>
-        </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">{{ checkInStatus.totalCheckInCount }}
-          </div>
-          <div class="text-sm text-gray-500 dark:text-gray-400">累计签到</div>
-        </div>
-      </div>
-
-      <!-- 下一个奖励提示 -->
-      <div v-if="checkInStatus.nextReward"
-        class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg p-4">
-        <div class="flex items-center gap-3">
-          <i class="fa-solid fa-star text-blue-600 dark:text-blue-400 text-lg"></i>
-          <span class="text-blue-800 dark:text-blue-200 font-medium">
-            连续签到{{ checkInStatus.nextReward.days }}天可获得额外{{ checkInStatus.nextReward.points }}积分
-          </span>
-        </div>
+      <div class="shrink-0">
+        <button
+          v-if="checkInStatus.hasCheckedInToday"
+          class="inline-flex min-h-10 min-w-[120px] items-center justify-center gap-2 rounded-lg bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200"
+          type="button"
+          disabled
+        >
+          <i class="fa-solid fa-circle-check"></i>
+          今日已完成
+        </button>
+        <button
+          v-else
+          class="inline-flex min-h-10 min-w-[120px] items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+          type="button"
+          :disabled="isCheckingIn"
+          @click="handleCheckIn"
+        >
+          <i :class="isCheckingIn ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-star'"></i>
+          {{ isCheckingIn ? '签到中' : '立即签到' }}
+        </button>
       </div>
     </div>
-  </div>
+  </article>
 
   <!-- 签到成功弹窗 -->
   <el-dialog v-model="showSuccessDialog" title="签到成功" width="400px" align-center>
@@ -108,7 +119,8 @@ import { useUserStore } from '~/stores/user'
 
 const userStore = useUserStore()
 const { refreshAccessControlConfig } = useAccessControlConfig()
-const emit = defineEmits(['checked-in'])
+const emit = defineEmits(['checked-in', 'status-loaded'])
+const baseCheckInPoints = 10
 
 // 响应式数据
 const checkInStatus = ref({
@@ -149,6 +161,7 @@ const fetchCheckInStatus = async () => {
     if (response.code === 200) {
       checkInStatus.value = response.data
       hasLoadedStatus.value = true
+      emit('status-loaded', response.data)
     }
   } catch (error) {
     console.error('获取签到状态失败:', error)
