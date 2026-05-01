@@ -1,4 +1,15 @@
 import prisma from "~/lib/prisma";
+import {
+    decoratePointsHistory,
+    getUserPointsBreakdown,
+} from "~/server/services/points/userPoints";
+import {
+    DEFAULT_ACCESS_DURATION,
+    DEFAULT_API_URL,
+    DEFAULT_QUARK_CONFIG,
+    getTransferTaskFromQuarkConfig,
+    normalizeQuarkConfig,
+} from "~/server/services/quark/quarkConfig.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -28,8 +39,12 @@ export default defineEventHandler(async (event) => {
             })
         }
 
+        const pointsBreakdown = await getUserPointsBreakdown(userId, {
+            permanentPoints: user.points
+        })
+
         // 获取积分统计信息
-        const pointsStats = await getPointsStats(userId)
+        const pointsStats = await getPointsStats(userId, pointsBreakdown)
 
         // 获取最近的积分历史
         const recentHistory = await prisma.pointsHistory.findMany({
@@ -41,15 +56,22 @@ export default defineEventHandler(async (event) => {
             },
             take: 10
         })
+        const transferTask = await getTransferTaskConfig()
 
         return {
             code: 200,
             msg: 'success',
             data: {
-                currentPoints: user.points,
+                currentPoints: pointsBreakdown.effectivePoints,
+                permanentPoints: pointsBreakdown.permanentPoints,
+                temporaryPoints: pointsBreakdown.temporaryPoints,
+                effectivePoints: pointsBreakdown.effectivePoints,
+                nextExpiringAt: pointsBreakdown.nextExpiringAt,
+                breakdown: pointsBreakdown,
                 userSince: user.createdAt,
                 stats: pointsStats,
-                recentHistory: recentHistory
+                recentHistory: decoratePointsHistory(recentHistory),
+                transferTask
             }
         }
 
@@ -63,7 +85,7 @@ export default defineEventHandler(async (event) => {
 })
 
 // 获取积分统计信息
-async function getPointsStats(userId: number) {
+async function getPointsStats(userId: number, pointsBreakdown: any) {
     // 总获得积分
     const totalEarned = await prisma.pointsHistory.aggregate({
         where: {
@@ -169,6 +191,10 @@ async function getPointsStats(userId: number) {
     const dailyTrend = groupByDay(weeklyTrend)
 
     return {
+        permanentPoints: pointsBreakdown.permanentPoints,
+        temporaryPoints: pointsBreakdown.temporaryPoints,
+        effectivePoints: pointsBreakdown.effectivePoints,
+        nextExpiringAt: pointsBreakdown.nextExpiringAt,
         totalEarned: totalEarned._sum.points || 0,
         totalSpent: Math.abs(totalSpent._sum.points || 0),
         monthlyEarned: monthlyEarned._sum.points || 0,
@@ -176,6 +202,24 @@ async function getPointsStats(userId: number) {
         pointsByType: pointsByType,
         weeklyTrend: dailyTrend
     }
+}
+
+async function getTransferTaskConfig() {
+    const settings = await prisma.systemSettings.findFirst({
+        where: {
+            key: 'quark_config'
+        }
+    })
+    const storedConfig = settings ? JSON.parse(settings.value || '{}') : {}
+    const config = normalizeQuarkConfig({
+        ...DEFAULT_QUARK_CONFIG,
+        ...storedConfig,
+        apiUrl: storedConfig.apiUrl || DEFAULT_API_URL,
+        accessDurationMinutes:
+            storedConfig.accessDurationMinutes || DEFAULT_ACCESS_DURATION,
+    })
+
+    return getTransferTaskFromQuarkConfig(config)
 }
 
 // 按天分组积分数据

@@ -74,6 +74,7 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   CheckIn: 'CheckIn',
   PointsHistory: 'PointsHistory',
+  TransferPointGrant: 'TransferPointGrant',
   NavigationCategory: 'NavigationCategory',
   NavigationItem: 'NavigationItem',
   Report: 'Report'
@@ -434,10 +435,25 @@ export const PointsHistoryScalarFieldEnum = {
   type: 'type',
   description: 'description',
   relatedId: 'relatedId',
+  expiresAt: 'expiresAt',
   createdAt: 'createdAt'
 } as const
 
 export type PointsHistoryScalarFieldEnum = (typeof PointsHistoryScalarFieldEnum)[keyof typeof PointsHistoryScalarFieldEnum]
+
+
+export const TransferPointGrantScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  shareId: 'shareId',
+  transferFingerprint: 'transferFingerprint',
+  points: 'points',
+  expiresAt: 'expiresAt',
+  pointsHistoryId: 'pointsHistoryId',
+  createdAt: 'createdAt'
+} as const
+
+export type TransferPointGrantScalarFieldEnum = (typeof TransferPointGrantScalarFieldEnum)[keyof typeof TransferPointGrantScalarFieldEnum]
 
 
 export const NavigationCategoryScalarFieldEnum = {

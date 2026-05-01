@@ -73,7 +73,7 @@ export default defineEventHandler(async (event) => {
     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
     ctx.font = '20px Arial'
     ctx.fillText('网盘搜索 · AI助手 · 音乐播放 · 游戏娱乐', canvas.width / 2, 360)
-    ctx.fillText('博客论坛 · 聊天社区 · 影视直播', canvas.width / 2, 390)
+    ctx.fillText('博客论坛 · 聊天社区 · TV直播', canvas.width / 2, 390)
 
     // Add a decorative line
     ctx.shadowColor = 'transparent'
@@ -116,7 +116,7 @@ export default defineEventHandler(async (event) => {
         <text x="600" y="280" font-family="Arial, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" fill="white">AIPAN.ME</text>
         <text x="600" y="340" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="rgba(255,255,255,0.9)">AI网盘搜索 · 智能助手 · 多功能平台</text>
         <text x="600" y="380" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">网盘搜索 · AI助手 · 音乐播放 · 游戏娱乐</text>
-        <text x="600" y="410" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">博客论坛 · 聊天社区 · 影视直播</text>
+        <text x="600" y="410" font-family="Arial, sans-serif" font-size="20" text-anchor="middle" fill="rgba(255,255,255,0.8)">博客论坛 · 聊天社区 · TV直播</text>
       </svg>
     `
 

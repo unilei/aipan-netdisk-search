@@ -31,7 +31,7 @@ export default defineNuxtConfig({
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
     head: {
-      title: '爱盼迷 - 一站式资源聚合平台 | 网盘搜索·音乐·电影·游戏·直播',
+      title: '爱盼 - 一站式资源聚合平台 | 网盘搜索·音乐·电影·游戏·直播',
       htmlAttrs: {
         lang: 'zh-CN'
       },
@@ -48,15 +48,15 @@ export default defineNuxtConfig({
         {
           name: 'keywords',
           content:
-            '爱盼迷,网盘搜索,资源搜索,百度网盘,阿里云盘,夸克网盘,在线音乐,电影播放,电视直播,FM电台,博客平台,社区论坛,休闲游戏,影视资源,音乐播放器,TVBox,资源聚合,一站式娱乐',
+            '爱盼,网盘搜索,资源搜索,百度网盘,阿里云盘,夸克网盘,在线音乐,每日电影推荐,电视直播,FM电台,博客平台,社区论坛,休闲游戏,音乐播放器,TVBox,资源聚合,一站式娱乐',
         },
         {
           name: 'description',
           content:
-            '爱盼迷是一站式资源聚合平台！集网盘搜索、在线音乐、电影电视、休闲游戏、直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，海量影视音乐资源随心享用。社区论坛、博客分享、AI搜索等功能齐全，满足你的所有数字娱乐需求！',
+            '爱盼是一站式资源聚合平台，集网盘搜索、在线音乐、每日电影推荐、TV直播、TVBox、休闲游戏和直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，资源检索和常用入口统一管理。',
         },
-        { name: 'author', content: '爱盼迷' },
-        { name: 'publisher', content: '爱盼迷' },
+        { name: 'author', content: '爱盼' },
+        { name: 'publisher', content: '爱盼' },
         { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
         { name: 'format-detection', content: 'telephone=no' },
         { name: 'theme-color', content: '#3b82f6' },
@@ -64,12 +64,12 @@ export default defineNuxtConfig({
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
         // Open Graph
         { property: 'og:type', content: 'website' },
-        { property: 'og:site_name', content: '爱盼迷' },
-        { property: 'og:title', content: '爱盼迷 - 一站式资源聚合平台 | 网盘搜索·音乐·电影·游戏·直播' },
+        { property: 'og:site_name', content: '爱盼' },
+        { property: 'og:title', content: '爱盼 - 一站式资源聚合平台 | 网盘搜索·音乐·电影·游戏·直播' },
         {
           property: 'og:description',
           content:
-            '爱盼迷是一站式资源聚合平台，集网盘搜索、在线音乐、电影电视、休闲游戏、直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，满足你的所有数字娱乐需求！',
+            '爱盼是一站式资源聚合平台，集网盘搜索、在线音乐、每日电影推荐、TV直播、TVBox、休闲游戏和直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索。',
         },
         { property: 'og:image', content: 'https://www.aipan.me/default-og-image.png' },
         { property: 'og:image:width', content: '1200' },
@@ -80,10 +80,10 @@ export default defineNuxtConfig({
         // Twitter Card
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:site', content: '@aipanmi' },
-        { name: 'twitter:title', content: '爱盼迷 - 一站式资源聚合平台' },
+        { name: 'twitter:title', content: '爱盼 - 一站式资源聚合平台' },
         {
           name: 'twitter:description',
-          content: '网盘搜索、在线音乐、电影电视、休闲游戏、直播电台，一个平台满足所有数字娱乐需求！',
+          content: '网盘搜索、在线音乐、每日电影推荐、TV直播、TVBox、休闲游戏和直播电台，一个平台统一管理常用资源入口。',
         },
         { name: 'twitter:image', content: 'https://www.aipan.me/default-og-image.png' },
         // 统一 referrer 策略
@@ -249,10 +249,10 @@ export default defineNuxtConfig({
     exclude: ['/admin/**', '/user/**'],
   },
   site: {
-    name: '爱盼迷 - 一站式资源聚合平台',
+    name: '爱盼 - 一站式资源聚合平台',
     url: 'https://www.aipan.me',
     description:
-      '爱盼迷是一站式资源聚合平台！集网盘搜索、在线音乐、电影电视、休闲游戏、直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，满足你的所有数字娱乐需求。',
+      '爱盼是一站式资源聚合平台，集网盘搜索、在线音乐、每日电影推荐、TV直播、TVBox、休闲游戏和直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索。',
   },
   compatibilityDate: '2026-03-06',
 })

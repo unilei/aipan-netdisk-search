@@ -147,9 +147,9 @@ import { ref, reactive, computed, onMounted } from "vue";
 
 // SEO配置
 useHead({
-  title: '发布新主题 - 社区论坛 - 爱盼迷',
+  title: '发布新主题 - 社区论坛 - 爱盼',
   meta: [
-    { name: 'description', content: '在爱盼迷社区论坛发布新主题，分享你的想法和见解，与社区成员互动交流。' },
+    { name: 'description', content: '在爱盼社区论坛发布新主题，分享你的想法和见解，与社区成员互动交流。' },
   ]
 })
 

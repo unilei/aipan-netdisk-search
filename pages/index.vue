@@ -3,7 +3,6 @@ import { useDoubanStore } from "~/stores/douban";
 import { badWords } from "~/utils/sensitiveWords";
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
 import { useDebounceFn } from "@vueuse/core";
-import i18nNavigationConfig from "@/assets/navigation/config.i18n.json";
 
 definePageMeta({
   layout: "netdisk",
@@ -130,10 +129,7 @@ const loadNavigationData = async () => {
     categories.value = data || [];
   } catch (error) {
     console.error('Failed to load navigation data:', error);
-    // 如果API失败，回退到静态配置
-    const currentLang = locale.value;
-    const config = i18nNavigationConfig[currentLang] || i18nNavigationConfig.zh;
-    categories.value = config?.categories || [];
+    categories.value = [];
   }
 };
 
@@ -144,6 +140,8 @@ onBeforeMount(async () => {
   await loadNavigationData();
   if (categories.value && categories.value.length > 0) {
     activeCategory.value = activeCategoryCookie.value || categories.value[0]?.id || '';
+  } else {
+    activeCategory.value = '';
   }
 });
 
@@ -162,6 +160,8 @@ const stopLocaleWatcher = watch(locale, async () => {
       // 如果不存在，使用第一个分类
       activeCategory.value = categories.value[0]?.id || '';
     }
+  } else {
+    activeCategory.value = '';
   }
 });
 
@@ -228,7 +228,7 @@ const stopRouteWatcher = watch(
         </div>
       </div>
 
-        <div class="max-w-[1240px] mx-auto mt-4 px-4">
+        <div v-if="categories.length > 0" class="max-w-[1240px] mx-auto mt-4 px-4">
           <!-- 导航分类标签 -->
           <div class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
             <button v-for="category in categories" :key="category.id"

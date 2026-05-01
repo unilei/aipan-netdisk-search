@@ -1,5 +1,12 @@
 import { defineStore } from 'pinia';
 
+interface PointsBreakdown {
+    permanentPoints: number;
+    temporaryPoints: number;
+    effectivePoints: number;
+    nextExpiringAt?: string | Date | null;
+}
+
 export interface UserState {
     isAuthenticated: boolean;
     token: string | null;
@@ -10,6 +17,11 @@ export interface UserState {
         role?: string;
         avatarStyle?: string;
         points?: number;
+        permanentPoints?: number;
+        temporaryPoints?: number;
+        effectivePoints?: number;
+        nextExpiringAt?: string | Date | null;
+        pointsBreakdown?: PointsBreakdown;
         isVerified?: boolean;
         emailVerificationRequired?: boolean;
     } | null;
@@ -25,6 +37,11 @@ interface UserResponse {
         role: string;
         avatarStyle?: string;
         points?: number;
+        permanentPoints?: number;
+        temporaryPoints?: number;
+        effectivePoints?: number;
+        nextExpiringAt?: string | Date | null;
+        pointsBreakdown?: PointsBreakdown;
         isVerified?: boolean;
         emailVerificationRequired?: boolean;
     };

@@ -1,18 +1,5 @@
 import prisma from "~/lib/prisma";
-
-const DEFAULT_API_URL = 'http://127.0.0.1:5000/api/quark/sharepage/save';
-const DEFAULT_ACCESS_DURATION = 1440;
-
-const DEFAULT_CONFIG = {
-    quarkCookie: '',
-    userId: '',
-    typeId: '',
-    enabled: false,
-    apiUrl: DEFAULT_API_URL,
-    verificationEnabled: false,
-    shareLink: '',
-    accessDurationMinutes: DEFAULT_ACCESS_DURATION
-};
+import { buildPublicQuarkConfig } from "~/server/services/quark/quarkConfig.mjs";
 
 export default defineEventHandler(async (event) => {
 
@@ -29,11 +16,7 @@ export default defineEventHandler(async (event) => {
 
             return {
                 code: 200,
-                data: {
-                    ...DEFAULT_CONFIG,
-                    ...storedConfig,
-                    accessDurationMinutes: Number(storedConfig?.accessDurationMinutes ?? DEFAULT_ACCESS_DURATION)
-                }
+                data: buildPublicQuarkConfig(storedConfig)
             };
         } catch (error) {
             console.error('获取配置失败:', error);

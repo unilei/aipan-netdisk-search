@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma";
+import { decoratePointsHistory } from "~/server/services/points/userPoints";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -53,6 +54,10 @@ export default defineEventHandler(async (event) => {
             skip: skip,
             take: limit
         })
+        const decoratedHistory = decoratePointsHistory(pointsHistory).map((record: any) => ({
+            ...record,
+            typeName: getTypeName(record.type)
+        }))
 
         // 获取总记录数
         const total = await prisma.pointsHistory.count({
@@ -66,7 +71,7 @@ export default defineEventHandler(async (event) => {
             code: 200,
             msg: 'success',
             data: {
-                history: pointsHistory,
+                history: decoratedHistory,
                 pagination: {
                     page: page,
                     limit: limit,
@@ -157,7 +162,8 @@ function getTypeName(type: string): string {
         'consume': '积分消费',
         'admin': '管理员调整',
         'activity': '活动奖励',
-        'task': '任务奖励'
+        'task': '任务奖励',
+        'transfer': '转存奖励'
     }
     return typeNames[type] || type
 }

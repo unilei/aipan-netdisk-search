@@ -17,20 +17,20 @@ datasource db {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  username    String   @unique
-  email       String   @unique
-  password    String
-  role        String   @default("user") // Possible values: "admin", "user"
-  status      String   @default("active") // Possible values: "active", "disabled"
-  avatarStyle String   @default("avataaars") // 头像风格
-  salt        String? // 用于密码哈希的盐
-  points      Int      @default(0) // 用户积分
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  isVerified  Boolean  @default(false)
-  emailVerifiedAt DateTime?
-  emailVerificationRequired Boolean @default(false)
+  id                        Int       @id @default(autoincrement())
+  username                  String    @unique
+  email                     String    @unique
+  password                  String
+  role                      String    @default("user") // Possible values: "admin", "user"
+  status                    String    @default("active") // Possible values: "active", "disabled"
+  avatarStyle               String    @default("avataaars") // 头像风格
+  salt                      String? // 用于密码哈希的盐
+  points                    Int       @default(0) // 用户积分
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+  isVerified                Boolean   @default(false)
+  emailVerifiedAt           DateTime?
+  emailVerificationRequired Boolean   @default(false)
 
   resources     Resource[] // 一个用户可以有多个资源
   resourceTypes ResourceType[] // 一个用户可以创建多种资源类型
@@ -49,8 +49,9 @@ model User {
   createdRooms ChatRoom[] // 用户创建的聊天室
 
   // Check-in related
-  checkIns      CheckIn[] // 用户的签到记录
-  pointsHistory PointsHistory[] // 用户的积分历史
+  checkIns                CheckIn[] // 用户的签到记录
+  pointsHistory           PointsHistory[] // 用户的积分历史
+  transferPointGrants     TransferPointGrant[] // 用户转存限时积分记录
   emailVerificationTokens EmailVerificationToken[]
 
   @@index([role])
@@ -467,18 +468,44 @@ model CheckIn {
 
 // 用户积分历史记录模型
 model PointsHistory {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   userId      Int // 用户ID
   points      Int // 积分变化数量（正数为获得，负数为消费）
   type        String // 积分类型：'checkin'（签到）, 'bonus'（奖励）, 'consume'（消费）
-  description String?  @db.Text // 积分变化描述
+  description String?   @db.Text // 积分变化描述
   relatedId   Int? // 关联记录ID（如签到记录ID）
-  createdAt   DateTime @default(now())
+  expiresAt   DateTime? // 限时积分过期时间，null 表示永久积分
+  createdAt   DateTime  @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transferPointGrant TransferPointGrant?
 
   @@index([userId])
   @@index([type])
+  @@index([expiresAt])
+  @@index([createdAt])
+}
+
+// 用户转存限时积分发放记录
+model TransferPointGrant {
+  id                  Int      @id @default(autoincrement())
+  userId              Int
+  shareId             String
+  transferFingerprint String
+  points              Int
+  expiresAt           DateTime
+  pointsHistoryId     Int?     @unique
+  createdAt           DateTime @default(now())
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pointsHistory PointsHistory? @relation(fields: [pointsHistoryId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, shareId])
+  @@unique([userId, transferFingerprint])
+  @@index([userId])
+  @@index([shareId])
+  @@index([transferFingerprint])
+  @@index([expiresAt])
   @@index([createdAt])
 }
 
@@ -523,20 +550,20 @@ model NavigationItem {
 
 // 举报模型
 model Report {
-  id            Int      @id @default(autoincrement())
+  id            Int       @id @default(autoincrement())
   contentType   String // 举报内容类型: 'post', 'comment', 'topic', 'message', 'resource'
   contentId     String // 被举报内容的ID
   contentTitle  String? // 被举报内容的标题（可选）
   reason        String // 举报原因: 'spam', 'illegal', 'pornography', 'violence', 'harassment', 'copyright', 'privacy', 'false', 'other'
-  description   String   @db.Text // 详细描述
+  description   String    @db.Text // 详细描述
   reporterEmail String? // 举报者邮箱（可选）
   reporterIp    String? // 举报者IP地址
-  status        String   @default("pending") // 处理状态: 'pending', 'reviewing', 'resolved', 'rejected'
-  adminNote     String?  @db.Text // 管理员备注
+  status        String    @default("pending") // 处理状态: 'pending', 'reviewing', 'resolved', 'rejected'
+  adminNote     String?   @db.Text // 管理员备注
   handledBy     Int? // 处理者ID
   handledAt     DateTime? // 处理时间
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([contentType])
   @@index([contentId])

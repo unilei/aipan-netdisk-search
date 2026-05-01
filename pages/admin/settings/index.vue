@@ -73,7 +73,7 @@
           <el-form-item label="发件人名称">
             <el-input
               v-model="emailForm.fromName"
-              placeholder="爱盼迷"
+              placeholder="爱盼"
             />
           </el-form-item>
 
@@ -317,6 +317,100 @@
         </el-form>
       </div>
 
+      <!-- 访问限制配置 -->
+      <div class="bg-white rounded-lg p-6 shadow-sm mb-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2">
+            <h2 class="text-lg font-semibold dark:text-gray-200">
+              访问限制配置
+            </h2>
+            <el-tag v-if="accessControlForm.enabled" type="success" size="small">
+              已启用
+            </el-tag>
+            <el-tag v-else type="info" size="small">已禁用</el-tag>
+          </div>
+          <el-switch
+            v-model="accessControlForm.enabled"
+            active-text="启用限制"
+            inactive-text="关闭限制"
+          />
+        </div>
+
+        <el-alert
+          title="仅校验用户是否达到积分门槛，不会扣除积分。服务端会同步保护核心接口。"
+          type="info"
+          :closable="false"
+          class="mb-4"
+        />
+
+        <el-form
+          ref="accessControlFormRef"
+          :model="accessControlForm"
+          :rules="accessControlRules"
+          label-width="120px"
+        >
+          <el-form-item label="限制模式">
+            <el-input value="登录状态 + 最低积分门槛" disabled />
+          </el-form-item>
+
+          <el-form-item label="必须登录">
+            <el-switch
+              v-model="accessControlForm.requireLogin"
+              active-text="需要登录"
+              inactive-text="不强制登录"
+              :disabled="!accessControlForm.enabled"
+            />
+          </el-form-item>
+
+          <el-form-item label="最低积分" prop="minPoints">
+            <el-input-number
+              v-model="accessControlForm.minPoints"
+              :min="0"
+              :max="100000000"
+              :step="100"
+              :disabled="!accessControlForm.enabled"
+              class="w-full"
+            />
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              默认 10000；设置为 0 表示只要求登录。
+            </div>
+          </el-form-item>
+
+          <el-form-item label="受限功能">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 w-full">
+              <el-checkbox
+                v-for="feature in accessControlFeatureOptions"
+                :key="feature.key"
+                v-model="accessControlForm.protectedFeatures[feature.key]"
+                :disabled="!accessControlForm.enabled"
+              >
+                <div>
+                  <div class="text-sm font-medium">{{ feature.label }}</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ feature.description }}
+                  </div>
+                </div>
+              </el-checkbox>
+            </div>
+          </el-form-item>
+
+          <el-form-item>
+            <div class="flex items-center gap-4">
+              <el-button
+                type="primary"
+                @click="handleAccessControlSubmit"
+                :loading="accessControlLoading"
+              >
+                保存配置
+              </el-button>
+              <el-button @click="resetAccessControlForm">
+                恢复默认
+              </el-button>
+            </div>
+          </el-form-item>
+        </el-form>
+      </div>
+
       <!-- 夸克网盘配置 -->
       <div class="admin-card-bg rounded-lg p-6 shadow-sm">
         <div class="flex items-center justify-between mb-4">
@@ -403,14 +497,14 @@
             />
           </el-form-item>
 
-          <el-form-item label="目标分享链接" prop="shareLink">
+          <el-form-item label="访问验证链接" prop="accessVerificationShareLink">
             <el-input
-              v-model="form.shareLink"
-              placeholder="请输入需要用户转存的夸克分享链接"
+              v-model="form.accessVerificationShareLink"
+              placeholder="请输入访问验证需要用户转存的夸克分享链接"
               :disabled="!form.verificationEnabled"
             />
             <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              用户提交的转存链接将与此链接内容比对，仅支持无提取码的公开链接
+              用户点击网盘资源前提交的转存链接将与此链接内容比对，仅支持无提取码的公开链接
             </div>
           </el-form-item>
 
@@ -426,6 +520,62 @@
             <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
               验证通过后允许访问的时长，最终到期不会超过当日24点；默认
               {{ DEFAULT_ACCESS_DURATION }} 分钟
+            </div>
+          </el-form-item>
+
+          <el-divider></el-divider>
+
+          <div class="mb-4">
+            <h3 class="text-base font-medium text-gray-900">转存积分奖励</h3>
+            <p class="text-xs text-gray-500 mt-1">
+              积分中心的独立转存任务；登录用户完成后获得限时积分，同一个分享链接只奖励一次。
+            </p>
+          </div>
+
+          <el-form-item label="奖励状态">
+            <el-switch
+              v-model="form.transferRewardEnabled"
+              active-text="启用奖励"
+              inactive-text="关闭奖励"
+            />
+          </el-form-item>
+
+          <el-form-item label="积分任务链接" prop="transferRewardShareLink">
+            <el-input
+              v-model="form.transferRewardShareLink"
+              placeholder="请输入积分任务需要用户转存的夸克分享链接"
+              :disabled="!form.transferRewardEnabled"
+            />
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              签到页“转存获取积分”会展示这个链接，独立于访问验证链接。
+            </div>
+          </el-form-item>
+
+          <el-form-item label="奖励积分" prop="transferRewardPoints">
+            <el-input-number
+              v-model="form.transferRewardPoints"
+              :min="1"
+              :max="100000000"
+              :step="100"
+              :disabled="!form.transferRewardEnabled"
+              class="w-full"
+            />
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              默认 {{ DEFAULT_TRANSFER_REWARD_POINTS }} 分，计入有效积分但不写入永久余额。
+            </div>
+          </el-form-item>
+
+          <el-form-item label="有效期(分钟)" prop="transferRewardDurationMinutes">
+            <el-input-number
+              v-model="form.transferRewardDurationMinutes"
+              :min="1"
+              :max="525600"
+              :step="60"
+              :disabled="!form.transferRewardEnabled"
+              class="w-full"
+            />
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              默认 {{ DEFAULT_TRANSFER_REWARD_DURATION }} 分钟，也就是 24 小时。
             </div>
           </el-form-item>
 
@@ -460,6 +610,7 @@ const emailLoading = ref(false);
 const emailTesting = ref(false);
 const musicLoading = ref(false);
 const groupQrLoading = ref(false);
+const accessControlLoading = ref(false);
 const resourceTypes = ref([]);
 
 const musicForm = reactive({
@@ -486,7 +637,7 @@ const emailForm = reactive({
   provider: "resend",
   apiKey: "",
   fromEmail: "",
-  fromName: "爱盼迷",
+  fromName: "爱盼",
   replyTo: "",
   siteUrl: "",
   verificationExpireMinutes: 60,
@@ -494,8 +645,68 @@ const emailForm = reactive({
   testEmail: "",
 });
 
+const DEFAULT_ACCESS_CONTROL_FEATURES = {
+  netdiskSearch: true,
+  aiSearch: true,
+  tvLive: true,
+  tvbox: true,
+  dailyMovieResources: true,
+  music: true,
+};
+
+const DEFAULT_ACCESS_CONTROL_CONFIG = {
+  enabled: true,
+  requireLogin: true,
+  minPoints: 10000,
+  protectedFeatures: { ...DEFAULT_ACCESS_CONTROL_FEATURES },
+};
+
+const accessControlFeatureOptions = [
+  {
+    key: "netdiskSearch",
+    label: "网盘搜索",
+    description: "搜索页和多源网盘资源接口",
+  },
+  {
+    key: "aiSearch",
+    label: "AI 网盘搜索",
+    description: "AI 对话式资源搜索入口",
+  },
+  {
+    key: "tvLive",
+    label: "TV 直播",
+    description: "直播频道源和播放入口",
+  },
+  {
+    key: "tvbox",
+    label: "TVBox",
+    description: "TVBox 数据源和缓存接口",
+  },
+  {
+    key: "dailyMovieResources",
+    label: "每日电影资源列表",
+    description: "每日电影页默认加载的网盘资源",
+  },
+  {
+    key: "music",
+    label: "音乐",
+    description: "音乐搜索、榜单、试听和下载接口",
+  },
+];
+
+const accessControlForm = reactive({
+  enabled: DEFAULT_ACCESS_CONTROL_CONFIG.enabled,
+  requireLogin: DEFAULT_ACCESS_CONTROL_CONFIG.requireLogin,
+  minPoints: DEFAULT_ACCESS_CONTROL_CONFIG.minPoints,
+  protectedFeatures: { ...DEFAULT_ACCESS_CONTROL_FEATURES },
+});
+
+const { setAccessControlConfig } = useAccessControlConfig();
+
 const DEFAULT_API_URL = "http://127.0.0.1:5000/api/quark/sharepage/save";
 const DEFAULT_ACCESS_DURATION = 1440;
+const DEFAULT_TRANSFER_REWARD_POINTS = 1000;
+const DEFAULT_TRANSFER_REWARD_DURATION = 1440;
 
 const form = reactive({
   apiUrl: "",
@@ -504,7 +715,12 @@ const form = reactive({
   enabled: false,
   verificationEnabled: false,
   shareLink: "",
+  accessVerificationShareLink: "",
   accessDurationMinutes: DEFAULT_ACCESS_DURATION,
+  transferRewardEnabled: true,
+  transferRewardShareLink: "",
+  transferRewardPoints: DEFAULT_TRANSFER_REWARD_POINTS,
+  transferRewardDurationMinutes: DEFAULT_TRANSFER_REWARD_DURATION,
 });
 
 const musicRules = {
@@ -605,6 +821,27 @@ const emailRules = {
   ],
 };
 
+const accessControlRules = {
+  minPoints: [
+    {
+      validator: (_rule, value, callback) => {
+        if (!accessControlForm.enabled) {
+          callback();
+          return;
+        }
+
+        if (typeof value !== "number" || value < 0 || value > 100000000) {
+          callback(new Error("最低积分需要在 0 到 100000000 之间"));
+          return;
+        }
+
+        callback();
+      },
+      trigger: ["blur", "change"],
+    },
+  ],
+};
+
 const groupQrRules = {
   title: [
     { required: true, message: "请输入标题", trigger: "blur" },
@@ -694,6 +931,26 @@ const validateShareLink = (_rule, value, callback) => {
   callback();
 };
 
+const validateTransferRewardShareLink = (_rule, value, callback) => {
+  if (!form.transferRewardEnabled) {
+    callback();
+    return;
+  }
+
+  if (!value) {
+    callback(new Error("请输入积分任务夸克分享链接"));
+    return;
+  }
+
+  const pattern = /https?:\/\/pan\.quark\.cn\/s\/[A-Za-z0-9]+/;
+  if (!pattern.test(value)) {
+    callback(new Error("请输入有效的夸克分享链接"));
+    return;
+  }
+
+  callback();
+};
+
 const validateAccessDuration = (_rule, value, callback) => {
   if (!form.verificationEnabled) {
     callback();
@@ -718,6 +975,22 @@ const validateAccessDuration = (_rule, value, callback) => {
   callback();
 };
 
+const validatePositiveInteger = (message, max) => {
+  return (_rule, value, callback) => {
+    if (!form.transferRewardEnabled) {
+      callback();
+      return;
+    }
+
+    if (typeof value !== "number" || value < 1 || value > max) {
+      callback(new Error(message));
+      return;
+    }
+
+    callback();
+  };
+};
+
 const rules = {
   apiUrl: [{ validator: validateUrl, trigger: "blur" }],
   quarkCookie: [
@@ -729,9 +1002,26 @@ const rules = {
   typeId: [
     { validator: requiredWhenEnabled("请选择资源类型"), trigger: "change" },
   ],
-  shareLink: [{ validator: validateShareLink, trigger: "blur" }],
+  accessVerificationShareLink: [
+    { validator: validateShareLink, trigger: "blur" },
+  ],
   accessDurationMinutes: [
     { validator: validateAccessDuration, trigger: ["blur", "change"] },
+  ],
+  transferRewardShareLink: [
+    { validator: validateTransferRewardShareLink, trigger: "blur" },
+  ],
+  transferRewardPoints: [
+    {
+      validator: validatePositiveInteger("奖励积分需要大于 0", 100000000),
+      trigger: ["blur", "change"],
+    },
+  ],
+  transferRewardDurationMinutes: [
+    {
+      validator: validatePositiveInteger("有效期需要大于 0 分钟", 525600),
+      trigger: ["blur", "change"],
+    },
   ],
 };
 
@@ -772,7 +1062,12 @@ const resetForm = () => {
     form.apiUrl = DEFAULT_API_URL;
     form.verificationEnabled = false;
     form.shareLink = "";
+    form.accessVerificationShareLink = "";
     form.accessDurationMinutes = DEFAULT_ACCESS_DURATION;
+    form.transferRewardEnabled = true;
+    form.transferRewardShareLink = "";
+    form.transferRewardPoints = DEFAULT_TRANSFER_REWARD_POINTS;
+    form.transferRewardDurationMinutes = DEFAULT_TRANSFER_REWARD_DURATION;
   });
 };
 
@@ -806,7 +1101,7 @@ const getEmailConfig = async () => {
       emailForm.provider = res.data.provider || "resend";
       emailForm.apiKey = "";
       emailForm.fromEmail = res.data.fromEmail || "";
-      emailForm.fromName = res.data.fromName || "爱盼迷";
+      emailForm.fromName = res.data.fromName || "爱盼";
       emailForm.replyTo = res.data.replyTo || "";
       emailForm.siteUrl = res.data.siteUrl || "";
       emailForm.verificationExpireMinutes =
@@ -820,6 +1115,85 @@ const getEmailConfig = async () => {
     console.error("获取邮箱配置失败:", error);
     ElMessage.error("获取邮箱配置失败");
   }
+};
+
+const applyAccessControlConfig = (config = DEFAULT_ACCESS_CONTROL_CONFIG) => {
+  accessControlForm.enabled =
+    config.enabled ?? DEFAULT_ACCESS_CONTROL_CONFIG.enabled;
+  accessControlForm.requireLogin =
+    config.requireLogin ?? DEFAULT_ACCESS_CONTROL_CONFIG.requireLogin;
+  accessControlForm.minPoints =
+    Number(config.minPoints ?? DEFAULT_ACCESS_CONTROL_CONFIG.minPoints);
+
+  Object.keys(DEFAULT_ACCESS_CONTROL_FEATURES).forEach((key) => {
+    accessControlForm.protectedFeatures[key] =
+      config.protectedFeatures?.[key] ?? DEFAULT_ACCESS_CONTROL_FEATURES[key];
+  });
+};
+
+const getAccessControlConfig = async () => {
+  try {
+    const res = await $fetch("/api/admin/settings/access-control", {
+      headers: {
+        Authorization: `Bearer ${useCookie("token").value}`,
+      },
+    });
+
+    if (res.code === 200) {
+      applyAccessControlConfig(res.data);
+    }
+  } catch (error) {
+    console.error("获取访问限制配置失败:", error);
+    ElMessage.error("获取访问限制配置失败");
+  }
+};
+
+const handleAccessControlSubmit = async () => {
+  if (!accessControlFormRef.value) return;
+
+  try {
+    const valid = await accessControlFormRef.value.validate();
+    if (!valid) return;
+
+    accessControlLoading.value = true;
+
+    const res = await $fetch("/api/admin/settings/access-control", {
+      method: "POST",
+      body: {
+        enabled: accessControlForm.enabled,
+        requireLogin: accessControlForm.requireLogin,
+        minPoints: accessControlForm.minPoints,
+        protectedFeatures: { ...accessControlForm.protectedFeatures },
+      },
+      headers: {
+        Authorization: `Bearer ${useCookie("token").value}`,
+      },
+    });
+
+    if (res.code === 200) {
+      ElMessage.success("访问限制配置保存成功");
+      applyAccessControlConfig(res.data);
+      setAccessControlConfig(res.data);
+    } else {
+      ElMessage.error(res.msg || "保存失败");
+    }
+  } catch (error) {
+    console.error("保存访问限制配置失败:", error);
+    ElMessage.error("保存访问限制配置失败");
+  } finally {
+    accessControlLoading.value = false;
+  }
+};
+
+const resetAccessControlForm = () => {
+  ElMessageBox.confirm("确定要恢复默认访问限制配置吗？", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    applyAccessControlConfig(DEFAULT_ACCESS_CONTROL_CONFIG);
+    handleAccessControlSubmit();
+  });
 };
 
 const handleEmailSubmit = async () => {
@@ -920,9 +1294,17 @@ const getConfig = async () => {
       form.typeId = res.data.typeId || "";
       form.enabled = res.data.enabled ?? false;
       form.verificationEnabled = res.data.verificationEnabled ?? false;
-      form.shareLink = res.data.shareLink || "";
+      form.accessVerificationShareLink =
+        res.data.accessVerificationShareLink || res.data.shareLink || "";
+      form.shareLink = form.accessVerificationShareLink;
       form.accessDurationMinutes =
         res.data.accessDurationMinutes ?? DEFAULT_ACCESS_DURATION;
+      form.transferRewardEnabled = res.data.transferRewardEnabled ?? true;
+      form.transferRewardShareLink = res.data.transferRewardShareLink || "";
+      form.transferRewardPoints =
+        res.data.transferRewardPoints ?? DEFAULT_TRANSFER_REWARD_POINTS;
+      form.transferRewardDurationMinutes =
+        res.data.transferRewardDurationMinutes ?? DEFAULT_TRANSFER_REWARD_DURATION;
     }
   } catch (error) {
     console.error("获取配置失败:", error);
@@ -960,8 +1342,13 @@ const handleSubmit = async () => {
         userId: userInfo.data.id,
         enabled: form.enabled,
         verificationEnabled: form.verificationEnabled,
-        shareLink: form.shareLink,
+        shareLink: form.accessVerificationShareLink,
+        accessVerificationShareLink: form.accessVerificationShareLink,
         accessDurationMinutes: form.accessDurationMinutes,
+        transferRewardEnabled: form.transferRewardEnabled,
+        transferRewardShareLink: form.transferRewardShareLink,
+        transferRewardPoints: form.transferRewardPoints,
+        transferRewardDurationMinutes: form.transferRewardDurationMinutes,
       },
       headers: {
         Authorization: `Bearer ${useCookie("token").value}`,
@@ -984,6 +1371,7 @@ const handleSubmit = async () => {
 // 音乐验证码相关方法
 const musicFormRef = ref(null);
 const groupQrFormRef = ref(null);
+const accessControlFormRef = ref(null);
 
 const handleMusicEnabledChange = (value) => {
   if (!value) {
@@ -1186,6 +1574,7 @@ onMounted(() => {
   getConfig();
   getMusicConfig();
   getGroupQrConfig();
+  getAccessControlConfig();
 });
 </script>
 

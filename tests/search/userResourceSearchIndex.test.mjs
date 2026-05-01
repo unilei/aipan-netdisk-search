@@ -47,6 +47,16 @@ test("buildUserResourceSearchQuery uses the fixed weighted fields and ordering",
     size: 25,
     sort: [{ _score: "desc" }, { updatedAt: "desc" }],
     query: buildUserResourceStrictKeywordQuery("资源"),
+    highlight: {
+      fields: {
+        name: {
+          pre_tags: ["<mark>"],
+          post_tags: ["</mark>"],
+          fragment_size: 0,
+          number_of_fragments: 0,
+        },
+      },
+    },
   });
 });
 

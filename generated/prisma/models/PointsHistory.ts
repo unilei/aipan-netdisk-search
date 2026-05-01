@@ -46,6 +46,7 @@ export type PointsHistoryMinAggregateOutputType = {
   type: string | null
   description: string | null
   relatedId: number | null
+  expiresAt: Date | null
   createdAt: Date | null
 }
 
@@ -56,6 +57,7 @@ export type PointsHistoryMaxAggregateOutputType = {
   type: string | null
   description: string | null
   relatedId: number | null
+  expiresAt: Date | null
   createdAt: Date | null
 }
 
@@ -66,6 +68,7 @@ export type PointsHistoryCountAggregateOutputType = {
   type: number
   description: number
   relatedId: number
+  expiresAt: number
   createdAt: number
   _all: number
 }
@@ -92,6 +95,7 @@ export type PointsHistoryMinAggregateInputType = {
   type?: true
   description?: true
   relatedId?: true
+  expiresAt?: true
   createdAt?: true
 }
 
@@ -102,6 +106,7 @@ export type PointsHistoryMaxAggregateInputType = {
   type?: true
   description?: true
   relatedId?: true
+  expiresAt?: true
   createdAt?: true
 }
 
@@ -112,6 +117,7 @@ export type PointsHistoryCountAggregateInputType = {
   type?: true
   description?: true
   relatedId?: true
+  expiresAt?: true
   createdAt?: true
   _all?: true
 }
@@ -209,6 +215,7 @@ export type PointsHistoryGroupByOutputType = {
   type: string
   description: string | null
   relatedId: number | null
+  expiresAt: Date | null
   createdAt: Date
   _count: PointsHistoryCountAggregateOutputType | null
   _avg: PointsHistoryAvgAggregateOutputType | null
@@ -242,8 +249,10 @@ export type PointsHistoryWhereInput = {
   type?: Prisma.StringFilter<"PointsHistory"> | string
   description?: Prisma.StringNullableFilter<"PointsHistory"> | string | null
   relatedId?: Prisma.IntNullableFilter<"PointsHistory"> | number | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"PointsHistory"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PointsHistory"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  transferPointGrant?: Prisma.XOR<Prisma.TransferPointGrantNullableScalarRelationFilter, Prisma.TransferPointGrantWhereInput> | null
 }
 
 export type PointsHistoryOrderByWithRelationInput = {
@@ -253,8 +262,10 @@ export type PointsHistoryOrderByWithRelationInput = {
   type?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   relatedId?: Prisma.SortOrderInput | Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  transferPointGrant?: Prisma.TransferPointGrantOrderByWithRelationInput
 }
 
 export type PointsHistoryWhereUniqueInput = Prisma.AtLeast<{
@@ -267,8 +278,10 @@ export type PointsHistoryWhereUniqueInput = Prisma.AtLeast<{
   type?: Prisma.StringFilter<"PointsHistory"> | string
   description?: Prisma.StringNullableFilter<"PointsHistory"> | string | null
   relatedId?: Prisma.IntNullableFilter<"PointsHistory"> | number | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"PointsHistory"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PointsHistory"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  transferPointGrant?: Prisma.XOR<Prisma.TransferPointGrantNullableScalarRelationFilter, Prisma.TransferPointGrantWhereInput> | null
 }, "id">
 
 export type PointsHistoryOrderByWithAggregationInput = {
@@ -278,6 +291,7 @@ export type PointsHistoryOrderByWithAggregationInput = {
   type?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   relatedId?: Prisma.SortOrderInput | Prisma.SortOrder
+  expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.PointsHistoryCountOrderByAggregateInput
   _avg?: Prisma.PointsHistoryAvgOrderByAggregateInput
@@ -296,6 +310,7 @@ export type PointsHistoryScalarWhereWithAggregatesInput = {
   type?: Prisma.StringWithAggregatesFilter<"PointsHistory"> | string
   description?: Prisma.StringNullableWithAggregatesFilter<"PointsHistory"> | string | null
   relatedId?: Prisma.IntNullableWithAggregatesFilter<"PointsHistory"> | number | null
+  expiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"PointsHistory"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"PointsHistory"> | Date | string
 }
 
@@ -304,8 +319,10 @@ export type PointsHistoryCreateInput = {
   type: string
   description?: string | null
   relatedId?: number | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutPointsHistoryInput
+  transferPointGrant?: Prisma.TransferPointGrantCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUncheckedCreateInput = {
@@ -315,7 +332,9 @@ export type PointsHistoryUncheckedCreateInput = {
   type: string
   description?: string | null
   relatedId?: number | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
+  transferPointGrant?: Prisma.TransferPointGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUpdateInput = {
@@ -323,8 +342,10 @@ export type PointsHistoryUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutPointsHistoryNestedInput
+  transferPointGrant?: Prisma.TransferPointGrantUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateInput = {
@@ -334,7 +355,9 @@ export type PointsHistoryUncheckedUpdateInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transferPointGrant?: Prisma.TransferPointGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryCreateManyInput = {
@@ -344,6 +367,7 @@ export type PointsHistoryCreateManyInput = {
   type: string
   description?: string | null
   relatedId?: number | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -352,6 +376,7 @@ export type PointsHistoryUpdateManyMutationInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -362,6 +387,7 @@ export type PointsHistoryUncheckedUpdateManyInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -382,6 +408,7 @@ export type PointsHistoryCountOrderByAggregateInput = {
   type?: Prisma.SortOrder
   description?: Prisma.SortOrder
   relatedId?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -399,6 +426,7 @@ export type PointsHistoryMaxOrderByAggregateInput = {
   type?: Prisma.SortOrder
   description?: Prisma.SortOrder
   relatedId?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -409,6 +437,7 @@ export type PointsHistoryMinOrderByAggregateInput = {
   type?: Prisma.SortOrder
   description?: Prisma.SortOrder
   relatedId?: Prisma.SortOrder
+  expiresAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -417,6 +446,11 @@ export type PointsHistorySumOrderByAggregateInput = {
   userId?: Prisma.SortOrder
   points?: Prisma.SortOrder
   relatedId?: Prisma.SortOrder
+}
+
+export type PointsHistoryNullableScalarRelationFilter = {
+  is?: Prisma.PointsHistoryWhereInput | null
+  isNot?: Prisma.PointsHistoryWhereInput | null
 }
 
 export type PointsHistoryCreateNestedManyWithoutUserInput = {
@@ -461,12 +495,30 @@ export type PointsHistoryUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.PointsHistoryScalarWhereInput | Prisma.PointsHistoryScalarWhereInput[]
 }
 
+export type PointsHistoryCreateNestedOneWithoutTransferPointGrantInput = {
+  create?: Prisma.XOR<Prisma.PointsHistoryCreateWithoutTransferPointGrantInput, Prisma.PointsHistoryUncheckedCreateWithoutTransferPointGrantInput>
+  connectOrCreate?: Prisma.PointsHistoryCreateOrConnectWithoutTransferPointGrantInput
+  connect?: Prisma.PointsHistoryWhereUniqueInput
+}
+
+export type PointsHistoryUpdateOneWithoutTransferPointGrantNestedInput = {
+  create?: Prisma.XOR<Prisma.PointsHistoryCreateWithoutTransferPointGrantInput, Prisma.PointsHistoryUncheckedCreateWithoutTransferPointGrantInput>
+  connectOrCreate?: Prisma.PointsHistoryCreateOrConnectWithoutTransferPointGrantInput
+  upsert?: Prisma.PointsHistoryUpsertWithoutTransferPointGrantInput
+  disconnect?: Prisma.PointsHistoryWhereInput | boolean
+  delete?: Prisma.PointsHistoryWhereInput | boolean
+  connect?: Prisma.PointsHistoryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PointsHistoryUpdateToOneWithWhereWithoutTransferPointGrantInput, Prisma.PointsHistoryUpdateWithoutTransferPointGrantInput>, Prisma.PointsHistoryUncheckedUpdateWithoutTransferPointGrantInput>
+}
+
 export type PointsHistoryCreateWithoutUserInput = {
   points: number
   type: string
   description?: string | null
   relatedId?: number | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
+  transferPointGrant?: Prisma.TransferPointGrantCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUncheckedCreateWithoutUserInput = {
@@ -475,7 +527,9 @@ export type PointsHistoryUncheckedCreateWithoutUserInput = {
   type: string
   description?: string | null
   relatedId?: number | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
+  transferPointGrant?: Prisma.TransferPointGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryCreateOrConnectWithoutUserInput = {
@@ -514,7 +568,66 @@ export type PointsHistoryScalarWhereInput = {
   type?: Prisma.StringFilter<"PointsHistory"> | string
   description?: Prisma.StringNullableFilter<"PointsHistory"> | string | null
   relatedId?: Prisma.IntNullableFilter<"PointsHistory"> | number | null
+  expiresAt?: Prisma.DateTimeNullableFilter<"PointsHistory"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"PointsHistory"> | Date | string
+}
+
+export type PointsHistoryCreateWithoutTransferPointGrantInput = {
+  points: number
+  type: string
+  description?: string | null
+  relatedId?: number | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutPointsHistoryInput
+}
+
+export type PointsHistoryUncheckedCreateWithoutTransferPointGrantInput = {
+  id?: number
+  userId: number
+  points: number
+  type: string
+  description?: string | null
+  relatedId?: number | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+}
+
+export type PointsHistoryCreateOrConnectWithoutTransferPointGrantInput = {
+  where: Prisma.PointsHistoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.PointsHistoryCreateWithoutTransferPointGrantInput, Prisma.PointsHistoryUncheckedCreateWithoutTransferPointGrantInput>
+}
+
+export type PointsHistoryUpsertWithoutTransferPointGrantInput = {
+  update: Prisma.XOR<Prisma.PointsHistoryUpdateWithoutTransferPointGrantInput, Prisma.PointsHistoryUncheckedUpdateWithoutTransferPointGrantInput>
+  create: Prisma.XOR<Prisma.PointsHistoryCreateWithoutTransferPointGrantInput, Prisma.PointsHistoryUncheckedCreateWithoutTransferPointGrantInput>
+  where?: Prisma.PointsHistoryWhereInput
+}
+
+export type PointsHistoryUpdateToOneWithWhereWithoutTransferPointGrantInput = {
+  where?: Prisma.PointsHistoryWhereInput
+  data: Prisma.XOR<Prisma.PointsHistoryUpdateWithoutTransferPointGrantInput, Prisma.PointsHistoryUncheckedUpdateWithoutTransferPointGrantInput>
+}
+
+export type PointsHistoryUpdateWithoutTransferPointGrantInput = {
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutPointsHistoryNestedInput
+}
+
+export type PointsHistoryUncheckedUpdateWithoutTransferPointGrantInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type PointsHistoryCreateManyUserInput = {
@@ -523,6 +636,7 @@ export type PointsHistoryCreateManyUserInput = {
   type: string
   description?: string | null
   relatedId?: number | null
+  expiresAt?: Date | string | null
   createdAt?: Date | string
 }
 
@@ -531,7 +645,9 @@ export type PointsHistoryUpdateWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transferPointGrant?: Prisma.TransferPointGrantUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateWithoutUserInput = {
@@ -540,7 +656,9 @@ export type PointsHistoryUncheckedUpdateWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transferPointGrant?: Prisma.TransferPointGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateManyWithoutUserInput = {
@@ -549,6 +667,7 @@ export type PointsHistoryUncheckedUpdateManyWithoutUserInput = {
   type?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -561,8 +680,10 @@ export type PointsHistorySelect<ExtArgs extends runtime.Types.Extensions.Interna
   type?: boolean
   description?: boolean
   relatedId?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  transferPointGrant?: boolean | Prisma.PointsHistory$transferPointGrantArgs<ExtArgs>
 }, ExtArgs["result"]["pointsHistory"]>
 
 export type PointsHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -572,6 +693,7 @@ export type PointsHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types
   type?: boolean
   description?: boolean
   relatedId?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pointsHistory"]>
@@ -583,6 +705,7 @@ export type PointsHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   type?: boolean
   description?: boolean
   relatedId?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["pointsHistory"]>
@@ -594,12 +717,14 @@ export type PointsHistorySelectScalar = {
   type?: boolean
   description?: boolean
   relatedId?: boolean
+  expiresAt?: boolean
   createdAt?: boolean
 }
 
-export type PointsHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "points" | "type" | "description" | "relatedId" | "createdAt", ExtArgs["result"]["pointsHistory"]>
+export type PointsHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "points" | "type" | "description" | "relatedId" | "expiresAt" | "createdAt", ExtArgs["result"]["pointsHistory"]>
 export type PointsHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  transferPointGrant?: boolean | Prisma.PointsHistory$transferPointGrantArgs<ExtArgs>
 }
 export type PointsHistoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -612,6 +737,7 @@ export type $PointsHistoryPayload<ExtArgs extends runtime.Types.Extensions.Inter
   name: "PointsHistory"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    transferPointGrant: Prisma.$TransferPointGrantPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -620,6 +746,7 @@ export type $PointsHistoryPayload<ExtArgs extends runtime.Types.Extensions.Inter
     type: string
     description: string | null
     relatedId: number | null
+    expiresAt: Date | null
     createdAt: Date
   }, ExtArgs["result"]["pointsHistory"]>
   composites: {}
@@ -1016,6 +1143,7 @@ readonly fields: PointsHistoryFieldRefs;
 export interface Prisma__PointsHistoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  transferPointGrant<T extends Prisma.PointsHistory$transferPointGrantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PointsHistory$transferPointGrantArgs<ExtArgs>>): Prisma.Prisma__TransferPointGrantClient<runtime.Types.Result.GetResult<Prisma.$TransferPointGrantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1051,6 +1179,7 @@ export interface PointsHistoryFieldRefs {
   readonly type: Prisma.FieldRef<"PointsHistory", 'String'>
   readonly description: Prisma.FieldRef<"PointsHistory", 'String'>
   readonly relatedId: Prisma.FieldRef<"PointsHistory", 'Int'>
+  readonly expiresAt: Prisma.FieldRef<"PointsHistory", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"PointsHistory", 'DateTime'>
 }
     
@@ -1445,6 +1574,25 @@ export type PointsHistoryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many PointsHistories to delete.
    */
   limit?: number
+}
+
+/**
+ * PointsHistory.transferPointGrant
+ */
+export type PointsHistory$transferPointGrantArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TransferPointGrant
+   */
+  select?: Prisma.TransferPointGrantSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TransferPointGrant
+   */
+  omit?: Prisma.TransferPointGrantOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TransferPointGrantInclude<ExtArgs> | null
+  where?: Prisma.TransferPointGrantWhereInput
 }
 
 /**

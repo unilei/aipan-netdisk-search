@@ -415,6 +415,7 @@ export const ModelName = {
   ChatMessage: 'ChatMessage',
   CheckIn: 'CheckIn',
   PointsHistory: 'PointsHistory',
+  TransferPointGrant: 'TransferPointGrant',
   NavigationCategory: 'NavigationCategory',
   NavigationItem: 'NavigationItem',
   Report: 'Report'
@@ -433,7 +434,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "dailySearchStats" | "userVodConfig" | "emailVerificationToken" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "navigationCategory" | "navigationItem" | "report"
+    modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "dailySearchStats" | "userVodConfig" | "emailVerificationToken" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "transferPointGrant" | "navigationCategory" | "navigationItem" | "report"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2361,6 +2362,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    TransferPointGrant: {
+      payload: Prisma.$TransferPointGrantPayload<ExtArgs>
+      fields: Prisma.TransferPointGrantFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TransferPointGrantFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TransferPointGrantFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>
+        }
+        findFirst: {
+          args: Prisma.TransferPointGrantFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TransferPointGrantFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>
+        }
+        findMany: {
+          args: Prisma.TransferPointGrantFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>[]
+        }
+        create: {
+          args: Prisma.TransferPointGrantCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>
+        }
+        createMany: {
+          args: Prisma.TransferPointGrantCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TransferPointGrantCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>[]
+        }
+        delete: {
+          args: Prisma.TransferPointGrantDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>
+        }
+        update: {
+          args: Prisma.TransferPointGrantUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>
+        }
+        deleteMany: {
+          args: Prisma.TransferPointGrantDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TransferPointGrantUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TransferPointGrantUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>[]
+        }
+        upsert: {
+          args: Prisma.TransferPointGrantUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TransferPointGrantPayload>
+        }
+        aggregate: {
+          args: Prisma.TransferPointGrantAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTransferPointGrant>
+        }
+        groupBy: {
+          args: Prisma.TransferPointGrantGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TransferPointGrantGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TransferPointGrantCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TransferPointGrantCountAggregateOutputType> | number
+        }
+      }
+    }
     NavigationCategory: {
       payload: Prisma.$NavigationCategoryPayload<ExtArgs>
       fields: Prisma.NavigationCategoryFieldRefs
@@ -2961,10 +3036,25 @@ export const PointsHistoryScalarFieldEnum = {
   type: 'type',
   description: 'description',
   relatedId: 'relatedId',
+  expiresAt: 'expiresAt',
   createdAt: 'createdAt'
 } as const
 
 export type PointsHistoryScalarFieldEnum = (typeof PointsHistoryScalarFieldEnum)[keyof typeof PointsHistoryScalarFieldEnum]
+
+
+export const TransferPointGrantScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  shareId: 'shareId',
+  transferFingerprint: 'transferFingerprint',
+  points: 'points',
+  expiresAt: 'expiresAt',
+  pointsHistoryId: 'pointsHistoryId',
+  createdAt: 'createdAt'
+} as const
+
+export type TransferPointGrantScalarFieldEnum = (typeof TransferPointGrantScalarFieldEnum)[keyof typeof TransferPointGrantScalarFieldEnum]
 
 
 export const NavigationCategoryScalarFieldEnum = {
@@ -3252,6 +3342,7 @@ export type GlobalOmitConfig = {
   chatMessage?: Prisma.ChatMessageOmit
   checkIn?: Prisma.CheckInOmit
   pointsHistory?: Prisma.PointsHistoryOmit
+  transferPointGrant?: Prisma.TransferPointGrantOmit
   navigationCategory?: Prisma.NavigationCategoryOmit
   navigationItem?: Prisma.NavigationItemOmit
   report?: Prisma.ReportOmit

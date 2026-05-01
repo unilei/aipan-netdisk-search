@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma";
+import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -85,13 +86,16 @@ export default defineEventHandler(async (event) => {
                 }
             })
 
-            // 更新用户积分
-            await tx.user.update({
+            // 更新用户永久积分
+            const updatedUser = await tx.user.update({
                 where: { id: userId },
                 data: {
                     points: {
                         increment: totalPoints
                     }
+                },
+                select: {
+                    points: true
                 }
             })
 
@@ -119,25 +123,32 @@ export default defineEventHandler(async (event) => {
                 })
             }
 
-            return checkIn
-        })
+            const pointsBreakdown = await getUserPointsBreakdown(userId, {
+                client: tx,
+                permanentPoints: updatedUser.points
+            })
 
-        // 获取用户最新积分
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
-            select: { points: true }
+            return {
+                checkIn,
+                pointsBreakdown
+            }
         })
 
         return {
             code: 200,
             msg: '签到成功',
             data: {
-                checkIn: result,
-                totalPoints: user?.points || 0,
+                checkIn: result.checkIn,
+                totalPoints: result.pointsBreakdown.effectivePoints,
                 earnedPoints: totalPoints,
                 consecutiveDays: consecutiveDays,
                 bonusPoints: bonusPoints,
-                bonusDescription: bonusDescription
+                bonusDescription: bonusDescription,
+                permanentPoints: result.pointsBreakdown.permanentPoints,
+                temporaryPoints: result.pointsBreakdown.temporaryPoints,
+                effectivePoints: result.pointsBreakdown.effectivePoints,
+                nextExpiringAt: result.pointsBreakdown.nextExpiringAt,
+                pointsBreakdown: result.pointsBreakdown
             }
         }
 
