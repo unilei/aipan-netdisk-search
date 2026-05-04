@@ -1,0 +1,55 @@
+import { simpleDecode } from '~/utils/index.js'
+
+const shouldUseFeatureAccessControl = async () => {
+    try {
+        const { ensureAccessControlConfig } = useAccessControlConfig()
+        const config = await ensureAccessControlConfig()
+        return config.enabled && config.protectedFeatures?.music !== false
+    } catch (error) {
+        console.error('Failed to check music access control:', error)
+        return true
+    }
+}
+
+export default defineNuxtRouteMiddleware(async (to, from) => {
+    // Only check password for music page
+    if (!to.path.startsWith('/music')) {
+        return
+    }
+
+    // Don't check the auth page itself
+    if (to.path === '/music/auth') {
+        return
+    }
+
+    if (await shouldUseFeatureAccessControl()) {
+        return
+    }
+
+    try {
+        // Get current password and enabled status from database
+        const response = await $fetch('/api/music/password')
+        const { password: currentPassword, enabled } = (response as any).data || {}
+
+        // If music verification is disabled, skip authentication
+        if (!enabled) {
+            return
+        }
+
+        const musicAuth = useCookie('music-auth')
+
+        // If no auth cookie, redirect to password page
+        if (!musicAuth.value) {
+            return navigateTo('/music/auth')
+        }
+
+        // Verify password
+        const decoded = simpleDecode(musicAuth.value)
+        if (!decoded || decoded !== (currentPassword || 'aipan.me2026')) {
+            return navigateTo('/music/auth')
+        }
+    } catch (error) {
+        console.error('Failed to verify music password:', error)
+        return navigateTo('/music/auth')
+    }
+})

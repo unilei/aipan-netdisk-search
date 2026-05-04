@@ -1,0 +1,130 @@
+x-app-env: &app-env
+  NODE_ENV: production
+  NUXT_HOST: 0.0.0.0
+  NUXT_PORT: "3000"
+  WS_PORT: ${WS_PORT:-3002}
+  NUXT_PUBLIC_WS_PORT: ${WS_PORT:-3002}
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+  ELASTICSEARCH_NODE: ${ELASTICSEARCH_NODE:-}
+  ELASTICSEARCH_USERNAME: ${ELASTICSEARCH_USERNAME:-}
+  ELASTICSEARCH_PASSWORD: ${ELASTICSEARCH_PASSWORD:-}
+  ELASTICSEARCH_CA_FINGERPRINT: ${ELASTICSEARCH_CA_FINGERPRINT:-}
+  ELASTICSEARCH_USER_RESOURCE_INDEX: ${ELASTICSEARCH_USER_RESOURCE_INDEX:-user-resources}
+  USER_RESOURCE_AUTO_REVIEW_ENABLED: ${USER_RESOURCE_AUTO_REVIEW_ENABLED:-true}
+  USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID: ${USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID:-true}
+  USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID: ${USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID:-true}
+  USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE: ${USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE:-false}
+  USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER: ${USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER:-true}
+  USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL: ${USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL:-true}
+  USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED: ${USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED:-true}
+  USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS: ${USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS:-86400}
+  USER_RESOURCE_AUTO_REVIEW_MAX_LINKS: ${USER_RESOURCE_AUTO_REVIEW_MAX_LINKS:-5}
+  USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED: ${USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED:-true}
+  USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE: ${USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE:-auto}
+  USER_RESOURCE_AUTO_REVIEW_WORKER_ENABLED: ${USER_RESOURCE_AUTO_REVIEW_WORKER_ENABLED:-true}
+  USER_RESOURCE_AUTO_REVIEW_WORKER_CONCURRENCY: ${USER_RESOURCE_AUTO_REVIEW_WORKER_CONCURRENCY:-2}
+  USER_RESOURCE_AUTO_REVIEW_QUEUE_MAX_RETRIES: ${USER_RESOURCE_AUTO_REVIEW_QUEUE_MAX_RETRIES:-3}
+  USER_RESOURCE_AUTO_REVIEW_QUEUE_RETRY_DELAY_MS: ${USER_RESOURCE_AUTO_REVIEW_QUEUE_RETRY_DELAY_MS:-30000}
+  USER_RESOURCE_AUTO_REVIEW_QUEUE_POLL_INTERVAL_MS: ${USER_RESOURCE_AUTO_REVIEW_QUEUE_POLL_INTERVAL_MS:-2000}
+  USER_RESOURCE_AUTO_REVIEW_QUEUE_DEDUPE_TTL_SECONDS: ${USER_RESOURCE_AUTO_REVIEW_QUEUE_DEDUPE_TTL_SECONDS:-3600}
+  DATABASE_SCHEMA: ${DATABASE_SCHEMA:-public}
+  DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA:-public}
+  NUXT_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA:-public}
+  NUXT_DATABASE_SCHEMA: ${DATABASE_SCHEMA:-public}
+  ADMIN_USER: ${ADMIN_USER}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  ADMIN_EMAIL: ${ADMIN_EMAIL}
+  NUXT_ADMIN_USER: ${ADMIN_USER}
+  NUXT_ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+  NUXT_ADMIN_EMAIL: ${ADMIN_EMAIL}
+  JWT_SECRET: ${JWT_SECRET}
+  NUXT_JWT_SECRET: ${JWT_SECRET}
+  SETTINGS_ENCRYPTION_KEY: ${SETTINGS_ENCRYPTION_KEY}
+  NUXT_SETTINGS_ENCRYPTION_KEY: ${SETTINGS_ENCRYPTION_KEY}
+  NUXT_PUBLIC_GITHUB_OWNER: ${NUXT_PUBLIC_GITHUB_OWNER:-}
+  NUXT_PUBLIC_GITHUB_REPO: ${NUXT_PUBLIC_GITHUB_REPO:-}
+  NUXT_PUBLIC_GITHUB_TOKEN: ${NUXT_PUBLIC_GITHUB_TOKEN:-}
+  NUXT_PUBLIC_GITHUB_BRANCH: ${NUXT_PUBLIC_GITHUB_BRANCH:-master}
+  NUXT_PUBLIC_QUARK_COOKIE: ${NUXT_PUBLIC_QUARK_COOKIE:-}
+
+services:
+  prisma-migrate:
+    image: ${APP_IMAGE:-unilei/aipan-netdisk-search:latest}
+    container_name: aipan-prisma-migrate
+    restart: "no"
+    environment:
+      <<: *app-env
+      SHADOW_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA:-public}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["prisma", "migrate", "deploy", "--schema=/app/prisma/schema.prisma"]
+    networks:
+      - aipan-network
+
+  aipan-netdisk-search:
+    image: ${APP_IMAGE:-unilei/aipan-netdisk-search:latest}
+    container_name: aipan-netdisk-search-app
+    restart: always
+    ports:
+      - "${APP_PORT:-3000}:3000"
+      - "${WS_PORT:-3002}:3002"
+    environment:
+      <<: *app-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - aipan-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: aipan-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - aipan-network
+
+  redis:
+    image: redis:alpine
+    container_name: aipan-redis
+    restart: always
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - aipan-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  aipan-network:
+    driver: bridge

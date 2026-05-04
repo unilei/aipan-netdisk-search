@@ -1,0 +1,64 @@
+{
+  "welcome": "欢迎使用爱盼",
+  "search": "搜索",
+  "app_title": "爱盼 - 资源随心，娱乐无限",
+  "subtitle": "资源随心，娱乐无限",
+  "search_placeholder": "请输入关键词搜索",
+  "sensitive_word_alert": "请勿输入敏感词",
+  "meta": {
+    "title": "爱盼 - 一站式资源聚合平台 | 网盘搜索·音乐·电影·游戏·直播",
+    "description": "爱盼是一站式资源聚合平台，集网盘搜索、在线音乐、每日电影推荐、TV直播、TVBox、休闲游戏和直播电台于一体。支持百度网盘、阿里云盘、夸克网盘多源搜索，资源检索和常用入口统一管理。",
+    "keywords": "爱盼,网盘搜索,资源搜索,百度网盘,阿里云盘,夸克网盘,在线音乐,每日电影推荐,电视直播,FM电台,博客平台,社区论坛,休闲游戏,音乐播放器,TVBox,资源聚合,一站式娱乐"
+  },
+  "broadcast": {
+    "message": "收藏网站发布页: https://link0.me/aipan"
+  },
+  "language": {
+    "switch": "切换语言",
+    "zh": "中文",
+    "en": "English"
+  },
+  "header": {
+    "navItems": {
+      "music": "音乐",
+      "blog": "博客",
+      "forum": "论坛",
+      "chat": "聊天",
+      "games": "游戏",
+      "home": "首页",
+      "tv": "电视TV",
+      "tvbox": "TVbox接口"
+    },
+    "user": {
+      "login": "登录",
+      "logout": "退出登录",
+      "admin": "管理后台",
+      "dashboard": "个人中心",
+      "profile": "账号设置"
+    },
+    "about": {
+      "disclaimer": "免责声明",
+      "about": "关于网站",
+      "copyright": "侵权投诉",
+      "releases": "发布日志",
+      "about_title": "关于"
+    }
+  },
+  "footer": {
+    "copyright": "© 2026 爱盼 - 一站式资源聚合平台",
+    "links": {
+      "about": "关于网站",
+      "userAgreement": "用户协议",
+      "privacy": "隐私政策",
+      "disclaimer": "免责声明",
+      "copyright": "侵权投诉",
+      "releases": "发布日志"
+    },
+    "statement": "声明：本站内容皆来自网络公开资源。本站不储存、复制、传播任何文件，不做任何盈利，仅作个人公益学习，请勿非法&商业传播。"
+  },
+  "douban": {
+    "movie_count": "部",
+    "no_image": "暂无图片",
+    "loading": "加载中"
+  }
+}

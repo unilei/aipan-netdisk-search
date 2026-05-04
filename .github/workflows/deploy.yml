@@ -1,0 +1,224 @@
+name: Build And Deploy Production
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: read
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      SERVER_HOST: ${{ secrets.DEPLOY_SERVER_HOST }}
+      DEPLOY_DIR: /www/wwwroot/aipan-docker
+      COMPOSE_PROJECT_NAME: aipan-docker
+      APP_SERVICE_NAME: aipan-netdisk-search
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Prepare image metadata
+        id: image
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        run: |
+          if [ -z "${DOCKERHUB_USERNAME}" ]; then
+            echo "DOCKERHUB_USERNAME is required." >&2
+            exit 1
+          fi
+
+          IMAGE_NAME="${DOCKERHUB_USERNAME}/aipan-netdisk-search"
+          IMAGE_TAG="sha-${GITHUB_SHA::7}"
+
+          echo "image_name=${IMAGE_NAME}" >> "${GITHUB_OUTPUT}"
+          echo "image_tag=${IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
+          echo "app_image=${IMAGE_NAME}:${IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.image.outputs.image_name }}:latest
+            ${{ steps.image.outputs.app_image }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          labels: |
+            org.opencontainers.image.source=${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Build production env file
+        env:
+          APP_IMAGE: ${{ steps.image.outputs.app_image }}
+          APP_PORT: ${{ vars.APP_PORT }}
+          WS_PORT: ${{ vars.WS_PORT }}
+          DATABASE_SCHEMA: ${{ vars.DATABASE_SCHEMA }}
+          NUXT_PUBLIC_GITHUB_OWNER: ${{ vars.NUXT_PUBLIC_GITHUB_OWNER }}
+          NUXT_PUBLIC_GITHUB_REPO: ${{ vars.NUXT_PUBLIC_GITHUB_REPO }}
+          NUXT_PUBLIC_GITHUB_BRANCH: ${{ vars.NUXT_PUBLIC_GITHUB_BRANCH }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          ADMIN_USER: ${{ secrets.ADMIN_USER }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          SETTINGS_ENCRYPTION_KEY: ${{ secrets.SETTINGS_ENCRYPTION_KEY }}
+          ELASTICSEARCH_NODE: ${{ secrets.ELASTICSEARCH_NODE }}
+          ELASTICSEARCH_USERNAME: ${{ secrets.ELASTICSEARCH_USERNAME }}
+          ELASTICSEARCH_PASSWORD: ${{ secrets.ELASTICSEARCH_PASSWORD }}
+          ELASTICSEARCH_CA_FINGERPRINT: ${{ vars.ELASTICSEARCH_CA_FINGERPRINT }}
+          ELASTICSEARCH_USER_RESOURCE_INDEX: ${{ vars.ELASTICSEARCH_USER_RESOURCE_INDEX }}
+          USER_RESOURCE_AUTO_REVIEW_ENABLED: ${{ vars.USER_RESOURCE_AUTO_REVIEW_ENABLED }}
+          USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID: ${{ vars.USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID }}
+          USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID: ${{ vars.USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID }}
+          USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE: ${{ vars.USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE }}
+          USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER: ${{ vars.USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER }}
+          USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL: ${{ vars.USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL }}
+          USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED: ${{ vars.USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED }}
+          USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS: ${{ vars.USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS }}
+          USER_RESOURCE_AUTO_REVIEW_MAX_LINKS: ${{ vars.USER_RESOURCE_AUTO_REVIEW_MAX_LINKS }}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED: ${{ vars.USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED }}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE: ${{ vars.USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE }}
+          USER_RESOURCE_AUTO_REVIEW_WORKER_ENABLED: ${{ vars.USER_RESOURCE_AUTO_REVIEW_WORKER_ENABLED }}
+          USER_RESOURCE_AUTO_REVIEW_WORKER_CONCURRENCY: ${{ vars.USER_RESOURCE_AUTO_REVIEW_WORKER_CONCURRENCY }}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_MAX_RETRIES: ${{ vars.USER_RESOURCE_AUTO_REVIEW_QUEUE_MAX_RETRIES }}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_RETRY_DELAY_MS: ${{ vars.USER_RESOURCE_AUTO_REVIEW_QUEUE_RETRY_DELAY_MS }}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_POLL_INTERVAL_MS: ${{ vars.USER_RESOURCE_AUTO_REVIEW_QUEUE_POLL_INTERVAL_MS }}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_DEDUPE_TTL_SECONDS: ${{ vars.USER_RESOURCE_AUTO_REVIEW_QUEUE_DEDUPE_TTL_SECONDS }}
+          NUXT_PUBLIC_GITHUB_TOKEN: ${{ secrets.NUXT_PUBLIC_GITHUB_TOKEN }}
+          NUXT_PUBLIC_QUARK_COOKIE: ${{ secrets.NUXT_PUBLIC_QUARK_COOKIE }}
+        run: |
+          : "${APP_PORT:=3000}"
+          : "${WS_PORT:=3002}"
+          : "${DATABASE_SCHEMA:=public}"
+          : "${ELASTICSEARCH_USER_RESOURCE_INDEX:=user-resources}"
+          : "${USER_RESOURCE_AUTO_REVIEW_ENABLED:=true}"
+          : "${USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID:=true}"
+          : "${USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID:=true}"
+          : "${USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE:=false}"
+          : "${USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER:=true}"
+          : "${USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL:=true}"
+          : "${USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED:=true}"
+          : "${USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS:=86400}"
+          : "${USER_RESOURCE_AUTO_REVIEW_MAX_LINKS:=5}"
+          : "${USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED:=true}"
+          : "${USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE:=auto}"
+          : "${USER_RESOURCE_AUTO_REVIEW_WORKER_ENABLED:=true}"
+          : "${USER_RESOURCE_AUTO_REVIEW_WORKER_CONCURRENCY:=2}"
+          : "${USER_RESOURCE_AUTO_REVIEW_QUEUE_MAX_RETRIES:=3}"
+          : "${USER_RESOURCE_AUTO_REVIEW_QUEUE_RETRY_DELAY_MS:=30000}"
+          : "${USER_RESOURCE_AUTO_REVIEW_QUEUE_POLL_INTERVAL_MS:=2000}"
+          : "${USER_RESOURCE_AUTO_REVIEW_QUEUE_DEDUPE_TTL_SECONDS:=3600}"
+          : "${NUXT_PUBLIC_GITHUB_BRANCH:=master}"
+
+          for name in POSTGRES_USER POSTGRES_PASSWORD POSTGRES_DB ADMIN_USER ADMIN_PASSWORD ADMIN_EMAIL JWT_SECRET SETTINGS_ENCRYPTION_KEY; do
+            if [ -z "$(eval "printf '%s' \"\${$name:-}\"")" ]; then
+              echo "$name is required." >&2
+              exit 1
+            fi
+          done
+
+          mkdir -p .deploy-workdir
+
+          cat > .deploy-workdir/.env.production <<EOF
+          APP_IMAGE=${APP_IMAGE}
+          APP_PORT=${APP_PORT}
+          WS_PORT=${WS_PORT}
+          POSTGRES_USER=${POSTGRES_USER}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          POSTGRES_DB=${POSTGRES_DB}
+          DATABASE_SCHEMA=${DATABASE_SCHEMA}
+          ADMIN_USER=${ADMIN_USER}
+          ADMIN_PASSWORD=${ADMIN_PASSWORD}
+          ADMIN_EMAIL=${ADMIN_EMAIL}
+          JWT_SECRET=${JWT_SECRET}
+          SETTINGS_ENCRYPTION_KEY=${SETTINGS_ENCRYPTION_KEY}
+          REDIS_URL=redis://redis:6379
+          ELASTICSEARCH_NODE=${ELASTICSEARCH_NODE}
+          ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+          ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
+          ELASTICSEARCH_CA_FINGERPRINT=${ELASTICSEARCH_CA_FINGERPRINT}
+          ELASTICSEARCH_USER_RESOURCE_INDEX=${ELASTICSEARCH_USER_RESOURCE_INDEX}
+          USER_RESOURCE_AUTO_REVIEW_ENABLED=${USER_RESOURCE_AUTO_REVIEW_ENABLED}
+          USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID=${USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID}
+          USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID=${USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID}
+          USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE=${USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE}
+          USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER=${USER_RESOURCE_AUTO_REVIEW_NOTIFY_USER}
+          USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL=${USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL}
+          USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED=${USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED}
+          USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS=${USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS}
+          USER_RESOURCE_AUTO_REVIEW_MAX_LINKS=${USER_RESOURCE_AUTO_REVIEW_MAX_LINKS}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED=${USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE=${USER_RESOURCE_AUTO_REVIEW_QUEUE_MODE}
+          USER_RESOURCE_AUTO_REVIEW_WORKER_ENABLED=${USER_RESOURCE_AUTO_REVIEW_WORKER_ENABLED}
+          USER_RESOURCE_AUTO_REVIEW_WORKER_CONCURRENCY=${USER_RESOURCE_AUTO_REVIEW_WORKER_CONCURRENCY}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_MAX_RETRIES=${USER_RESOURCE_AUTO_REVIEW_QUEUE_MAX_RETRIES}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_RETRY_DELAY_MS=${USER_RESOURCE_AUTO_REVIEW_QUEUE_RETRY_DELAY_MS}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_POLL_INTERVAL_MS=${USER_RESOURCE_AUTO_REVIEW_QUEUE_POLL_INTERVAL_MS}
+          USER_RESOURCE_AUTO_REVIEW_QUEUE_DEDUPE_TTL_SECONDS=${USER_RESOURCE_AUTO_REVIEW_QUEUE_DEDUPE_TTL_SECONDS}
+          NUXT_PUBLIC_GITHUB_OWNER=${NUXT_PUBLIC_GITHUB_OWNER}
+          NUXT_PUBLIC_GITHUB_REPO=${NUXT_PUBLIC_GITHUB_REPO}
+          NUXT_PUBLIC_GITHUB_TOKEN=${NUXT_PUBLIC_GITHUB_TOKEN}
+          NUXT_PUBLIC_GITHUB_BRANCH=${NUXT_PUBLIC_GITHUB_BRANCH}
+          NUXT_PUBLIC_QUARK_COOKIE=${NUXT_PUBLIC_QUARK_COOKIE}
+          EOF
+
+      - name: Validate deployment target
+        run: |
+          if [ -z "${SERVER_HOST}" ]; then
+            echo "GitHub Actions secret DEPLOY_SERVER_HOST is required." >&2
+            exit 1
+          fi
+
+      - name: Copy deployment files to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ env.SERVER_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          target: ${{ env.DEPLOY_DIR }}
+          source: "deploy/docker-compose.prod.yml,deploy/remote-deploy.sh,deploy/clean_docker_resources.sh,.deploy-workdir/.env.production"
+          strip_components: 1
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DEPLOY_DIR: ${{ env.DEPLOY_DIR }}
+          COMPOSE_PROJECT_NAME: ${{ env.COMPOSE_PROJECT_NAME }}
+          APP_SERVICE_NAME: ${{ env.APP_SERVICE_NAME }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        with:
+          host: ${{ env.SERVER_HOST }}
+          username: ${{ secrets.DEPLOY_SSH_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: DEPLOY_DIR,COMPOSE_PROJECT_NAME,APP_SERVICE_NAME,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          script: |
+            chmod +x "${DEPLOY_DIR}/remote-deploy.sh"
+            "${DEPLOY_DIR}/remote-deploy.sh"

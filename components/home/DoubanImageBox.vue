@@ -1,0 +1,189 @@
+<script setup>
+import { ref } from "vue";
+import placeHolderImage from "~/assets/placeholder.webp";
+
+defineProps({
+  doubanData: {
+    type: Array,
+    default: () => [],
+  },
+});
+
+const emit = defineEmits(["goDouban"]);
+
+const imageLoadStatus = ref({});
+
+const getMovieKey = (sectionName, index) => `${sectionName}-${index}`;
+
+const getProxyImageUrl = (url) => {
+  if (!url) return placeHolderImage;
+  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+};
+
+const getImageStatus = (movieId, hasCover = true) => {
+  if (!hasCover) {
+    return "loaded";
+  }
+
+  return imageLoadStatus.value[movieId] || "loading";
+};
+
+const handleImageLoad = (movieId) => {
+  imageLoadStatus.value[movieId] = "loaded";
+};
+
+const handleImageError = (movieId) => {
+  imageLoadStatus.value[movieId] = "error";
+};
+
+const setImageRef = (el, movieId, originalSrc) => {
+  if (!el) {
+    return;
+  }
+
+  if (!originalSrc) {
+    imageLoadStatus.value[movieId] = "loaded";
+    return;
+  }
+
+  if (el.complete) {
+    imageLoadStatus.value[movieId] = el.naturalWidth > 0 ? "loaded" : "error";
+    return;
+  }
+
+  if (!imageLoadStatus.value[movieId]) {
+    imageLoadStatus.value[movieId] = "loading";
+  }
+};
+
+const getImageLoadingMode = (sectionIndex, movieIndex) => {
+  return sectionIndex === 0 && movieIndex < 8 ? "eager" : "lazy";
+};
+
+const getImageFetchPriority = (sectionIndex, movieIndex) => {
+  return sectionIndex === 0 && movieIndex < 8 ? "high" : "auto";
+};
+
+const goDouban = (movie) => {
+  emit("goDouban", movie);
+};
+</script>
+
+<template>
+  <div v-for="(item, i) in doubanData" :key="i" class="mx-5 xl:max-w-[1200px] xl:mx-auto my-10">
+    <h1
+      class="flex flex-row items-center text-sm sm:text-base text-gray-700 font-bold dark:text-white mt-[20px] mb-4 group">
+      <div class="flex gap-1 mr-2">
+        <span class="w-1 h-5 bg-blue-400 rounded-full group-hover:h-6 transition-all duration-300"></span>
+        <span class="w-1 h-5 bg-green-400 rounded-full group-hover:h-4 transition-all duration-300 delay-75"></span>
+        <span class="w-1 h-5 bg-red-400 rounded-full group-hover:h-6 transition-all duration-300 delay-150"></span>
+      </div>
+      <span class="hover:text-blue-500 transition-colors duration-300 cursor-pointer">{{ item.name }}</span>
+      <span class="ml-2 text-xs text-gray-400 dark:text-gray-500">{{ item.data.length }} {{ $t('douban.movie_count')
+      }}</span>
+    </h1>
+
+    <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8 gap-4 mt-[10px]">
+      <div v-for="(movie, index) in item.data" :key="index"
+        class="group cursor-default md:cursor-pointer bg-white dark:bg-gray-700 rounded-md overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 md:hover:-translate-y-1"
+        @click="goDouban(movie)">
+        <div class="relative overflow-hidden bg-gray-100 dark:bg-gray-600">
+          <div
+            v-if="getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'loading'"
+            class="absolute inset-0 pointer-events-none animate-pulse bg-gray-200/60 dark:bg-gray-600/60 backdrop-blur-[1px]">
+            <div class="flex items-center justify-center h-full">
+              <el-icon class="animate-spin text-gray-400" :size="24">
+                <Loading />
+              </el-icon>
+            </div>
+          </div>
+
+          <img
+            :ref="(el) => setImageRef(el, getMovieKey(item.name, index), movie.cover)"
+            :src="getProxyImageUrl(movie.cover)"
+            class="w-full aspect-[270/405] object-cover transition-all duration-300 md:group-hover:scale-[1.8]" :class="{
+              'opacity-100': getImageStatus(getMovieKey(item.name, index), !!movie.cover) !== 'error',
+              'blur-[2px] scale-[1.01]': getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'loading',
+              'blur-0 scale-100': getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'loaded',
+            }"
+            :loading="getImageLoadingMode(i, index)"
+            :fetchpriority="getImageFetchPriority(i, index)"
+            decoding="async"
+            @load="handleImageLoad(getMovieKey(item.name, index))"
+            @error="handleImageError(getMovieKey(item.name, index))" :alt="movie.title"
+            referrerpolicy="no-referrer" />
+          <div v-if="getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'error'"
+            class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+            <div class="text-center p-3">
+              <el-icon class="text-gray-400 mb-2" :size="24">
+                <PictureFilled />
+              </el-icon>
+              <p class="text-xs text-gray-500">{{ $t('douban.no_image') }}</p>
+            </div>
+          </div>
+
+          <div
+            class="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <div class="absolute bottom-0 left-0 right-0 p-3">
+              <p class="text-white text-sm font-medium mb-1 line-clamp-2">
+                {{ movie.title }}
+              </p>
+              <div class="flex items-center gap-2">
+                <span v-if="movie.rate" class="flex items-center gap-1 text-yellow-400 text-xs font-bold">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor">
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                  {{ movie.rate }}
+                </span>
+                <span class="text-gray-300 text-xs">{{ movie.year }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-2">
+          <p
+            class="text-sm text-center truncate dark:text-gray-100 group-hover:text-indigo-500 transition-colors duration-300">
+            {{ movie.title }}
+          </p>
+          <p class="text-xs text-center text-gray-500 dark:text-gray-400 mt-0.5">
+            {{ movie.year }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+</style>

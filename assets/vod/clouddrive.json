@@ -1,0 +1,26 @@
+[
+  {
+    "api": "/api/sources/local"
+  },
+  {
+    "api": "/api/sources/pansou"
+  },
+  {
+    "api": "/api/sources/xiaokupan"
+  },
+  {
+    "api": "/api/sources/kkqws"
+  },
+  {
+    "api": "/api/sources/xccji"
+  },
+  {
+    "api": "/api/sources/vipray"
+  },
+  {
+    "api": "/api/sources/slowread"
+  },
+  {
+    "api": "/api/sources/jso"
+  }
+]

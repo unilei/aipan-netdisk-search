@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  # 数据库迁移服务
+  prisma-migrate:
+    image: unilei/aipan-netdisk-search:latest
+    container_name: aipan-prisma-migrate
+    restart: "no"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+      - SHADOW_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}
+      # 确保 Prisma 使用正确的数据库用户名
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    command: ["/bin/sh", "-c", "cd /app && if [ ! -f ./prisma-esm-fix.mjs ]; then echo 'Creating prisma-esm-fix.mjs file...' && echo \"import { fileURLToPath } from 'url'; import { dirname } from 'path'; import { createRequire } from 'module'; if (typeof global.__filename === 'undefined') { global.__filename = fileURLToPath(import.meta.url); } if (typeof global.__dirname === 'undefined') { global.__dirname = dirname(global.__filename); } if (typeof global.require === 'undefined') { global.require = createRequire(import.meta.url); } console.log('[Prisma ESM Fix] 已加载 ES Module 环境修复');\" > ./prisma-esm-fix.mjs; fi && node --import=./prisma-esm-fix.mjs -e \"console.log('Running Prisma migrations with ESM fix')\" && npx prisma migrate deploy && npx prisma db seed"]
+    depends_on:
+      - postgres
+    networks:
+      - aipan-network
+
+  # 主应用服务
+  aipan-netdisk-search:
+    image: unilei/aipan-netdisk-search:latest
+    container_name: aipan-netdisk-search-app
+    restart: always
+    ports:
+      - "${APP_PORT}:3000"  # Web应用端口
+      - "${WS_PORT}:3002"  # WebSocket端口
+    environment:
+      # 数据库配置
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+      - NUXT_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=${DATABASE_SCHEMA}
+      - DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - NUXT_DATABASE_SCHEMA=${DATABASE_SCHEMA}
+      - SHADOW_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}
+      # 数据库连接信息
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      
+      # 管理员配置
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      # Nuxt 版本的管理员配置（用于 useRuntimeConfig 访问）
+      - NUXT_ADMIN_USER=${ADMIN_USER}
+      - NUXT_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - NUXT_ADMIN_EMAIL=${ADMIN_EMAIL}
+      
+      # 安全配置
+      - JWT_SECRET=${JWT_SECRET}
+      - NUXT_JWT_SECRET=${JWT_SECRET}
+      
+      # GitHub配置
+      - NUXT_PUBLIC_GITHUB_OWNER=${NUXT_PUBLIC_GITHUB_OWNER}
+      - NUXT_PUBLIC_GITHUB_REPO=${NUXT_PUBLIC_GITHUB_REPO}
+      - NUXT_PUBLIC_GITHUB_TOKEN=${NUXT_PUBLIC_GITHUB_TOKEN}
+      - NUXT_PUBLIC_GITHUB_BRANCH=${NUXT_PUBLIC_GITHUB_BRANCH}
+      
+      # Quark配置
+      - NUXT_PUBLIC_QUARK_COOKIE=${NUXT_PUBLIC_QUARK_COOKIE}
+      
+      # WebSocket配置
+      - WS_PORT=${WS_PORT}
+      
+      # Redis配置
+      - REDIS_URL=${REDIS_URL}
+      
+      # 环境配置
+      - NODE_ENV=production
+    depends_on:
+      - postgres
+      - redis
+      - prisma-migrate
+    networks:
+      - aipan-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: aipan-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - aipan-network
+
+  redis:
+    image: redis:alpine
+    container_name: aipan-redis
+    restart: always
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    networks:
+      - aipan-network
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  aipan-network:
+    driver: bridge

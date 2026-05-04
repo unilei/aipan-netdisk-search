@@ -1,0 +1,80 @@
+# Dependencies
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.test
+.env.production
+
+# Build outputs
+.nuxt
+dist
+.output
+generated
+build
+out
+
+# Logs
+logs
+*.log
+
+# Cache directories
+.cache
+.parcel-cache
+.npm
+.eslintcache
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile*
+docker-compose*
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.agent
+.shared
+.history
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Test files
+__tests__
+*.test.js
+*.spec.js
+test
+tests
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+backup_*.sql
+.env copy*
+
+# Lock files (keep package-lock.json)
+yarn.lock
+pnpm-lock.yaml
