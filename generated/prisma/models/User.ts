@@ -307,6 +307,7 @@ export type UserWhereInput = {
   checkIns?: Prisma.CheckInListRelationFilter
   pointsHistory?: Prisma.PointsHistoryListRelationFilter
   transferPointGrants?: Prisma.TransferPointGrantListRelationFilter
+  pointTaskCompletions?: Prisma.PointTaskCompletionListRelationFilter
   emailVerificationTokens?: Prisma.EmailVerificationTokenListRelationFilter
 }
 
@@ -341,6 +342,7 @@ export type UserOrderByWithRelationInput = {
   checkIns?: Prisma.CheckInOrderByRelationAggregateInput
   pointsHistory?: Prisma.PointsHistoryOrderByRelationAggregateInput
   transferPointGrants?: Prisma.TransferPointGrantOrderByRelationAggregateInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionOrderByRelationAggregateInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenOrderByRelationAggregateInput
 }
 
@@ -378,6 +380,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   checkIns?: Prisma.CheckInListRelationFilter
   pointsHistory?: Prisma.PointsHistoryListRelationFilter
   transferPointGrants?: Prisma.TransferPointGrantListRelationFilter
+  pointTaskCompletions?: Prisma.PointTaskCompletionListRelationFilter
   emailVerificationTokens?: Prisma.EmailVerificationTokenListRelationFilter
 }, "id" | "username" | "email">
 
@@ -453,6 +456,7 @@ export type UserCreateInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -487,6 +491,7 @@ export type UserUncheckedCreateInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -520,6 +525,7 @@ export type UserUpdateInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -554,6 +560,7 @@ export type UserUncheckedUpdateInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -939,6 +946,20 @@ export type UserUpdateOneRequiredWithoutTransferPointGrantsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTransferPointGrantsInput, Prisma.UserUpdateWithoutTransferPointGrantsInput>, Prisma.UserUncheckedUpdateWithoutTransferPointGrantsInput>
 }
 
+export type UserCreateNestedOneWithoutPointTaskCompletionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPointTaskCompletionsInput, Prisma.UserUncheckedCreateWithoutPointTaskCompletionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPointTaskCompletionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPointTaskCompletionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPointTaskCompletionsInput, Prisma.UserUncheckedCreateWithoutPointTaskCompletionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPointTaskCompletionsInput
+  upsert?: Prisma.UserUpsertWithoutPointTaskCompletionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPointTaskCompletionsInput, Prisma.UserUpdateWithoutPointTaskCompletionsInput>, Prisma.UserUncheckedUpdateWithoutPointTaskCompletionsInput>
+}
+
 export type UserCreateWithoutResourceTypesInput = {
   username: string
   email: string
@@ -968,6 +989,7 @@ export type UserCreateWithoutResourceTypesInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -1001,6 +1023,7 @@ export type UserUncheckedCreateWithoutResourceTypesInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1049,6 +1072,7 @@ export type UserUpdateWithoutResourceTypesInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -1082,6 +1106,7 @@ export type UserUncheckedUpdateWithoutResourceTypesInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1114,6 +1139,7 @@ export type UserCreateWithoutResourcesInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -1147,6 +1173,7 @@ export type UserUncheckedCreateWithoutResourcesInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1195,6 +1222,7 @@ export type UserUpdateWithoutResourcesInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -1228,6 +1256,7 @@ export type UserUncheckedUpdateWithoutResourcesInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1260,6 +1289,7 @@ export type UserCreateWithoutPostsInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -1293,6 +1323,7 @@ export type UserUncheckedCreateWithoutPostsInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1341,6 +1372,7 @@ export type UserUpdateWithoutPostsInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -1374,6 +1406,7 @@ export type UserUncheckedUpdateWithoutPostsInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1406,6 +1439,7 @@ export type UserCreateWithoutAlistInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -1439,6 +1473,7 @@ export type UserUncheckedCreateWithoutAlistInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1487,6 +1522,7 @@ export type UserUpdateWithoutAlistInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -1520,6 +1556,7 @@ export type UserUncheckedUpdateWithoutAlistInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1552,6 +1589,7 @@ export type UserCreateWithoutBlogPostsInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -1585,6 +1623,7 @@ export type UserUncheckedCreateWithoutBlogPostsInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1633,6 +1672,7 @@ export type UserUpdateWithoutBlogPostsInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -1666,6 +1706,7 @@ export type UserUncheckedUpdateWithoutBlogPostsInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1698,6 +1739,7 @@ export type UserCreateWithoutUserResourcesInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -1731,6 +1773,7 @@ export type UserUncheckedCreateWithoutUserResourcesInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1779,6 +1822,7 @@ export type UserUpdateWithoutUserResourcesInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -1812,6 +1856,7 @@ export type UserUncheckedUpdateWithoutUserResourcesInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1844,6 +1889,7 @@ export type UserCreateWithoutVodConfigsInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -1877,6 +1923,7 @@ export type UserUncheckedCreateWithoutVodConfigsInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1925,6 +1972,7 @@ export type UserUpdateWithoutVodConfigsInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -1958,6 +2006,7 @@ export type UserUncheckedUpdateWithoutVodConfigsInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1991,6 +2040,7 @@ export type UserCreateWithoutEmailVerificationTokensInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEmailVerificationTokensInput = {
@@ -2024,6 +2074,7 @@ export type UserUncheckedCreateWithoutEmailVerificationTokensInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEmailVerificationTokensInput = {
@@ -2072,6 +2123,7 @@ export type UserUpdateWithoutEmailVerificationTokensInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
@@ -2105,6 +2157,7 @@ export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumTopicsInput = {
@@ -2136,6 +2189,7 @@ export type UserCreateWithoutForumTopicsInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -2169,6 +2223,7 @@ export type UserUncheckedCreateWithoutForumTopicsInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -2217,6 +2272,7 @@ export type UserUpdateWithoutForumTopicsInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -2250,6 +2306,7 @@ export type UserUncheckedUpdateWithoutForumTopicsInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -2282,6 +2339,7 @@ export type UserCreateWithoutForumPostsInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -2315,6 +2373,7 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -2363,6 +2422,7 @@ export type UserUpdateWithoutForumPostsInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -2396,6 +2456,7 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -2428,6 +2489,7 @@ export type UserCreateWithoutNotificationsInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -2461,6 +2523,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -2509,6 +2572,7 @@ export type UserUpdateWithoutNotificationsInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -2542,6 +2606,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -2574,6 +2639,7 @@ export type UserCreateWithoutCreatedRoomsInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -2607,6 +2673,7 @@ export type UserUncheckedCreateWithoutCreatedRoomsInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -2655,6 +2722,7 @@ export type UserUpdateWithoutCreatedRoomsInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -2688,6 +2756,7 @@ export type UserUncheckedUpdateWithoutCreatedRoomsInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -2720,6 +2789,7 @@ export type UserCreateWithoutChatRoomsInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -2753,6 +2823,7 @@ export type UserUncheckedCreateWithoutChatRoomsInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -2801,6 +2872,7 @@ export type UserUpdateWithoutChatRoomsInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -2834,6 +2906,7 @@ export type UserUncheckedUpdateWithoutChatRoomsInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -2866,6 +2939,7 @@ export type UserCreateWithoutMessagesInput = {
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -2899,6 +2973,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -2947,6 +3022,7 @@ export type UserUpdateWithoutMessagesInput = {
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -2980,6 +3056,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -3012,6 +3089,7 @@ export type UserCreateWithoutCheckInsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -3045,6 +3123,7 @@ export type UserUncheckedCreateWithoutCheckInsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -3093,6 +3172,7 @@ export type UserUpdateWithoutCheckInsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -3126,6 +3206,7 @@ export type UserUncheckedUpdateWithoutCheckInsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -3158,6 +3239,7 @@ export type UserCreateWithoutPointsHistoryInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -3191,6 +3273,7 @@ export type UserUncheckedCreateWithoutPointsHistoryInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -3239,6 +3322,7 @@ export type UserUpdateWithoutPointsHistoryInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -3272,6 +3356,7 @@ export type UserUncheckedUpdateWithoutPointsHistoryInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -3304,6 +3389,7 @@ export type UserCreateWithoutTransferPointGrantsInput = {
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
 }
 
@@ -3337,6 +3423,7 @@ export type UserUncheckedCreateWithoutTransferPointGrantsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
   checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
   pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -3385,6 +3472,7 @@ export type UserUpdateWithoutTransferPointGrantsInput = {
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
 }
 
@@ -3418,6 +3506,157 @@ export type UserUncheckedUpdateWithoutTransferPointGrantsInput = {
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
   checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
   pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPointTaskCompletionsInput = {
+  username: string
+  email: string
+  password: string
+  role?: string
+  status?: string
+  avatarStyle?: string
+  salt?: string | null
+  points?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
+  resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
+  resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
+  posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
+  alist?: Prisma.AlistCreateNestedManyWithoutCreatorInput
+  blogPosts?: Prisma.BlogPostCreateNestedManyWithoutAuthorInput
+  userResources?: Prisma.UserResourceCreateNestedManyWithoutCreatorInput
+  vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
+  forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
+  chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
+  createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
+  checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
+  pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPointTaskCompletionsInput = {
+  id?: number
+  username: string
+  email: string
+  password: string
+  role?: string
+  status?: string
+  avatarStyle?: string
+  salt?: string | null
+  points?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
+  resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
+  alist?: Prisma.AlistUncheckedCreateNestedManyWithoutCreatorInput
+  blogPosts?: Prisma.BlogPostUncheckedCreateNestedManyWithoutAuthorInput
+  userResources?: Prisma.UserResourceUncheckedCreateNestedManyWithoutCreatorInput
+  vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
+  forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
+  chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
+  createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+  checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
+  pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPointTaskCompletionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPointTaskCompletionsInput, Prisma.UserUncheckedCreateWithoutPointTaskCompletionsInput>
+}
+
+export type UserUpsertWithoutPointTaskCompletionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPointTaskCompletionsInput, Prisma.UserUncheckedUpdateWithoutPointTaskCompletionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPointTaskCompletionsInput, Prisma.UserUncheckedCreateWithoutPointTaskCompletionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPointTaskCompletionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPointTaskCompletionsInput, Prisma.UserUncheckedUpdateWithoutPointTaskCompletionsInput>
+}
+
+export type UserUpdateWithoutPointTaskCompletionsInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarStyle?: Prisma.StringFieldUpdateOperationsInput | string
+  salt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
+  resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
+  alist?: Prisma.AlistUpdateManyWithoutCreatorNestedInput
+  blogPosts?: Prisma.BlogPostUpdateManyWithoutAuthorNestedInput
+  userResources?: Prisma.UserResourceUpdateManyWithoutCreatorNestedInput
+  vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
+  forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
+  chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
+  createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
+  checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
+  pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPointTaskCompletionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarStyle?: Prisma.StringFieldUpdateOperationsInput | string
+  salt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
+  alist?: Prisma.AlistUncheckedUpdateManyWithoutCreatorNestedInput
+  blogPosts?: Prisma.BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
+  userResources?: Prisma.UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
+  forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+  chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
+  createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+  checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
+  pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -3443,6 +3682,7 @@ export type UserCountOutputType = {
   checkIns: number
   pointsHistory: number
   transferPointGrants: number
+  pointTaskCompletions: number
   emailVerificationTokens: number
 }
 
@@ -3463,6 +3703,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   checkIns?: boolean | UserCountOutputTypeCountCheckInsArgs
   pointsHistory?: boolean | UserCountOutputTypeCountPointsHistoryArgs
   transferPointGrants?: boolean | UserCountOutputTypeCountTransferPointGrantsArgs
+  pointTaskCompletions?: boolean | UserCountOutputTypeCountPointTaskCompletionsArgs
   emailVerificationTokens?: boolean | UserCountOutputTypeCountEmailVerificationTokensArgs
 }
 
@@ -3591,6 +3832,13 @@ export type UserCountOutputTypeCountTransferPointGrantsArgs<ExtArgs extends runt
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountPointTaskCompletionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PointTaskCompletionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountEmailVerificationTokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.EmailVerificationTokenWhereInput
 }
@@ -3627,6 +3875,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   checkIns?: boolean | Prisma.User$checkInsArgs<ExtArgs>
   pointsHistory?: boolean | Prisma.User$pointsHistoryArgs<ExtArgs>
   transferPointGrants?: boolean | Prisma.User$transferPointGrantsArgs<ExtArgs>
+  pointTaskCompletions?: boolean | Prisma.User$pointTaskCompletionsArgs<ExtArgs>
   emailVerificationTokens?: boolean | Prisma.User$emailVerificationTokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -3700,6 +3949,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   checkIns?: boolean | Prisma.User$checkInsArgs<ExtArgs>
   pointsHistory?: boolean | Prisma.User$pointsHistoryArgs<ExtArgs>
   transferPointGrants?: boolean | Prisma.User$transferPointGrantsArgs<ExtArgs>
+  pointTaskCompletions?: boolean | Prisma.User$pointTaskCompletionsArgs<ExtArgs>
   emailVerificationTokens?: boolean | Prisma.User$emailVerificationTokensArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -3725,6 +3975,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     checkIns: Prisma.$CheckInPayload<ExtArgs>[]
     pointsHistory: Prisma.$PointsHistoryPayload<ExtArgs>[]
     transferPointGrants: Prisma.$TransferPointGrantPayload<ExtArgs>[]
+    pointTaskCompletions: Prisma.$PointTaskCompletionPayload<ExtArgs>[]
     emailVerificationTokens: Prisma.$EmailVerificationTokenPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -4152,6 +4403,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   checkIns<T extends Prisma.User$checkInsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$checkInsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   pointsHistory<T extends Prisma.User$pointsHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pointsHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointsHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   transferPointGrants<T extends Prisma.User$transferPointGrantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$transferPointGrantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TransferPointGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  pointTaskCompletions<T extends Prisma.User$pointTaskCompletionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$pointTaskCompletionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PointTaskCompletionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   emailVerificationTokens<T extends Prisma.User$emailVerificationTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailVerificationTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -4965,6 +5217,30 @@ export type User$transferPointGrantsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.TransferPointGrantScalarFieldEnum | Prisma.TransferPointGrantScalarFieldEnum[]
+}
+
+/**
+ * User.pointTaskCompletions
+ */
+export type User$pointTaskCompletionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PointTaskCompletion
+   */
+  select?: Prisma.PointTaskCompletionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PointTaskCompletion
+   */
+  omit?: Prisma.PointTaskCompletionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PointTaskCompletionInclude<ExtArgs> | null
+  where?: Prisma.PointTaskCompletionWhereInput
+  orderBy?: Prisma.PointTaskCompletionOrderByWithRelationInput | Prisma.PointTaskCompletionOrderByWithRelationInput[]
+  cursor?: Prisma.PointTaskCompletionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PointTaskCompletionScalarFieldEnum | Prisma.PointTaskCompletionScalarFieldEnum[]
 }
 
 /**

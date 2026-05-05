@@ -52,6 +52,7 @@ model User {
   checkIns                CheckIn[] // 用户的签到记录
   pointsHistory           PointsHistory[] // 用户的积分历史
   transferPointGrants     TransferPointGrant[] // 用户转存限时积分记录
+  pointTaskCompletions    PointTaskCompletion[] // 用户积分任务完成记录
   emailVerificationTokens EmailVerificationToken[]
 
   @@index([role])
@@ -477,8 +478,9 @@ model PointsHistory {
   expiresAt   DateTime? // 限时积分过期时间，null 表示永久积分
   createdAt   DateTime  @default(now())
 
-  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transferPointGrant TransferPointGrant?
+  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transferPointGrant  TransferPointGrant?
+  pointTaskCompletion PointTaskCompletion?
 
   @@index([userId])
   @@index([type])
@@ -506,6 +508,47 @@ model TransferPointGrant {
   @@index([shareId])
   @@index([transferFingerprint])
   @@index([expiresAt])
+  @@index([createdAt])
+}
+
+// 可配置积分任务
+model PointTask {
+  id          Int      @id @default(autoincrement())
+  key         String   @unique
+  title       String
+  description String?  @db.Text
+  url         String
+  points      Int
+  enabled     Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  claimLimit  Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  completions PointTaskCompletion[]
+
+  @@index([enabled])
+  @@index([sortOrder])
+  @@index([createdAt])
+}
+
+// 用户积分任务领取记录
+model PointTaskCompletion {
+  id              Int      @id @default(autoincrement())
+  userId          Int
+  taskId          Int
+  claimNo         Int      @default(1)
+  points          Int
+  pointsHistoryId Int?     @unique
+  createdAt       DateTime @default(now())
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task          PointTask      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  pointsHistory PointsHistory? @relation(fields: [pointsHistoryId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, taskId, claimNo])
+  @@index([userId])
+  @@index([taskId])
   @@index([createdAt])
 }
 

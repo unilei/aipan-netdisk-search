@@ -416,6 +416,8 @@ export const ModelName = {
   CheckIn: 'CheckIn',
   PointsHistory: 'PointsHistory',
   TransferPointGrant: 'TransferPointGrant',
+  PointTask: 'PointTask',
+  PointTaskCompletion: 'PointTaskCompletion',
   NavigationCategory: 'NavigationCategory',
   NavigationItem: 'NavigationItem',
   Report: 'Report'
@@ -434,7 +436,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "dailySearchStats" | "userVodConfig" | "emailVerificationToken" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "transferPointGrant" | "navigationCategory" | "navigationItem" | "report"
+    modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "dailySearchStats" | "userVodConfig" | "emailVerificationToken" | "forumCategory" | "forumTopic" | "forumPost" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "transferPointGrant" | "pointTask" | "pointTaskCompletion" | "navigationCategory" | "navigationItem" | "report"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2436,6 +2438,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PointTask: {
+      payload: Prisma.$PointTaskPayload<ExtArgs>
+      fields: Prisma.PointTaskFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PointTaskFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PointTaskFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>
+        }
+        findFirst: {
+          args: Prisma.PointTaskFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PointTaskFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>
+        }
+        findMany: {
+          args: Prisma.PointTaskFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>[]
+        }
+        create: {
+          args: Prisma.PointTaskCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>
+        }
+        createMany: {
+          args: Prisma.PointTaskCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PointTaskCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>[]
+        }
+        delete: {
+          args: Prisma.PointTaskDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>
+        }
+        update: {
+          args: Prisma.PointTaskUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>
+        }
+        deleteMany: {
+          args: Prisma.PointTaskDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PointTaskUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PointTaskUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>[]
+        }
+        upsert: {
+          args: Prisma.PointTaskUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskPayload>
+        }
+        aggregate: {
+          args: Prisma.PointTaskAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePointTask>
+        }
+        groupBy: {
+          args: Prisma.PointTaskGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PointTaskGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PointTaskCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PointTaskCountAggregateOutputType> | number
+        }
+      }
+    }
+    PointTaskCompletion: {
+      payload: Prisma.$PointTaskCompletionPayload<ExtArgs>
+      fields: Prisma.PointTaskCompletionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PointTaskCompletionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PointTaskCompletionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>
+        }
+        findFirst: {
+          args: Prisma.PointTaskCompletionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PointTaskCompletionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>
+        }
+        findMany: {
+          args: Prisma.PointTaskCompletionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>[]
+        }
+        create: {
+          args: Prisma.PointTaskCompletionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>
+        }
+        createMany: {
+          args: Prisma.PointTaskCompletionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PointTaskCompletionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>[]
+        }
+        delete: {
+          args: Prisma.PointTaskCompletionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>
+        }
+        update: {
+          args: Prisma.PointTaskCompletionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>
+        }
+        deleteMany: {
+          args: Prisma.PointTaskCompletionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PointTaskCompletionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PointTaskCompletionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>[]
+        }
+        upsert: {
+          args: Prisma.PointTaskCompletionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PointTaskCompletionPayload>
+        }
+        aggregate: {
+          args: Prisma.PointTaskCompletionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePointTaskCompletion>
+        }
+        groupBy: {
+          args: Prisma.PointTaskCompletionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PointTaskCompletionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PointTaskCompletionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PointTaskCompletionCountAggregateOutputType> | number
+        }
+      }
+    }
     NavigationCategory: {
       payload: Prisma.$NavigationCategoryPayload<ExtArgs>
       fields: Prisma.NavigationCategoryFieldRefs
@@ -3057,6 +3207,36 @@ export const TransferPointGrantScalarFieldEnum = {
 export type TransferPointGrantScalarFieldEnum = (typeof TransferPointGrantScalarFieldEnum)[keyof typeof TransferPointGrantScalarFieldEnum]
 
 
+export const PointTaskScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  description: 'description',
+  url: 'url',
+  points: 'points',
+  enabled: 'enabled',
+  sortOrder: 'sortOrder',
+  claimLimit: 'claimLimit',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PointTaskScalarFieldEnum = (typeof PointTaskScalarFieldEnum)[keyof typeof PointTaskScalarFieldEnum]
+
+
+export const PointTaskCompletionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  taskId: 'taskId',
+  claimNo: 'claimNo',
+  points: 'points',
+  pointsHistoryId: 'pointsHistoryId',
+  createdAt: 'createdAt'
+} as const
+
+export type PointTaskCompletionScalarFieldEnum = (typeof PointTaskCompletionScalarFieldEnum)[keyof typeof PointTaskCompletionScalarFieldEnum]
+
+
 export const NavigationCategoryScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -3343,6 +3523,8 @@ export type GlobalOmitConfig = {
   checkIn?: Prisma.CheckInOmit
   pointsHistory?: Prisma.PointsHistoryOmit
   transferPointGrant?: Prisma.TransferPointGrantOmit
+  pointTask?: Prisma.PointTaskOmit
+  pointTaskCompletion?: Prisma.PointTaskCompletionOmit
   navigationCategory?: Prisma.NavigationCategoryOmit
   navigationItem?: Prisma.NavigationItemOmit
   report?: Prisma.ReportOmit

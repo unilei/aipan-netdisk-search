@@ -206,6 +206,7 @@ const menuGroups = [
     icon: 'fas fa-cog',
     children: [
       { title: '用户管理', path: '/admin/users', icon: 'fas fa-user-friends' },
+      { title: '积分任务', path: '/admin/points/tasks', icon: 'fas fa-coins' },
       { title: '导航管理', path: '/admin/navigation', icon: 'fas fa-bars' },
       { title: '搜索统计', path: '/admin/search-stats', icon: 'fas fa-chart-line' },
       { title: '系统配置', path: '/admin/settings', icon: 'fas fa-cog' }

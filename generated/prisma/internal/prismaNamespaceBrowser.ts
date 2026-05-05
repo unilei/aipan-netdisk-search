@@ -75,6 +75,8 @@ export const ModelName = {
   CheckIn: 'CheckIn',
   PointsHistory: 'PointsHistory',
   TransferPointGrant: 'TransferPointGrant',
+  PointTask: 'PointTask',
+  PointTaskCompletion: 'PointTaskCompletion',
   NavigationCategory: 'NavigationCategory',
   NavigationItem: 'NavigationItem',
   Report: 'Report'
@@ -454,6 +456,36 @@ export const TransferPointGrantScalarFieldEnum = {
 } as const
 
 export type TransferPointGrantScalarFieldEnum = (typeof TransferPointGrantScalarFieldEnum)[keyof typeof TransferPointGrantScalarFieldEnum]
+
+
+export const PointTaskScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  title: 'title',
+  description: 'description',
+  url: 'url',
+  points: 'points',
+  enabled: 'enabled',
+  sortOrder: 'sortOrder',
+  claimLimit: 'claimLimit',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PointTaskScalarFieldEnum = (typeof PointTaskScalarFieldEnum)[keyof typeof PointTaskScalarFieldEnum]
+
+
+export const PointTaskCompletionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  taskId: 'taskId',
+  claimNo: 'claimNo',
+  points: 'points',
+  pointsHistoryId: 'pointsHistoryId',
+  createdAt: 'createdAt'
+} as const
+
+export type PointTaskCompletionScalarFieldEnum = (typeof PointTaskCompletionScalarFieldEnum)[keyof typeof PointTaskCompletionScalarFieldEnum]
 
 
 export const NavigationCategoryScalarFieldEnum = {

@@ -49,7 +49,7 @@
             <span class="text-xs text-gray-500 dark:text-gray-400">{{ taskSummaryText }}</span>
           </div>
 
-          <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 xl:grid-cols-3">
             <UserCheckInCard
               @checked-in="handlePointsChanged"
               @status-loaded="handleCheckInStatusLoaded"
@@ -94,6 +94,17 @@
                 </button>
               </div>
             </article>
+
+            <UserPointTaskCard
+              v-for="task in pointTasks"
+              :key="task.key"
+              :task="task"
+              :opened="Boolean(openedPointTasks[task.key])"
+              :remaining-seconds="getPointTaskRemainingSeconds(task)"
+              :claiming="Boolean(pointTaskClaiming[task.key])"
+              @open="handleOpenPointTask"
+              @claim="handleClaimPointTask"
+            />
           </div>
         </section>
 
@@ -263,6 +274,7 @@
                     <el-option label="全部" value="" />
                     <el-option label="每日签到" value="checkin" />
                     <el-option label="连续签到奖励" value="bonus" />
+                    <el-option label="任务奖励" value="task" />
                     <el-option label="转存奖励" value="transfer" />
                     <el-option label="积分消费" value="consume" />
                     <el-option label="管理员调整" value="admin" />
@@ -452,11 +464,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 
 import UserCheckInCard from '~/components/user/CheckInCard.vue'
+import UserPointTaskCard from '~/components/user/PointTaskCard.vue'
 import UserPointsOverview from '~/components/user/PointsOverview.vue'
+import { useUserStore } from '~/stores/user'
 
 definePageMeta({
   middleware: 'auth',
@@ -464,6 +478,8 @@ definePageMeta({
 })
 
 const activeTab = ref('checkin-history')
+const userStore = useUserStore()
+const { refreshAccessControlConfig } = useAccessControlConfig()
 const selectedMonth = ref(new Date().toISOString().slice(0, 7))
 const checkInPage = ref(1)
 const pointsPage = ref(1)
@@ -477,6 +493,14 @@ const pointsSummary = ref({
   transferTask: defaultTransferTask
 })
 const pointsSummaryLoaded = ref(false)
+const pointTasks = ref([])
+const pointTasksLoaded = ref(false)
+const openedPointTasks = ref({})
+const pointTaskReadyAt = ref({})
+const pointTaskClaiming = ref({})
+const nowTick = ref(Date.now())
+let pointTaskTimer = null
+const POINT_TASK_READ_DELAY_SECONDS = 10
 const transferTask = computed(() => pointsSummary.value.transferTask || defaultTransferTask)
 const transferTaskLabel = computed(() => {
   if (!pointsSummaryLoaded.value) return '读取中'
@@ -487,8 +511,8 @@ const transferDurationLabel = computed(() => {
   return transferTask.value.enabled ? formatDuration(transferTask.value.durationMinutes) : '未开启'
 })
 const taskSummaryText = computed(() => {
-  if (!pointsSummaryLoaded.value) return '正在读取任务配置'
-  return `${1 + (transferTask.value.enabled ? 1 : 0)} 个可用任务`
+  if (!pointsSummaryLoaded.value || !pointTasksLoaded.value) return '正在读取任务配置'
+  return `${1 + (transferTask.value.enabled ? 1 : 0) + pointTasks.value.length} 个可用任务`
 })
 const checkInStatusSnapshot = ref(null)
 
@@ -609,6 +633,84 @@ const handlePointsChanged = async () => {
   }
 }
 
+const fetchPointTasks = async () => {
+  try {
+    const response = await $fetch('/api/user/points/tasks', {
+      headers: {
+        Authorization: `Bearer ${useCookie('token').value}`
+      }
+    })
+
+    if (response.code === 200) {
+      pointTasks.value = response.data?.tasks || []
+    }
+  } catch (error) {
+    console.error('获取积分任务失败:', error)
+  } finally {
+    pointTasksLoaded.value = true
+  }
+}
+
+const setTaskState = (stateRef, key, value) => {
+  stateRef.value = {
+    ...stateRef.value,
+    [key]: value
+  }
+}
+
+const handleOpenPointTask = (task) => {
+  if (!task?.url || !task?.key) return
+  window.open(task.url, '_blank', 'noopener,noreferrer')
+  setTaskState(openedPointTasks, task.key, true)
+  setTaskState(pointTaskReadyAt, task.key, Date.now() + POINT_TASK_READ_DELAY_SECONDS * 1000)
+}
+
+const getPointTaskRemainingSeconds = (task) => {
+  const readyAt = Number(pointTaskReadyAt.value[task.key] || 0)
+  if (!readyAt) return 0
+  return Math.max(0, Math.ceil((readyAt - nowTick.value) / 1000))
+}
+
+const handleClaimPointTask = async (task) => {
+  if (!task?.key || pointTaskClaiming.value[task.key] || getPointTaskRemainingSeconds(task) > 0) return
+
+  setTaskState(pointTaskClaiming, task.key, true)
+  try {
+    const response = await $fetch(`/api/user/points/tasks/${encodeURIComponent(task.key)}/claim`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${useCookie('token').value}`
+      }
+    })
+
+    if (response.code === 200 && response.data?.granted) {
+      if (userStore.user) {
+        userStore.user.points = response.data.totalPoints
+        userStore.user.permanentPoints = response.data.permanentPoints
+        userStore.user.temporaryPoints = response.data.temporaryPoints
+        userStore.user.effectivePoints = response.data.effectivePoints
+        userStore.user.nextExpiringAt = response.data.nextExpiringAt
+        userStore.user.pointsBreakdown = response.data.pointsBreakdown
+      }
+      refreshAccessControlConfig().catch(error => {
+        console.warn('Failed to refresh access control config after point task claim:', error)
+      })
+      ElMessage.success(`领取成功，获得 ${response.data.points} 积分`)
+      await fetchPointTasks()
+      await handlePointsChanged()
+      return
+    }
+
+    ElMessage.info(response.msg || '该任务奖励已领取')
+    await fetchPointTasks()
+  } catch (error) {
+    console.error('领取积分任务失败:', error)
+    ElMessage.error(error?.data?.message || '领取积分失败，请稍后重试')
+  } finally {
+    setTaskState(pointTaskClaiming, task.key, false)
+  }
+}
+
 const handleCheckInStatusLoaded = (status) => {
   checkInStatusSnapshot.value = status
 }
@@ -696,5 +798,15 @@ watch(activeTab, (newTab) => {
 
 onMounted(() => {
   fetchCheckInHistory()
+  fetchPointTasks()
+  pointTaskTimer = window.setInterval(() => {
+    nowTick.value = Date.now()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (pointTaskTimer) {
+    window.clearInterval(pointTaskTimer)
+  }
 })
 </script>
