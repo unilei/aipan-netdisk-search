@@ -1,10 +1,40 @@
 import tailwindcss from '@tailwindcss/vite'
+import type { Plugin, TransformPluginContext } from 'vite'
+
+function tailwindcssWithSourceMapNoopGuard(): Plugin[] {
+  return tailwindcss().map((plugin) => {
+    if (!plugin.name.startsWith('@tailwindcss/vite:generate:')) {
+      return plugin
+    }
+
+    const transform = plugin.transform
+    if (typeof transform !== 'function') {
+      return plugin
+    }
+
+    return {
+      ...plugin,
+      async transform(
+        this: TransformPluginContext,
+        code: string,
+        id: string,
+        options?: { ssr?: boolean },
+      ) {
+        const result = await transform.call(this, code, id, options)
+        return result === code ? null : result
+      },
+    }
+  })
+}
 
 export default defineNuxtConfig({
   devtools: { enabled: false },
   // 优化构建配置
   vite: {
-    plugins: [tailwindcss()],
+    plugins: tailwindcssWithSourceMapNoopGuard(),
+    css: {
+      devSourcemap: true,
+    },
     build: {
       chunkSizeWarningLimit: 3000,
       rollupOptions: {
