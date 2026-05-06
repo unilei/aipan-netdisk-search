@@ -1,77 +1,62 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-    <!-- 回复头部 -->
-    <div
-      class="bg-gray-50 dark:bg-gray-750 px-4 py-2 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center"
-    >
-      <div class="flex items-center">
-        <div
-          class="w-5 h-5 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-400 mr-2 overflow-hidden text-[11px]"
-        >
-          <span>{{ post.author.username.charAt(0).toUpperCase() }}</span>
-        </div>
-        <div>
-          <div class="text-xs font-medium text-gray-900 dark:text-white">
-            {{ post.author.username }}
+  <div class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
+    <div class="grid md:grid-cols-[150px_minmax(0,1fr)]">
+      <aside class="border-b border-slate-100 bg-slate-50/80 px-3 py-3 dark:border-white/10 dark:bg-white/5 md:border-b-0 md:border-r">
+        <div class="flex items-center gap-3 md:block md:text-center">
+          <div class="inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-lg bg-blue-50 text-sm font-semibold text-blue-600 dark:bg-blue-500/10 dark:text-blue-300 md:h-14 md:w-14">
+            {{ getInitial(post.author?.username) }}
           </div>
-          <div class="text-[10px] text-gray-500 dark:text-gray-400">
-            <client-only>{{ formatDate(post.createdAt) }}</client-only>
+          <div class="min-w-0 md:mt-2">
+            <div class="truncate text-xs font-semibold text-slate-900 dark:text-white">
+              {{ post.author.username }}
+            </div>
+            <div class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+              普通会员
+            </div>
           </div>
         </div>
-      </div>
-      <div class="text-xs text-gray-500 dark:text-gray-400">
-        #{{ index }}
-      </div>
-    </div>
-    
-    <!-- 回复内容 -->
-    <div class="px-6 py-4">
-      <div
-        class="markdown-body prose prose-sm dark:prose-invert max-w-none"
-        v-html="parsedContent"
-      ></div>
-    </div>
-    
-    <!-- 回复操作 -->
-    <div
-      class="px-6 py-2 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center"
-    >
-      <CommonReportButton 
-        content-type="topic"
-        :content-id="post.id"
-        :content-title="`${post.author.username}的回复`"
-      />
-      
-      <el-button
-        v-if="user && canReply"
-        size="small"
-        link
-        @click="$emit('reply', post.id)"
-        class="!text-xs !text-gray-500 hover:!text-blue-600 dark:!text-gray-400 dark:hover:!text-blue-400"
-      >
-        <i class="fas fa-reply mr-1 text-xs"></i>回复
-      </el-button>
-    </div>
-    
-    <!-- 子回复 -->
-    <div v-if="post.children && post.children.length > 0" class="pl-6 pr-4 pb-4">
-      <div class="space-y-3">
-        <div 
-          v-for="(child, childIndex) in post.children" 
-          :key="child.id"
-          class="border-l-2 border-gray-200 dark:border-gray-700 pl-4 mt-3"
-        >
-          <!-- 递归使用组件自身来显示子回复 -->
-          <ForumPostItem
-            :post="child"
-            :index="`${index}.${childIndex + 1}`"
-            :topic="topic"
-            :user="user"
-            :can-reply="canReply"
-            @reply="$emit('reply', $event)"
+      </aside>
+
+      <article class="min-w-0">
+        <header class="flex items-center justify-between border-b border-slate-100 bg-white px-3 py-2 text-xs text-slate-500 dark:border-white/10 dark:bg-transparent dark:text-slate-400">
+          <span><client-only>{{ formatDate(post.createdAt) }}</client-only></span>
+          <span>#{{ index }}</span>
+        </header>
+
+        <div class="px-4 py-4">
+          <div class="forum-markdown markdown-body" v-html="parsedContent"></div>
+        </div>
+
+        <footer class="flex items-center justify-between border-t border-slate-100 px-3 py-2 dark:border-white/10">
+          <CommonReportButton
+            content-type="topic"
+            :content-id="post.id"
+            :content-title="`${post.author.username}的回复`"
           />
-        </div>
-      </div>
+
+          <button
+            v-if="user && canReply"
+            class="text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-300"
+            @click="$emit('reply', post.id)"
+          >
+            <i class="fas fa-reply mr-1"></i>
+            回复
+          </button>
+        </footer>
+      </article>
+    </div>
+
+    <div v-if="post.children && post.children.length > 0" class="space-y-3 border-t border-slate-100 bg-slate-50/80 p-3 pl-6 dark:border-white/10 dark:bg-white/5">
+      <ForumPostItem
+        v-for="(child, childIndex) in post.children"
+        :key="child.id"
+        :post="child"
+        :index="`${index}.${childIndex + 1}`"
+        :topic="topic"
+        :user="user"
+        :can-reply="canReply"
+        @reply="$emit('reply', $event)"
+      />
     </div>
   </div>
 </template>
@@ -86,35 +71,37 @@ import { sanitizeHtml } from "~/utils/sanitize";
 const props = defineProps({
   post: {
     type: Object,
-    required: true
+    required: true,
   },
   index: {
     type: [Number, String],
-    required: true
+    required: true,
   },
   topic: {
     type: Object,
-    required: true
+    required: true,
   },
   user: {
     type: Object,
-    default: null
+    default: null,
   },
   canReply: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
 
-const emit = defineEmits(['reply']);
+defineEmits(["reply"]);
 
-// 解析Markdown内容
 const parsedContent = computed(() => {
   if (!props.post.content) return "";
   return sanitizeHtml(marked.parse(props.post.content));
 });
 
-// 格式化日期
+function getInitial(name) {
+  return String(name || "?").charAt(0).toUpperCase();
+}
+
 function formatDate(dateString) {
   try {
     return formatDistanceToNow(new Date(dateString), {
@@ -128,15 +115,46 @@ function formatDate(dateString) {
 </script>
 
 <style scoped>
-/* 子回复样式 */
-.child-replies {
-  margin-left: 1.5rem;
-  border-left: 2px solid #e5e7eb;
-  padding-left: 1rem;
+:deep(.forum-markdown) {
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
 }
 
-/* 深色模式下的边框颜色 */
-:deep(.dark) .child-replies {
-  border-left-color: #374151;
+:deep(.dark .forum-markdown) {
+  color: #cbd5e1;
+}
+
+:deep(.forum-markdown p),
+:deep(.forum-markdown ul),
+:deep(.forum-markdown ol) {
+  margin-bottom: 12px;
+}
+
+:deep(.forum-markdown a) {
+  color: rgb(37 99 235);
+}
+
+:deep(.forum-markdown pre) {
+  background: #0f172a;
+  color: #e2e8f0;
+  margin: 12px 0;
+  overflow-x: auto;
+  padding: 12px;
+}
+
+:deep(.forum-markdown code) {
+  background: rgba(15, 23, 42, 0.06);
+  padding: 0.15em 0.35em;
+}
+
+:deep(.forum-markdown pre code) {
+  background: transparent;
+  padding: 0;
+}
+
+:deep(.forum-markdown img) {
+  max-width: 100%;
 }
 </style>

@@ -1,157 +1,139 @@
 <template>
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen pb-12">
-    <!-- 返回导航 -->
-    <div
-      class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10 shadow-sm"
-    >
-      <div class="max-w-6xl mx-auto px-4">
-        <div class="py-3 flex items-center text-xs">
-          <NuxtLink
-            to="/forum"
-            class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center"
-          >
-            <i class="fas fa-home mr-1 text-xs"></i>
-            论坛首页
-          </NuxtLink>
-          <i class="fas fa-chevron-right mx-2 text-gray-400 text-[10px]"></i>
-          <span class="text-gray-900 dark:text-white">发布新主题</span>
-        </div>
+  <main class="min-h-screen bg-[#f8fafc] pb-10 text-slate-950 dark:bg-slate-950 dark:text-white">
+    <section class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mb-4 rounded-lg bg-white px-3 py-2 text-xs text-slate-500 dark:bg-white/10 dark:text-slate-400">
+        <NuxtLink to="/forum" class="text-blue-600 hover:text-blue-700 dark:text-blue-300">
+          <i class="fas fa-home mr-1"></i>
+          论坛首页
+        </NuxtLink>
+        <i class="fas fa-chevron-right mx-2 text-[10px] text-slate-400"></i>
+        <span>发表帖子</span>
       </div>
-    </div>
 
-    <div class="max-w-6xl mx-auto px-4 py-4">
       <div
         v-if="!user"
-        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 text-center"
+        class="rounded-lg bg-white p-10 text-center dark:bg-white/10"
       >
-        <i class="fas fa-lock text-gray-300 text-2xl mb-3"></i>
-        <h2 class="text-base font-medium text-gray-800 dark:text-gray-200 mb-2">
-          需要登录
-        </h2>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          请登录后发布主题
-        </p>
-        <el-button
-          type="primary"
+        <i class="fas fa-lock text-3xl text-slate-300 dark:text-slate-600"></i>
+        <h1 class="mt-4 text-base font-semibold text-slate-800 dark:text-white">需要登录</h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">请登录后发布主题。</p>
+        <button
+          class="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-blue-700"
           @click="navigateToLogin"
-          class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs"
         >
           登录 / 注册
-        </el-button>
+        </button>
       </div>
 
-      <div v-else>
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4">
-          <h1 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
-            发布新主题
-          </h1>
+      <div v-else class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_260px]">
+        <section class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
+          <div class="bg-slate-50/80 px-3 py-2 dark:bg-white/5">
+            <h1 class="text-xs font-semibold text-slate-700 dark:text-slate-200">发表新主题</h1>
+          </div>
+
           <el-form
             ref="formRef"
             :model="form"
-            label-position="top"
-            @submit.prevent="handleSubmit"
             :rules="rules"
+            label-position="top"
+            class="forum-post-form"
+            @submit.prevent="handleSubmit"
           >
-            <el-form-item label="选择分类" prop="categoryId" class="mb-3">
-              <el-select
-                v-model="form.categoryId"
-                placeholder="请选择分类"
-                class="w-full"
+            <div class="grid gap-3 border-t border-slate-100 px-3 py-3 dark:border-white/10 md:grid-cols-[96px_minmax(0,1fr)]">
+              <label class="pt-2 text-xs font-medium text-slate-600 dark:text-slate-300">版块</label>
+              <el-form-item prop="categoryId" class="!mb-0">
+                <el-select v-model="form.categoryId" placeholder="请选择分类" class="w-full">
+                  <el-option
+                    v-for="category in categories"
+                    :key="category.id"
+                    :label="category.name"
+                    :value="category.id"
+                  />
+                </el-select>
+              </el-form-item>
+            </div>
+
+            <div class="grid gap-3 border-t border-slate-100 px-3 py-3 dark:border-white/10 md:grid-cols-[96px_minmax(0,1fr)]">
+              <label class="pt-2 text-xs font-medium text-slate-600 dark:text-slate-300">标题</label>
+              <el-form-item prop="title" class="!mb-0">
+                <el-input
+                  v-model="form.title"
+                  placeholder="请输入标题"
+                  maxlength="100"
+                  show-word-limit
+                />
+              </el-form-item>
+            </div>
+
+            <div class="grid gap-3 border-t border-slate-100 px-3 py-3 dark:border-white/10 md:grid-cols-[96px_minmax(0,1fr)]">
+              <label class="pt-2 text-xs font-medium text-slate-600 dark:text-slate-300">内容</label>
+              <el-form-item prop="content" class="!mb-0 min-w-0">
+                <client-only>
+                  <template #fallback>
+                    <div class="flex h-[300px] items-center justify-center rounded-lg bg-slate-50 dark:bg-white/5">
+                      <p class="text-xs text-slate-400">编辑器加载中...</p>
+                    </div>
+                  </template>
+                  <MarkdownEditor
+                    v-model="form.content"
+                    placeholder="在这里输入您的主题内容，支持 Markdown 格式..."
+                    minHeight="280px"
+                    :onSave="handleSubmit"
+                  />
+                </client-only>
+              </el-form-item>
+            </div>
+
+            <div class="flex items-center gap-2 border-t border-slate-100 bg-slate-50/80 px-3 py-3 dark:border-white/10 dark:bg-white/5 md:pl-[111px]">
+              <button
+                type="button"
+                class="rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                :disabled="submitting"
+                @click="handleSubmit"
               >
-                <el-option
-                  v-for="category in categories"
-                  :key="category.id"
-                  :label="category.name"
-                  :value="category.id"
-                />
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="标题" prop="title" class="mb-3">
-              <el-input
-                v-model="form.title"
-                placeholder="请输入标题"
-                maxlength="100"
-                show-word-limit
-              />
-            </el-form-item>
-
-            <el-form-item prop="content" label="内容" class="mb-3">
-              <client-only>
-                <template #fallback>
-                  <div
-                    class="border border-gray-200 dark:border-gray-700 rounded p-4 h-[300px] flex items-center justify-center bg-gray-50 dark:bg-gray-800"
-                  >
-                    <p class="text-gray-400 text-xs">编辑器加载中...</p>
-                  </div>
-                </template>
-                <MarkdownEditor
-                  v-model="form.content"
-                  placeholder="在这里输入您的主题内容，支持Markdown格式..."
-                  minHeight="250px"
-                  :onSave="handleSubmit"
-                />
-              </client-only>
-            </el-form-item>
-
-            <el-form-item>
-              <div class="flex space-x-3">
-                <el-button
-                  type="primary"
-                  native-type="submit"
-                  :loading="submitting"
-                  class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs !h-8"
-                >
-                  发布主题
-                </el-button>
-                <el-button @click="router.push('/forum')" class="!text-xs !h-8">
-                  取消
-                </el-button>
-              </div>
-            </el-form-item>
+                <i class="fas fa-paper-plane mr-1.5"></i>
+                {{ submitting ? "发布中..." : "发布主题" }}
+              </button>
+              <button
+                type="button"
+                class="rounded-lg px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-white hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-blue-300"
+                @click="router.push('/forum')"
+              >
+                取消
+              </button>
+            </div>
           </el-form>
-        </div>
+        </section>
 
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-            发帖指南
-          </h3>
-
-          <div class="text-gray-600 text-xs dark:text-gray-400 space-y-3">
-            <p>
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              请选择正确的分类，以便其他用户更容易找到您的主题。
-            </p>
-            <p>
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              标题应简明扼要地概括主题内容，避免使用全部大写字母和过多标点符号。
-            </p>
-            <p>
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              内容应详细、有条理，如果有代码片段，请使用代码格式进行标记。
-            </p>
-            <p>
-              <i class="fas fa-exclamation-circle text-yellow-500 mr-2"></i>
-              请勿发布违反社区规则的内容，包括但不限于广告、侵权、歧视等内容。
-            </p>
+        <aside class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
+          <div class="bg-slate-50/80 px-3 py-2 dark:bg-white/5">
+            <h2 class="text-xs font-semibold text-slate-700 dark:text-slate-200">发帖规则</h2>
           </div>
-        </div>
+          <div class="space-y-3 px-3 py-3 text-xs leading-6 text-slate-600 dark:text-slate-400">
+            <p><i class="fas fa-check mr-2 text-emerald-500"></i>请选择正确版块，方便其他用户检索。</p>
+            <p><i class="fas fa-check mr-2 text-emerald-500"></i>标题简洁明确，避免无意义符号和重复内容。</p>
+            <p><i class="fas fa-check mr-2 text-emerald-500"></i>内容尽量补充背景、步骤、截图或代码片段。</p>
+            <p><i class="fas fa-triangle-exclamation mr-2 text-amber-500"></i>请勿发布广告、侵权、歧视或违反社区规则的内容。</p>
+          </div>
+        </aside>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>
 
 <script setup>
 import { ElMessage } from "element-plus";
 import { ref, reactive, computed, onMounted } from "vue";
 
-// SEO配置
 useHead({
-  title: '发布新主题 - 社区论坛 - 爱盼',
+  title: "发布新主题 - 社区论坛 - 爱盼",
   meta: [
-    { name: 'description', content: '在爱盼社区论坛发布新主题，分享你的想法和见解，与社区成员互动交流。' },
-  ]
-})
+    {
+      name: "description",
+      content: "在爱盼社区论坛发布新主题，分享你的想法和见解，与社区成员互动交流。",
+    },
+  ],
+});
 
 const router = useRouter();
 const route = useRoute();
@@ -160,21 +142,18 @@ const user = computed(() => userStore.user);
 
 const formRef = ref(null);
 
-// 获取分类列表
 const { data: categoriesData } = await useFetch("/api/forum/categories");
 const categories = computed(() => {
   if (!categoriesData.value?.success) return [];
   return categoriesData.value.data;
 });
 
-// 表单数据
 const form = reactive({
   categoryId: route.query.categoryId ? parseInt(route.query.categoryId) : "",
   title: "",
   content: "",
 });
 
-// 表单验证规则
 const rules = {
   categoryId: [{ required: true, message: "请选择分类", trigger: "change" }],
   title: [
@@ -189,11 +168,15 @@ const rules = {
   content: [{ required: true, message: "请输入内容", trigger: "blur" }],
 };
 
-// 表单提交
 const submitting = ref(false);
 
 const handleSubmit = async () => {
   if (submitting.value) return;
+
+  if (!form.categoryId) {
+    ElMessage.error("请选择分类");
+    return;
+  }
 
   if (!form.title.trim()) {
     ElMessage.error("请输入标题");
@@ -220,13 +203,10 @@ const handleSubmit = async () => {
     });
 
     if (response.success) {
-      // 根据主题状态决定后续操作
       if (response.data && response.data.status === "approved") {
-        // 已批准的主题直接跳转到详情页
         ElMessage.success("发布成功");
         router.push(`/forum/topic/${response.data.slug}`);
       } else {
-        // 待审核的主题显示提示信息并返回论坛首页
         ElMessage.success("主题已提交，等待审核");
         router.push("/forum");
       }
@@ -242,10 +222,9 @@ const handleSubmit = async () => {
 };
 
 function navigateToLogin() {
-  router.push(`/login?redirect=/forum/create`);
+  router.push("/login?redirect=/forum/create");
 }
 
-// 检查用户是否已登录
 onMounted(() => {
   if (!user.value) {
     ElMessage.warning("请登录后发布主题");
@@ -254,5 +233,7 @@ onMounted(() => {
 </script>
 
 <style>
-/* 样式移至MarkdownEditor组件中 */
+.forum-post-form .el-form-item__label {
+  font-size: 12px;
+}
 </style>

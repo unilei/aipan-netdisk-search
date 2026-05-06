@@ -1,197 +1,189 @@
 <template>
-  <div class="bg-gray-50 dark:bg-gray-900 min-h-screen pb-12">
-    <!-- 返回导航 -->
-    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10 shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="py-3 flex items-center text-xs">
-          <NuxtLink to="/forum"
-            class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center">
-            <i class="fas fa-home mr-1 text-xs"></i>
-            论坛首页
+  <main class="min-h-screen bg-[#f8fafc] pb-10 text-slate-950 dark:bg-slate-950 dark:text-white">
+    <section class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="mb-4 rounded-lg bg-white px-3 py-2 text-xs text-slate-500 dark:bg-white/10 dark:text-slate-400">
+        <NuxtLink to="/forum" class="text-blue-600 hover:text-blue-700 dark:text-blue-300">
+          <i class="fas fa-home mr-1"></i>
+          论坛首页
+        </NuxtLink>
+        <i class="fas fa-chevron-right mx-2 text-[10px] text-slate-400"></i>
+        <client-only>
+          <NuxtLink
+            v-if="topic?.category"
+            :to="`/forum/category/${topic.category.slug}`"
+            class="text-blue-600 hover:text-blue-700 dark:text-blue-300"
+          >
+            {{ topic.category.name }}
           </NuxtLink>
-          <i class="fas fa-chevron-right mx-2 text-gray-400 text-[10px]"></i>
-          <client-only>
-            <NuxtLink v-if="topic?.category" :to="`/forum/category/${topic.category.slug}`"
-              class="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
-              {{ topic.category.name }}
-            </NuxtLink>
-          </client-only>
-          <i class="fas fa-chevron-right mx-2 text-gray-400 text-[10px]"></i>
-          <span class="text-gray-900 dark:text-white truncate">{{
-            topic?.title || "加载中..."
-            }}</span>
-        </div>
+        </client-only>
+        <i class="fas fa-chevron-right mx-2 text-[10px] text-slate-400"></i>
+        <span class="truncate">{{ topic?.title || "加载中..." }}</span>
       </div>
-    </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <!-- 加载状态 -->
-      <div v-if="loading" class="flex flex-col space-y-3">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+      <div v-if="loading" class="space-y-3">
+        <div class="rounded-lg bg-white p-4 dark:bg-white/10">
           <el-skeleton :rows="2" animated />
         </div>
-        <div v-for="i in 3" :key="i" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+        <div v-for="item in 3" :key="item" class="rounded-lg bg-white p-4 dark:bg-white/10">
           <el-skeleton :rows="4" animated />
         </div>
       </div>
 
-      <div v-else-if="error || !topic" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 text-center">
-        <i class="fas fa-exclamation-triangle text-yellow-500 text-3xl mb-3"></i>
-        <h2 class="text-base font-medium text-gray-800 dark:text-gray-200 mb-2">
-          加载失败
-        </h2>
-        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          {{ error?.message || "无法加载主题内容" }}
-        </p>
-        <div class="flex justify-center space-x-3">
-          <el-button @click="refresh" size="small" class="!text-xs">重试</el-button>
-          <NuxtLink to="/forum">
-            <el-button size="small" class="!text-xs">返回论坛</el-button>
+      <div v-else-if="error || !topic" class="rounded-lg bg-white p-10 text-center dark:bg-white/10">
+        <i class="fas fa-exclamation-triangle text-3xl text-amber-500"></i>
+        <h1 class="mt-4 text-base font-semibold text-slate-800 dark:text-white">加载失败</h1>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">{{ error?.message || "无法加载主题内容" }}</p>
+        <div class="mt-5 flex justify-center gap-2">
+          <button class="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-blue-300" @click="refresh">
+            重试
+          </button>
+          <NuxtLink to="/forum" class="rounded-lg px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50 hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-blue-300">
+            返回论坛
           </NuxtLink>
         </div>
       </div>
 
-      <div v-else>
-        <!-- 主题标题卡片 -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-4">
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <div class="flex items-center">
-                <span v-if="topic.isSticky"
-                  class="inline-block bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 text-[10px] font-medium px-1.5 py-0.5 rounded-full mr-1.5">
-                  <i class="fas fa-thumbtack mr-0.5 text-[10px]"></i>置顶
-                </span>
-                <span v-if="topic.isLocked"
-                  class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-[10px] font-medium px-1.5 py-0.5 rounded-full mr-1.5">
-                  <i class="fas fa-lock mr-0.5 text-[10px]"></i>已锁定
-                </span>
-                <h1 class="text-base font-medium text-gray-900 dark:text-white">
-                  {{ topic.title }}
-                </h1>
+      <div v-else class="space-y-3">
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
+          <div class="flex flex-col gap-3 bg-slate-50/80 px-3 py-3 dark:bg-white/5 md:flex-row md:items-center md:justify-between">
+            <div class="min-w-0">
+              <div class="flex min-w-0 items-center gap-2">
+                <span v-if="topic.isSticky" class="shrink-0 text-[11px] font-medium text-red-600 dark:text-red-300">[置顶]</span>
+                <span v-if="topic.isLocked" class="shrink-0 text-[11px] font-medium text-slate-500 dark:text-slate-400">[锁定]</span>
+                <h1 class="truncate text-base font-semibold text-slate-950 dark:text-white">{{ topic.title }}</h1>
               </div>
-              <div class="mt-2 flex flex-wrap items-center text-xs text-gray-500 dark:text-gray-400">
-                <div class="flex items-center mr-3">
-                  <div
-                    class="w-4 h-4 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center text-purple-600 dark:text-purple-400 mr-1 overflow-hidden text-[10px]">
-                    <span>{{
-                      topic.author.username.charAt(0).toUpperCase()
-                      }}</span>
-                  </div>
-                  <span>{{ topic.author.username }}</span>
-                </div>
-                <span class="mr-3">
-                  <i class="far fa-clock mr-1 text-xs"></i><client-only>{{ formatDate(topic.createdAt) }}</client-only>
-                </span>
-                <span class="mr-3">
-                  <i class="far fa-eye mr-1 text-xs"></i>{{ topic.viewCount }} 次浏览
-                </span>
-                <span>
-                  <i class="far fa-comment mr-1 text-xs"></i>{{ posts?.length || 0 }} 个回复
-                </span>
+              <div class="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                <span>查看 {{ topic.viewCount || 0 }}</span>
+                <span>回复 {{ posts?.length || 0 }}</span>
+                <span><client-only>{{ formatDate(topic.createdAt) }}</client-only></span>
               </div>
             </div>
 
-            <div class="flex space-x-2">
-              <!-- 举报按钮 -->
-              <CommonReportButton 
+            <div class="flex flex-wrap gap-2">
+              <CommonReportButton
                 v-if="topic?.id"
                 content-type="topic"
                 :content-id="topic.id"
                 :content-title="topic.title"
               />
-              
               <client-only>
-                <el-button v-if="canModerate && !topic.isSticky" size="small" @click="toggleSticky"
-                  class="!bg-purple-50 !text-purple-700 !border-purple-200 hover:!bg-purple-100 !text-xs !h-7">
-                  <i class="fas fa-thumbtack mr-1 text-xs"></i>置顶
-                </el-button>
-                <el-button v-if="canModerate && topic.isSticky" size="small" @click="toggleSticky"
-                  class="!bg-purple-100 !text-purple-700 !border-purple-200 hover:!bg-purple-200 !text-xs !h-7">
-                  <i class="fas fa-thumbtack mr-1 text-xs"></i>取消置顶
-                </el-button>
-                <el-button v-if="canModerate && !topic.isLocked" size="small" @click="toggleLock"
-                  class="!bg-gray-50 !text-gray-700 !border-gray-200 hover:!bg-gray-100 !text-xs !h-7">
-                  <i class="fas fa-lock mr-1 text-xs"></i>锁定
-                </el-button>
-                <el-button v-if="canModerate && topic.isLocked" size="small" @click="toggleLock"
-                  class="!bg-gray-100 !text-gray-700 !border-gray-200 hover:!bg-gray-200 !text-xs !h-7">
-                  <i class="fas fa-lock-open mr-1 text-xs"></i>解除锁定
-                </el-button>
+                <button
+                  v-if="canModerate"
+                  class="rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-white hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-blue-300"
+                  @click="toggleSticky"
+                >
+                  <i class="fas fa-thumbtack mr-1"></i>
+                  {{ topic.isSticky ? "取消置顶" : "置顶" }}
+                </button>
+                <button
+                  v-if="canModerate"
+                  class="rounded-lg px-2.5 py-1 text-xs font-medium text-slate-600 transition hover:bg-white hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-blue-300"
+                  @click="toggleLock"
+                >
+                  <i :class="[topic.isLocked ? 'fas fa-lock-open' : 'fas fa-lock', 'mr-1']"></i>
+                  {{ topic.isLocked ? "解除锁定" : "锁定" }}
+                </button>
               </client-only>
             </div>
           </div>
-
-          <div class="px-6 py-4">
-            <div class="markdown-body prose prose-sm dark:prose-invert max-w-none" v-html="parsedContent"></div>
-          </div>
         </div>
 
-        <!-- 回复列表 -->
-        <h2 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
-          回复 ({{ posts?.length || 0 }})
-        </h2>
-
-        <div v-if="posts && posts.length > 0" class="space-y-3 mb-6">
-          <!-- 递归组件用于显示嵌套回复 -->
-          <ForumPostItem v-for="(post, index) in posts" :key="post.id" :post="post" :index="index + 1" :topic="topic"
-            :user="user" :can-reply="!topic.isLocked" @reply="replyToPost" />
-        </div>
-
-        <!-- 回复表单 -->
-        <div v-if="!topic.isLocked" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
-          <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-3">
-            <template v-if="replyingTo">
-              回复 #{{posts.findIndex((p) => p.id === replyingTo) + 1}}
-              <el-button size="small" @click="cancelReply" class="ml-2 !text-xs !text-gray-500">
-                <i class="fas fa-times mr-1"></i>取消回复
-              </el-button>
-            </template>
-            <template v-else> 发表回复 </template>
-          </h3>
-
-          <div v-if="user">
-            <div class="space-y-4">
-              <div>
-                <client-only>
-                  <template #fallback>
-                    <div
-                      class="border border-gray-200 dark:border-gray-700 rounded p-4 h-[250px] flex items-center justify-center bg-gray-50 dark:bg-gray-800">
-                      <p class="text-gray-400 text-xs">编辑器加载中...</p>
-                    </div>
-                  </template>
-                  <MarkdownEditor v-model="replyContent" placeholder="在这里输入您的回复内容，支持Markdown格式..." minHeight="150px"
-                    :onSave="submitReply" ref="mdEditorRef" />
-                </client-only>
+        <article class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
+          <div class="grid md:grid-cols-[170px_minmax(0,1fr)]">
+            <aside class="border-b border-slate-100 bg-slate-50/80 px-3 py-4 dark:border-white/10 dark:bg-white/5 md:border-b-0 md:border-r">
+              <div class="flex items-center gap-3 md:block md:text-center">
+                <div class="inline-flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg bg-blue-50 text-base font-semibold text-blue-600 dark:bg-blue-500/10 dark:text-blue-300 md:h-16 md:w-16">
+                  {{ getInitial(topic.author?.username) }}
+                </div>
+                <div class="min-w-0 md:mt-2">
+                  <div class="truncate text-xs font-semibold text-slate-900 dark:text-white">{{ topic.author.username }}</div>
+                  <div class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">楼主</div>
+                </div>
               </div>
-              <div>
-                <el-button type="primary" :loading="submitting" @click="submitReply"
-                  class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs !h-8">
-                  发表回复
-                </el-button>
+            </aside>
+
+            <div class="min-w-0">
+              <header class="flex items-center justify-between border-b border-slate-100 bg-white px-3 py-2 text-xs text-slate-500 dark:border-white/10 dark:bg-transparent dark:text-slate-400">
+                <span>发表于 <client-only>{{ formatDate(topic.createdAt) }}</client-only></span>
+                <span>#楼主</span>
+              </header>
+              <div class="px-4 py-5">
+                <div class="forum-markdown markdown-body" v-html="parsedContent"></div>
               </div>
             </div>
           </div>
-          <div v-else
-            class="text-center py-4 border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-750">
-            <p class="text-gray-600 dark:text-gray-400 text-xs mb-3">
-              您需要登录后才能回复
-            </p>
-            <el-button type="primary" @click="navigateToLogin" size="small"
-              class="!bg-linear-to-r !from-purple-600 !to-blue-600 hover:!from-purple-700 hover:!to-blue-700 border-0 !text-xs">
-              登录 / 注册
-            </el-button>
-          </div>
+        </article>
+
+        <div class="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-200">
+          回复列表 ({{ posts?.length || 0 }})
         </div>
 
-        <div v-else class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 text-center">
-          <i class="fas fa-lock text-gray-400 text-sm mb-2"></i>
-          <p class="text-gray-600 dark:text-gray-400 text-xs">
-            该主题已被锁定，无法回复
-          </p>
+        <div v-if="posts && posts.length > 0" class="space-y-3">
+          <ForumPostItem
+            v-for="(post, index) in posts"
+            :key="post.id"
+            :post="post"
+            :index="index + 1"
+            :topic="topic"
+            :user="user"
+            :can-reply="!topic.isLocked"
+            @reply="replyToPost"
+          />
+        </div>
+        <div v-else class="rounded-lg bg-white p-6 text-center text-xs text-slate-500 dark:bg-white/10 dark:text-slate-400">
+          暂无回复。
+        </div>
+
+        <section v-if="!topic.isLocked" class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
+          <div class="bg-slate-50/80 px-3 py-2 dark:bg-white/5">
+            <h2 class="text-xs font-semibold text-slate-700 dark:text-slate-200">
+              <template v-if="replyingTo">
+                回复 #{{ posts.findIndex((item) => item.id === replyingTo) + 1 }}
+                <button class="ml-2 text-slate-500 hover:underline" @click="cancelReply">取消</button>
+              </template>
+              <template v-else>快速回复</template>
+            </h2>
+          </div>
+
+          <div v-if="user" class="p-3">
+            <client-only>
+              <template #fallback>
+                <div class="flex h-[180px] items-center justify-center rounded-lg bg-slate-50 dark:bg-white/5">
+                  <p class="text-xs text-slate-400">编辑器加载中...</p>
+                </div>
+              </template>
+              <MarkdownEditor
+                ref="mdEditorRef"
+                v-model="replyContent"
+                placeholder="在这里输入您的回复内容，支持 Markdown 格式..."
+                minHeight="170px"
+                :onSave="submitReply"
+              />
+            </client-only>
+            <div class="mt-3">
+              <button
+                class="rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                :disabled="submitting"
+                @click="submitReply"
+              >
+                {{ submitting ? "发表中..." : "发表回复" }}
+              </button>
+            </div>
+          </div>
+
+          <div v-else class="p-6 text-center text-xs text-slate-500 dark:text-slate-400">
+            您需要登录后才能回复。
+            <button class="ml-1 text-blue-600 hover:text-blue-700 dark:text-blue-300" @click="navigateToLogin">立即登录</button>
+          </div>
+        </section>
+
+        <div v-else class="rounded-lg bg-white p-4 text-center text-xs text-slate-500 dark:bg-white/10 dark:text-slate-400">
+          <i class="fas fa-lock mr-1"></i>
+          该主题已被锁定，无法回复。
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>
 
 <script setup>
@@ -288,7 +280,6 @@ useHead({
   ],
 });
 
-// 检查用户是否有权限管理该主题（管理员或版主）
 const canModerate = computed(() => {
   if (!user.value) return false;
   return user.value.role === "ADMIN" || user.value.role === "MODERATOR";
@@ -296,16 +287,20 @@ const canModerate = computed(() => {
 
 const replyContent = ref("");
 const submitting = ref(false);
-const replyingTo = ref(null); // 添加一个变量来跟踪回复的父评论ID
-const mdEditorRef = ref(null); // 更改编辑器引用名称
+const replyingTo = ref(null);
+const mdEditorRef = ref(null);
 
-// Computed property to safely parse the topic content
 const parsedContent = computed(() => {
   if (!topic.value?.content) return "";
   return sanitizeHtml(marked.parse(topic.value.content));
 });
 
+function getInitial(name) {
+  return String(name || "?").charAt(0).toUpperCase();
+}
+
 function formatDate(dateString) {
+  if (!dateString) return "";
   try {
     return formatDistanceToNow(new Date(dateString), {
       addSuffix: true,
@@ -328,7 +323,7 @@ async function submitReply() {
       method: "POST",
       body: {
         content: replyContent.value,
-        parentId: replyingTo.value, // 添加parentId参数
+        parentId: replyingTo.value,
       },
       headers: {
         authorization: "Bearer " + useCookie("token").value,
@@ -338,11 +333,10 @@ async function submitReply() {
     if (response.success) {
       ElMessage.success(response.message || "回复成功");
       replyContent.value = "";
-      replyingTo.value = null; // 重置回复的父评论ID
+      replyingTo.value = null;
 
-      // 如果回复状态是approved，则直接添加到页面，否则不添加
       if (response.data && response.data.status === "approved") {
-        refresh(); // 刷新数据以显示新回复
+        refresh();
       }
     } else {
       ElMessage.error(response.message || "回复失败");
@@ -357,7 +351,6 @@ async function submitReply() {
 
 function replyToPost(postId) {
   replyingTo.value = postId;
-  // 添加滚动到编辑器的功能
   setTimeout(() => {
     if (mdEditorRef.value) {
       mdEditorRef.value.$el.scrollIntoView({
@@ -428,19 +421,15 @@ function navigateToLogin() {
   router.push(`/login?redirect=/forum/topic/${slug}`);
 }
 
-// 浏览量暂时不记录，等待后端API实现
 onMounted(async () => {
-  // 调用浏览量记录API
   try {
     await $fetch(`/api/forum/topics/${slug}/view`, {
       method: "GET",
-      // 添加一个随机数作为查询参数，避免缓存
       query: {
         _t: Date.now(),
       },
     });
   } catch (error) {
-    // 如果记录浏览量失败，不影响用户体验，只是在控制台记录错误
     console.error("增加浏览量失败:", error);
   }
 });
@@ -449,36 +438,73 @@ onMounted(async () => {
 <style>
 @import "tailwindcss" reference;
 
-/* 添加自定义黑暗模式颜色 */
-.dark\:bg-gray-750 {
-  @apply dark:bg-gray-700/70;
+.forum-markdown {
+  color: #334155;
+  font-size: 13px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
 }
 
-/* 文章内容样式 */
-.markdown-body {
-  @apply text-gray-800 dark:text-gray-200;
-  font-size: 14px;
+.dark .forum-markdown {
+  color: #cbd5e1;
 }
 
-.markdown-body img {
-  @apply rounded-lg;
+.forum-markdown p,
+.forum-markdown ul,
+.forum-markdown ol {
+  margin-bottom: 12px;
+}
+
+.forum-markdown h1,
+.forum-markdown h2,
+.forum-markdown h3,
+.forum-markdown h4 {
+  color: #0f172a;
+  font-weight: 600;
+  margin: 18px 0 10px;
+}
+
+.dark .forum-markdown h1,
+.dark .forum-markdown h2,
+.dark .forum-markdown h3,
+.dark .forum-markdown h4 {
+  color: #f8fafc;
+}
+
+.forum-markdown a {
+  color: rgb(37 99 235);
+}
+
+.dark .forum-markdown a {
+  color: #93c5fd;
+}
+
+.forum-markdown pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  margin: 14px 0;
+  overflow-x: auto;
+  padding: 12px;
+}
+
+.forum-markdown code {
+  background: rgba(15, 23, 42, 0.06);
+  padding: 0.15em 0.35em;
+}
+
+.forum-markdown pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.forum-markdown blockquote {
+  border-left: 2px solid #dbeafe;
+  color: #64748b;
+  margin: 14px 0;
+  padding-left: 12px;
+}
+
+.forum-markdown img {
   max-width: 100%;
-  height: auto;
-}
-
-.markdown-body pre {
-  @apply rounded-md bg-gray-100 dark:bg-gray-800 p-3 overflow-x-auto;
-}
-
-.markdown-body code {
-  @apply bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded;
-}
-
-.markdown-body blockquote {
-  @apply border-l-4 border-gray-300 dark:border-gray-600 pl-3 italic;
-}
-
-.markdown-body a {
-  @apply text-blue-600 dark:text-blue-400 hover:underline;
 }
 </style>

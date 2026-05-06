@@ -1,344 +1,366 @@
 <script setup>
-import { format } from 'date-fns';
+import { format } from "date-fns";
 
-// SEO优化
 useSeoMeta({
-    title: 'AIPAN博客 - 技术分享与生活感悟平台 | 编程技术·开发经验·生活随笔',
-    description: 'AIPAN博客是一个优质的内容分享平台，汇聚技术文章、编程教程、开发经验、生活感悟等多样化内容。用户可以在这里发布博客文章，分享知识和见解，与社区成员交流学习。',
-    keywords: 'AIPAN博客,技术博客,编程教程,开发经验,技术分享,生活感悟,博客平台,内容创作,知识分享',
-    ogTitle: 'AIPAN博客 - 技术分享与生活感悟平台',
-    ogDescription: 'AIPAN博客汇聚技术文章、编程教程、开发经验、生活感悟等优质内容，与社区成员交流学习。',
-    twitterTitle: 'AIPAN博客 - 技术分享与生活感悟平台',
-    twitterDescription: '优质内容分享平台！技术文章、编程教程、开发经验、生活感悟，与社区交流学习！'
+  title: "AIPAN博客 - 技术分享与生活感悟平台 | 编程技术·开发经验·生活随笔",
+  description:
+    "AIPAN博客是一个优质的内容分享平台，汇聚技术文章、编程教程、开发经验、生活感悟等多样化内容。用户可以在这里发布博客文章，分享知识和见解，与社区成员交流学习。",
+  keywords: "AIPAN博客,技术博客,编程教程,开发经验,技术分享,生活感悟,博客平台,内容创作,知识分享",
+  ogTitle: "AIPAN博客 - 技术分享与生活感悟平台",
+  ogDescription: "AIPAN博客汇聚技术文章、编程教程、开发经验、生活感悟等优质内容，与社区成员交流学习。",
+  twitterTitle: "AIPAN博客 - 技术分享与生活感悟平台",
+  twitterDescription: "优质内容分享平台！技术文章、编程教程、开发经验、生活感悟，与社区交流学习！",
 });
 
 useHead({
-    meta: [
-        {
-            name: 'keywords',
-            content: 'AIPAN博客,技术博客,编程教程,开发经验,技术分享,生活感悟'
+  meta: [
+    {
+      name: "keywords",
+      content: "AIPAN博客,技术博客,编程教程,开发经验,技术分享,生活感悟",
+    },
+    { property: "og:type", content: "website" },
+    { property: "og:title", content: "AIPAN.ME 博客 - 分享技术、生活和见解" },
+    {
+      property: "og:description",
+      content:
+        "爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。",
+    },
+    { property: "og:image", content: "https://www.aipan.me/default-og-image.png" },
+    { property: "og:url", content: "https://www.aipan.me/blog" },
+    { name: "twitter:card", content: "summary_large_image" },
+    { name: "twitter:title", content: "AIPAN.ME 博客 - 分享技术、生活和见解" },
+    {
+      name: "twitter:description",
+      content:
+        "爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。",
+    },
+    { name: "twitter:image", content: "https://www.aipan.me/default-og-image.png" },
+    { name: "robots", content: "index,follow" },
+    { name: "author", content: "AIPAN.ME" },
+  ],
+  link: [{ rel: "canonical", href: "https://www.aipan.me/blog" }],
+  script: [
+    {
+      type: "application/ld+json",
+      children: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        name: "AIPAN.ME 博客",
+        description: "爱盼博客是一个分享技术、生活和见解的平台。",
+        url: "https://www.aipan.me/blog",
+        publisher: {
+          "@type": "Organization",
+          name: "AIPAN.ME",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://www.aipan.me/logo.png",
+          },
         },
-        // Open Graph / Facebook
-        { property: 'og:type', content: 'website' },
-        { property: 'og:title', content: 'AIPAN.ME 博客 - 分享技术、生活和见解' },
-        {
-            property: 'og:description',
-            content: '爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。'
-        },
-        { property: 'og:image', content: 'https://www.aipan.me/default-og-image.png' },
-        { property: 'og:url', content: 'https://www.aipan.me/blog' },
-        // Twitter
-        { name: 'twitter:card', content: 'summary_large_image' },
-        { name: 'twitter:title', content: 'AIPAN.ME 博客 - 分享技术、生活和见解' },
-        {
-            name: 'twitter:description',
-            content: '爱盼博客是一个分享技术、生活和见解的平台。在这里，你可以找到关于编程、技术趋势、生活感悟等多样化的优质内容。'
-        },
-        { name: 'twitter:image', content: 'https://www.aipan.me/default-og-image.png' },
-        // 其他重要的meta标签
-        { name: 'robots', content: 'index,follow' },
-        { name: 'author', content: 'AIPAN.ME' }
-    ],
-    link: [
-        { rel: 'canonical', href: 'https://www.aipan.me/blog' }
-    ],
-    // 添加结构化数据
-    script: [
-        {
-            type: 'application/ld+json',
-            children: JSON.stringify({
-                '@context': 'https://schema.org',
-                '@type': 'Blog',
-                name: 'AIPAN.ME 博客',
-                description: '爱盼博客是一个分享技术、生活和见解的平台。',
-                url: 'https://www.aipan.me/blog',
-                publisher: {
-                    '@type': 'Organization',
-                    name: 'AIPAN.ME',
-                    logo: {
-                        '@type': 'ImageObject',
-                        url: 'https://www.aipan.me/logo.png'
-                    }
-                }
-            })
-        }
-    ]
-})
+      }),
+    },
+  ],
+});
 
-const formatDate = (date) => {
-    return format(new Date(date), 'yyyy-MM-dd')
-}
-
-const page = ref(1)
-const pageSize = ref(16)
-const categoryId = ref(undefined)
+const page = ref(1);
+const pageSize = ref(12);
+const categoryId = ref(undefined);
 
 const buildPostsQuery = () => {
-    const queryJson = {
-        page: page.value,
-        pageSize: pageSize.value
-    }
+  const queryJson = {
+    page: page.value,
+    pageSize: pageSize.value,
+  };
 
-    if (categoryId.value) {
-        queryJson.categoryId = categoryId.value
-    }
+  if (categoryId.value) {
+    queryJson.categoryId = categoryId.value;
+  }
 
-    return queryJson
-}
+  return queryJson;
+};
 
-const { data: categoriesResponse } = await useAsyncData('blog-categories', async () => {
-    return await $fetch('/api/blog/category/get', {
-        method: 'GET',
-    })
-})
+const { data: categoriesResponse } = await useAsyncData("blog-categories", async () => {
+  return await $fetch("/api/blog/category/get", {
+    method: "GET",
+  });
+});
 
-const categoriesData = computed(() => categoriesResponse.value?.data || [])
+const categoriesData = computed(() => categoriesResponse.value?.data || []);
 
 const {
-    data: postsResponse,
-    pending: loading,
+  data: postsResponse,
+  pending: loading,
 } = await useAsyncData(
-    'blog-posts',
-    async () => {
-        return await $fetch('/api/blog/posts/get', {
-            method: 'GET',
-            query: buildPostsQuery(),
-        })
-    },
-    {
-        watch: [page, pageSize, categoryId]
-    }
-)
+  "blog-posts",
+  async () => {
+    return await $fetch("/api/blog/posts/get", {
+      method: "GET",
+      query: buildPostsQuery(),
+    });
+  },
+  {
+    watch: [page, pageSize, categoryId],
+  }
+);
 
-const postsData = computed(() => postsResponse.value?.posts || [])
-const totalCount = computed(() => postsResponse.value?.totalCount || 0)
+const postsData = computed(() => postsResponse.value?.posts || []);
+const totalCount = computed(() => postsResponse.value?.totalCount || 0);
+const selectedCategoryName = computed(() => {
+  if (!categoryId.value) return "全部文章";
+  return categoriesData.value.find((category) => category.id === categoryId.value)?.name || "当前分类";
+});
 
-const handleCurrentChange = async (val) => {
-    page.value = val
-}
+const formatDate = (date) => {
+  if (!date) return "";
 
-const handleSizeChange = async (val) => {
-    pageSize.value = val
-    page.value = 1
-}
+  try {
+    return format(new Date(date), "yyyy-MM-dd");
+  } catch (_) {
+    return "";
+  }
+};
+
+const getCategoryNames = (post) => {
+  return post?.categories?.map((item) => item.category?.name).filter(Boolean) || [];
+};
+
+const stripMarkdown = (content) => {
+  if (!content) return "";
+
+  return content
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[#>*_~`-]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+};
+
+const getExcerpt = (content, length = 96) => {
+  const text = stripMarkdown(content);
+
+  if (!text) return "这篇文章暂时没有摘要，点击阅读全文。";
+  return text.length > length ? `${text.slice(0, length)}...` : text;
+};
+
+const getReadingMinutes = (content) => {
+  const text = stripMarkdown(content);
+  if (!text) return 1;
+
+  const cjkChars = text.match(/[\u4e00-\u9fa5]/g)?.length || 0;
+  const words = text.match(/[A-Za-z0-9]+/g)?.length || 0;
+  return Math.max(1, Math.ceil((cjkChars + words) / 400));
+};
+
+const normalizeImageUrl = (url) => {
+  if (!url) return "";
+
+  const value = url.trim();
+  if (value.startsWith("//")) return `https:${value}`;
+  if (value.startsWith("/") || /^https?:\/\//i.test(value)) return value;
+  return "";
+};
+
+const getContentImageUrl = (content) => {
+  if (!content) return "";
+
+  const markdownImage = content.match(/!\[[^\]]*\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/);
+  if (markdownImage?.[1]) {
+    return normalizeImageUrl(markdownImage[1]);
+  }
+
+  const htmlImage = content.match(/<img[^>]+src=["']([^"']+)["']/i);
+  if (htmlImage?.[1]) {
+    return normalizeImageUrl(htmlImage[1]);
+  }
+
+  return "";
+};
+
+const getFallbackThumbnailUrl = (post) => {
+  const seed = encodeURIComponent(String(post?.slug || post?.id || "aipan-blog"));
+  return `https://picsum.photos/seed/${seed}/640/360`;
+};
+
+const getThumbnailUrl = (post) => {
+  return getContentImageUrl(post?.content) || getFallbackThumbnailUrl(post);
+};
+
+const handleThumbnailError = (event, post) => {
+  if (event.target.dataset.fallbackApplied === "true") return;
+  event.target.dataset.fallbackApplied = "true";
+  event.target.src = getFallbackThumbnailUrl(post);
+};
+
+const handleCurrentChange = (val) => {
+  page.value = val;
+};
+
+const handleSizeChange = (val) => {
+  pageSize.value = val;
+  page.value = 1;
+};
 
 const handleSelectCategory = (val) => {
-    categoryId.value = val
-    page.value = 1
-}
+  categoryId.value = val;
+  page.value = 1;
+};
 </script>
 
 <template>
-    <div class="min-h-[calc(100vh-140px)] bg-gray-50 dark:bg-gray-900">
-        <div class="max-w-[1240px] mx-auto px-4 py-12">
-            <!-- 分类导航 -->
-            <div class="mb-12">
-                <div class="flex items-center justify-center flex-wrap gap-4">
-                    <button class="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200" :class="[
-                        categoryId === undefined
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white border border-gray-200 dark:border-gray-700'
-                    ]" @click="handleSelectCategory(undefined)">
-                        全部文章
-                    </button>
-                    <button v-for="category in categoriesData" :key="category.id"
-                        class="px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200" :class="[
-                            categoryId === category.id
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-500 hover:text-white border border-gray-200 dark:border-gray-700'
-                        ]" @click="handleSelectCategory(category.id)">
-                        {{ category.name }}
-                    </button>
-                </div>
-            </div>
-
-            <!-- 文章列表 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                <!-- 骨架屏 -->
-                <template v-if="loading">
-                    <div v-for="i in 12" :key="i"
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden animate-pulse border border-gray-200 dark:border-gray-700">
-                        <div class="p-6 space-y-4">
-
-                            <!-- 分类标签骨架 -->
-                            <div class="flex gap-2">
-                                <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
-                                <div class="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-20"></div>
-                            </div>
-                            <!-- 标题骨架 -->
-                            <div class="space-y-2">
-                                <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-                                <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                            </div>
-                            <!-- 日期和阅读更多骨架 -->
-                            <div class="flex items-center justify-between">
-                                <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-                                <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
-                            </div>
-                        </div>
-                    </div>
-                </template>
-
-                <!-- 文章卡片 -->
-                <template v-else>
-                    <div v-if="postsData.length === 0" class="col-span-full">
-                        <div class="text-center py-20">
-                            <div
-                                class="w-24 h-24 mx-auto mb-6 bg-linear-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-600 rounded-full flex items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-400 dark:text-gray-500" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                                    </path>
-                                </svg>
-                            </div>
-                            <h3 class="text-base font-semibold text-gray-600 dark:text-gray-400 mb-2">暂无文章</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-500">该分类下还没有发布文章</p>
-                        </div>
-                    </div>
-                    <nuxt-link v-for="(item, index) in postsData" :key="index" :to="'/blog/' + item.slug"
-                        class="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden border border-gray-200 dark:border-gray-700">
-                        <!-- 文章信息 -->
-                        <div class="p-6 space-y-4">
-
-                            <div class="flex flex-wrap gap-2">
-                                <span v-for="(category, idx) in item.categories" :key="idx"
-                                    class="px-3 py-1 text-xs font-medium rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800">
-                                    {{ category.category.name }}
-                                </span>
-                            </div>
-                            <div class="space-y-3">
-                                <h2 class="text-sm font-bold text-gray-800 dark:text-white line-clamp-2 leading-tight">
-                                    {{ item.title }}
-                                </h2>
-                                <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                                    <time class="flex items-center space-x-1">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                            </path>
-                                        </svg>
-                                        <span>{{ formatDate(item.createdAt) }}</span>
-                                    </time>
-                                    <div class="flex items-center space-x-1">
-                                        <span class="text-xs">阅读更多</span>
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </nuxt-link>
-                </template>
-            </div>
-
-            <!-- 分页 -->
-            <div v-if="!loading && totalCount > 0" class="mt-16 flex justify-center">
-                <div
-                    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 p-4">
-                    <el-pagination v-model:current-page="page" v-model:page-size="pageSize" :page-sizes="[12, 24, 36]"
-                        :background="true" layout="prev, pager, next, sizes, jumper" :total="totalCount"
-                        @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                        class="pagination-custom" />
-                </div>
-            </div>
+  <main class="min-h-[calc(100vh-140px)] bg-[#f8fafc] text-slate-950 dark:bg-slate-950 dark:text-white">
+    <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1">
+          <button
+            class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition"
+            :class="[
+              categoryId === undefined
+                ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                : 'text-slate-600 hover:bg-white hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-blue-300',
+            ]"
+            @click="handleSelectCategory(undefined)"
+          >
+            全部文章
+          </button>
+          <button
+            v-for="category in categoriesData"
+            :key="category.id"
+            class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition"
+            :class="[
+              categoryId === category.id
+                ? 'bg-slate-950 text-white dark:bg-white dark:text-slate-950'
+                : 'text-slate-600 hover:bg-white hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-blue-300',
+            ]"
+            @click="handleSelectCategory(category.id)"
+          >
+            {{ category.name }}
+          </button>
         </div>
-    </div>
+
+        <div class="flex items-center justify-between gap-4 text-xs text-slate-500 dark:text-slate-400">
+          <span>{{ selectedCategoryName }} · {{ totalCount }} 篇</span>
+          <NuxtLink
+            to="/user/posts/list"
+            class="inline-flex items-center justify-center rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
+          >
+            <i class="fa-solid fa-pen-to-square mr-1.5"></i>
+            写文章
+          </NuxtLink>
+        </div>
+      </div>
+
+      <div v-if="loading" class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-for="item in 6"
+          :key="item"
+          class="h-56 animate-pulse rounded-lg bg-white dark:bg-white/10"
+        ></div>
+      </div>
+
+      <div v-else-if="postsData.length === 0" class="mt-8 rounded-lg bg-white p-10 text-center dark:bg-white/10">
+        <i class="fa-regular fa-file-lines text-3xl text-slate-300 dark:text-slate-600"></i>
+        <h2 class="mt-4 text-base font-semibold text-slate-900 dark:text-white">暂无文章</h2>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">该分类下还没有发布内容。</p>
+      </div>
+
+      <div v-else class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <NuxtLink
+          v-for="post in postsData"
+          :key="post.id"
+          :to="`/blog/${post.slug}`"
+          class="group overflow-hidden rounded-lg bg-white transition hover:-translate-y-0.5 dark:bg-white/10"
+        >
+          <article class="flex h-full flex-col">
+            <div class="aspect-[16/9] overflow-hidden bg-slate-100 dark:bg-slate-900/60">
+              <img
+                :src="getThumbnailUrl(post)"
+                :alt="post.title"
+                class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                loading="lazy"
+                @error="handleThumbnailError($event, post)"
+              />
+            </div>
+
+            <div class="flex flex-1 flex-col p-4">
+              <div class="flex flex-wrap gap-1.5">
+                <span
+                  v-for="category in getCategoryNames(post).slice(0, 2)"
+                  :key="category"
+                  class="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500 dark:bg-white/10 dark:text-slate-300"
+                >
+                  {{ category }}
+                </span>
+              </div>
+
+              <h2 class="mt-3 line-clamp-2 text-sm font-semibold leading-6 text-slate-950 transition group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-300">
+                {{ post.title }}
+              </h2>
+              <p class="mt-2 line-clamp-3 flex-1 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                {{ getExcerpt(post.content, 88) }}
+              </p>
+
+              <div class="mt-4 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
+                <span>{{ formatDate(post.createdAt) }}</span>
+                <span>{{ getReadingMinutes(post.content) }} 分钟阅读</span>
+              </div>
+            </div>
+          </article>
+        </NuxtLink>
+      </div>
+
+      <div v-if="!loading && totalCount > 0" class="mt-8 flex justify-center">
+        <div class="rounded-lg bg-white/70 p-2 dark:bg-white/10">
+          <el-pagination
+            v-model:current-page="page"
+            v-model:page-size="pageSize"
+            :page-sizes="[12, 24, 36]"
+            :background="true"
+            layout="prev, pager, next, sizes"
+            :total="totalCount"
+            class="pagination-custom"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </div>
+    </section>
+  </main>
 </template>
 
 <style scoped>
-/* 自定义分页样式 */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
-    background: rgb(59 130 246);
-    border-color: rgb(59 130 246);
-    color: white;
+  background: rgb(37 99 235);
+  border-color: rgb(37 99 235);
+  color: white;
 }
 
 :deep(.el-pagination.is-background .el-pager li) {
-    background-color: transparent;
-    color: inherit;
-    border: 1px solid rgb(229 231 235);
-    margin: 0 2px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-}
-
-:deep(.el-pagination.is-background .el-pager li:hover:not(.is-active)) {
-    background: rgb(59 130 246);
-    color: white;
+  border-radius: 8px;
 }
 
 :deep(.el-pagination .btn-prev),
 :deep(.el-pagination .btn-next) {
-    background: rgb(59 130 246);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+  border-radius: 8px;
 }
 
-:deep(.el-pagination .btn-prev:hover),
-:deep(.el-pagination .btn-next:hover) {
-    background: rgb(37 99 235);
-}
-
-/* 基础过渡效果 */
-.group {
-    transition: all 0.2s ease;
-}
-
-/* 文章标题多行省略 */
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* 响应式优化 */
-@media (max-width: 768px) {
-    .grid {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-/* 滚动条样式 */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgb(243 244 246);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgb(59 130 246);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgb(37 99 235);
-}
-
-/* 暗色模式滚动条 */
-.dark ::-webkit-scrollbar-track {
-    background: rgb(31 41 55);
+@media (max-width: 640px) {
+  :deep(.el-pagination__sizes) {
+    display: none;
+  }
 }
 </style>
