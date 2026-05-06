@@ -1,4 +1,3 @@
-# 评论管理页面
 <script setup>
 import { Delete, Search } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
@@ -8,7 +7,7 @@ import { sanitizeHtml } from "~/utils/sanitize";
 
 definePageMeta({
   layout: "admin",
-  middleware: ["auth"],
+  middleware: ["admin"],
   ssr: false,
 });
 
@@ -49,7 +48,7 @@ const parseContent = (content) => {
 const fetchComments = async () => {
   try {
     loading.value = true;
-    const response = await $fetch(`/api/blog/comments`, {
+    const response = await $fetch(`/api/admin/blog/comments`, {
       method: "GET",
       query: {
         page: page.value,
@@ -58,8 +57,9 @@ const fetchComments = async () => {
         searchType: searchForm.searchType,
       },
       headers: {
-        authorization: "Bearer " + useCookie("token").value,
+        Authorization: "Bearer " + useCookie("token").value,
       },
+      timeout: 10000,
     });
     if (response.code === 200) {
       comments.value = response.data.comments || [];
@@ -82,11 +82,12 @@ const fetchComments = async () => {
 // 删除评论
 const handleDeleteComment = async (row) => {
   try {
-    const response = await $fetch(`/api/blog/comments/${row.id}`, {
+    const response = await $fetch(`/api/admin/blog/comments/${row.id}`, {
       method: "DELETE",
       headers: {
-        authorization: "Bearer " + useCookie("token").value,
+        Authorization: "Bearer " + useCookie("token").value,
       },
+      timeout: 10000,
     });
 
     if (response.code === 200) {
@@ -199,6 +200,13 @@ onMounted(() => {
               class="prose prose-sm max-w-none dark:prose-invert"
               v-html="parseContent(row.content)"
             />
+            <NuxtLink
+              v-if="row.postSlug"
+              :to="`/blog/${row.postSlug}`"
+              class="mt-2 inline-flex text-xs text-blue-600 hover:text-blue-700"
+            >
+              {{ row.postTitle || `文章 #${row.postId}` }}
+            </NuxtLink>
             <div v-if="row.parentId" class="mt-2 text-xs text-gray-500 italic">
               回复评论 #{{ row.parentId }}
             </div>

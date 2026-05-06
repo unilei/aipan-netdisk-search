@@ -34,3 +34,4 @@ public/image-cache/*
 # Database backups
 *.sql
 !prisma/migrations/**/*.sql
+.playwright-mcp
