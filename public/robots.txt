@@ -1,14 +1,5 @@
 User-agent: *
-Allow: /
 Disallow: /admin/
-Disallow: /api/
-Disallow: /*.json$
-Disallow: /user/
-Disallow: /login
-Disallow: /register
 
 # Sitemap
 Sitemap: https://www.aipan.me/sitemap.xml
-
-# Crawl-delay for better server performance
-Crawl-delay: 1
