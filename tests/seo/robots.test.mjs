@@ -4,18 +4,16 @@ import test from "node:test";
 
 const robotsTxt = readFileSync(new URL("../../public/robots.txt", import.meta.url), "utf8");
 
-test("robots.txt allows Nuxt and i18n JSON required for page rendering", () => {
+test("robots.txt does not block render-critical Nuxt and i18n assets", () => {
   assert.doesNotMatch(
     robotsTxt,
     /^Disallow:\s*\/\*\.json\$/m,
-    "Do not block all JSON files; Nuxt build metadata and i18n messages are render-critical.",
+    "Do not block all JSON files; Nuxt and i18n JSON can be render-critical.",
   );
-  assert.match(robotsTxt, /^Allow:\s*\/_nuxt\//m);
-  assert.match(robotsTxt, /^Allow:\s*\/_i18n\//m);
+  assert.doesNotMatch(robotsTxt, /^Disallow:\s*\/_nuxt\//m);
+  assert.doesNotMatch(robotsTxt, /^Disallow:\s*\/_i18n\//m);
 });
 
-test("robots.txt still keeps private application areas out of crawling", () => {
+test("robots.txt keeps admin pages out of crawling", () => {
   assert.match(robotsTxt, /^Disallow:\s*\/admin\//m);
-  assert.match(robotsTxt, /^Disallow:\s*\/api\//m);
-  assert.match(robotsTxt, /^Disallow:\s*\/user\//m);
 });

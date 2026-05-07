@@ -1,5 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
-import type { Plugin, TransformPluginContext } from 'vite'
+import type { Plugin } from 'vite'
 
 function tailwindcssWithSourceMapNoopGuard(): Plugin[] {
   return tailwindcss().map((plugin) => {
@@ -15,7 +15,7 @@ function tailwindcssWithSourceMapNoopGuard(): Plugin[] {
     return {
       ...plugin,
       async transform(
-        this: TransformPluginContext,
+        this: ThisParameterType<typeof transform>,
         code: string,
         id: string,
         options?: { ssr?: boolean },
@@ -29,6 +29,9 @@ function tailwindcssWithSourceMapNoopGuard(): Plugin[] {
 
 export default defineNuxtConfig({
   devtools: { enabled: false },
+  experimental: {
+    appManifest: false,
+  },
   // 优化构建配置
   vite: {
     plugins: tailwindcssWithSourceMapNoopGuard(),

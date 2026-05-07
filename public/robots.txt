@@ -2,4 +2,4 @@ User-agent: *
 Disallow: /admin/
 
 # Sitemap
-Sitemap: https://www.aipan.me/sitemap.xml
+Sitemap: https://www.aipan.me/sitemap_index.xml
