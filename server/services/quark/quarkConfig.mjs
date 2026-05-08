@@ -25,6 +25,13 @@ export const DEFAULT_QUARK_CONFIG = {
   transferRewardDurationMinutes: DEFAULT_TRANSFER_REWARD_DURATION,
 };
 
+export const TRANSFER_REWARD_CONFIG_KEYS = [
+  "transferRewardEnabled",
+  "transferRewardShareLink",
+  "transferRewardPoints",
+  "transferRewardDurationMinutes",
+];
+
 const normalizeString = (value) =>
   typeof value === "string" ? value.trim() : "";
 
@@ -36,6 +43,18 @@ const normalizeInteger = (value, fallback, { min, max }) => {
   if (!Number.isFinite(parsed)) return fallback;
   return Math.min(max, Math.max(min, Math.floor(parsed)));
 };
+
+const pickDefinedEntries = (input = {}) =>
+  Object.fromEntries(
+    Object.entries(input).filter(([, value]) => value !== undefined),
+  );
+
+const pickDefinedTransferRewardEntries = (input = {}) =>
+  Object.fromEntries(
+    TRANSFER_REWARD_CONFIG_KEYS
+      .filter((key) => input[key] !== undefined)
+      .map((key) => [key, input[key]]),
+  );
 
 export const normalizeQuarkConfig = (input = {}) => {
   const legacyShareLink = normalizeString(input.shareLink);
@@ -84,6 +103,32 @@ export const normalizeQuarkConfig = (input = {}) => {
     ),
   };
 };
+
+export const pickTransferRewardConfig = (inputConfig = {}) => {
+  const config = normalizeQuarkConfig(inputConfig);
+
+  return {
+    transferRewardEnabled: config.transferRewardEnabled,
+    transferRewardShareLink: config.transferRewardShareLink,
+    transferRewardPoints: config.transferRewardPoints,
+    transferRewardDurationMinutes: config.transferRewardDurationMinutes,
+  };
+};
+
+export const mergeQuarkConfigUpdate = (storedConfig = {}, update = {}) =>
+  normalizeQuarkConfig({
+    ...normalizeQuarkConfig(storedConfig),
+    ...pickDefinedEntries(update),
+  });
+
+export const mergeTransferRewardConfigUpdate = (
+  storedConfig = {},
+  update = {},
+) =>
+  mergeQuarkConfigUpdate(
+    storedConfig,
+    pickDefinedTransferRewardEntries(update),
+  );
 
 export const normalizeQuarkVerificationPurpose = (purpose) =>
   purpose === QUARK_VERIFICATION_PURPOSES.points

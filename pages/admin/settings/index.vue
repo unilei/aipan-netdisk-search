@@ -523,62 +523,6 @@
             </div>
           </el-form-item>
 
-          <el-divider></el-divider>
-
-          <div class="mb-4">
-            <h3 class="text-base font-medium text-gray-900">转存积分奖励</h3>
-            <p class="text-xs text-gray-500 mt-1">
-              积分中心的独立转存任务；登录用户完成后获得限时积分，同一个分享链接只奖励一次。
-            </p>
-          </div>
-
-          <el-form-item label="奖励状态">
-            <el-switch
-              v-model="form.transferRewardEnabled"
-              active-text="启用奖励"
-              inactive-text="关闭奖励"
-            />
-          </el-form-item>
-
-          <el-form-item label="积分任务链接" prop="transferRewardShareLink">
-            <el-input
-              v-model="form.transferRewardShareLink"
-              placeholder="请输入积分任务需要用户转存的夸克分享链接"
-              :disabled="!form.transferRewardEnabled"
-            />
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              签到页“转存获取积分”会展示这个链接，独立于访问验证链接。
-            </div>
-          </el-form-item>
-
-          <el-form-item label="奖励积分" prop="transferRewardPoints">
-            <el-input-number
-              v-model="form.transferRewardPoints"
-              :min="1"
-              :max="100000000"
-              :step="100"
-              :disabled="!form.transferRewardEnabled"
-              class="w-full"
-            />
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              默认 {{ DEFAULT_TRANSFER_REWARD_POINTS }} 分，计入有效积分但不写入永久余额。
-            </div>
-          </el-form-item>
-
-          <el-form-item label="有效期(分钟)" prop="transferRewardDurationMinutes">
-            <el-input-number
-              v-model="form.transferRewardDurationMinutes"
-              :min="1"
-              :max="525600"
-              :step="60"
-              :disabled="!form.transferRewardEnabled"
-              class="w-full"
-            />
-            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              默认 {{ DEFAULT_TRANSFER_REWARD_DURATION }} 分钟，也就是 24 小时。
-            </div>
-          </el-form-item>
-
           <el-form-item>
             <div class="flex items-center gap-4">
               <el-button
@@ -705,8 +649,6 @@ const { setAccessControlConfig } = useAccessControlConfig();
 
 const DEFAULT_API_URL = "http://127.0.0.1:5000/api/quark/sharepage/save";
 const DEFAULT_ACCESS_DURATION = 1440;
-const DEFAULT_TRANSFER_REWARD_POINTS = 1000;
-const DEFAULT_TRANSFER_REWARD_DURATION = 1440;
 
 const form = reactive({
   apiUrl: "",
@@ -717,10 +659,6 @@ const form = reactive({
   shareLink: "",
   accessVerificationShareLink: "",
   accessDurationMinutes: DEFAULT_ACCESS_DURATION,
-  transferRewardEnabled: true,
-  transferRewardShareLink: "",
-  transferRewardPoints: DEFAULT_TRANSFER_REWARD_POINTS,
-  transferRewardDurationMinutes: DEFAULT_TRANSFER_REWARD_DURATION,
 });
 
 const musicRules = {
@@ -931,26 +869,6 @@ const validateShareLink = (_rule, value, callback) => {
   callback();
 };
 
-const validateTransferRewardShareLink = (_rule, value, callback) => {
-  if (!form.transferRewardEnabled) {
-    callback();
-    return;
-  }
-
-  if (!value) {
-    callback(new Error("请输入积分任务夸克分享链接"));
-    return;
-  }
-
-  const pattern = /https?:\/\/pan\.quark\.cn\/s\/[A-Za-z0-9]+/;
-  if (!pattern.test(value)) {
-    callback(new Error("请输入有效的夸克分享链接"));
-    return;
-  }
-
-  callback();
-};
-
 const validateAccessDuration = (_rule, value, callback) => {
   if (!form.verificationEnabled) {
     callback();
@@ -975,22 +893,6 @@ const validateAccessDuration = (_rule, value, callback) => {
   callback();
 };
 
-const validatePositiveInteger = (message, max) => {
-  return (_rule, value, callback) => {
-    if (!form.transferRewardEnabled) {
-      callback();
-      return;
-    }
-
-    if (typeof value !== "number" || value < 1 || value > max) {
-      callback(new Error(message));
-      return;
-    }
-
-    callback();
-  };
-};
-
 const rules = {
   apiUrl: [{ validator: validateUrl, trigger: "blur" }],
   quarkCookie: [
@@ -1007,21 +909,6 @@ const rules = {
   ],
   accessDurationMinutes: [
     { validator: validateAccessDuration, trigger: ["blur", "change"] },
-  ],
-  transferRewardShareLink: [
-    { validator: validateTransferRewardShareLink, trigger: "blur" },
-  ],
-  transferRewardPoints: [
-    {
-      validator: validatePositiveInteger("奖励积分需要大于 0", 100000000),
-      trigger: ["blur", "change"],
-    },
-  ],
-  transferRewardDurationMinutes: [
-    {
-      validator: validatePositiveInteger("有效期需要大于 0 分钟", 525600),
-      trigger: ["blur", "change"],
-    },
   ],
 };
 
@@ -1064,10 +951,6 @@ const resetForm = () => {
     form.shareLink = "";
     form.accessVerificationShareLink = "";
     form.accessDurationMinutes = DEFAULT_ACCESS_DURATION;
-    form.transferRewardEnabled = true;
-    form.transferRewardShareLink = "";
-    form.transferRewardPoints = DEFAULT_TRANSFER_REWARD_POINTS;
-    form.transferRewardDurationMinutes = DEFAULT_TRANSFER_REWARD_DURATION;
   });
 };
 
@@ -1299,12 +1182,6 @@ const getConfig = async () => {
       form.shareLink = form.accessVerificationShareLink;
       form.accessDurationMinutes =
         res.data.accessDurationMinutes ?? DEFAULT_ACCESS_DURATION;
-      form.transferRewardEnabled = res.data.transferRewardEnabled ?? true;
-      form.transferRewardShareLink = res.data.transferRewardShareLink || "";
-      form.transferRewardPoints =
-        res.data.transferRewardPoints ?? DEFAULT_TRANSFER_REWARD_POINTS;
-      form.transferRewardDurationMinutes =
-        res.data.transferRewardDurationMinutes ?? DEFAULT_TRANSFER_REWARD_DURATION;
     }
   } catch (error) {
     console.error("获取配置失败:", error);
@@ -1345,10 +1222,6 @@ const handleSubmit = async () => {
         shareLink: form.accessVerificationShareLink,
         accessVerificationShareLink: form.accessVerificationShareLink,
         accessDurationMinutes: form.accessDurationMinutes,
-        transferRewardEnabled: form.transferRewardEnabled,
-        transferRewardShareLink: form.transferRewardShareLink,
-        transferRewardPoints: form.transferRewardPoints,
-        transferRewardDurationMinutes: form.transferRewardDurationMinutes,
       },
       headers: {
         Authorization: `Bearer ${useCookie("token").value}`,

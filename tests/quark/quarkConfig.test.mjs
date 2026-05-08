@@ -4,6 +4,8 @@ import test from "node:test";
 import {
   QUARK_VERIFICATION_PURPOSES,
   getTransferTaskFromQuarkConfig,
+  mergeQuarkConfigUpdate,
+  mergeTransferRewardConfigUpdate,
   normalizeQuarkConfig,
   resolveQuarkVerificationTarget,
 } from "../../server/services/quark/quarkConfig.mjs";
@@ -82,4 +84,55 @@ test("points transfer task is disabled without a dedicated points share link", (
     durationMinutes: 1440,
   });
   assert.equal(resolveQuarkVerificationTarget(config, "points").enabled, false);
+});
+
+test("mergeQuarkConfigUpdate preserves transfer reward settings when omitted", () => {
+  const config = mergeQuarkConfigUpdate({
+    verificationEnabled: true,
+    accessVerificationShareLink: "https://pan.quark.cn/s/access111",
+    transferRewardEnabled: true,
+    transferRewardShareLink: "https://pan.quark.cn/s/points222",
+    transferRewardPoints: 1200,
+    transferRewardDurationMinutes: 60,
+  }, {
+    verificationEnabled: false,
+    accessVerificationShareLink: "https://pan.quark.cn/s/access333",
+  });
+
+  assert.equal(config.verificationEnabled, false);
+  assert.equal(
+    config.accessVerificationShareLink,
+    "https://pan.quark.cn/s/access333",
+  );
+  assert.equal(config.transferRewardEnabled, true);
+  assert.equal(config.transferRewardShareLink, "https://pan.quark.cn/s/points222");
+  assert.equal(config.transferRewardPoints, 1200);
+  assert.equal(config.transferRewardDurationMinutes, 60);
+});
+
+test("mergeTransferRewardConfigUpdate updates only transfer reward settings", () => {
+  const config = mergeTransferRewardConfigUpdate({
+    verificationEnabled: true,
+    accessVerificationShareLink: "https://pan.quark.cn/s/access111",
+    transferRewardEnabled: true,
+    transferRewardShareLink: "https://pan.quark.cn/s/points222",
+    transferRewardPoints: 1200,
+    transferRewardDurationMinutes: 60,
+  }, {
+    transferRewardEnabled: false,
+    transferRewardShareLink: "https://pan.quark.cn/s/points333",
+    transferRewardPoints: 300,
+    transferRewardDurationMinutes: 30,
+    accessVerificationShareLink: "https://pan.quark.cn/s/ignored",
+  });
+
+  assert.equal(config.verificationEnabled, true);
+  assert.equal(
+    config.accessVerificationShareLink,
+    "https://pan.quark.cn/s/access111",
+  );
+  assert.equal(config.transferRewardEnabled, false);
+  assert.equal(config.transferRewardShareLink, "https://pan.quark.cn/s/points333");
+  assert.equal(config.transferRewardPoints, 300);
+  assert.equal(config.transferRewardDurationMinutes, 30);
 });

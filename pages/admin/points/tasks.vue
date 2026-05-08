@@ -14,17 +14,17 @@
             </div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">积分任务</h1>
             <p class="mt-1 text-gray-500 dark:text-gray-400">
-              配置推广文章和活动任务，用户完成后可在积分中心领取奖励。
+              统一规划签到、转存验证和自定义活动任务，用户完成后可在积分中心领取奖励。
             </p>
           </div>
           <div class="flex flex-wrap gap-3">
-            <el-button @click="loadTasks" :loading="loading">
+            <el-button @click="loadPageData" :loading="loading || transferLoading">
               <el-icon class="mr-1"><Refresh /></el-icon>
               刷新
             </el-button>
             <el-button type="primary" @click="openCreateDialog">
               <el-icon class="mr-1"><Plus /></el-icon>
-              新增任务
+              新增自定义任务
             </el-button>
           </div>
         </div>
@@ -50,6 +50,116 @@
       </div>
 
       <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="mb-4">
+          <h2 class="m-0 text-lg font-semibold text-gray-900 dark:text-white">积分任务规划</h2>
+          <p class="m-0 mt-1 text-sm text-gray-500 dark:text-gray-400">
+            按任务来源拆分管理入口，避免积分规则散落在系统配置里。
+          </p>
+        </div>
+        <div class="grid gap-4 lg:grid-cols-3">
+          <div
+            v-for="item in taskPlanItems"
+            :key="item.key"
+            :class="getPlanCardClass(item.tone)"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="m-0 text-sm font-semibold text-gray-900 dark:text-white">{{ item.title }}</p>
+                <p class="m-0 mt-1 text-xs leading-5 text-gray-500 dark:text-gray-400">{{ item.description }}</p>
+              </div>
+              <el-tag size="small" :type="item.tagType">{{ item.status }}</el-tag>
+            </div>
+            <div class="mt-4 text-sm text-gray-700 dark:text-gray-200">{{ item.reward }}</div>
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ item.rule }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 class="m-0 text-lg font-semibold text-gray-900 dark:text-white">转存验证任务</h2>
+            <p class="m-0 mt-1 text-sm text-gray-500 dark:text-gray-400">
+              配置积分中心的“转存验证”任务；奖励为限时积分，同一个转存结果只奖励一次。
+            </p>
+          </div>
+          <el-tag :type="transferTaskConfigured ? 'success' : 'info'">
+            {{ transferTaskConfigured ? '已配置' : '未完整配置' }}
+          </el-tag>
+        </div>
+
+        <div v-if="transferLoading" class="py-6">
+          <el-skeleton :rows="4" animated />
+        </div>
+
+        <el-form
+          v-else
+          ref="transferFormRef"
+          :model="transferForm"
+          :rules="transferRules"
+          label-width="110px"
+        >
+          <el-form-item label="任务状态">
+            <el-switch
+              v-model="transferForm.transferRewardEnabled"
+              active-text="启用任务"
+              inactive-text="关闭任务"
+            />
+          </el-form-item>
+
+          <el-form-item label="任务链接" prop="transferRewardShareLink">
+            <el-input
+              v-model="transferForm.transferRewardShareLink"
+              placeholder="请输入用户需要转存的夸克分享链接"
+              :disabled="!transferForm.transferRewardEnabled"
+            />
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              这个链接会展示在用户积分中心的“转存验证”任务中，独立于访问验证链接。
+            </div>
+          </el-form-item>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <el-form-item label="奖励积分" prop="transferRewardPoints">
+              <el-input-number
+                v-model="transferForm.transferRewardPoints"
+                :min="1"
+                :max="100000000"
+                :step="100"
+                :disabled="!transferForm.transferRewardEnabled"
+                class="w-full"
+              />
+            </el-form-item>
+            <el-form-item label="有效期(分钟)" prop="transferRewardDurationMinutes">
+              <el-input-number
+                v-model="transferForm.transferRewardDurationMinutes"
+                :min="1"
+                :max="525600"
+                :step="60"
+                :disabled="!transferForm.transferRewardEnabled"
+                class="w-full"
+              />
+            </el-form-item>
+          </div>
+
+          <el-form-item>
+            <el-button
+              type="primary"
+              :loading="transferSaving"
+              @click="saveTransferConfig"
+            >
+              保存转存任务
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="mb-5">
+          <h2 class="m-0 text-lg font-semibold text-gray-900 dark:text-white">自定义任务</h2>
+          <p class="m-0 mt-1 text-sm text-gray-500 dark:text-gray-400">
+            管理推广文章和活动任务，用户打开任务后可回到积分中心领取奖励。
+          </p>
+        </div>
         <div v-if="loading" class="py-10">
           <el-skeleton :rows="6" animated />
         </div>
@@ -156,9 +266,15 @@ definePageMeta({
 const tasks = ref([]);
 const loading = ref(false);
 const saving = ref(false);
+const transferLoading = ref(false);
+const transferSaving = ref(false);
 const dialogVisible = ref(false);
 const editingTaskId = ref(null);
 const formRef = ref();
+const transferFormRef = ref();
+
+const DEFAULT_TRANSFER_REWARD_POINTS = 1000;
+const DEFAULT_TRANSFER_REWARD_DURATION = 1440;
 
 const form = reactive({
   title: "",
@@ -170,12 +286,70 @@ const form = reactive({
   claimLimit: 1,
 });
 
+const transferForm = reactive({
+  transferRewardEnabled: true,
+  transferRewardShareLink: "",
+  transferRewardPoints: DEFAULT_TRANSFER_REWARD_POINTS,
+  transferRewardDurationMinutes: DEFAULT_TRANSFER_REWARD_DURATION,
+});
+
 const stats = computed(() => ({
   total: tasks.value.length,
   enabled: tasks.value.filter((task) => task.enabled).length,
   disabled: tasks.value.filter((task) => !task.enabled).length,
   completions: tasks.value.reduce((sum, task) => sum + Number(task.completionCount || 0), 0),
 }));
+
+const transferTaskConfigured = computed(() =>
+  Boolean(
+    transferForm.transferRewardEnabled &&
+      String(transferForm.transferRewardShareLink || "").trim(),
+  ),
+);
+
+const formatDurationText = (minutes) => {
+  const normalizedMinutes = Number(minutes || 0);
+  if (normalizedMinutes >= 1440 && normalizedMinutes % 1440 === 0) {
+    return `${normalizedMinutes / 1440} 天`;
+  }
+  if (normalizedMinutes >= 60 && normalizedMinutes % 60 === 0) {
+    return `${normalizedMinutes / 60} 小时`;
+  }
+  return `${normalizedMinutes} 分钟`;
+};
+
+const taskPlanItems = computed(() => [
+  {
+    key: "checkin",
+    title: "每日签到",
+    description: "固定任务，面向所有登录用户。",
+    status: "固定启用",
+    tagType: "success",
+    tone: "green",
+    reward: "+10 永久积分",
+    rule: "连续 3/7/15/30 天会获得额外奖励。",
+  },
+  {
+    key: "transfer",
+    title: "转存验证",
+    description: "由当前页面配置任务链接和限时积分。",
+    status: transferTaskConfigured.value ? "启用中" : "待配置",
+    tagType: transferTaskConfigured.value ? "success" : "info",
+    tone: "blue",
+    reward: `+${transferForm.transferRewardPoints} 限时积分`,
+    rule: `有效期 ${formatDurationText(transferForm.transferRewardDurationMinutes)}，同一次转存只奖励一次。`,
+  },
+  {
+    key: "custom",
+    title: "自定义任务",
+    description: "推广文章、活动页面和其他可领取任务。",
+    status: `${stats.value.enabled} 个启用`,
+    tagType: stats.value.enabled > 0 ? "success" : "info",
+    tone: "purple",
+    reward: "按任务配置发放永久积分",
+    rule: `当前共 ${stats.value.total} 个任务，累计领取 ${stats.value.completions} 次。`,
+  },
+]);
 
 const authHeaders = () => ({
   Authorization: `Bearer ${useCookie("token").value}`,
@@ -199,6 +373,72 @@ const rules = {
   url: [{ required: true, validator: validateUrl, trigger: "blur" }],
   points: [{ required: true, message: "请输入奖励积分", trigger: "change" }],
   claimLimit: [{ required: true, message: "请输入每人领取次数", trigger: "change" }],
+};
+
+const validateTransferShareLink = (_rule, value, callback) => {
+  if (!transferForm.transferRewardEnabled) {
+    callback();
+    return;
+  }
+
+  if (!value) {
+    callback(new Error("请输入积分任务夸克分享链接"));
+    return;
+  }
+
+  const pattern = /https?:\/\/pan\.quark\.cn\/s\/[A-Za-z0-9]+/;
+  if (!pattern.test(value)) {
+    callback(new Error("请输入有效的夸克分享链接"));
+    return;
+  }
+
+  callback();
+};
+
+const validateTransferPositiveInteger = (message, max) => {
+  return (_rule, value, callback) => {
+    if (!transferForm.transferRewardEnabled) {
+      callback();
+      return;
+    }
+
+    if (typeof value !== "number" || value < 1 || value > max) {
+      callback(new Error(message));
+      return;
+    }
+
+    callback();
+  };
+};
+
+const transferRules = {
+  transferRewardShareLink: [
+    { validator: validateTransferShareLink, trigger: "blur" },
+  ],
+  transferRewardPoints: [
+    {
+      validator: validateTransferPositiveInteger("奖励积分需要大于 0", 100000000),
+      trigger: ["blur", "change"],
+    },
+  ],
+  transferRewardDurationMinutes: [
+    {
+      validator: validateTransferPositiveInteger("有效期需要大于 0 分钟", 525600),
+      trigger: ["blur", "change"],
+    },
+  ],
+};
+
+const getPlanCardClass = (tone) => {
+  const base =
+    "rounded-lg border p-4 transition-colors duration-200 dark:bg-gray-900/40";
+  const tones = {
+    green: "border-emerald-100 bg-emerald-50/60 dark:border-emerald-900/60",
+    blue: "border-blue-100 bg-blue-50/60 dark:border-blue-900/60",
+    purple: "border-violet-100 bg-violet-50/60 dark:border-violet-900/60",
+  };
+
+  return `${base} ${tones[tone] || tones.blue}`;
 };
 
 const resetForm = () => {
@@ -240,6 +480,70 @@ const loadTasks = async () => {
     ElMessage.error(error.data?.message || "加载积分任务失败");
   } finally {
     loading.value = false;
+  }
+};
+
+const loadTransferConfig = async () => {
+  try {
+    transferLoading.value = true;
+    const res = await $fetch("/api/admin/points/transfer-reward", {
+      headers: authHeaders(),
+    });
+    if (res.code === 200) {
+      Object.assign(transferForm, {
+        transferRewardEnabled: res.data?.transferRewardEnabled ?? true,
+        transferRewardShareLink: res.data?.transferRewardShareLink || "",
+        transferRewardPoints:
+          res.data?.transferRewardPoints ?? DEFAULT_TRANSFER_REWARD_POINTS,
+        transferRewardDurationMinutes:
+          res.data?.transferRewardDurationMinutes ?? DEFAULT_TRANSFER_REWARD_DURATION,
+      });
+      return;
+    }
+    ElMessage.error(res.msg || "加载转存任务失败");
+  } catch (error) {
+    ElMessage.error(error.data?.message || "加载转存任务失败");
+  } finally {
+    transferLoading.value = false;
+  }
+};
+
+const loadPageData = async () => {
+  await Promise.all([loadTasks(), loadTransferConfig()]);
+};
+
+const saveTransferConfig = async () => {
+  try {
+    await transferFormRef.value.validate();
+    transferSaving.value = true;
+    const res = await $fetch("/api/admin/points/transfer-reward", {
+      method: "POST",
+      body: {
+        transferRewardEnabled: transferForm.transferRewardEnabled,
+        transferRewardShareLink: transferForm.transferRewardShareLink,
+        transferRewardPoints: transferForm.transferRewardPoints,
+        transferRewardDurationMinutes: transferForm.transferRewardDurationMinutes,
+      },
+      headers: authHeaders(),
+    });
+
+    if (res.code === 200) {
+      Object.assign(transferForm, {
+        transferRewardEnabled: res.data?.transferRewardEnabled ?? true,
+        transferRewardShareLink: res.data?.transferRewardShareLink || "",
+        transferRewardPoints:
+          res.data?.transferRewardPoints ?? DEFAULT_TRANSFER_REWARD_POINTS,
+        transferRewardDurationMinutes:
+          res.data?.transferRewardDurationMinutes ?? DEFAULT_TRANSFER_REWARD_DURATION,
+      });
+      ElMessage.success(res.msg || "保存成功");
+      return;
+    }
+    ElMessage.error(res.msg || "保存失败");
+  } catch (error) {
+    ElMessage.error(error.data?.message || error.message || "保存失败");
+  } finally {
+    transferSaving.value = false;
   }
 };
 
@@ -334,5 +638,5 @@ const deleteTask = async (row) => {
   }
 };
 
-onMounted(loadTasks);
+onMounted(loadPageData);
 </script>
