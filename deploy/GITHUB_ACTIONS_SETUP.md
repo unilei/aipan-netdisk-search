@@ -275,9 +275,52 @@ openssl rand -base64 48
 - 使用 ES VPS 上 `.env` 中的 `ELASTIC_PASSWORD`
 - 如果重置 ES 密码，需要同步更新这个 Secret
 
+### 17. `R2_ACCOUNT_ID`
+
+用途：
+
+- 生成 Cloudflare R2 S3 endpoint
+- 数据库备份 sidecar 和后台手动备份功能会用它访问 R2
+- 如果你单独配置了 `R2_ENDPOINT`，这个值可以不填
+
+如何获取：
+
+- Cloudflare Dashboard -> 账号首页，复制 Account ID
+
+### 18. `R2_ACCESS_KEY_ID`
+
+用途：
+
+- 数据库备份 sidecar 和后台手动备份功能上传备份到 R2
+
+如何获取：
+
+- Cloudflare Dashboard -> R2 -> Manage R2 API Tokens
+- 创建 Access Key，授予目标 bucket 的对象读写权限
+
+### 19. `R2_SECRET_ACCESS_KEY`
+
+用途：
+
+- R2 Access Key 对应的 secret
+
+注意：
+
+- 只在创建时显示一次，必须保存到 GitHub Secret
+
+### 20. `R2_BUCKET`
+
+用途：
+
+- 存放 PostgreSQL 备份文件的 R2 bucket 名称
+
+要求：
+
+- 备份 Access Key 必须能对这个 bucket 执行对象写入、列出、读取和删除
+
 ## 二、可选 Secrets
 
-### 17. `NUXT_PUBLIC_GITHUB_TOKEN`
+### 21. `NUXT_PUBLIC_GITHUB_TOKEN`
 
 用途：
 
@@ -296,7 +339,7 @@ openssl rand -base64 48
 
 - 对目标仓库至少有 `Contents: Read and write`
 
-### 18. `NUXT_PUBLIC_QUARK_COOKIE`
+### 22. `NUXT_PUBLIC_QUARK_COOKIE`
 
 用途：
 
@@ -359,7 +402,37 @@ openssl rand -base64 48
 - 看你当前 Prisma 连接串末尾是否带 `?schema=...`
 - 大多数情况用 `public`
 
-### 4. `ELASTICSEARCH_CA_FINGERPRINT`
+### 4. `DB_BACKUP_TIME`
+
+用途：
+
+- PostgreSQL 备份每天执行的时间
+
+默认值：
+
+- `03:00`
+
+### 5. `DB_BACKUP_RETENTION`
+
+用途：
+
+- R2 中保留最近多少份 `.sql.gz` 备份
+
+默认值：
+
+- `10`
+
+### 6. `R2_PREFIX`
+
+用途：
+
+- R2 bucket 内的备份路径前缀
+
+默认值：
+
+- `aipan/postgres`
+
+### 7. `ELASTICSEARCH_CA_FINGERPRINT`
 
 用途：
 
@@ -372,7 +445,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
   | openssl x509 -fingerprint -sha256 -noout -in /dev/stdin
 ```
 
-### 5. `ELASTICSEARCH_USER_RESOURCE_INDEX`
+### 8. `ELASTICSEARCH_USER_RESOURCE_INDEX`
 
 用途：
 
@@ -382,7 +455,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - `user-resources`
 
-### 6. `USER_RESOURCE_AUTO_REVIEW_ENABLED`
+### 9. `USER_RESOURCE_AUTO_REVIEW_ENABLED`
 
 用途：
 
@@ -392,7 +465,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - `true`
 
-### 7. `USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE`
+### 10. `USER_RESOURCE_AUTO_REVIEW_REQUIRE_REACHABLE`
 
 用途：
 
@@ -406,7 +479,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - 设为 `true` 时，无法确认可达性的资源会进入人工审核，不会自动通过。
 
-### 8. `USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID`
+### 11. `USER_RESOURCE_AUTO_REVIEW_REJECT_INVALID`
 
 用途：
 
@@ -416,7 +489,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - `true`
 
-### 9. `USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL`
+### 12. `USER_RESOURCE_AUTO_REVIEW_NOTIFY_EMAIL`
 
 用途：
 
@@ -431,7 +504,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 - 邮件仍依赖后台邮箱服务配置；邮箱未启用时只发送站内通知。
 - 邮件发送还会受 `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_*` 限流保护，避免同一用户同一邮箱被每条投稿重复发送邮件。
 
-### 10. `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED`
+### 13. `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED`
 
 用途：
 
@@ -441,7 +514,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - `true`
 
-### 11. `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS`
+### 14. `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_SECONDS`
 
 用途：
 
@@ -455,7 +528,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - 默认 24 小时内最多发送一封审核结果邮件；每条资源仍会创建站内通知。
 
-### 12. `USER_RESOURCE_AUTO_REVIEW_MAX_LINKS`
+### 15. `USER_RESOURCE_AUTO_REVIEW_MAX_LINKS`
 
 用途：
 
@@ -465,7 +538,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 
 - `5`
 
-### 13. `NUXT_PUBLIC_GITHUB_OWNER`
+### 16. `NUXT_PUBLIC_GITHUB_OWNER`
 
 用途：
 
@@ -477,7 +550,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 - 例如 `https://github.com/unilei-github/aipan-images`
 - 则 owner 是 `unilei-github`
 
-### 14. `NUXT_PUBLIC_GITHUB_REPO`
+### 17. `NUXT_PUBLIC_GITHUB_REPO`
 
 用途：
 
@@ -489,7 +562,7 @@ openssl s_client -connect localhost:9200 -servername localhost -showcerts </dev/
 - 例如 `https://github.com/unilei-github/aipan-images`
 - 则 repo 是 `aipan-images`
 
-### 15. `NUXT_PUBLIC_GITHUB_BRANCH`
+### 18. `NUXT_PUBLIC_GITHUB_BRANCH`
 
 用途：
 
@@ -572,6 +645,10 @@ gh secret set SETTINGS_ENCRYPTION_KEY -b"你的系统配置加密密钥"
 gh secret set ELASTICSEARCH_NODE -b"https://<ELASTICSEARCH_HOST>:9200"
 gh secret set ELASTICSEARCH_USERNAME -b"elastic"
 gh secret set ELASTICSEARCH_PASSWORD -b"你的ES密码"
+gh secret set R2_ACCOUNT_ID -b"你的Cloudflare账号ID"
+gh secret set R2_ACCESS_KEY_ID -b"你的R2 Access Key ID"
+gh secret set R2_SECRET_ACCESS_KEY -b"你的R2 Secret Access Key"
+gh secret set R2_BUCKET -b"你的R2 Bucket名称"
 ```
 
 可选 Secrets：
@@ -587,6 +664,11 @@ gh secret set NUXT_PUBLIC_QUARK_COOKIE -b"你的Quark Cookie"
 gh variable set APP_PORT -b"3000"
 gh variable set WS_PORT -b"3002"
 gh variable set DATABASE_SCHEMA -b"public"
+gh variable set DB_BACKUP_ENABLED -b"true"
+gh variable set DB_BACKUP_TIME -b"03:00"
+gh variable set DB_BACKUP_RETENTION -b"10"
+gh variable set DB_BACKUP_RUN_ON_STARTUP -b"false"
+gh variable set R2_PREFIX -b"aipan/postgres"
 gh variable set ELASTICSEARCH_CA_FINGERPRINT -b"你的ES HTTP CA SHA256指纹"
 gh variable set ELASTICSEARCH_USER_RESOURCE_INDEX -b"user-resources"
 gh variable set USER_RESOURCE_AUTO_REVIEW_ENABLED -b"true"
@@ -617,7 +699,7 @@ gh variable set NUXT_PUBLIC_GITHUB_BRANCH -b"master"
 SERVER_HOST=<APP_SERVER_HOST> ./deploy/bootstrap-github-actions.sh
 ```
 
-脚本会从生产容器读取数据库、管理员、ES、GitHub 和 Quark 配置，并写入 GitHub Actions。
+脚本会从生产容器读取数据库、管理员、ES、数据库备份、R2、GitHub 和 Quark 配置，并写入 GitHub Actions。第一次启用 R2 备份时，如果生产环境还没有 `aipan-postgres-backup` 容器，需要手工添加 R2 Secrets。
 
 ## 六、第一次发布流程
 

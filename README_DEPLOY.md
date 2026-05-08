@@ -10,6 +10,7 @@
 - 应用服务名：`aipan-netdisk-search`
 - 应用容器名：`aipan-netdisk-search-app`
 - PostgreSQL/Redis：随应用服务器 compose 启动
+- PostgreSQL 备份：`postgres-backup` sidecar 每天定时上传到 Cloudflare R2，后台支持手动备份和下载
 - Elasticsearch VPS：通过 GitHub Actions Secret `ELASTICSEARCH_NODE` 配置
 - Elasticsearch 访问方式：`HTTPS + Basic Auth + CA fingerprint`
 - Elasticsearch 端口：`9200`，只允许应用服务器出口 IP 访问
@@ -22,7 +23,8 @@
 - 工作流：`.github/workflows/deploy.yml`
 - push 到 `master` 自动部署
 - 也支持在 GitHub Actions 页面手动运行 `workflow_dispatch`
-- 镜像会推送到 Docker Hub，标签包含 `latest` 和 `sha-<commit>`
+- 应用镜像会推送到 Docker Hub，标签包含 `latest` 和 `sha-<commit>`
+- 数据库备份镜像会推送到同一仓库，标签包含 `db-backup-latest` 和 `db-backup-sha-<commit>`
 - 服务器会拉取新镜像、执行 Prisma migration，然后重启应用容器
 
 相关文件：
@@ -53,6 +55,10 @@
 - `ELASTICSEARCH_NODE`
 - `ELASTICSEARCH_USERNAME`
 - `ELASTICSEARCH_PASSWORD`
+- `R2_ACCOUNT_ID`，如果配置了 `R2_ENDPOINT` 可以不填
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_BUCKET`
 
 可选 Secrets：
 
@@ -66,6 +72,12 @@
 - `APP_PORT`，默认 `3000`
 - `WS_PORT`，默认 `3002`
 - `DATABASE_SCHEMA`，默认 `public`
+- `DB_BACKUP_ENABLED`，默认 `true`
+- `DB_BACKUP_TIME`，默认 `03:00`
+- `DB_BACKUP_RETENTION`，默认 `10`
+- `DB_BACKUP_RUN_ON_STARTUP`，默认 `false`
+- `R2_PREFIX`，默认 `aipan/postgres`
+- `R2_ENDPOINT`，默认通过 `R2_ACCOUNT_ID` 生成 `https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com`
 - `ELASTICSEARCH_CA_FINGERPRINT`
 - `ELASTICSEARCH_USER_RESOURCE_INDEX`，当前为 `user-resources`
 - `USER_RESOURCE_REVIEW_EMAIL_THROTTLE_ENABLED`，默认 `true`
@@ -88,6 +100,7 @@ SERVER_HOST=<APP_SERVER_HOST> ./deploy/bootstrap-github-actions.sh
 
 ```bash
 APP_IMAGE=unilei/aipan-netdisk-search:latest
+DB_BACKUP_IMAGE=unilei/aipan-netdisk-search:db-backup-latest
 APP_PORT=3000
 WS_PORT=3002
 
@@ -104,6 +117,18 @@ JWT_SECRET=change-me
 SETTINGS_ENCRYPTION_KEY=change-me
 REDIS_URL=redis://redis:6379
 
+DB_BACKUP_ENABLED=true
+DB_BACKUP_TIME=03:00
+DB_BACKUP_RETENTION=10
+DB_BACKUP_RUN_ON_STARTUP=false
+R2_ACCOUNT_ID=<cloudflare-account-id>
+R2_ACCESS_KEY_ID=<r2-access-key-id>
+R2_SECRET_ACCESS_KEY=<r2-secret-access-key>
+R2_BUCKET=<r2-bucket-name>
+R2_PREFIX=aipan/postgres
+R2_ENDPOINT=
+TZ=Asia/Shanghai
+
 ELASTICSEARCH_NODE=https://your-es-host:9200
 ELASTICSEARCH_USERNAME=elastic
 ELASTICSEARCH_PASSWORD=change-me
@@ -116,6 +141,37 @@ ELASTICSEARCH_USER_RESOURCE_INDEX=user-resources
 - `SETTINGS_ENCRYPTION_KEY` 用于解密后台系统配置，已有生产环境必须复用原值。
 - `JWT_SECRET` 变更会导致已有登录 token 失效。
 - ES 变量不完整时，`/api/sources/1` 会降级为只返回本地 `Resource`，但审核同步和 ES 索引页面会不可用。
+
+## PostgreSQL R2 备份
+
+生产 compose 会启动 `postgres-backup` sidecar 执行定时备份。应用容器也会安装 `pg_dump` 和 `aws` CLI，用同一套 R2 配置支持后台手动备份、备份列表和下载。
+
+默认策略：
+
+- 时间：每天 `03:00`，按容器 `TZ=Asia/Shanghai` 计算
+- 保留：最新 `10` 份
+- 路径：`aipan/postgres/<POSTGRES_DB>-YYYYMMDD-HHMMSS.sql.gz`
+- 启动时不立即备份：`DB_BACKUP_RUN_ON_STARTUP=false`
+
+后台入口：
+
+- `/admin/database-backups`
+- 支持立即备份、刷新备份记录、下载 `.sql.gz` 备份文件
+
+命令行手动触发一次备份：
+
+```bash
+cd /www/wwwroot/aipan-docker
+docker compose -p aipan-docker --env-file .env -f docker-compose.prod.yml run --rm postgres-backup --once
+```
+
+查看备份日志：
+
+```bash
+docker logs -f aipan-postgres-backup
+```
+
+R2 凭证需要使用 Cloudflare R2 API Token / Access Key，并授予目标 bucket 的对象读写权限。`R2_ENDPOINT` 可以留空；留空时脚本会用 `R2_ACCOUNT_ID` 自动生成 endpoint。
 
 ## Elasticsearch VPS
 

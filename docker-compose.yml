@@ -35,9 +35,19 @@ services:
       - NUXT_DATABASE_SCHEMA=${DATABASE_SCHEMA}
       - SHADOW_DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA}
       # 数据库连接信息
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+      # 数据库备份 / R2
+      - DB_BACKUP_RETENTION=${DB_BACKUP_RETENTION:-10}
+      - R2_ACCOUNT_ID=${R2_ACCOUNT_ID:-}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:-}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY:-}
+      - R2_BUCKET=${R2_BUCKET:-}
+      - R2_PREFIX=${R2_PREFIX:-aipan/postgres}
+      - R2_ENDPOINT=${R2_ENDPOINT:-}
       
       # 管理员配置
       - ADMIN_USER=${ADMIN_USER}
@@ -73,6 +83,32 @@ services:
       - postgres
       - redis
       - prisma-migrate
+    networks:
+      - aipan-network
+
+  postgres-backup:
+    image: ${DB_BACKUP_IMAGE:-unilei/aipan-netdisk-search:db-backup-latest}
+    container_name: aipan-postgres-backup
+    restart: unless-stopped
+    environment:
+      - DB_BACKUP_ENABLED=${DB_BACKUP_ENABLED:-true}
+      - DB_BACKUP_TIME=${DB_BACKUP_TIME:-03:00}
+      - DB_BACKUP_RETENTION=${DB_BACKUP_RETENTION:-10}
+      - DB_BACKUP_RUN_ON_STARTUP=${DB_BACKUP_RUN_ON_STARTUP:-false}
+      - TZ=${TZ:-Asia/Shanghai}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - R2_ACCOUNT_ID=${R2_ACCOUNT_ID:-}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID:-}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY:-}
+      - R2_BUCKET=${R2_BUCKET:-}
+      - R2_PREFIX=${R2_PREFIX:-aipan/postgres}
+      - R2_ENDPOINT=${R2_ENDPOINT:-}
+    depends_on:
+      - postgres
     networks:
       - aipan-network
 

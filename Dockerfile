@@ -59,6 +59,7 @@ LABEL authors="Lei"
 
 # 安装 Canvas 运行时依赖
 RUN apk add --no-cache \
+  aws-cli \
   cairo \
   jpeg \
   pango \
@@ -67,6 +68,7 @@ RUN apk add --no-cache \
   libjpeg-turbo \
   freetype \
   fontconfig \
+  postgresql-client \
   ttf-dejavu
 
 WORKDIR /app

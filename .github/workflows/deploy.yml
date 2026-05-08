@@ -40,10 +40,12 @@ jobs:
 
           IMAGE_NAME="${DOCKERHUB_USERNAME}/aipan-netdisk-search"
           IMAGE_TAG="sha-${GITHUB_SHA::7}"
+          BACKUP_IMAGE_TAG="db-backup-sha-${GITHUB_SHA::7}"
 
           echo "image_name=${IMAGE_NAME}" >> "${GITHUB_OUTPUT}"
           echo "image_tag=${IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
           echo "app_image=${IMAGE_NAME}:${IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
+          echo "backup_image=${IMAGE_NAME}:${BACKUP_IMAGE_TAG}" >> "${GITHUB_OUTPUT}"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -72,12 +74,34 @@ jobs:
             org.opencontainers.image.source=${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
 
+      - name: Build and push database backup image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./deploy/db-backup
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.image.outputs.image_name }}:db-backup-latest
+            ${{ steps.image.outputs.backup_image }}
+          cache-from: type=gha,scope=db-backup
+          cache-to: type=gha,mode=max,scope=db-backup
+          labels: |
+            org.opencontainers.image.source=${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
       - name: Build production env file
         env:
           APP_IMAGE: ${{ steps.image.outputs.app_image }}
+          DB_BACKUP_IMAGE: ${{ steps.image.outputs.backup_image }}
           APP_PORT: ${{ vars.APP_PORT }}
           WS_PORT: ${{ vars.WS_PORT }}
           DATABASE_SCHEMA: ${{ vars.DATABASE_SCHEMA }}
+          DB_BACKUP_ENABLED: ${{ vars.DB_BACKUP_ENABLED }}
+          DB_BACKUP_TIME: ${{ vars.DB_BACKUP_TIME }}
+          DB_BACKUP_RETENTION: ${{ vars.DB_BACKUP_RETENTION }}
+          DB_BACKUP_RUN_ON_STARTUP: ${{ vars.DB_BACKUP_RUN_ON_STARTUP }}
+          R2_PREFIX: ${{ vars.R2_PREFIX }}
+          R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
           NUXT_PUBLIC_GITHUB_OWNER: ${{ vars.NUXT_PUBLIC_GITHUB_OWNER }}
           NUXT_PUBLIC_GITHUB_REPO: ${{ vars.NUXT_PUBLIC_GITHUB_REPO }}
           NUXT_PUBLIC_GITHUB_BRANCH: ${{ vars.NUXT_PUBLIC_GITHUB_BRANCH }}
@@ -89,6 +113,10 @@ jobs:
           ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           SETTINGS_ENCRYPTION_KEY: ${{ secrets.SETTINGS_ENCRYPTION_KEY }}
+          R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET: ${{ secrets.R2_BUCKET }}
           ELASTICSEARCH_NODE: ${{ secrets.ELASTICSEARCH_NODE }}
           ELASTICSEARCH_USERNAME: ${{ secrets.ELASTICSEARCH_USERNAME }}
           ELASTICSEARCH_PASSWORD: ${{ secrets.ELASTICSEARCH_PASSWORD }}
@@ -117,6 +145,11 @@ jobs:
           : "${APP_PORT:=3000}"
           : "${WS_PORT:=3002}"
           : "${DATABASE_SCHEMA:=public}"
+          : "${DB_BACKUP_ENABLED:=true}"
+          : "${DB_BACKUP_TIME:=03:00}"
+          : "${DB_BACKUP_RETENTION:=10}"
+          : "${DB_BACKUP_RUN_ON_STARTUP:=false}"
+          : "${R2_PREFIX:=aipan/postgres}"
           : "${ELASTICSEARCH_USER_RESOURCE_INDEX:=user-resources}"
           : "${USER_RESOURCE_AUTO_REVIEW_ENABLED:=true}"
           : "${USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID:=true}"
@@ -144,10 +177,25 @@ jobs:
             fi
           done
 
+          if [ "${DB_BACKUP_ENABLED}" != "false" ]; then
+            for name in DB_BACKUP_IMAGE R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY R2_BUCKET; do
+              if [ -z "$(eval "printf '%s' \"\${$name:-}\"")" ]; then
+                echo "$name is required when DB_BACKUP_ENABLED is not false." >&2
+                exit 1
+              fi
+            done
+
+            if [ -z "${R2_ENDPOINT}" ] && [ -z "${R2_ACCOUNT_ID}" ]; then
+              echo "R2_ACCOUNT_ID is required when R2_ENDPOINT is empty." >&2
+              exit 1
+            fi
+          fi
+
           mkdir -p .deploy-workdir
 
           cat > .deploy-workdir/.env.production <<EOF
           APP_IMAGE=${APP_IMAGE}
+          DB_BACKUP_IMAGE=${DB_BACKUP_IMAGE}
           APP_PORT=${APP_PORT}
           WS_PORT=${WS_PORT}
           POSTGRES_USER=${POSTGRES_USER}
@@ -160,6 +208,17 @@ jobs:
           JWT_SECRET=${JWT_SECRET}
           SETTINGS_ENCRYPTION_KEY=${SETTINGS_ENCRYPTION_KEY}
           REDIS_URL=redis://redis:6379
+          DB_BACKUP_ENABLED=${DB_BACKUP_ENABLED}
+          DB_BACKUP_TIME=${DB_BACKUP_TIME}
+          DB_BACKUP_RETENTION=${DB_BACKUP_RETENTION}
+          DB_BACKUP_RUN_ON_STARTUP=${DB_BACKUP_RUN_ON_STARTUP}
+          R2_ACCOUNT_ID=${R2_ACCOUNT_ID}
+          R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+          R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+          R2_BUCKET=${R2_BUCKET}
+          R2_PREFIX=${R2_PREFIX}
+          R2_ENDPOINT=${R2_ENDPOINT}
+          TZ=Asia/Shanghai
           ELASTICSEARCH_NODE=${ELASTICSEARCH_NODE}
           ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
           ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}

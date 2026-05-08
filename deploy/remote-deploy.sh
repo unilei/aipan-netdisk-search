@@ -34,6 +34,7 @@ mkdir -p "${DEPLOY_DIR}"
 
 if [ -f "${ENV_SOURCE_FILE}" ]; then
   mv "${ENV_SOURCE_FILE}" "${ENV_FILE}"
+  chmod 600 "${ENV_FILE}"
 fi
 
 require_file "${COMPOSE_FILE}"
@@ -54,8 +55,8 @@ cd "${DEPLOY_DIR}"
 
 echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
 
-compose pull "${APP_SERVICE_NAME}" prisma-migrate
+compose pull "${APP_SERVICE_NAME}" prisma-migrate postgres-backup
 compose up -d postgres redis
 compose up --abort-on-container-exit --exit-code-from prisma-migrate prisma-migrate
-compose up -d --remove-orphans "${APP_SERVICE_NAME}"
+compose up -d --remove-orphans "${APP_SERVICE_NAME}" postgres-backup
 compose ps

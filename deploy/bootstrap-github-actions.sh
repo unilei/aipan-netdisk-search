@@ -5,6 +5,7 @@ REPO="${REPO:-unilei/aipan-netdisk-search}"
 SERVER_HOST="${SERVER_HOST:-}"
 SERVER_USER="${SERVER_USER:-root}"
 APP_CONTAINER_NAME="${APP_CONTAINER_NAME:-aipan-netdisk-search-app}"
+BACKUP_CONTAINER_NAME="${BACKUP_CONTAINER_NAME:-aipan-postgres-backup}"
 RUNTIME_GITHUB_OWNER="${RUNTIME_GITHUB_OWNER:-}"
 RUNTIME_GITHUB_REPO="${RUNTIME_GITHUB_REPO:-}"
 RUNTIME_GITHUB_BRANCH="${RUNTIME_GITHUB_BRANCH:-}"
@@ -35,10 +36,18 @@ if ! gh auth status >/dev/null 2>&1; then
 fi
 
 REMOTE_DOCKER_ENV_CMD="docker inspect ${APP_CONTAINER_NAME} --format '{{range .Config.Env}}{{println .}}{{end}}'"
+REMOTE_BACKUP_ENV_CMD="docker inspect ${BACKUP_CONTAINER_NAME} --format '{{range .Config.Env}}{{println .}}{{end}}'"
 
 remote_env() {
   local key="$1"
   ssh "${SSH_OPTS[@]}" "${SERVER_USER}@${SERVER_HOST}" "${REMOTE_DOCKER_ENV_CMD}" \
+    | sed -n "s/^${key}=//p" \
+    | tail -n 1
+}
+
+backup_env() {
+  local key="$1"
+  ssh "${SSH_OPTS[@]}" "${SERVER_USER}@${SERVER_HOST}" "${REMOTE_BACKUP_ENV_CMD} 2>/dev/null || true" \
     | sed -n "s/^${key}=//p" \
     | tail -n 1
 }
@@ -138,10 +147,25 @@ CURRENT_GITHUB_REPO="$(remote_env NUXT_PUBLIC_GITHUB_REPO || true)"
 CURRENT_GITHUB_BRANCH="$(remote_env NUXT_PUBLIC_GITHUB_BRANCH || true)"
 NUXT_PUBLIC_GITHUB_TOKEN="$(remote_env NUXT_PUBLIC_GITHUB_TOKEN || true)"
 NUXT_PUBLIC_QUARK_COOKIE="$(remote_env NUXT_PUBLIC_QUARK_COOKIE || true)"
+DB_BACKUP_ENABLED="$(backup_env DB_BACKUP_ENABLED || true)"
+DB_BACKUP_TIME="$(backup_env DB_BACKUP_TIME || true)"
+DB_BACKUP_RETENTION="$(backup_env DB_BACKUP_RETENTION || true)"
+DB_BACKUP_RUN_ON_STARTUP="$(backup_env DB_BACKUP_RUN_ON_STARTUP || true)"
+R2_ACCOUNT_ID="$(backup_env R2_ACCOUNT_ID || true)"
+R2_ACCESS_KEY_ID="$(backup_env R2_ACCESS_KEY_ID || true)"
+R2_SECRET_ACCESS_KEY="$(backup_env R2_SECRET_ACCESS_KEY || true)"
+R2_BUCKET="$(backup_env R2_BUCKET || true)"
+R2_PREFIX="$(backup_env R2_PREFIX || true)"
+R2_ENDPOINT="$(backup_env R2_ENDPOINT || true)"
 
 APP_PORT="${APP_PORT:-${APP_PORT_DEFAULT}}"
 WS_PORT="${WS_PORT:-${WS_PORT_DEFAULT}}"
 DATABASE_SCHEMA="${DATABASE_SCHEMA:-${DATABASE_SCHEMA_DEFAULT}}"
+DB_BACKUP_ENABLED="${DB_BACKUP_ENABLED:-true}"
+DB_BACKUP_TIME="${DB_BACKUP_TIME:-03:00}"
+DB_BACKUP_RETENTION="${DB_BACKUP_RETENTION:-10}"
+DB_BACKUP_RUN_ON_STARTUP="${DB_BACKUP_RUN_ON_STARTUP:-false}"
+R2_PREFIX="${R2_PREFIX:-aipan/postgres}"
 RUNTIME_GITHUB_OWNER="${RUNTIME_GITHUB_OWNER:-${CURRENT_GITHUB_OWNER}}"
 RUNTIME_GITHUB_REPO="${RUNTIME_GITHUB_REPO:-${CURRENT_GITHUB_REPO}}"
 RUNTIME_GITHUB_BRANCH="${RUNTIME_GITHUB_BRANCH:-${CURRENT_GITHUB_BRANCH:-master}}"
@@ -164,12 +188,22 @@ set_secret_from_value "DEPLOY_SERVER_HOST" "${SERVER_HOST}"
 set_secret_from_value "ELASTICSEARCH_NODE" "${ELASTICSEARCH_NODE}"
 set_secret_from_value "ELASTICSEARCH_USERNAME" "${ELASTICSEARCH_USERNAME}"
 set_secret_from_value "ELASTICSEARCH_PASSWORD" "${ELASTICSEARCH_PASSWORD}"
+set_secret_from_value "R2_ACCOUNT_ID" "${R2_ACCOUNT_ID}"
+set_secret_from_value "R2_ACCESS_KEY_ID" "${R2_ACCESS_KEY_ID}"
+set_secret_from_value "R2_SECRET_ACCESS_KEY" "${R2_SECRET_ACCESS_KEY}"
+set_secret_from_value "R2_BUCKET" "${R2_BUCKET}"
 set_secret_from_value "NUXT_PUBLIC_GITHUB_TOKEN" "${NUXT_PUBLIC_GITHUB_TOKEN}"
 set_secret_from_value "NUXT_PUBLIC_QUARK_COOKIE" "${NUXT_PUBLIC_QUARK_COOKIE}"
 
 set_variable_from_value "APP_PORT" "${APP_PORT}"
 set_variable_from_value "WS_PORT" "${WS_PORT}"
 set_variable_from_value "DATABASE_SCHEMA" "${DATABASE_SCHEMA}"
+set_variable_from_value "DB_BACKUP_ENABLED" "${DB_BACKUP_ENABLED}"
+set_variable_from_value "DB_BACKUP_TIME" "${DB_BACKUP_TIME}"
+set_variable_from_value "DB_BACKUP_RETENTION" "${DB_BACKUP_RETENTION}"
+set_variable_from_value "DB_BACKUP_RUN_ON_STARTUP" "${DB_BACKUP_RUN_ON_STARTUP}"
+set_variable_from_value "R2_PREFIX" "${R2_PREFIX}"
+set_variable_from_value "R2_ENDPOINT" "${R2_ENDPOINT}"
 set_variable_from_value "ELASTICSEARCH_CA_FINGERPRINT" "${ELASTICSEARCH_CA_FINGERPRINT}"
 set_variable_from_value "ELASTICSEARCH_USER_RESOURCE_INDEX" "${ELASTICSEARCH_USER_RESOURCE_INDEX}"
 set_variable_from_value "USER_RESOURCE_AUTO_REVIEW_ENABLED" "${USER_RESOURCE_AUTO_REVIEW_ENABLED}"
