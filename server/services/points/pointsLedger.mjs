@@ -8,6 +8,7 @@ export const POINT_TYPES = {
   activity: "activity",
   task: "task",
   transfer: "transfer",
+  redemption: "redemption",
 };
 
 export const DEFAULT_TRANSFER_REWARD_CONFIG = {

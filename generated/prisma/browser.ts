@@ -162,6 +162,21 @@ export type PointTask = Prisma.PointTaskModel
  */
 export type PointTaskCompletion = Prisma.PointTaskCompletionModel
 /**
+ * Model RedemptionCodeCampaign
+ *
+ */
+export type RedemptionCodeCampaign = Prisma.RedemptionCodeCampaignModel
+/**
+ * Model RedemptionCode
+ *
+ */
+export type RedemptionCode = Prisma.RedemptionCodeModel
+/**
+ * Model RedemptionCodeRedemption
+ *
+ */
+export type RedemptionCodeRedemption = Prisma.RedemptionCodeRedemptionModel
+/**
  * Model NavigationCategory
  *
  */

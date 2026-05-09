@@ -12,6 +12,7 @@ const POINT_TYPE_NAMES: Record<string, string> = {
   activity: "活动奖励",
   task: "任务奖励",
   transfer: "转存奖励",
+  redemption: "兑换码奖励",
 };
 
 export default defineEventHandler(async (event) => {

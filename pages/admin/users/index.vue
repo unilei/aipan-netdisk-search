@@ -670,7 +670,8 @@ const getPointTypeName = (type) => {
         admin: '管理员调整',
         activity: '活动奖励',
         task: '任务奖励',
-        transfer: '转存奖励'
+        transfer: '转存奖励',
+        redemption: '兑换码奖励'
     }
     return typeMap[type] || type || '-'
 }
@@ -683,7 +684,8 @@ const getPointTypeTag = (type) => {
         admin: 'info',
         activity: 'primary',
         task: 'primary',
-        transfer: 'primary'
+        transfer: 'primary',
+        redemption: 'success'
     }
     return typeMap[type] || 'info'
 }
