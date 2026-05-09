@@ -163,7 +163,8 @@ function getTypeName(type: string): string {
         'admin': '管理员调整',
         'activity': '活动奖励',
         'task': '任务奖励',
-        'transfer': '转存奖励'
+        'transfer': '转存奖励',
+        'redemption': '兑换码奖励'
     }
     return typeNames[type] || type
 }

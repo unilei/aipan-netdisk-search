@@ -49,11 +49,13 @@ model User {
   createdRooms ChatRoom[] // 用户创建的聊天室
 
   // Check-in related
-  checkIns                CheckIn[] // 用户的签到记录
-  pointsHistory           PointsHistory[] // 用户的积分历史
-  transferPointGrants     TransferPointGrant[] // 用户转存限时积分记录
-  pointTaskCompletions    PointTaskCompletion[] // 用户积分任务完成记录
-  emailVerificationTokens EmailVerificationToken[]
+  checkIns                  CheckIn[] // 用户的签到记录
+  pointsHistory             PointsHistory[] // 用户的积分历史
+  transferPointGrants       TransferPointGrant[] // 用户转存限时积分记录
+  pointTaskCompletions      PointTaskCompletion[] // 用户积分任务完成记录
+  emailVerificationTokens   EmailVerificationToken[]
+  redemptionCodeCampaigns   RedemptionCodeCampaign[]   @relation("RedemptionCodeCampaignCreator")
+  redemptionCodeRedemptions RedemptionCodeRedemption[]
 
   @@index([role])
   @@index([status])
@@ -478,9 +480,10 @@ model PointsHistory {
   expiresAt   DateTime? // 限时积分过期时间，null 表示永久积分
   createdAt   DateTime  @default(now())
 
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  transferPointGrant  TransferPointGrant?
-  pointTaskCompletion PointTaskCompletion?
+  user                     User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transferPointGrant       TransferPointGrant?
+  pointTaskCompletion      PointTaskCompletion?
+  redemptionCodeRedemption RedemptionCodeRedemption?
 
   @@index([userId])
   @@index([type])
@@ -549,6 +552,77 @@ model PointTaskCompletion {
   @@unique([userId, taskId, claimNo])
   @@index([userId])
   @@index([taskId])
+  @@index([createdAt])
+}
+
+model RedemptionCodeCampaign {
+  id                     Int       @id @default(autoincrement())
+  name                   String
+  description            String?   @db.Text
+  rewardType             String    @default("points")
+  points                 Int
+  pointsExpiresInMinutes Int?
+  enabled                Boolean   @default(true)
+  startsAt               DateTime?
+  endsAt                 DateTime?
+  maxRedemptionsPerUser  Int       @default(1)
+  createdById            Int?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  createdBy   User?                      @relation("RedemptionCodeCampaignCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  codes       RedemptionCode[]
+  redemptions RedemptionCodeRedemption[]
+
+  @@index([enabled])
+  @@index([startsAt])
+  @@index([endsAt])
+  @@index([createdAt])
+}
+
+model RedemptionCode {
+  id             Int      @id @default(autoincrement())
+  campaignId     Int
+  codeHash       String   @unique
+  codePrefix     String?
+  codeSuffix     String?
+  batchName      String?
+  maxRedemptions Int?
+  usedCount      Int      @default(0)
+  enabled        Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  campaign    RedemptionCodeCampaign     @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  redemptions RedemptionCodeRedemption[]
+
+  @@index([campaignId])
+  @@index([enabled])
+  @@index([batchName])
+  @@index([createdAt])
+}
+
+model RedemptionCodeRedemption {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  campaignId      Int
+  codeId          Int
+  points          Int
+  expiresAt       DateTime?
+  pointsHistoryId Int?      @unique
+  ipHash          String?
+  userAgentHash   String?
+  createdAt       DateTime  @default(now())
+
+  user          User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaign      RedemptionCodeCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  code          RedemptionCode         @relation(fields: [codeId], references: [id], onDelete: Cascade)
+  pointsHistory PointsHistory?         @relation(fields: [pointsHistoryId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, codeId])
+  @@index([userId])
+  @@index([campaignId])
+  @@index([codeId])
   @@index([createdAt])
 }
 

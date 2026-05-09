@@ -55,6 +55,10 @@
               @status-loaded="handleCheckInStatusLoaded"
             />
 
+            <UserRedemptionCodeCard
+              @redeemed="handleRedemptionCodeRedeemed"
+            />
+
             <article class="flex min-h-[220px] flex-col rounded-xl border border-gray-200 bg-white p-5 transition-colors duration-200 hover:border-blue-200 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-blue-700">
               <div class="flex items-start justify-between gap-4">
                 <div class="flex min-w-0 items-start gap-4">
@@ -276,6 +280,7 @@
                     <el-option label="连续签到奖励" value="bonus" />
                     <el-option label="任务奖励" value="task" />
                     <el-option label="转存奖励" value="transfer" />
+                    <el-option label="兑换码奖励" value="redemption" />
                     <el-option label="积分消费" value="consume" />
                     <el-option label="管理员调整" value="admin" />
                   </el-select>
@@ -470,6 +475,7 @@ import { ElMessage } from 'element-plus'
 import UserCheckInCard from '~/components/user/CheckInCard.vue'
 import UserPointTaskCard from '~/components/user/PointTaskCard.vue'
 import UserPointsOverview from '~/components/user/PointsOverview.vue'
+import UserRedemptionCodeCard from '~/components/user/RedemptionCodeCard.vue'
 import { useUserStore } from '~/stores/user'
 
 definePageMeta({
@@ -512,7 +518,7 @@ const transferDurationLabel = computed(() => {
 })
 const taskSummaryText = computed(() => {
   if (!pointsSummaryLoaded.value || !pointTasksLoaded.value) return '正在读取任务配置'
-  return `${1 + (transferTask.value.enabled ? 1 : 0) + pointTasks.value.length} 个可用任务`
+  return `${2 + (transferTask.value.enabled ? 1 : 0) + pointTasks.value.length} 个可用任务`
 })
 const checkInStatusSnapshot = ref(null)
 
@@ -631,6 +637,21 @@ const handlePointsChanged = async () => {
   if (activeTab.value === 'leaderboard') {
     await fetchLeaderboard()
   }
+}
+
+const handleRedemptionCodeRedeemed = async (data) => {
+  if (userStore.user) {
+    userStore.user.points = data.totalPoints
+    userStore.user.permanentPoints = data.permanentPoints
+    userStore.user.temporaryPoints = data.temporaryPoints
+    userStore.user.effectivePoints = data.effectivePoints
+    userStore.user.nextExpiringAt = data.nextExpiringAt
+    userStore.user.pointsBreakdown = data.pointsBreakdown
+  }
+  refreshAccessControlConfig().catch(error => {
+    console.warn('Failed to refresh access control config after redemption code:', error)
+  })
+  await handlePointsChanged()
 }
 
 const fetchPointTasks = async () => {
@@ -781,7 +802,8 @@ const getTypeName = (type) => {
     admin: '管理员调整',
     activity: '活动奖励',
     task: '任务奖励',
-    transfer: '转存奖励'
+    transfer: '转存奖励',
+    redemption: '兑换码奖励'
   }
   return typeNames[type] || type
 }
