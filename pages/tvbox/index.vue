@@ -49,13 +49,34 @@ const getAuthHeaders = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+const getSourceAddressMeta = (link) => {
+  const value = String(link || "").trim();
+  const match = value.match(/^(https?):\/\/([^/?#]+)(.*)$/i);
+
+  if (!match) {
+    return {
+      protocol: "",
+      host: "自定义地址",
+      path: value,
+    };
+  }
+
+  return {
+    protocol: match[1].toUpperCase(),
+    host: match[2],
+    path: match[3] || "/",
+  };
+};
+
 const normalizeSourceItem = (item, index) => {
   const sourceType = item.sourceType || "other";
+  const link = item.link || "";
 
   return {
     id: item.id || `${sourceType}-${index + 1}`,
     name: item.name || "未命名数据源",
-    link: item.link || "",
+    link,
+    address: getSourceAddressMeta(link),
     sourceType,
     sourceTypeLabel:
       item.sourceTypeLabel || SOURCE_TYPE_LABELS[sourceType] || "其他",
@@ -395,7 +416,7 @@ const clearFilters = () => {
           <article
             v-for="item in filteredTvbox"
             :key="item.id"
-            class="grid gap-3 border-b border-slate-100 p-4 transition last:border-b-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900/70 md:grid-cols-[minmax(180px,0.7fr)_minmax(0,1fr)_96px] md:items-center"
+            class="grid gap-3 border-b border-slate-100 p-4 transition last:border-b-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900/70 md:grid-cols-[minmax(180px,0.7fr)_minmax(0,1fr)_96px] md:items-start"
           >
             <div class="min-w-0">
               <div class="flex min-w-0 items-center gap-2">
@@ -408,16 +429,29 @@ const clearFilters = () => {
               </div>
             </div>
 
-            <input
-              class="source-link-input h-10 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs text-slate-700 outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300"
-              type="text"
-              :value="item.link"
-              readonly
-            />
+            <div
+              class="source-address min-w-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-800 dark:bg-slate-950"
+            >
+              <div class="flex min-w-0 flex-wrap items-center gap-2 text-[11px] leading-4 text-slate-500 dark:text-slate-400">
+                <span class="inline-flex items-center gap-1 rounded bg-white px-1.5 py-0.5 font-medium text-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                  <i class="fas fa-globe text-[10px]"></i>
+                  {{ item.address.host }}
+                </span>
+                <span v-if="item.address.protocol" class="text-slate-400">
+                  {{ item.address.protocol }}
+                </span>
+                <span class="min-w-0 flex-1 truncate">
+                  {{ item.address.path }}
+                </span>
+              </div>
+              <div class="source-link-text mt-1 break-all text-xs leading-5 text-slate-800 dark:text-slate-200">
+                {{ item.link }}
+              </div>
+            </div>
 
             <button
               type="button"
-              class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-sky-500 hover:text-sky-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-200"
+              class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-sky-500 hover:text-sky-700 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-200 md:mt-1"
               @click="copy(item.link)"
             >
               <i class="fas fa-copy"></i>
@@ -447,7 +481,7 @@ const clearFilters = () => {
   background: #020617;
 }
 
-.source-link-input {
+.source-link-text {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
 }

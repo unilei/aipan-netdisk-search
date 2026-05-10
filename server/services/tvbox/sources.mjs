@@ -54,6 +54,10 @@ const URL_PATTERN = /https?:\/\/[^\s"'<>，。；、)）\]]+/gi;
 const NON_SOURCE_EXT_PATTERN =
   /\.(?:avif|css|gif|ico|jpeg|jpg|js|png|svg|webp)(?:[?#].*)?$/i;
 const DISCOVERY_PAGE_HOSTS = new Set(["www.yxzhi.com", "yxzhi.com", "yinghezhinan.com"]);
+const DESCRIPTION_MARKER_PATTERN =
+  /(一键复制|复制链接|复制地址|复制|配置地址|接口地址)/i;
+const SOURCE_FILE_WITH_DESCRIPTION_PATTERN =
+  /^(https?:\/\/.+?\.(?:json|txt|m3u|m3u8))(?:([\u4e00-\u9fa5].*))$/i;
 
 const normalizeSpace = (value) => String(value || "").replace(/\s+/g, " ").trim();
 
@@ -75,6 +79,43 @@ const cleanName = (name, fallback) => {
 
 const cleanLink = (link) => normalizeSpace(decodeHtml(link));
 
+const cleanDescription = (value) =>
+  normalizeSpace(decodeHtml(value))
+    .replace(/^(?:一键复制|复制链接|复制地址|复制|配置地址|接口地址)[：:\s-]*/i, "")
+    .replace(/^TVBox(?:多仓)?配置接口地址[：:\s-]*/i, "")
+    .replace(/^地址[：:\s-]*/i, "")
+    .replace(/https?:?$/i, "")
+    .replace(/[.,;，。；、]+$/g, "")
+    .trim();
+
+const splitUrlDescription = (value) => {
+  const raw = cleanLink(stripTrailingPunctuation(value));
+  const markerIndex = raw.search(DESCRIPTION_MARKER_PATTERN);
+
+  if (markerIndex > 0) {
+    return {
+      raw,
+      link: stripTrailingPunctuation(raw.slice(0, markerIndex)),
+      description: cleanDescription(raw.slice(markerIndex)),
+    };
+  }
+
+  const sourceFileMatch = raw.match(SOURCE_FILE_WITH_DESCRIPTION_PATTERN);
+  if (sourceFileMatch) {
+    return {
+      raw,
+      link: stripTrailingPunctuation(sourceFileMatch[1]),
+      description: cleanDescription(sourceFileMatch[2]),
+    };
+  }
+
+  return {
+    raw,
+    link: raw,
+    description: "",
+  };
+};
+
 const createSourceItem = ({ name, link, group, index }) => ({
   name,
   link,
@@ -84,8 +125,8 @@ const createSourceItem = ({ name, link, group, index }) => ({
   id: `${getSourceType(group)}-${index + 1}`,
 });
 
-const isProbablySourceUrl = (value) => {
-  const cleaned = cleanLink(stripTrailingPunctuation(value));
+const isProbablySourceUrl = (value, options = {}) => {
+  const cleaned = splitUrlDescription(value).link;
   if (!isSourceLink(cleaned) || NON_SOURCE_EXT_PATTERN.test(cleaned)) {
     return false;
   }
@@ -97,6 +138,10 @@ const isProbablySourceUrl = (value) => {
 
     if (DISCOVERY_PAGE_HOSTS.has(parsedUrl.hostname) || DISCOVERY_PAGE_HOSTS.has(host)) {
       return false;
+    }
+
+    if (options.hasDescription) {
+      return true;
     }
 
     if (!path || path === "/") {
@@ -145,7 +190,7 @@ export const parseTvboxSourceHtml = (html, group) => {
   const seen = new Set();
 
   const addItem = (name, link) => {
-    const cleanedLink = cleanLink(link);
+    const cleanedLink = splitUrlDescription(link).link;
     if (!isSourceLink(cleanedLink)) return;
 
     const key = normalizeLinkKey(cleanedLink);
@@ -196,9 +241,9 @@ export const parseTvboxArticleHtml = (html, group) => {
   const seen = new Set();
   let previousLabel = "";
 
-  const addItem = (name, link) => {
-    const cleanedLink = cleanLink(stripTrailingPunctuation(link));
-    if (!isProbablySourceUrl(cleanedLink)) return;
+  const addItem = (name, link, options = {}) => {
+    const cleanedLink = splitUrlDescription(link).link;
+    if (!isProbablySourceUrl(cleanedLink, options)) return;
 
     const key = normalizeLinkKey(cleanedLink);
     if (!key || seen.has(key)) return;
@@ -215,10 +260,21 @@ export const parseTvboxArticleHtml = (html, group) => {
   };
 
   for (const line of lines) {
-    const urls = [...line.matchAll(URL_PATTERN)].map((match) => match[0]);
+    const urls = [...line.matchAll(URL_PATTERN)]
+      .map((match) => splitUrlDescription(match[0]))
+      .filter((item) => item.link);
+
     if (urls.length) {
-      const name = cleanArticleName(line, urls, previousLabel);
-      urls.forEach((url) => addItem(name, url));
+      const fallbackName = cleanArticleName(
+        line,
+        urls.map((item) => item.raw),
+        previousLabel,
+      );
+      urls.forEach((url) =>
+        addItem(url.description || fallbackName, url.link, {
+          hasDescription: Boolean(url.description),
+        }),
+      );
       continue;
     }
 

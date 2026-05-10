@@ -108,6 +108,9 @@ test("parseTvboxArticleHtml extracts source URLs from public list articles", () 
       <p>http://饭太硬.top/tv</p>
       <p>多仓</p>
       <p>欧歌多仓：http://m.nxog.top/nxog/ou1.php?url=http://tv.nxog.top&amp;b=欧歌</p>
+      <p>https://9280.kstore.vip/newwex.json一键复制肥猫混合线路</p>
+      <p>https://ym.wya6.cn/一键复制TVBox多仓配置接口地址：讴歌多仓</p>
+      <p>https://jihulab.com/ymz1231/ymz/raw/main/ymshaoer一键复制玩偶常规线路http</p>
       <p>站内页面 https://www.yxzhi.com/9257.html</p>
       <img src="https://cdn.example.test/cover.png" />
     </article>
@@ -132,6 +135,24 @@ test("parseTvboxArticleHtml extracts source URLs from public list articles", () 
       {
         name: "欧歌多仓",
         link: "http://m.nxog.top/nxog/ou1.php?url=http://tv.nxog.top&b=欧歌",
+        sourceType: "discovery",
+        sourceTypeLabel: "扩展源",
+      },
+      {
+        name: "肥猫混合线路",
+        link: "https://9280.kstore.vip/newwex.json",
+        sourceType: "discovery",
+        sourceTypeLabel: "扩展源",
+      },
+      {
+        name: "讴歌多仓",
+        link: "https://ym.wya6.cn/",
+        sourceType: "discovery",
+        sourceTypeLabel: "扩展源",
+      },
+      {
+        name: "玩偶常规线路",
+        link: "https://jihulab.com/ymz1231/ymz/raw/main/ymshaoer",
         sourceType: "discovery",
         sourceTypeLabel: "扩展源",
       },
