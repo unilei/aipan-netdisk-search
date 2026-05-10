@@ -297,6 +297,27 @@ model UserVodConfig {
   @@index([userId])
 }
 
+model TvboxSource {
+  id              Int      @id @default(autoincrement())
+  name            String
+  link            String   @unique @db.Text
+  sourceType      String   @default("other") @map("source_type")
+  sourceTypeLabel String   @map("source_type_label")
+  upstream        String?  @db.Text
+  active          Boolean  @default(true)
+  firstSeenAt     DateTime @default(now()) @map("first_seen_at")
+  lastSeenAt      DateTime @default(now()) @map("last_seen_at")
+  lastSyncedAt    DateTime @default(now()) @map("last_synced_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@index([sourceType])
+  @@index([active])
+  @@index([lastSeenAt])
+  @@index([name])
+  @@map("tvbox_sources")
+}
+
 model EmailVerificationToken {
   id            Int       @id @default(autoincrement())
   userId        Int

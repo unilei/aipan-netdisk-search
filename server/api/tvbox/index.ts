@@ -1,28 +1,48 @@
+import {
+    getTvboxDatabasePayload,
+    syncTvboxSourcesToDatabase,
+} from '~/server/services/tvbox/store.mjs'
+
 export default defineEventHandler(async (event) => {
     try {
-        // 直接从源头抓取，绕过已宕机的 netdisk.aipan.me
-        const res = await $fetch('https://www.juwanhezi.com/other/jsonlist', {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                'Referer': 'https://www.juwanhezi.com/',
-            },
-            timeout: 15000,
-        })
+        const query = getQuery(event)
+        const forceRefresh = query.refresh === '1' || query.refresh === 'true'
 
-        // 正则提取 <label>名称</label>...<input value="链接">
-        const pattern = /<label.*?>(.*?)<\/label>.*?<input.*?value="(.*?)"/gs
-        const matches = [...res.matchAll(pattern)]
+        if (forceRefresh) {
+            const { meta } = await syncTvboxSourcesToDatabase({ fetcher: $fetch })
+            const payload = await getTvboxDatabasePayload()
 
-        if (!matches.length) {
-            return { msg: 'No matches found', list: [] }
+            return {
+                msg: payload.list.length ? 'success' : 'No matches found',
+                list: payload.list,
+                meta: {
+                    ...payload.meta,
+                    sync: meta,
+                },
+            }
         }
 
-        const list = matches.map(m => ({
-            name: m[1].trim(),
-            link: m[2].trim(),
-        }))
+        let payload = await getTvboxDatabasePayload()
 
-        return { msg: 'success', list }
+        if (!payload.list.length) {
+            const { meta } = await syncTvboxSourcesToDatabase({ fetcher: $fetch })
+            payload = await getTvboxDatabasePayload()
+
+            return {
+                msg: payload.list.length ? 'success' : 'No matches found',
+                list: payload.list,
+                meta: {
+                    ...payload.meta,
+                    sync: meta,
+                },
+            }
+        }
+
+        return {
+            msg: 'success',
+            list: payload.list,
+            meta: payload.meta,
+        }
     } catch (e) {
         console.error('TVBox fetch error:', e)
         return { code: 500, msg: 'error', list: [] }

@@ -105,6 +105,8 @@ jobs:
           NUXT_PUBLIC_GITHUB_OWNER: ${{ vars.NUXT_PUBLIC_GITHUB_OWNER }}
           NUXT_PUBLIC_GITHUB_REPO: ${{ vars.NUXT_PUBLIC_GITHUB_REPO }}
           NUXT_PUBLIC_GITHUB_BRANCH: ${{ vars.NUXT_PUBLIC_GITHUB_BRANCH }}
+          TVBOX_SYNC_TIME: ${{ secrets.TVBOX_SYNC_TIME }}
+          TVBOX_SYNC_ENABLED: ${{ secrets.TVBOX_SYNC_ENABLED }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -151,6 +153,8 @@ jobs:
           : "${DB_BACKUP_RETENTION:=10}"
           : "${DB_BACKUP_RUN_ON_STARTUP:=false}"
           : "${R2_PREFIX:=aipan/postgres}"
+          : "${TVBOX_SYNC_TIME:=03:20}"
+          : "${TVBOX_SYNC_ENABLED:=true}"
           : "${ELASTICSEARCH_USER_RESOURCE_INDEX:=user-resources}"
           : "${USER_RESOURCE_AUTO_REVIEW_ENABLED:=true}"
           : "${USER_RESOURCE_AUTO_REVIEW_APPROVE_VALID:=true}"
@@ -221,6 +225,8 @@ jobs:
           R2_PREFIX=${R2_PREFIX}
           R2_ENDPOINT=${R2_ENDPOINT}
           TZ=Asia/Shanghai
+          TVBOX_SYNC_TIME=${TVBOX_SYNC_TIME}
+          TVBOX_SYNC_ENABLED=${TVBOX_SYNC_ENABLED}
           ELASTICSEARCH_NODE=${ELASTICSEARCH_NODE}
           ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
           ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD}
