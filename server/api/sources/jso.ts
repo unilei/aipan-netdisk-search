@@ -1,6 +1,7 @@
 import type { H3Event } from "h3";
 import { $fetch } from "ofetch";
 import { createRateLimiter } from "~/server/utils/rateLimit";
+import { getSearchModerationFailure } from "~/server/utils/sourceModeration";
 
 interface SearchBody {
   name: string;
@@ -216,6 +217,11 @@ export default defineEventHandler(
           code: 400,
           msg: "Search term is required",
         };
+      }
+
+      const moderationFailure = await getSearchModerationFailure(searchTerm);
+      if (moderationFailure) {
+        return moderationFailure;
       }
 
       const settled = await Promise.allSettled(

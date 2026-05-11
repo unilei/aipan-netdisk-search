@@ -202,6 +202,15 @@ const menuGroups = [
     ]
   },
   {
+    id: 'moderation',
+    title: '审核管理',
+    icon: 'fas fa-shield-alt',
+    children: [
+      { title: '敏感词', path: '/admin/sensitive-words', icon: 'fas fa-filter' },
+      { title: '审核', path: '/admin/review', icon: 'fas fa-clipboard-check' }
+    ]
+  },
+  {
     id: 'system',
     title: '系统管理',
     icon: 'fas fa-cog',
@@ -217,7 +226,7 @@ const menuGroups = [
 ];
 
 // 默认展开所有分组
-const expandedGroups = ref(['content', 'data', 'community', 'system']);
+const expandedGroups = ref(['content', 'data', 'community', 'moderation', 'system']);
 
 // 切换分组展开状态
 const toggleGroup = (groupId) => {

@@ -230,8 +230,8 @@ import { Search } from "@element-plus/icons-vue";
 import DiskInfoList from "~/components/diskInfoList.vue";
 import GroupQrCode from "~/components/GroupQrCode.vue";
 import sourcesApiEndpoints from "~/assets/vod/clouddrive.json";
-import { badWords } from "~/utils/sensitiveWords";
 import { useGroupQrConfig } from "~/composables/useGroupQrConfig";
+import { MODERATION_CONTEXTS } from "~/composables/useModerationCheck";
 
 // SEO配置
 useHead({
@@ -244,6 +244,7 @@ useHead({
 const colorMode = useColorMode()
 const { shouldShowInHeader, shouldShowInSearchResults, getConfig } = useGroupQrConfig()
 const { accessStatus, ensureAccess } = useFeatureAccess("aiSearch")
+const { checkModeration } = useModerationCheck()
 const shouldShowAccessNotice = computed(() => {
   return accessStatus.value.loading ||
     (accessStatus.value.checked && !accessStatus.value.allowed)
@@ -401,8 +402,9 @@ const handleSearch = async () => {
     return;
   }
 
-  if (badWords.includes(message.value.trim())) {
-    ElMessage.error("请勿输入敏感词");
+  const moderation = await checkModeration(message.value, MODERATION_CONTEXTS.aiSearch);
+  if (!moderation.allowed) {
+    ElMessage.error(moderation.message || "搜索内容包含敏感信息，请修改后重试");
     return;
   }
   const messageValue = message.value.trim();

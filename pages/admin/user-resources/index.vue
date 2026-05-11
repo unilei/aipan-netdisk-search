@@ -70,8 +70,8 @@
       </div>
 
       <!-- 资源列表 -->
-      <div class="bg-white rounded-lg shadow-sm">
-        <el-table :data="resources" v-loading="loading" style="width: 100%">
+      <div v-loading="loading" class="bg-white rounded-lg shadow-sm">
+        <el-table :data="resources" style="width: 100%">
           <el-table-column label="资源名称" prop="name" min-width="200" />
           <el-table-column label="资源类型" prop="type.name" width="120" />
           <el-table-column label="上传者" width="120">
@@ -286,6 +286,8 @@ definePageMeta({
   middleware: ["admin"],
 });
 
+const route = useRoute();
+
 // 状态
 const loading = ref(false);
 const resources = ref([]);
@@ -305,6 +307,16 @@ const autoReviewForm = reactive({
   requireReachable: true,
   rejectInvalid: false,
 });
+const statusQueryValues = new Set(["pending", "published", "rejected"]);
+
+const applyRouteStatusFilter = () => {
+  const status = Array.isArray(route.query.status)
+    ? route.query.status[0]
+    : route.query.status;
+
+  statusFilter.value = statusQueryValues.has(status) ? status : "";
+  currentPage.value = 1;
+};
 
 // 获取资源列表
 const fetchResources = async () => {
@@ -580,6 +592,15 @@ const formatDate = (date) => {
 
 // 初始加载
 onMounted(() => {
+  applyRouteStatusFilter();
   fetchResources();
 });
+
+watch(
+  () => route.query.status,
+  () => {
+    applyRouteStatusFilter();
+    fetchResources();
+  }
+);
 </script>

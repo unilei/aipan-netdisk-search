@@ -32,6 +32,10 @@ export default defineNuxtConfig({
   experimental: {
     appManifest: false,
   },
+  routeRules: {
+    '/admin': { ssr: false },
+    '/admin/**': { ssr: false },
+  },
   // 优化构建配置
   vite: {
     plugins: tailwindcssWithSourceMapNoopGuard(),

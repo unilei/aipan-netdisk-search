@@ -75,9 +75,8 @@
       </div>
 
       <!-- 聊天室列表 -->
-      <div class="bg-white rounded-lg shadow-sm p-6">
+      <div v-loading="loading" class="bg-white rounded-lg shadow-sm p-6">
         <el-table
-          v-loading="loading"
           :data="chatRooms"
           style="width: 100%"
           row-key="id"

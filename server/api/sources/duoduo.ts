@@ -6,6 +6,7 @@ import type {
     TransformedItem,
     Link
 } from '~/server/utils/aipan'
+import { getSearchModerationFailure } from '~/server/utils/sourceModeration'
 
 interface ApiResponse {
     source: string;
@@ -91,6 +92,11 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
        
         if (!searchTerm) {
             throw new Error('Search term is required')
+        }
+
+        const moderationFailure = await getSearchModerationFailure(searchTerm)
+        if (moderationFailure) {
+            return moderationFailure
         }
         
         // 获取真实的token

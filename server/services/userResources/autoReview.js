@@ -1,4 +1,8 @@
 import { normalizeLinks, normalizeSourceName } from "../search/source1Results.js";
+import {
+  evaluateContentModeration,
+  MODERATION_CONTEXTS,
+} from "../moderation/policy.mjs";
 
 const SUPPORTED_HTTP_SERVICE_HOSTS = {
   BAIDU: ["pan.baidu.com"],
@@ -277,6 +281,10 @@ export async function evaluateUserResourceForAutoReview(
   const name = normalizeSourceName(resource.name);
   const description = normalizeSourceName(resource.description);
   const links = normalizeLinks(resource.links);
+  const moderation = evaluateContentModeration(`${name}\n${description}`, {
+    context: MODERATION_CONTEXTS.userResource,
+    config: options.moderationConfig,
+  });
 
   addCheck(
     "status_pending",
@@ -293,6 +301,16 @@ export async function evaluateUserResourceForAutoReview(
     description.length >= minDescriptionLength,
     `资源描述至少${minDescriptionLength}个字符`
   );
+  if (moderation.action !== "allow") {
+    addCheck(
+      "content_moderation",
+      false,
+      moderation.message || "资源名称或描述包含敏感信息",
+      moderation.risk === "high" ? "error" : "warning"
+    );
+  } else {
+    addCheck("content_moderation", true, "资源名称和描述未命中敏感策略");
+  }
   addCheck("type_exists", Boolean(resource.type), "资源类型必须存在");
   addCheck(
     "type_enabled",

@@ -51,46 +51,47 @@
           </div>
         </div>
 
-        <el-table
-          v-loading="loading"
-          :data="backups"
-          stripe
-          :empty-text="loading ? '数据加载中...' : '暂无备份记录'"
-        >
-          <el-table-column prop="fileName" label="文件名" min-width="240">
-            <template #default="{ row }">
-              <div class="font-medium text-gray-900 dark:text-gray-100">
-                {{ row.fileName }}
-              </div>
-              <div class="mt-1 break-all text-xs text-gray-500">
-                {{ row.key }}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="lastModified" label="备份时间" width="190">
-            <template #default="{ row }">
-              {{ formatDate(row.lastModified) }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="size" label="大小" width="120" align="right">
-            <template #default="{ row }">
-              {{ formatBytes(row.size) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="140" fixed="right" align="center">
-            <template #default="{ row }">
-              <el-button
-                type="primary"
-                size="small"
-                :icon="Download"
-                :loading="downloadingKey === row.key"
-                @click="handleDownload(row)"
-              >
-                下载
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div v-loading="loading">
+          <el-table
+            :data="backups"
+            stripe
+            :empty-text="loading ? '数据加载中...' : '暂无备份记录'"
+          >
+            <el-table-column prop="fileName" label="文件名" min-width="240">
+              <template #default="{ row }">
+                <div class="font-medium text-gray-900 dark:text-gray-100">
+                  {{ row.fileName }}
+                </div>
+                <div class="mt-1 break-all text-xs text-gray-500">
+                  {{ row.key }}
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="lastModified" label="备份时间" width="190">
+              <template #default="{ row }">
+                {{ formatDate(row.lastModified) }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="size" label="大小" width="120" align="right">
+              <template #default="{ row }">
+                {{ formatBytes(row.size) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="140" fixed="right" align="center">
+              <template #default="{ row }">
+                <el-button
+                  type="primary"
+                  size="small"
+                  :icon="Download"
+                  :loading="downloadingKey === row.key"
+                  @click="handleDownload(row)"
+                >
+                  下载
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
     </div>
   </div>

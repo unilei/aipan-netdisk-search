@@ -1,7 +1,7 @@
 <script setup>
 import { useDoubanStore } from "~/stores/douban";
-import { badWords } from "~/utils/sensitiveWords";
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
+import { MODERATION_CONTEXTS } from "~/composables/useModerationCheck";
 import { useDebounceFn } from "@vueuse/core";
 
 definePageMeta({
@@ -11,6 +11,7 @@ const doubanStore = useDoubanStore();
 const searchKeyword = ref("");
 const router = useRouter();
 const { locale, locales, setLocale, t } = useI18n();
+const { checkModeration } = useModerationCheck();
 
 // 清理函数，防止内存泄漏
 onUnmounted(() => {
@@ -90,10 +91,11 @@ const activeCategoryCookie = useCookie("activeCategory", {
   maxAge: 60 * 60 * 24 * 7, // 保存7天
 });
 
-const debouncedSearch = useDebounceFn((keyword) => {
+const debouncedSearch = useDebounceFn(async (keyword) => {
   if (!keyword || !keyword.trim()) return;
-  if (badWords.includes(keyword)) {
-    return alert(t('sensitive_word_alert'));
+  const moderation = await checkModeration(keyword, MODERATION_CONTEXTS.netdiskSearch);
+  if (!moderation.allowed) {
+    return alert(moderation.message || t('sensitive_word_alert'));
   }
   router.push({
     path: "/search",

@@ -10,6 +10,7 @@ import {
     getOptionalResourceSearchClient,
     searchResources,
 } from "~/server/services/search/elasticsearchClient.js";
+import { getSearchModerationFailure } from "~/server/utils/sourceModeration";
 
 interface Body {
     name: string
@@ -26,6 +27,11 @@ export default defineEventHandler(async (event) => {
                 list: [],
                 code: 200
             };
+        }
+
+        const moderationFailure = await getSearchModerationFailure(nameFilter);
+        if (moderationFailure) {
+            return moderationFailure;
         }
 
         const maxResults = 50;

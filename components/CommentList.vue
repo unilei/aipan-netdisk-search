@@ -3,7 +3,6 @@
 import { ref, onMounted } from 'vue'
 import { format } from 'date-fns'
 import { marked } from 'marked'
-import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
 import { sanitizeHtml } from '~/utils/sanitize'
 
 const props = defineProps({
@@ -24,8 +23,7 @@ const formatDate = (date) => {
 
 // 过滤并解析评论内容
 const parseContent = (content) => {
-    const filteredContent = sensitiveWordFilter.filter(content)
-    return sanitizeHtml(marked.parse(filteredContent))
+    return sanitizeHtml(marked.parse(content || ''))
 }
 
 // 获取评论列表

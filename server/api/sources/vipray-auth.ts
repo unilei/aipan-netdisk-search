@@ -1,5 +1,6 @@
 import { H3Event } from 'h3'
 import { $fetch } from 'ofetch'
+import { getSearchModerationFailure } from '~/server/utils/sourceModeration'
 import { extractLinks } from '~/server/utils/aipan'
 import type {
     SearchBody,
@@ -127,13 +128,21 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
         if (!body?.name?.trim()) {
             throw new Error('Search term is required')
         }
+        const searchTerm = body.name.trim()
+        const moderationFailure = await getSearchModerationFailure(searchTerm)
+        if (moderationFailure) {
+            return moderationFailure
+        }
 
         // 使用截图中完整的URL
         const searchUrl = "http://transition.vipray.cn/index.php?m=vod-search"
 
         try {
             // 使用自定义方法发送POST请求并解析HTML
-            const result = await fetchViprayApi(searchUrl, body)
+            const result = await fetchViprayApi(searchUrl, {
+                ...body,
+                name: searchTerm
+            })
 
             // 处理返回结果并转换格式
             const transformedList = result.list

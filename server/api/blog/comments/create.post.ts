@@ -1,6 +1,12 @@
 import { v4 as uuidv4 } from 'uuid'
 import prisma from "~/lib/prisma";
-import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
+import {
+    evaluateModerationWithConfig,
+    maskModeratedText,
+    MODERATION_ACTIONS,
+    MODERATION_CONTEXTS,
+    summarizeModerationDecision,
+} from "~/server/utils/moderation";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -17,22 +23,26 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 服务端敏感词过滤
-        const hasSensitiveWords = sensitiveWordFilter.hasSensitiveWords(content)
-        if (hasSensitiveWords) {
-            const sensitiveWords = sensitiveWordFilter.findSensitiveWords(content)
+        const moderation = await evaluateModerationWithConfig(content, {
+            context: MODERATION_CONTEXTS.blogComment,
+        })
+        if (!moderation.allowed) {
             return {
                 code: 400,
-                message: `评论包含敏感词：${sensitiveWords.join('、')}`,
-                error: 'Comment contains sensitive words'
+                message: moderation.message || '评论包含敏感信息，请修改后重新提交',
+                error: 'Comment blocked by moderation',
+                moderation: summarizeModerationDecision(moderation)
             }
         }
+        const moderatedContent = moderation.action === MODERATION_ACTIONS.mask
+            ? maskModeratedText(content, moderation.matches)
+            : content
 
         // 创建评论
         const comment = await prisma.comment.create({
             data: {
                 postId: parseInt(postId),
-                content,
+                content: moderatedContent,
                 author,
                 email,
                 website,
@@ -55,4 +65,4 @@ export default defineEventHandler(async (event) => {
             error: error instanceof Error ? error.message : 'Unknown error'
         }
     }
-}) 
+})

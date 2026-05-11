@@ -83,69 +83,70 @@
           </div>
         </div>
 
-        <el-table 
-          :data="rankingList" 
-          stripe 
-          v-loading="rankingLoading"
-          :empty-text="rankingList.length === 0 ? '暂无搜索数据' : '数据加载中...'"
-        >
-          <el-table-column label="排名" width="80" align="center">
-            <template #default="{ $index }">
-              <div class="flex items-center justify-center">
-                <span
-                  v-if="$index < 3"
-                  :class="[
-                    'w-7 h-7 rounded-full flex items-center justify-center text-white text-sm font-bold',
-                    $index === 0
-                      ? 'bg-yellow-500'
-                      : $index === 1
-                      ? 'bg-gray-400'
-                      : 'bg-amber-600',
-                  ]"
-                >
-                  {{ $index + 1 }}
-                </span>
-                <span v-else class="text-gray-600 font-medium">{{ $index + 1 }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="keyword" label="关键词" min-width="150">
-            <template #default="{ row }">
-              <span class="font-medium text-gray-800 dark:text-gray-200">{{ row.keyword }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="count" label="搜索次数" width="150" align="center">
-            <template #default="{ row }">
-              <el-tag type="primary" size="default" round>
-                <i class="fas fa-search mr-1"></i>
-                {{ row.count }} 次
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="lastSearchAt" label="最后搜索时间" width="180">
-            <template #default="{ row }">
-              {{ new Date(row.lastSearchAt).toLocaleString() }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="200" fixed="right">
-            <template #default="{ row }">
-              <div class="flex items-center gap-2">
-                <el-button
-                  type="primary"
-                  size="small"
-                  :loading="row.loading"
-                  @click="handleSearch(row)"
-                >
-                  <i class="fas fa-cloud-download-alt mr-1"></i>
-                  转存资源
-                </el-button>
-                <el-tag v-if="row.successCount" type="success" size="small">
-                  已转存: {{ row.successCount }}
+        <div v-loading="rankingLoading">
+          <el-table
+            :data="rankingList"
+            stripe
+            :empty-text="rankingList.length === 0 ? '暂无搜索数据' : '数据加载中...'"
+          >
+            <el-table-column label="排名" width="80" align="center">
+              <template #default="{ $index }">
+                <div class="flex items-center justify-center">
+                  <span
+                    v-if="$index < 3"
+                    :class="[
+                      'w-7 h-7 rounded-full flex items-center justify-center text-white text-sm font-bold',
+                      $index === 0
+                        ? 'bg-yellow-500'
+                        : $index === 1
+                        ? 'bg-gray-400'
+                        : 'bg-amber-600',
+                    ]"
+                  >
+                    {{ $index + 1 }}
+                  </span>
+                  <span v-else class="text-gray-600 font-medium">{{ $index + 1 }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="keyword" label="关键词" min-width="150">
+              <template #default="{ row }">
+                <span class="font-medium text-gray-800 dark:text-gray-200">{{ row.keyword }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="count" label="搜索次数" width="150" align="center">
+              <template #default="{ row }">
+                <el-tag type="primary" size="default" round>
+                  <i class="fas fa-search mr-1"></i>
+                  {{ row.count }} 次
                 </el-tag>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
+              </template>
+            </el-table-column>
+            <el-table-column prop="lastSearchAt" label="最后搜索时间" width="180">
+              <template #default="{ row }">
+                {{ new Date(row.lastSearchAt).toLocaleString() }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="200" fixed="right">
+              <template #default="{ row }">
+                <div class="flex items-center gap-2">
+                  <el-button
+                    type="primary"
+                    size="small"
+                    :loading="row.loading"
+                    @click="handleSearch(row)"
+                  >
+                    <i class="fas fa-cloud-download-alt mr-1"></i>
+                    转存资源
+                  </el-button>
+                  <el-tag v-if="row.successCount" type="success" size="small">
+                    已转存: {{ row.successCount }}
+                  </el-tag>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
 
       <!-- 转存进度弹窗 -->

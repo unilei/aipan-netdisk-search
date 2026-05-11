@@ -1,5 +1,9 @@
 import prisma from "~/lib/prisma"
-import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
+import {
+    evaluateModerationWithConfig,
+    MODERATION_CONTEXTS,
+    summarizeModerationDecision,
+} from "~/server/utils/moderation";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -54,13 +58,25 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 判断用户角色，管理员创建的回复直接审核通过
-        const status = user.role === 'admin' ? 'approved' : 'approved';
+        const moderation = await evaluateModerationWithConfig(content, {
+            context: MODERATION_CONTEXTS.forumReply,
+        })
+        if (!moderation.allowed) {
+            return {
+                success: false,
+                message: moderation.message || '回复包含敏感信息，请修改后重新提交',
+                moderation: summarizeModerationDecision(moderation)
+            }
+        }
+
+        const status = user.role === 'admin' || !moderation.needsReview
+            ? 'approved'
+            : 'pending';
 
         // 创建回复，添加状态字段
         const post = await prisma.forumPost.create({
             data: {
-                content: sensitiveWordFilter.filter(content),
+                content,
                 topicId: topic.id,
                 authorId: user.userId,
                 parentId: parentId ? parseInt(parentId) : null,
@@ -88,6 +104,14 @@ export default defineEventHandler(async (event) => {
         const userData = await prisma.user.findUnique({
             where: { id: user.userId },
         })
+
+        if (status !== 'approved') {
+            return {
+                success: true,
+                message: '回复已提交，等待审核',
+                data: post
+            }
+        }
 
         // 获取需要通知的用户ID列表(去重)
         let notifyUserIds = new Set();
@@ -146,4 +170,4 @@ export default defineEventHandler(async (event) => {
             message: '创建回复失败'
         }
     }
-}) 
+})

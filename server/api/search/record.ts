@@ -1,5 +1,10 @@
 import prisma from "~/lib/prisma";
 import { createRateLimiter } from "~/server/utils/rateLimit";
+import {
+    evaluateModerationWithConfig,
+    MODERATION_CONTEXTS,
+    summarizeModerationDecision,
+} from "~/server/utils/moderation";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
 
@@ -20,6 +25,26 @@ export default defineEventHandler(async (event) => {
                 return {
                     code: 400,
                     msg: '关键词不能为空'
+                };
+            }
+
+            const moderation = await evaluateModerationWithConfig(String(keyword), {
+                context: MODERATION_CONTEXTS.netdiskSearch,
+            });
+
+            if (!moderation.allowed) {
+                return {
+                    code: 400,
+                    msg: moderation.message || '搜索内容包含敏感信息，请修改后重试',
+                    moderation: summarizeModerationDecision(moderation),
+                };
+            }
+
+            if (!moderation.shouldRecord) {
+                return {
+                    code: 200,
+                    msg: '该搜索不计入排行榜',
+                    moderation: summarizeModerationDecision(moderation),
                 };
             }
 
@@ -128,4 +153,4 @@ export default defineEventHandler(async (event) => {
             };
         }
     }
-}); 
+});

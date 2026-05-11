@@ -49,7 +49,7 @@
         </div>
       </div>
 
-      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+      <div v-loading="campaignsLoading" class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
         <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h2 class="m-0 text-lg font-semibold text-gray-900 dark:text-white">兑换活动</h2>
@@ -63,7 +63,7 @@
           </el-button>
         </div>
 
-        <el-table v-loading="campaignsLoading" :data="campaigns" style="width: 100%" border stripe>
+        <el-table :data="campaigns" style="width: 100%" border stripe>
           <el-table-column label="活动" min-width="260">
             <template #default="{ row }">
               <div class="font-semibold text-gray-900 dark:text-white">{{ row.name }}</div>
@@ -118,7 +118,7 @@
       </div>
 
       <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
-        <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div v-loading="codesLoading" class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
           <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
             <div>
               <h2 class="m-0 text-lg font-semibold text-gray-900 dark:text-white">兑换码列表</h2>
@@ -141,7 +141,7 @@
             </el-select>
           </div>
 
-          <el-table v-loading="codesLoading" :data="codes" style="width: 100%" border stripe>
+          <el-table :data="codes" style="width: 100%" border stripe>
             <el-table-column label="兑换码" min-width="160">
               <template #default="{ row }">
                 <div class="font-mono text-sm text-gray-900 dark:text-white">{{ row.maskedCode || '-' }}</div>

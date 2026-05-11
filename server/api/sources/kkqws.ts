@@ -6,6 +6,7 @@ import type {
   ApiEndpoint,
 } from "~/server/utils/aipan";
 import { createRateLimiter } from "~/server/utils/rateLimit";
+import { getSearchModerationFailure } from "~/server/utils/sourceModeration";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 20 });
 
@@ -66,11 +67,16 @@ export default defineEventHandler(
           msg: "Search term is required",
         };
       }
+      const searchTerm = body.name.trim();
+      const moderationFailure = await getSearchModerationFailure(searchTerm);
+      if (moderationFailure) {
+        return moderationFailure;
+      }
 
       return await executeApiRequests(
         getApiEndpoints(),
         {
-          name: body.name.trim(),
+          name: searchTerm,
         },
         WORKING_TOKEN
       );

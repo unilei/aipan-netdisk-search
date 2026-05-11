@@ -1,5 +1,6 @@
 import type { H3Event } from 'h3'
 import { $fetch } from 'ofetch'
+import { getSearchModerationFailure } from '~/server/utils/sourceModeration'
 
 interface SearchBody {
     name: string
@@ -188,6 +189,11 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
                 code: 400,
                 msg: 'Search term is required'
             }
+        }
+
+        const moderationFailure = await getSearchModerationFailure(searchTerm)
+        if (moderationFailure) {
+            return moderationFailure
         }
 
         const searchUrl = `${SEARCH_BASE_URL}/${encodeURIComponent(searchTerm)}`

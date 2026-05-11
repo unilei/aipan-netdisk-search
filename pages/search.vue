@@ -40,13 +40,13 @@ import SearchContent from "~/components/search/SearchContent.vue";
 import GroupQrCode from "~/components/GroupQrCode.vue";
 import sourcesApiEndpointsGuest from "~/assets/vod/clouddrive.json";
 import sourcesApiEndpointsLoggedIn from "~/assets/vod/clouddrive-login.json";
-import { badWords } from "~/utils/sensitiveWords";
 import { useUserStore } from "~/stores/user";
 import { useSearchState } from "~/composables/useSearchState";
 import { useSearchLogic } from "~/composables/useSearchLogic";
 import { useQuarkConfig } from "~/composables/useQuarkConfig";
 import { useSearchQueue } from "~/composables/useSearchQueue";
 import { useGroupQrConfig } from "~/composables/useGroupQrConfig";
+import { MODERATION_CONTEXTS } from "~/composables/useModerationCheck";
 import { getLegacyDecodedQueryValue } from "~/utils/routeQuery";
 
 definePageMeta({
@@ -81,6 +81,7 @@ const { stopQueueProcessing } = useSearchQueue();
 const { shouldShowInSearchResults, getConfig: getGroupQrConfig } =
   useGroupQrConfig();
 const { accessStatus, ensureAccess } = useFeatureAccess("netdiskSearch");
+const { checkModeration } = useModerationCheck();
 
 // 关键词
 const keyword = ref(getLegacyDecodedQueryValue(route.query.keyword));
@@ -94,14 +95,6 @@ const sourcesApiEndpoints = computed(() => {
   const endpoints = userStore.loggedIn ? sourcesApiEndpointsLoggedIn : sourcesApiEndpointsGuest;
   return endpoints;
 });
-
-// 敏感词检查
-const checkSensitiveWords = (text) => {
-  if (!text || typeof text !== 'string') return false;
-  return badWords.some((word) =>
-    text.toLowerCase().includes(word.toLowerCase())
-  );
-};
 
 const resetLoadingState = () => {
   skeletonLoading.value = false;
@@ -137,12 +130,12 @@ const searchByKeyword = async () => {
     return;
   }
 
-  // 敏感词检查
-  if (checkSensitiveWords(keyword.value)) {
+  const moderation = await checkModeration(keyword.value, MODERATION_CONTEXTS.netdiskSearch);
+  if (!moderation.allowed) {
     sources.value = [];
     searchPerformed.value = false;
     resetLoadingState();
-    ElMessage.error("搜索内容包含敏感词，请修改后重试");
+    ElMessage.error(moderation.message || "搜索内容包含敏感信息，请修改后重试");
     return;
   }
 

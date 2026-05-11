@@ -1073,3 +1073,30 @@ export const politicalWords = [
   "李洪志",
   "新疆骚乱",
 ];
+
+const firstPoliticalPersonEnd = politicalWords.indexOf("国家主席");
+const expandedPoliticalPersonStart = politicalWords.findIndex(
+  (word, index) => index > firstPoliticalPersonEnd && word === "习近平"
+);
+const expandedPoliticalPersonEnd = politicalWords.indexOf(
+  "中南海",
+  expandedPoliticalPersonStart
+);
+
+const safeSlice = (start, end) =>
+  start >= 0 && end > start ? politicalWords.slice(start, end) : [];
+
+const politicalPersonExcludedWords = new Set([
+  "胡派",
+  "江胡",
+  "江派",
+  "主席画像",
+  "改革历程",
+]);
+
+export const politicalPersonWords = [
+  ...new Set([
+    ...safeSlice(0, firstPoliticalPersonEnd),
+    ...safeSlice(expandedPoliticalPersonStart, expandedPoliticalPersonEnd),
+  ]),
+].filter((word) => word && !politicalPersonExcludedWords.has(word));

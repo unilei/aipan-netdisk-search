@@ -57,8 +57,8 @@
             </div>
 
             <!-- 用户列表 -->
-            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
-                <el-table v-loading="loading" :data="users" style="width: 100%" border stripe>
+            <div v-loading="loading" class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <el-table :data="users" style="width: 100%" border stripe>
                     <el-table-column prop="avatar" label="" width="70">
                         <template #default="scope">
                             <el-avatar :alt="scope.row.username">

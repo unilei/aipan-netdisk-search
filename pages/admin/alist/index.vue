@@ -166,11 +166,10 @@ onMounted(() => {
             </div>
 
             <!-- 表格区域 -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
+            <div v-loading="tableLoading" class="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-sm">
                 <el-table 
                     ref="multipleTableRef" 
                     :data="alistsData"
-                    v-loading="tableLoading"
                     border
                     class="w-full">
                     <el-table-column type="index" label="序号" width="80" align="center" />

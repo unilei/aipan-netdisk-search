@@ -88,6 +88,46 @@ test("evaluateUserResourceForAutoReview sends unknown link checks to manual revi
   assert.equal(review.needsManualReview, true);
 });
 
+test("evaluateUserResourceForAutoReview sends contextual sensitive resource names to manual review", async () => {
+  const context = buildUserResourceAuditContext();
+  const review = await evaluateUserResourceForAutoReview(
+    buildResource({
+      name: "兼职代理资料合集",
+      description: "网盘资源整理",
+    }),
+    context
+  );
+
+  const failedWarnings = review.checks
+    .filter((check) => !check.passed && check.severity === "warning")
+    .map((check) => check.code);
+
+  assert.equal(review.canAutoApprove, false);
+  assert.equal(review.shouldReject, false);
+  assert.equal(review.needsManualReview, true);
+  assert.ok(failedWarnings.includes("content_moderation"));
+});
+
+test("evaluateUserResourceForAutoReview rejects high risk sensitive resource names", async () => {
+  const context = buildUserResourceAuditContext();
+  const review = await evaluateUserResourceForAutoReview(
+    buildResource({
+      name: "六合彩投注技巧",
+      description: "网盘资源整理",
+    }),
+    context
+  );
+
+  const failedErrors = review.checks
+    .filter((check) => !check.passed && check.severity === "error")
+    .map((check) => check.code);
+
+  assert.equal(review.canAutoApprove, false);
+  assert.equal(review.shouldReject, true);
+  assert.equal(review.needsManualReview, false);
+  assert.ok(failedErrors.includes("content_moderation"));
+});
+
 test("isSafeShareUrl only allows supported share hosts", () => {
   assert.equal(
     isSafeShareUrl({

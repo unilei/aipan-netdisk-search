@@ -3,7 +3,6 @@
 import { ref, computed } from 'vue'
 import { marked } from 'marked'
 import 'highlight.js/styles/atom-one-dark.css'
-import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
 import { sanitizeHtml } from '~/utils/sanitize'
 
 const props = defineProps({
@@ -40,15 +39,6 @@ const previewContent = computed(() => {
 const submitComment = async () => {
     if (!content.value.trim()) {
         alert('评论内容不能为空')
-        return
-    }
-
-    // 检查敏感词
-    if (sensitiveWordFilter.hasSensitiveWords(content.value)) {
-        const sensitiveWords = sensitiveWordFilter.findSensitiveWords(content.value)
-        const filteredContent = sensitiveWordFilter.filter(content.value)
-        content.value = filteredContent // 自动替换为过滤后的内容
-        alert(`评论包含敏感词：${sensitiveWords.join('、')}，请修改后重新提交`)
         return
     }
 

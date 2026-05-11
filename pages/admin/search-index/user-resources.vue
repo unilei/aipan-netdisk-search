@@ -62,10 +62,9 @@
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm">
+      <div v-loading="loading" class="bg-white rounded-lg shadow-sm">
         <el-table
           :data="resources"
-          v-loading="loading"
           style="width: 100%"
         >
           <el-table-column label="ES文档ID" prop="documentId" width="180" />

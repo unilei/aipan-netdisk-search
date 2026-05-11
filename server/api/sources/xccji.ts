@@ -7,6 +7,7 @@ import type {
   Token,
 } from "~/server/utils/aipan";
 import { createRateLimiter } from "~/server/utils/rateLimit";
+import { getSearchModerationFailure } from "~/server/utils/sourceModeration";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 20 });
 
@@ -90,6 +91,11 @@ export default defineEventHandler(
           msg: "Search term is required",
         };
       }
+      const searchTerm = body.name.trim();
+      const moderationFailure = await getSearchModerationFailure(searchTerm);
+      if (moderationFailure) {
+        return moderationFailure;
+      }
 
       const rawUrl = "http://xccji.top";
       const baseUrl = rawUrl.endsWith("/v") ? rawUrl : `${rawUrl}/v`;
@@ -109,8 +115,11 @@ export default defineEventHandler(
       }
 
       return await executeApiRequests(
-        getApiEndpoints(baseUrl, body.name.trim()),
-        body,
+        getApiEndpoints(baseUrl, searchTerm),
+        {
+          ...body,
+          name: searchTerm,
+        },
         tokenResponse.token
       );
     } catch (error: any) {

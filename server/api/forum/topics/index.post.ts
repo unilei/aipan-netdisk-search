@@ -1,6 +1,10 @@
 import GithubSlugger from 'github-slugger'
 import prisma from "~/lib/prisma"
-import sensitiveWordFilter from '~/utils/sensitiveWordFilter'
+import {
+    evaluateModerationWithConfig,
+    MODERATION_CONTEXTS,
+    summarizeModerationDecision,
+} from "~/server/utils/moderation";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -25,9 +29,22 @@ export default defineEventHandler(async (event) => {
             }
         }
 
+        const moderation = await evaluateModerationWithConfig(`${title}\n${content}`, {
+            context: MODERATION_CONTEXTS.forumTopic,
+        })
+        if (!moderation.allowed) {
+            return {
+                success: false,
+                message: moderation.message || '主题包含敏感信息，请修改后重新提交',
+                moderation: summarizeModerationDecision(moderation)
+            }
+        }
+        const moderatedTitle = title
+        const moderatedContent = content
+
         // 创建slug
         const slugger = new GithubSlugger()
-        let slug = slugger.slug(title)
+        let slug = slugger.slug(moderatedTitle)
 
         // 如果无法从标题生成有效的slug，使用时间戳
         if (!slug || slug === '') {
@@ -44,14 +61,15 @@ export default defineEventHandler(async (event) => {
             slug = `${slug}-${Date.now().toString().slice(-6)}`
         }
 
-        // 判断用户角色，管理员创建的主题直接审核通过
-        const status = user.role === 'admin' ? 'approved' : 'approved';
+        const status = user.role === 'admin' || !moderation.needsReview
+            ? 'approved'
+            : 'pending';
 
         // 创建主题
         const topic = await prisma.forumTopic.create({
             data: {
-                title: sensitiveWordFilter.filter(title),
-                content: sensitiveWordFilter.filter(content),
+                title: moderatedTitle,
+                content: moderatedContent,
                 slug,
                 authorId: user.userId,
                 categoryId: Number(categoryId),
@@ -74,4 +92,4 @@ export default defineEventHandler(async (event) => {
             message: '创建主题失败'
         }
     }
-}) 
+})

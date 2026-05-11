@@ -12,7 +12,7 @@ definePageMeta({
 });
 
 const comments = ref([]);
-const loading = ref(true);
+const loading = ref(false);
 const page = ref(1);
 const pageSize = ref(10);
 const totalCount = ref(0);
@@ -171,75 +171,76 @@ onMounted(() => {
 
     <!-- 表格区域 -->
     <div class="bg-white rounded-lg p-6 shadow-sm">
-      <el-table
-        v-loading="loading"
-        :data="comments"
-        style="width: 100%"
-        :border="true"
-        class="mt-4"
-      >
-        <el-table-column type="index" label="序号" width="80" align="center" />
-        <el-table-column label="评论者" width="200">
-          <template #default="{ row }">
-            <div class="flex items-center">
-              <img
-                :src="row.avatar"
-                :alt="row.author"
-                class="w-8 h-8 rounded-full mr-2"
-              />
-              <div>
-                <div class="font-medium">{{ row.author }}</div>
-                <div class="text-xs text-gray-500">{{ row.email }}</div>
-              </div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="评论内容" min-width="300">
-          <template #default="{ row }">
-            <div
-              class="prose prose-sm max-w-none dark:prose-invert"
-              v-html="parseContent(row.content)"
-            />
-            <NuxtLink
-              v-if="row.postSlug"
-              :to="`/blog/${row.postSlug}`"
-              class="mt-2 inline-flex text-xs text-blue-600 hover:text-blue-700"
-            >
-              {{ row.postTitle || `文章 #${row.postId}` }}
-            </NuxtLink>
-            <div v-if="row.parentId" class="mt-2 text-xs text-gray-500 italic">
-              回复评论 #{{ row.parentId }}
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="createdAt"
-          label="评论时间"
-          width="180"
-          align="center"
+      <div v-loading="loading">
+        <el-table
+          :data="comments"
+          style="width: 100%"
+          :border="true"
+          class="mt-4"
         >
-          <template #default="{ row }">
-            {{ formatDate(row.createdAt) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="120" fixed="right" align="center">
-          <template #default="{ row }">
-            <el-popconfirm
-              title="确定要删除这条评论吗？这将同时删除所有回复。"
-              @confirm="handleDeleteComment(row)"
-            >
-              <template #reference>
-                <el-button type="danger" size="small">
-                  <el-icon>
-                    <Delete />
-                  </el-icon>
-                  删除
-                </el-button>
-              </template>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
+          <el-table-column type="index" label="序号" width="80" align="center" />
+          <el-table-column label="评论者" width="200">
+            <template #default="{ row }">
+              <div class="flex items-center">
+                <img
+                  :src="row.avatar"
+                  :alt="row.author"
+                  class="w-8 h-8 rounded-full mr-2"
+                />
+                <div>
+                  <div class="font-medium">{{ row.author }}</div>
+                  <div class="text-xs text-gray-500">{{ row.email }}</div>
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column label="评论内容" min-width="300">
+            <template #default="{ row }">
+              <div
+                class="prose prose-sm max-w-none dark:prose-invert"
+                v-html="parseContent(row.content)"
+              />
+              <NuxtLink
+                v-if="row.postSlug"
+                :to="`/blog/${row.postSlug}`"
+                class="mt-2 inline-flex text-xs text-blue-600 hover:text-blue-700"
+              >
+                {{ row.postTitle || `文章 #${row.postId}` }}
+              </NuxtLink>
+              <div v-if="row.parentId" class="mt-2 text-xs text-gray-500 italic">
+                回复评论 #{{ row.parentId }}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="createdAt"
+            label="评论时间"
+            width="180"
+            align="center"
+          >
+            <template #default="{ row }">
+              {{ formatDate(row.createdAt) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="120" fixed="right" align="center">
+            <template #default="{ row }">
+              <el-popconfirm
+                title="确定要删除这条评论吗？这将同时删除所有回复。"
+                @confirm="handleDeleteComment(row)"
+              >
+                <template #reference>
+                  <el-button type="danger" size="small">
+                    <el-icon>
+                      <Delete />
+                    </el-icon>
+                    删除
+                  </el-button>
+                </template>
+              </el-popconfirm>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
       <!-- 分页器 -->
       <div

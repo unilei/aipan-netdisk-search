@@ -7,6 +7,7 @@ import type {
     TransformedResult,
     ApiEndpoint
 } from '~/server/utils/aipan'
+import { getSearchModerationFailure } from '~/server/utils/sourceModeration'
 
 const getApiEndpoints = (baseUrl: string, searchTerm: string): ApiEndpoint[] => [
     {
@@ -90,12 +91,17 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
         if (!body?.name?.trim()) {
             throw new Error('Search term is required')
         }
+        const searchTerm = body.name.trim()
+        const moderationFailure = await getSearchModerationFailure(searchTerm)
+        if (moderationFailure) {
+            return moderationFailure
+        }
 
         const baseUrl = "http://m.kkqws.com"
 
         const token = "i69"
 
-        const apiEndpoints = getApiEndpoints(baseUrl, body.name)
+        const apiEndpoints = getApiEndpoints(baseUrl, searchTerm)
         return await executeApiRequests(apiEndpoints, body, token)
 
     } catch (error) {

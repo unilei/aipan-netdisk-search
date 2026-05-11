@@ -308,6 +308,8 @@ definePageMeta({
     middleware: ['admin']
 })
 
+const route = useRoute()
+
 // 初始化数据
 const loading = ref(false)
 const topics = ref([])
@@ -331,6 +333,16 @@ const selectedTopic = ref(null)
 const isEdit = ref(false)
 const submitting = ref(false)
 const deleting = ref(false)
+const statusQueryValues = new Set(['pending', 'approved', 'rejected'])
+
+function applyRouteStatusFilter() {
+    const status = Array.isArray(route.query.status)
+        ? route.query.status[0]
+        : route.query.status
+
+    filters.status = statusQueryValues.has(status) ? status : ''
+    pagination.current = 1
+}
 
 // 表单数据和验证规则
 const formRef = ref(null)
@@ -696,9 +708,18 @@ function formatContent(content) {
 
 // 初始化页面
 onMounted(async () => {
+    applyRouteStatusFilter()
     await loadCategories()
     await loadTopics()
 })
+
+watch(
+    () => route.query.status,
+    () => {
+        applyRouteStatusFilter()
+        loadTopics()
+    }
+)
 </script>
 
 <style>

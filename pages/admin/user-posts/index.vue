@@ -55,8 +55,8 @@
       </div>
 
       <!-- 文章列表 -->
-      <div class="bg-white rounded-lg shadow-sm">
-        <el-table :data="posts" v-loading="loading" style="width: 100%">
+      <div v-loading="loading" class="bg-white rounded-lg shadow-sm">
+        <el-table :data="posts" style="width: 100%">
           <el-table-column label="文章标题" prop="title" min-width="200" />
           <el-table-column label="作者" width="120">
             <template #default="{ row }">
@@ -212,6 +212,8 @@ definePageMeta({
   middleware: ["admin"],
 });
 
+const route = useRoute();
+
 // 状态
 const loading = ref(false);
 const posts = ref([]);
@@ -222,6 +224,16 @@ const searchQuery = ref("");
 const statusFilter = ref("");
 const dialogVisible = ref(false);
 const selectedPost = ref(null);
+const statusQueryValues = new Set(["pending", "published", "rejected"]);
+
+const applyRouteStatusFilter = () => {
+  const status = Array.isArray(route.query.status)
+    ? route.query.status[0]
+    : route.query.status;
+
+  statusFilter.value = statusQueryValues.has(status) ? status : "";
+  currentPage.value = 1;
+};
 
 // 获取文章列表
 const fetchPosts = async () => {
@@ -360,8 +372,17 @@ const formatDate = (date) => {
 
 // 初始加载
 onMounted(() => {
+  applyRouteStatusFilter();
   fetchPosts();
 });
+
+watch(
+  () => route.query.status,
+  () => {
+    applyRouteStatusFilter();
+    fetchPosts();
+  }
+);
 </script>
 
 <style>

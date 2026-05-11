@@ -6,6 +6,8 @@ definePageMeta({
   middleware: ['admin']
 });
 
+const route = useRoute();
+
 const reports = ref([]);
 const loading = ref(false);
 const total = ref(0);
@@ -46,6 +48,16 @@ const statusColors = {
   reviewing: 'primary',
   resolved: 'success',
   rejected: 'info'
+};
+const statusQueryValues = new Set(statusOptions.map((item) => item.value));
+
+const applyRouteStatusFilter = () => {
+  const status = Array.isArray(route.query.status)
+    ? route.query.status[0]
+    : route.query.status;
+
+  selectedStatus.value = statusQueryValues.has(status) ? status : 'all';
+  currentPage.value = 1;
 };
 
 // 加载举报列表
@@ -171,8 +183,17 @@ const handleStatusChange = () => {
 };
 
 onMounted(() => {
+  applyRouteStatusFilter();
   loadReports();
 });
+
+watch(
+  () => route.query.status,
+  () => {
+    applyRouteStatusFilter();
+    loadReports();
+  }
+);
 </script>
 
 <template>
@@ -197,8 +218,8 @@ onMounted(() => {
     </div>
 
     <!-- 举报列表 -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
-        <el-table :data="reports" v-loading="loading" stripe>
+    <div v-loading="loading" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+        <el-table :data="reports" stripe>
         <el-table-column prop="id" label="ID" width="80" />
         
         <el-table-column label="内容类型" width="100">

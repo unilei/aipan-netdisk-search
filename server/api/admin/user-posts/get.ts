@@ -1,5 +1,10 @@
 import { verifyToken } from '~/server/model/user'
 import prisma from "~/lib/prisma";
+import {
+    MODERATION_CONTEXTS,
+    evaluateModerationWithConfig,
+    summarizeModerationDecision,
+} from "~/server/utils/moderation";
 
 export default defineEventHandler(async (event) => {
     // 验证管理员权限
@@ -19,6 +24,7 @@ export default defineEventHandler(async (event) => {
     const pageSize = parseInt(query.pageSize as string) || 10
     const status = query.status as string || undefined
     const search = query.search as string || undefined
+    const includeModeration = query.includeModeration === 'true'
 
     // 构建查询条件
     const where = {
@@ -58,8 +64,22 @@ export default defineEventHandler(async (event) => {
         take: pageSize
     })
 
+    const data = includeModeration
+        ? await Promise.all(posts.map(async (post) => {
+            const moderation = await evaluateModerationWithConfig(
+                `${post.title || ''}\n${post.content || ''}`,
+                { context: MODERATION_CONTEXTS.blogPost }
+            )
+
+            return {
+                ...post,
+                moderation: summarizeModerationDecision(moderation)
+            }
+        }))
+        : posts
+
     return {
-        data: posts,
+        data,
         pagination: {
             page,
             pageSize,
@@ -67,4 +87,4 @@ export default defineEventHandler(async (event) => {
             totalPages: Math.ceil(total / pageSize)
         }
     }
-}) 
+})
