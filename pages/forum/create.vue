@@ -1,36 +1,24 @@
 <template>
-  <main class="min-h-screen bg-[#f8fafc] pb-10 text-slate-950 dark:bg-slate-950 dark:text-white">
-    <section class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-      <div class="mb-4 rounded-lg bg-white px-3 py-2 text-xs text-slate-500 dark:bg-white/10 dark:text-slate-400">
-        <NuxtLink to="/forum" class="text-blue-600 hover:text-blue-700 dark:text-blue-300">
-          <i class="fas fa-home mr-1"></i>
-          论坛首页
-        </NuxtLink>
-        <i class="fas fa-chevron-right mx-2 text-[10px] text-slate-400"></i>
-        <span>发表帖子</span>
-      </div>
+  <main class="min-h-screen bg-[#f8fafc] py-4 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
+    <section class="mx-auto grid max-w-[1100px] gap-4 px-3 md:grid-cols-[minmax(0,1fr)_270px]">
+      <div class="min-w-0 space-y-3">
+        <div class="v2-box v2-crumb">
+          <NuxtLink to="/forum" class="hover:text-[#4d5256]">论坛首页</NuxtLink>
+          <span>›</span>
+          <span>发布主题</span>
+        </div>
 
-      <div
-        v-if="!user"
-        class="rounded-lg bg-white p-10 text-center dark:bg-white/10"
-      >
-        <i class="fas fa-lock text-3xl text-slate-300 dark:text-slate-600"></i>
-        <h1 class="mt-4 text-base font-semibold text-slate-800 dark:text-white">需要登录</h1>
-        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400">请登录后发布主题。</p>
-        <button
-          class="mt-5 rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-blue-700"
-          @click="navigateToLogin"
-        >
-          登录 / 注册
-        </button>
-      </div>
+        <div v-if="!user" class="v2-box px-4 py-12 text-center text-sm text-[#666] dark:text-slate-300">
+          <i class="fas fa-lock text-3xl text-[#bbb]"></i>
+          <h1 class="mt-4 text-base font-semibold text-[#333] dark:text-white">需要登录</h1>
+          <p class="mt-2">请登录后发布主题，登录后会回到当前发帖页面。</p>
+          <button class="mt-5 v2-primary-button" type="button" @click="navigateToLogin">
+            登录 / 注册
+          </button>
+        </div>
 
-      <div v-else class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_260px]">
-        <section class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
-          <div class="bg-slate-50/80 px-3 py-2 dark:bg-white/5">
-            <h1 class="text-xs font-semibold text-slate-700 dark:text-slate-200">发表新主题</h1>
-          </div>
-
+        <section v-else class="v2-box">
+          <div class="v2-side-header">发布新主题</div>
           <el-form
             ref="formRef"
             :model="form"
@@ -39,84 +27,105 @@
             class="forum-post-form"
             @submit.prevent="handleSubmit"
           >
-            <div class="grid gap-3 border-t border-slate-100 px-3 py-3 dark:border-white/10 md:grid-cols-[96px_minmax(0,1fr)]">
-              <label class="pt-2 text-xs font-medium text-slate-600 dark:text-slate-300">版块</label>
-              <el-form-item prop="categoryId" class="!mb-0">
-                <el-select v-model="form.categoryId" placeholder="请选择分类" class="w-full">
-                  <el-option
-                    v-for="category in categories"
-                    :key="category.id"
-                    :label="category.name"
-                    :value="category.id"
+            <div class="v2-form-row">
+              <label class="v2-form-label">板块</label>
+              <div class="min-w-0">
+                <el-form-item prop="categoryId" class="!mb-0">
+                  <el-select v-model="form.categoryId" placeholder="请选择板块" class="w-full" filterable>
+                    <el-option
+                      v-for="category in categories"
+                      :key="category.id"
+                      :label="category.name"
+                      :value="category.id"
+                    >
+                      <div class="flex items-center justify-between gap-3">
+                        <span>{{ category.name }}</span>
+                        <span class="text-xs text-[#999]">{{ category._count?.topics || 0 }} 主题</span>
+                      </div>
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <p v-if="selectedCategory" class="mt-2 text-xs leading-5 text-[#999]">
+                  {{ selectedCategory.description || "该板块暂无简介" }}
+                </p>
+              </div>
+            </div>
+
+            <div class="v2-form-row">
+              <label class="v2-form-label">标题</label>
+              <div class="min-w-0">
+                <el-form-item prop="title" class="!mb-0">
+                  <el-input
+                    v-model="form.title"
+                    placeholder="一句话说明要讨论的问题或资源线索"
+                    maxlength="100"
+                    show-word-limit
                   />
-                </el-select>
-              </el-form-item>
+                </el-form-item>
+                <p class="mt-2 text-xs text-[#999]">建议包含关键词，方便其他用户搜索和判断是否要进入。</p>
+              </div>
             </div>
 
-            <div class="grid gap-3 border-t border-slate-100 px-3 py-3 dark:border-white/10 md:grid-cols-[96px_minmax(0,1fr)]">
-              <label class="pt-2 text-xs font-medium text-slate-600 dark:text-slate-300">标题</label>
-              <el-form-item prop="title" class="!mb-0">
-                <el-input
-                  v-model="form.title"
-                  placeholder="请输入标题"
-                  maxlength="100"
-                  show-word-limit
-                />
-              </el-form-item>
+            <div class="v2-form-row">
+              <label class="v2-form-label">正文</label>
+              <div class="min-w-0">
+                <el-form-item prop="content" class="!mb-0 min-w-0">
+                  <client-only>
+                    <template #fallback>
+                      <div class="flex h-[300px] items-center justify-center bg-[#f5f5f5] dark:bg-white/5">
+                        <p class="text-xs text-[#999]">编辑器加载中...</p>
+                      </div>
+                    </template>
+                    <MarkdownEditor
+                      v-model="form.content"
+                      placeholder="写清背景、问题和希望大家帮你确认的内容。支持 Markdown。"
+                      minHeight="300px"
+                      :onSave="handleSubmit"
+                    />
+                  </client-only>
+                </el-form-item>
+                <div class="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-[#999]">
+                  <span>支持链接、图片、代码块和列表。</span>
+                  <span>{{ contentLength }} 字</span>
+                </div>
+              </div>
             </div>
 
-            <div class="grid gap-3 border-t border-slate-100 px-3 py-3 dark:border-white/10 md:grid-cols-[96px_minmax(0,1fr)]">
-              <label class="pt-2 text-xs font-medium text-slate-600 dark:text-slate-300">内容</label>
-              <el-form-item prop="content" class="!mb-0 min-w-0">
-                <client-only>
-                  <template #fallback>
-                    <div class="flex h-[300px] items-center justify-center rounded-lg bg-slate-50 dark:bg-white/5">
-                      <p class="text-xs text-slate-400">编辑器加载中...</p>
-                    </div>
-                  </template>
-                  <MarkdownEditor
-                    v-model="form.content"
-                    placeholder="在这里输入您的主题内容，支持 Markdown 格式..."
-                    minHeight="280px"
-                    :onSave="handleSubmit"
-                  />
-                </client-only>
-              </el-form-item>
-            </div>
-
-            <div class="flex items-center gap-2 border-t border-slate-100 bg-slate-50/80 px-3 py-3 dark:border-white/10 dark:bg-white/5 md:pl-[111px]">
-              <button
-                type="button"
-                class="rounded-lg bg-blue-600 px-4 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-                :disabled="submitting"
-                @click="handleSubmit"
-              >
-                <i class="fas fa-paper-plane mr-1.5"></i>
-                {{ submitting ? "发布中..." : "发布主题" }}
-              </button>
-              <button
-                type="button"
-                class="rounded-lg px-4 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-white hover:text-blue-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-blue-300"
-                @click="router.push('/forum')"
-              >
-                取消
-              </button>
+            <div class="v2-form-footer">
+              <p class="text-xs text-[#999]">如果进入审核，主题通过后才会公开显示。</p>
+              <div class="flex items-center gap-2">
+                <button type="button" class="v2-primary-button" :disabled="submitting" @click="handleSubmit">
+                  {{ submitting ? "发布中..." : "发布主题" }}
+                </button>
+                <button type="button" class="v2-muted-button" @click="router.push('/forum')">
+                  取消
+                </button>
+              </div>
             </div>
           </el-form>
         </section>
-
-        <aside class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
-          <div class="bg-slate-50/80 px-3 py-2 dark:bg-white/5">
-            <h2 class="text-xs font-semibold text-slate-700 dark:text-slate-200">发帖规则</h2>
-          </div>
-          <div class="space-y-3 px-3 py-3 text-xs leading-6 text-slate-600 dark:text-slate-400">
-            <p><i class="fas fa-check mr-2 text-emerald-500"></i>请选择正确版块，方便其他用户检索。</p>
-            <p><i class="fas fa-check mr-2 text-emerald-500"></i>标题简洁明确，避免无意义符号和重复内容。</p>
-            <p><i class="fas fa-check mr-2 text-emerald-500"></i>内容尽量补充背景、步骤、截图或代码片段。</p>
-            <p><i class="fas fa-triangle-exclamation mr-2 text-amber-500"></i>请勿发布广告、侵权、歧视或违反社区规则的内容。</p>
-          </div>
-        </aside>
       </div>
+
+      <aside class="space-y-3">
+        <section class="v2-box">
+          <div class="v2-side-header">发布检查</div>
+          <div class="space-y-3 px-4 py-3 text-xs leading-6 text-[#666] dark:text-slate-300">
+            <p>标题能让别人一眼看懂主题。</p>
+            <p>正文包含背景、问题或资源有效性说明。</p>
+            <p>板块和主题内容匹配。</p>
+          </div>
+        </section>
+
+        <section class="v2-box">
+          <div class="v2-side-header">审核说明</div>
+          <div class="px-4 py-3 text-xs leading-6 text-[#666] dark:text-slate-300">
+            <p>包含敏感词或需要人工确认的主题会进入审核。你可以在用户中心查看审核状态。</p>
+            <NuxtLink to="/user/forum" class="mt-3 inline-flex text-[#778087] hover:text-[#4d5256]">
+              查看我的帖子和回复
+            </NuxtLink>
+          </div>
+        </section>
+      </aside>
     </section>
   </main>
 </template>
@@ -154,8 +163,14 @@ const form = reactive({
   content: "",
 });
 
+const selectedCategory = computed(() => {
+  return categories.value.find((category) => category.id === form.categoryId) || null;
+});
+
+const contentLength = computed(() => form.content.trim().length);
+
 const rules = {
-  categoryId: [{ required: true, message: "请选择分类", trigger: "change" }],
+  categoryId: [{ required: true, message: "请选择板块", trigger: "change" }],
   title: [
     { required: true, message: "请输入标题", trigger: "blur" },
     {
@@ -165,7 +180,14 @@ const rules = {
       trigger: "blur",
     },
   ],
-  content: [{ required: true, message: "请输入内容", trigger: "blur" }],
+  content: [
+    { required: true, message: "请输入内容", trigger: "blur" },
+    {
+      min: 5,
+      message: "内容至少需要5个字符",
+      trigger: "blur",
+    },
+  ],
 };
 
 const submitting = ref(false);
@@ -174,7 +196,7 @@ const handleSubmit = async () => {
   if (submitting.value) return;
 
   if (!form.categoryId) {
-    ElMessage.error("请选择分类");
+    ElMessage.error("请选择板块");
     return;
   }
 
@@ -183,8 +205,18 @@ const handleSubmit = async () => {
     return;
   }
 
+  if (form.title.trim().length < 3) {
+    ElMessage.error("标题至少需要3个字符");
+    return;
+  }
+
   if (!form.content.trim()) {
     ElMessage.error("请输入内容");
+    return;
+  }
+
+  if (form.content.trim().length < 5) {
+    ElMessage.error("内容至少需要5个字符");
     return;
   }
 
@@ -193,8 +225,8 @@ const handleSubmit = async () => {
     const response = await $fetch("/api/forum/topics", {
       method: "POST",
       body: {
-        title: form.title,
-        content: form.content,
+        title: form.title.trim(),
+        content: form.content.trim(),
         categoryId: form.categoryId,
       },
       headers: {
@@ -208,7 +240,7 @@ const handleSubmit = async () => {
         router.push(`/forum/topic/${response.data.slug}`);
       } else {
         ElMessage.success("主题已提交，等待审核");
-        router.push("/forum");
+        router.push("/user/forum");
       }
     } else {
       ElMessage.error(response.message || "发布失败");
@@ -222,7 +254,7 @@ const handleSubmit = async () => {
 };
 
 function navigateToLogin() {
-  router.push("/login?redirect=/forum/create");
+  router.push(`/login?redirect=${encodeURIComponent(route.fullPath || "/forum/create")}`);
 }
 
 onMounted(() => {
@@ -233,6 +265,195 @@ onMounted(() => {
 </script>
 
 <style>
+.v2-box {
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 3px;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.04);
+  overflow: hidden;
+}
+
+.dark .v2-box {
+  background: rgb(15 23 42 / 0.92);
+  border-color: rgb(255 255 255 / 0.12);
+}
+
+.v2-crumb {
+  align-items: center;
+  color: #778087;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 8px;
+  padding: 10px 12px;
+}
+
+.v2-side-header {
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  color: #999;
+  font-size: 12px;
+  line-height: 1;
+  padding: 10px 12px;
+}
+
+.dark .v2-side-header {
+  background: rgb(30 41 59 / 0.75);
+  border-bottom-color: rgb(255 255 255 / 0.1);
+  color: rgb(148 163 184);
+}
+
+.v2-form-row {
+  border-bottom: 1px solid #eee;
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+@media (min-width: 768px) {
+  .v2-form-row {
+    grid-template-columns: 90px minmax(0, 1fr);
+  }
+}
+
+.dark .v2-form-row {
+  border-bottom-color: rgb(255 255 255 / 0.1);
+}
+
+.v2-form-label {
+  color: #666;
+  font-size: 12px;
+  font-weight: 700;
+  padding-top: 8px;
+}
+
+.dark .v2-form-label {
+  color: rgb(203 213 225);
+}
+
+.v2-form-footer {
+  align-items: center;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+@media (min-width: 768px) {
+  .v2-form-footer {
+    flex-direction: row;
+    padding-left: 118px;
+  }
+}
+
+.dark .v2-form-footer {
+  background: rgb(30 41 59 / 0.5);
+}
+
+.v2-primary-button,
+.v2-muted-button {
+  border-radius: 3px;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 8px 12px;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.v2-primary-button {
+  background: #4d90fe;
+  color: white;
+}
+
+.v2-primary-button:hover {
+  background: #357ae8;
+}
+
+.v2-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.v2-muted-button {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #666;
+}
+
+.v2-muted-button:hover {
+  background: #e8e8e8;
+  color: #333;
+}
+
+.v2-box {
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+}
+
+.dark .v2-box {
+  background: rgb(255 255 255 / 10%);
+  box-shadow: none;
+}
+
+.v2-crumb,
+.v2-side-header {
+  border-color: rgb(226 232 240);
+  background: #fff;
+  color: rgb(100 116 139);
+}
+
+.dark .v2-crumb,
+.dark .v2-side-header {
+  border-color: rgb(255 255 255 / 10%);
+  background: transparent;
+}
+
+.v2-form-row {
+  border-color: rgb(226 232 240);
+}
+
+.v2-form-label {
+  color: rgb(71 85 105);
+}
+
+.v2-form-footer {
+  background: rgb(248 250 252);
+}
+
+.dark .v2-form-footer {
+  background: transparent;
+}
+
+.v2-primary-button {
+  border: 0;
+  border-radius: 8px;
+  background: rgb(37 99 235);
+  color: #fff;
+  font-size: 12px;
+  padding: 8px 12px;
+}
+
+.v2-primary-button:hover {
+  background: rgb(29 78 216);
+}
+
+.v2-muted-button {
+  border: 0;
+  border-radius: 8px;
+  background: rgb(241 245 249);
+  color: rgb(71 85 105);
+}
+
+.v2-muted-button:hover {
+  background: rgb(226 232 240);
+  color: rgb(37 99 235);
+}
+
 .forum-post-form .el-form-item__label {
   font-size: 12px;
 }

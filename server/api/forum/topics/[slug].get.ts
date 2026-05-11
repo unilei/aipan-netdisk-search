@@ -107,12 +107,6 @@ export default defineEventHandler(async (event) => {
             }
         })
 
-        // 更新浏览次数
-        await prisma.forumTopic.update({
-            where: { id: topic.id },
-            data: { viewCount: { increment: 1 } }
-        })
-
         return {
             success: true,
             data: {
@@ -133,4 +127,4 @@ export default defineEventHandler(async (event) => {
             message: '获取主题详情失败'
         }
     }
-}) 
+})

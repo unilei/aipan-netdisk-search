@@ -1,44 +1,32 @@
 <template>
-    <div class="min-h-[calc(100vh-60px)] bg-gray-50 dark:bg-gray-900">
-        <div class="max-w-[1240px] mx-auto p-6">
-            <!-- 头部区域 -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden mb-6">
-                <div class="relative h-24 bg-linear-to-r from-blue-500 to-purple-500">
-                    <div class="absolute bottom-0 left-0 right-0 px-6 py-4 bg-white/10 backdrop-blur-sm">
-                        <div class="flex items-center space-x-2 text-sm text-white">
-                            <nuxt-link to="/user/dashboard"
-                                class="hover:text-white/80 flex items-center transition-colors duration-200">
-                                <el-icon class="mr-1">
-                                    <House />
-                                </el-icon>
-                                用户中心
-                            </nuxt-link>
-                            <span>/</span>
-                            <span>我的论坛</span>
-                        </div>
-                    </div>
+    <div class="min-h-screen bg-[#f8fafc] py-4 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
+        <div class="mx-auto max-w-[1100px] px-3">
+            <div class="v2-box mb-3">
+                <div class="v2-crumb">
+                    <nuxt-link to="/forum" class="hover:text-[#4d5256]">论坛首页</nuxt-link>
+                    <span>›</span>
+                    <nuxt-link to="/user/dashboard" class="hover:text-[#4d5256]">用户中心</nuxt-link>
+                    <span>›</span>
+                    <span>我的帖子和回复</span>
                 </div>
-                <div class="p-6">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-200 mb-2">我的论坛内容</h1>
-                            <p class="text-gray-500 dark:text-gray-400">管理您发布的主题和回复</p>
-                        </div>
-                        <el-button @click="() => navigateTo('/user/dashboard')"
-                            class="flex items-center hover:scale-105 transition-transform duration-200">
-                            <el-icon class="mr-1">
-                                <ArrowLeft />
-                            </el-icon>
+                <div class="flex flex-col gap-3 px-4 py-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <h1 class="text-xl font-semibold text-[#333] dark:text-white">我的帖子和回复</h1>
+                        <p class="mt-1 text-xs text-[#999]">查看和管理你发布的主题、回复。</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <nuxt-link to="/forum/create" class="v2-primary-button">发布主题</nuxt-link>
+                        <button class="v2-muted-button" type="button" @click="() => navigateTo('/user/dashboard')">
                             返回用户中心
-                        </el-button>
+                        </button>
                     </div>
                 </div>
             </div>
 
             <!-- 标签页切换 -->
-            <el-tabs v-model="activeTab" class="mb-6">
+            <el-tabs v-model="activeTab" class="v2-box v2-user-tabs">
                 <el-tab-pane label="我的主题" name="topics">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 hover:shadow-md transition-all">
+                    <div class="p-4">
                         <!-- 主题筛选器 -->
                         <div class="flex flex-wrap gap-3 mb-4">
                             <el-select v-model="topicsFilter.status" placeholder="状态" class="w-32">
@@ -61,7 +49,7 @@
                         </div>
                         <div v-else-if="topics.length === 0" class="py-10 text-center">
                             <i class="fas fa-inbox text-gray-300 dark:text-gray-600 text-5xl mb-4"></i>
-                            <p class="text-gray-500 dark:text-gray-400">您还没有发布过主题</p>
+                            <p class="text-gray-500 dark:text-gray-400">你还没有发布过主题</p>
                         </div>
                         <div v-else>
                             <div class="overflow-x-auto">
@@ -96,9 +84,9 @@
                                                             {{ truncate(topic.title, 50) }}
                                                         </nuxt-link>
                                                         <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                                            <span>{{ topic.category?.name || '未分类' }}</span>
+                                                            <span>{{ topic.category?.name || '未设置板块' }}</span>
                                                             <span class="mx-1">·</span>
-                                                            <span>{{ topic._count?.posts || 0 }}个回复</span>
+                                                            <span>{{ topic._count?.posts || 0 }} 条回复</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -143,7 +131,7 @@
                 </el-tab-pane>
 
                 <el-tab-pane label="我的回复" name="replies">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 hover:shadow-md transition-all">
+                    <div class="p-4">
                         <!-- 回复筛选器 -->
                         <div class="flex flex-wrap gap-3 mb-4">
                             <el-select v-model="repliesFilter.status" placeholder="状态" class="w-32">
@@ -166,7 +154,7 @@
                         </div>
                         <div v-else-if="replies.length === 0" class="py-10 text-center">
                             <i class="fas fa-comment-slash text-gray-300 dark:text-gray-600 text-5xl mb-4"></i>
-                            <p class="text-gray-500 dark:text-gray-400">您还没有发表过回复</p>
+                            <p class="text-gray-500 dark:text-gray-400">你还没有发布过回复</p>
                         </div>
                         <div v-else>
                             <div class="overflow-x-auto">
@@ -255,8 +243,8 @@
                             <el-input v-model="dialogs.editTopic.form.title" placeholder="请输入主题标题"
                                 class="hover:shadow-sm transition-shadow duration-200" />
                         </el-form-item>
-                        <el-form-item label="分类">
-                            <el-select v-model="dialogs.editTopic.form.categoryId" placeholder="请选择分类"
+                        <el-form-item label="板块">
+                            <el-select v-model="dialogs.editTopic.form.categoryId" placeholder="请选择板块"
                                 class="w-full hover:shadow-sm transition-shadow duration-200">
                                 <el-option v-for="category in categories" :key="category.id" :label="category.name"
                                     :value="category.id" />
@@ -308,7 +296,6 @@ import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { MdEditor } from 'md-editor-v3'
 import 'md-editor-v3/lib/style.css'
-import { ArrowLeft, House } from '@element-plus/icons-vue'
 
 definePageMeta({
     middleware: ['auth']
@@ -519,7 +506,7 @@ const updateTopic = async () => {
     }
 
     if (!dialogs.editTopic.form.categoryId) {
-        ElMessage.warning('请选择分类')
+        ElMessage.warning('请选择板块')
         return
     }
 
@@ -722,6 +709,143 @@ watch(activeTab, (newVal) => {
 
 <style>
 @import "tailwindcss" reference;
+
+.v2-box {
+    background: white;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    box-shadow: 0 1px 0 rgb(0 0 0 / 0.04);
+    overflow: hidden;
+}
+
+.dark .v2-box {
+    background: rgb(15 23 42 / 0.92);
+    border-color: rgb(255 255 255 / 0.12);
+}
+
+.v2-crumb {
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    color: #778087;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 12px;
+    gap: 8px;
+    padding: 10px 12px;
+}
+
+.dark .v2-crumb {
+    border-bottom-color: rgb(255 255 255 / 0.1);
+}
+
+.v2-primary-button,
+.v2-muted-button {
+    border-radius: 3px;
+    display: inline-flex;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 8px 12px;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.v2-primary-button {
+    background: #4d90fe;
+    color: white;
+}
+
+.v2-primary-button:hover {
+    background: #357ae8;
+}
+
+.v2-muted-button {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #666;
+}
+
+.v2-muted-button:hover {
+    background: #e8e8e8;
+    color: #333;
+}
+
+.v2-user-tabs > .el-tabs__header {
+    background: #fff;
+    margin: 0;
+    padding: 0 12px;
+}
+
+.v2-user-tabs .el-tabs__nav-wrap::after {
+    background-color: #eee;
+}
+
+.v2-user-tabs .el-tabs__content {
+    background: white;
+}
+
+.dark .v2-user-tabs > .el-tabs__header,
+.dark .v2-user-tabs .el-tabs__content {
+    background: rgb(15 23 42 / 0.92);
+}
+
+.v2-box {
+    border: 0;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+}
+
+.dark .v2-box {
+    background: rgb(255 255 255 / 10%);
+    box-shadow: none;
+}
+
+.v2-crumb {
+    border-color: rgb(226 232 240);
+    color: rgb(100 116 139);
+}
+
+.v2-primary-button {
+    border: 0;
+    border-radius: 8px;
+    background: rgb(37 99 235);
+    color: #fff;
+    font-size: 12px;
+    padding: 8px 12px;
+}
+
+.v2-primary-button:hover {
+    background: rgb(29 78 216);
+}
+
+.v2-muted-button {
+    border: 0;
+    border-radius: 8px;
+    background: rgb(241 245 249);
+    color: rgb(71 85 105);
+}
+
+.v2-muted-button:hover {
+    background: rgb(226 232 240);
+    color: rgb(37 99 235);
+}
+
+.v2-user-tabs > .el-tabs__header {
+    background: #fff;
+}
+
+.v2-user-tabs .el-tabs__nav-wrap::after {
+    background-color: rgb(226 232 240);
+}
+
+.v2-user-tabs .el-tabs__content {
+    background: #fff;
+}
+
+.dark .v2-user-tabs > .el-tabs__header,
+.dark .v2-user-tabs .el-tabs__content {
+    background: transparent;
+}
 
 .dark\:bg-gray-750 {
     @apply dark:bg-gray-700/70;

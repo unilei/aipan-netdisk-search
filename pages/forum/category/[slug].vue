@@ -1,145 +1,139 @@
 <template>
-  <main class="min-h-screen bg-[#f8fafc] pb-10 text-slate-950 dark:bg-slate-950 dark:text-white">
-    <section class="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-      <div class="mb-4 rounded-lg bg-white px-3 py-2 text-xs text-slate-500 dark:bg-white/10 dark:text-slate-400">
-        <NuxtLink to="/forum" class="text-blue-600 hover:text-blue-700 dark:text-blue-300">
-          <i class="fas fa-home mr-1"></i>
-          论坛首页
-        </NuxtLink>
-        <i class="fas fa-chevron-right mx-2 text-[10px] text-slate-400"></i>
-        <span>{{ category?.name || "加载中..." }}</span>
-      </div>
-
-      <div v-if="loading" class="space-y-3">
-        <div class="rounded-lg bg-white p-3 dark:bg-white/10">
-          <div class="h-5 w-40 animate-pulse bg-slate-100 dark:bg-white/10"></div>
-          <div class="mt-3 h-4 w-2/3 animate-pulse bg-slate-100 dark:bg-white/10"></div>
-        </div>
-        <div class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
-          <div v-for="item in 6" :key="item" class="grid grid-cols-[minmax(0,1fr)_90px_90px_140px] gap-3 border-t border-slate-100 px-3 py-3 first:border-t-0 dark:border-white/10">
-            <div class="h-4 animate-pulse bg-slate-100 dark:bg-white/10"></div>
-            <div class="h-4 animate-pulse bg-slate-100 dark:bg-white/10"></div>
-            <div class="h-4 animate-pulse bg-slate-100 dark:bg-white/10"></div>
-            <div class="h-4 animate-pulse bg-slate-100 dark:bg-white/10"></div>
-          </div>
-        </div>
-      </div>
-
-      <div v-else>
-        <div class="mb-4 overflow-hidden rounded-lg bg-white dark:bg-white/10">
-          <div class="flex flex-col gap-3 bg-slate-50/80 px-3 py-3 dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between">
-            <div class="flex min-w-0 items-center">
-              <span class="mr-3 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300">
-                <i :class="[category?.icon || 'fas fa-comments', 'text-sm']"></i>
-              </span>
+  <main class="min-h-screen bg-[#f8fafc] py-4 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
+    <section class="mx-auto grid max-w-[1100px] gap-4 px-3 md:grid-cols-[minmax(0,1fr)_270px]">
+      <div class="min-w-0 space-y-3">
+        <section class="v2-box">
+          <div class="v2-node-header">
+            <div class="flex min-w-0 items-center gap-3">
+              <span class="v2-node-icon"><i :class="[category?.icon || 'fas fa-comments']"></i></span>
               <div class="min-w-0">
-                <h1 class="truncate text-base font-semibold text-slate-950 dark:text-white">{{ category?.name }}</h1>
-                <p class="mt-1 line-clamp-2 text-xs text-slate-500 dark:text-slate-400">{{ category?.description || "暂无简介" }}</p>
+                <div class="mb-1 text-xs text-[#999]">
+                  <NuxtLink to="/forum" class="hover:text-[#4d5256]">论坛首页</NuxtLink>
+                  <span class="mx-1">›</span>
+                  <span>{{ category?.name || "加载中..." }}</span>
+                </div>
+                <h1 class="truncate text-lg font-semibold text-[#333] dark:text-white">{{ category?.name || "加载中..." }}</h1>
+                <p class="mt-1 text-xs leading-5 text-[#777] dark:text-slate-400">{{ category?.description || "暂无简介" }}</p>
               </div>
             </div>
-
-            <div class="flex shrink-0 items-center gap-2">
-              <span class="text-xs text-slate-500 dark:text-slate-400">{{ pagination?.total || 0 }} 个主题</span>
-              <button
-                class="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-                :disabled="!user"
-                @click="navigateToCreateTopic"
-              >
-                <i class="fas fa-pen-to-square mr-1.5"></i>
-                发帖
-              </button>
-            </div>
-          </div>
-          <div v-if="!user" class="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
-            需要
-            <button class="text-blue-600 hover:text-blue-700 dark:text-blue-300" @click="navigateToLogin">登录</button>
-            后发布主题。
-          </div>
-        </div>
-
-        <section class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
-          <div class="flex items-center justify-between bg-slate-50/80 px-3 py-2 dark:bg-white/5">
-            <h2 class="text-xs font-semibold text-slate-700 dark:text-slate-200">主题列表</h2>
-            <span class="text-[11px] text-slate-500 dark:text-slate-400">版块：{{ category?.name || "-" }}</span>
-          </div>
-
-          <div v-if="!topics || topics.length === 0" class="p-10 text-center">
-            <i class="fas fa-comments text-3xl text-slate-300 dark:text-slate-600"></i>
-            <h3 class="mt-4 text-sm font-semibold text-slate-800 dark:text-white">暂无主题</h3>
-            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">成为第一个发表主题的用户。</p>
-            <button
-              class="mt-4 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700"
-              @click="user ? navigateToCreateTopic() : navigateToLogin()"
-            >
-              {{ user ? "发帖" : "登录后发帖" }}
+            <button class="v2-primary-button shrink-0" type="button" @click="user ? navigateToCreateTopic() : navigateToLogin()">
+              {{ user ? "发布主题" : "登录后发布" }}
             </button>
           </div>
 
-          <div v-else>
-            <div class="hidden grid-cols-[minmax(0,1fr)_110px_90px_150px] bg-white px-3 py-2 text-xs text-slate-400 dark:bg-transparent dark:text-slate-500 md:grid">
-              <div>主题</div>
-              <div>作者</div>
-              <div class="text-center">回复 / 查看</div>
-              <div>最后发表</div>
+          <div v-if="loading" class="divide-y divide-[#e2e2e2] dark:divide-white/10">
+            <div v-for="item in 8" :key="item" class="v2-topic-row">
+              <div class="h-12 w-12 shrink-0 animate-pulse rounded bg-[#f0f0f0] dark:bg-white/10"></div>
+              <div class="min-w-0 flex-1">
+                <div class="h-4 w-3/4 animate-pulse rounded bg-[#f0f0f0] dark:bg-white/10"></div>
+                <div class="mt-3 h-3 w-1/2 animate-pulse rounded bg-[#f0f0f0] dark:bg-white/10"></div>
+              </div>
             </div>
+          </div>
 
-            <ul>
-              <li
-                v-for="topic in topics"
-                :key="topic.id"
-                class="grid gap-2 border-t border-slate-100 px-3 py-3 transition hover:bg-slate-50/80 dark:border-white/10 dark:hover:bg-white/5 md:grid-cols-[minmax(0,1fr)_110px_90px_150px] md:items-center"
-              >
-                <div class="min-w-0">
-                  <div class="flex min-w-0 items-center gap-2">
-                    <i :class="[getTopicIconClass(topic), 'shrink-0 text-xs']"></i>
-                    <NuxtLink
-                      :to="`/forum/topic/${topic.slug}`"
-                      class="truncate text-sm font-semibold text-slate-950 transition hover:text-blue-600 dark:text-white dark:hover:text-blue-300"
-                    >
-                      <span v-if="topic.isSticky" class="mr-1 text-[11px] text-red-600 dark:text-red-300">[置顶]</span>
-                      <span v-if="topic.isLocked" class="mr-1 text-[11px] text-slate-500 dark:text-slate-400">[锁定]</span>
-                      {{ topic.title }}
-                    </NuxtLink>
-                  </div>
-                  <div class="mt-1 text-xs text-slate-500 dark:text-slate-400 md:hidden">
-                    {{ topic.author.username }} · {{ formatDate(topic.createdAt) }}
-                  </div>
+          <div v-else-if="!category" class="px-4 py-10 text-center text-sm text-[#999]">
+            <div class="text-3xl text-amber-500"><i class="fas fa-circle-exclamation"></i></div>
+            <p class="mt-3">板块不存在或已被删除</p>
+            <NuxtLink to="/forum" class="mt-4 inline-flex v2-primary-button">返回论坛首页</NuxtLink>
+          </div>
+
+          <div v-else-if="!topics || topics.length === 0" class="px-4 py-10 text-center text-sm text-[#999]">
+            <div class="text-3xl text-[#ccc]"><i class="fas fa-comments"></i></div>
+            <p class="mt-3">这个板块还没有主题</p>
+            <button class="mt-4 v2-primary-button" type="button" @click="user ? navigateToCreateTopic() : navigateToLogin()">
+              {{ user ? "发布第一个主题" : "登录后发布" }}
+            </button>
+          </div>
+
+          <ul v-else class="divide-y divide-[#e2e2e2] dark:divide-white/10">
+            <li v-for="topic in topics" :key="topic.id" class="v2-topic-row">
+              <div class="v2-avatar" :title="topic.author.username">
+                {{ getInitial(topic.author?.username) }}
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <div class="flex min-w-0 items-center gap-2">
+                  <span v-if="topic.isSticky" class="v2-label text-[#d15f5f]">置顶</span>
+                  <span v-if="topic.isLocked" class="v2-label">锁定</span>
+                  <NuxtLink :to="`/forum/topic/${topic.slug}`" class="v2-topic-title">
+                    {{ topic.title }}
+                  </NuxtLink>
                 </div>
-
-                <div class="hidden text-xs leading-5 text-slate-500 dark:text-slate-400 md:block">
-                  <span class="block text-slate-700 dark:text-slate-300">{{ topic.author.username }}</span>
+                <div class="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[#999]">
+                  <span>{{ topic.author.username }}</span>
+                  <span>•</span>
                   <span>{{ formatDate(topic.createdAt) }}</span>
+                  <template v-if="topic.lastActivityAt">
+                    <span>•</span>
+                    <span>最近回复 {{ formatDate(topic.lastActivityAt) }}</span>
+                  </template>
                 </div>
+              </div>
 
-                <div class="text-xs text-slate-500 dark:text-slate-400 md:text-center">
-                  <span class="font-semibold text-blue-600 dark:text-blue-300">{{ topic._count?.posts || 0 }}</span>
-                  /
-                  <span>{{ topic.viewCount || 0 }}</span>
-                </div>
+              <NuxtLink
+                :to="`/forum/topic/${topic.slug}`"
+                class="v2-reply-count"
+                :aria-label="`${topic._count?.posts || 0} 条回复`"
+              >
+                {{ topic._count?.posts || 0 }}
+              </NuxtLink>
+            </li>
+          </ul>
+        </section>
 
-                <div class="text-xs leading-5 text-slate-500 dark:text-slate-400">
-                  <span class="block">{{ formatDate(topic.lastActivityAt || topic.createdAt) }}</span>
-                  <span>{{ topic.lastActivityAt ? "最后回复" : "主题发布" }}</span>
-                </div>
-              </li>
-            </ul>
+        <div v-if="pagination && pagination.totalPages > 1" class="v2-box p-2">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="pagination.total"
+            :page-size="pagination.pageSize"
+            :current-page="pagination.page"
+            class="forum-pagination justify-center"
+            @current-change="handlePageChange"
+          />
+        </div>
+      </div>
+
+      <aside class="space-y-3">
+        <section class="v2-box p-4">
+          <div class="text-sm font-semibold text-[#333] dark:text-white">{{ category?.name || "板块" }}</div>
+          <p class="mt-2 text-xs leading-5 text-[#777] dark:text-slate-400">{{ category?.description || "暂无简介" }}</p>
+          <dl class="mt-3 space-y-2 text-xs">
+            <div class="flex justify-between">
+              <dt class="text-[#999]">主题总数</dt>
+              <dd>{{ pagination?.total || 0 }}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-[#999]">排序方式</dt>
+              <dd>最近回复</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="v2-box">
+          <div class="v2-side-header">发帖提示</div>
+          <div class="space-y-2 px-4 py-3 text-xs leading-5 text-[#666] dark:text-slate-300">
+            <p>标题直接写问题或资源名称。</p>
+            <p>正文补充背景、链接、截图或已经尝试过的方法。</p>
+            <p>如果进入审核，请在“我的帖子和回复”查看状态。</p>
           </div>
         </section>
 
-        <div v-if="pagination && pagination.totalPages > 1" class="mt-3 flex justify-center">
-          <div class="rounded-lg bg-white/70 p-2 dark:bg-white/10">
-            <el-pagination
-              background
-              layout="prev, pager, next"
-              :total="pagination.total"
-              :page-size="pagination.pageSize"
-              :current-page="pagination.page"
-              class="forum-pagination"
-              @current-change="handlePageChange"
-            />
+        <section v-if="otherCategories.length > 0" class="v2-box">
+          <div class="v2-side-header">其他板块</div>
+          <div class="flex flex-wrap gap-2 px-4 py-3">
+            <button
+              v-for="item in otherCategories"
+              :key="item.id"
+              class="rounded bg-[#f5f5f5] px-2 py-1 text-xs text-[#555] hover:bg-[#e8e8e8] dark:bg-white/10 dark:text-slate-300"
+              type="button"
+              @click="navigateToCategory(item.slug)"
+            >
+              {{ item.name }}
+            </button>
           </div>
-        </div>
-      </div>
+        </section>
+      </aside>
     </section>
   </main>
 </template>
@@ -153,7 +147,7 @@ const router = useRouter();
 const userStore = useUserStore();
 const user = computed(() => userStore.user);
 
-const slug = route.params.slug;
+const slug = String(route.params.slug || "");
 const page = ref(parseInt(route.query.page || "1"));
 const pageSize = 20;
 const categoryId = ref(null);
@@ -163,45 +157,40 @@ const {
   pending: categoryLoading,
 } = await useFetch("/api/forum/categories");
 
-const category = computed(() => {
-  if (!categoryData.value?.success) return null;
-  const foundCategory = categoryData.value.data.find((item) => item.slug === slug);
-  if (foundCategory?.id) {
-    categoryId.value = foundCategory.id;
-  }
-  return foundCategory;
+const categories = computed(() => {
+  if (!categoryData.value?.success) return [];
+  return categoryData.value.data;
 });
+
+const category = computed(() => categories.value.find((item) => item.slug === slug) || null);
+
+const otherCategories = computed(() =>
+  categories.value.filter((item) => item.slug !== slug).slice(0, 12)
+);
+
+watch(
+  category,
+  (value) => {
+    categoryId.value = value?.id || null;
+  },
+  { immediate: true }
+);
 
 useHead({
   title: computed(() =>
     category.value?.name
       ? `${category.value.name} - AIPAN论坛`
-      : "AIPAN论坛分类"
+      : "AIPAN论坛板块"
   ),
   meta: [
     {
       name: "description",
       content: computed(() =>
         category.value?.description ||
-        "浏览 AIPAN 论坛分类下的最新主题讨论。"
+        "浏览 AIPAN 论坛板块下的最新主题讨论。"
       ),
     },
     { name: "robots", content: "index,follow" },
-    {
-      property: "og:title",
-      content: computed(() =>
-        category.value?.name
-          ? `${category.value.name} - AIPAN论坛`
-          : "AIPAN论坛分类"
-      ),
-    },
-    {
-      property: "og:description",
-      content: computed(() =>
-        category.value?.description ||
-        "浏览 AIPAN 论坛分类下的最新主题讨论。"
-      ),
-    },
   ],
   link: [
     {
@@ -244,12 +233,6 @@ const pagination = computed(() => {
   return data.value.data.pagination;
 });
 
-const getTopicIconClass = (topic) => {
-  if (topic.isLocked) return "fas fa-lock text-slate-400";
-  if (topic.isSticky) return "fas fa-thumbtack text-red-500";
-  return "far fa-comment-dots text-[#7da2c8]";
-};
-
 function formatDate(dateString) {
   if (!dateString) return "";
   try {
@@ -262,25 +245,32 @@ function formatDate(dateString) {
   }
 }
 
+const getInitial = (name) => String(name || "?").charAt(0).toUpperCase();
+
 function handlePageChange(newPage) {
   page.value = newPage;
   router.push({ query: { ...route.query, page: newPage } });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-const navigateToCreateTopic = () => {
+const getCreatePath = () => {
   if (category.value?.id) {
-    router.push(`/forum/create?categoryId=${category.value.id}`);
-  } else {
-    router.push("/forum/create");
+    return `/forum/create?categoryId=${category.value.id}`;
   }
+  return "/forum/create";
+};
+
+const navigateToCreateTopic = () => {
+  router.push(getCreatePath());
 };
 
 const navigateToLogin = () => {
-  if (category.value?.id) {
-    router.push(`/login?redirect=/forum/create?categoryId=${category.value.id}`);
-  } else {
-    router.push("/login?redirect=/forum/create");
-  }
+  router.push(`/login?redirect=${encodeURIComponent(getCreatePath())}`);
+};
+
+const navigateToCategory = (categorySlug) => {
+  if (!categorySlug) return;
+  router.push(`/forum/category/${categorySlug}`);
 };
 
 watch(
@@ -304,13 +294,244 @@ watch(
 <style>
 @import "tailwindcss" reference;
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
+.v2-box {
+  overflow: hidden;
+  border-radius: 3px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+}
+
+.dark .v2-box {
+  border-color: rgb(255 255 255 / 10%);
+  background: rgb(15 23 42 / 88%);
+  box-shadow: none;
+}
+
+.v2-node-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid #e2e2e2;
+  background: linear-gradient(#fff, #f9f9f9);
+  padding: 12px;
+}
+
+.dark .v2-node-header {
+  border-color: rgb(255 255 255 / 10%);
+  background: rgb(15 23 42 / 80%);
+}
+
+.v2-node-icon,
+.v2-avatar {
+  display: inline-flex;
+  height: 48px;
+  width: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #f6f6f6, #e8e8e8);
+  color: #778087;
+  font-weight: 700;
+}
+
+.dark .v2-node-icon,
+.dark .v2-avatar {
+  background: rgb(255 255 255 / 10%);
+  color: #cbd5e1;
+}
+
+.v2-topic-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 10px;
+  background: #fff;
+}
+
+.dark .v2-topic-row {
+  background: rgb(15 23 42 / 72%);
+}
+
+.v2-topic-row:hover {
+  background: #fbfbfb;
+}
+
+.dark .v2-topic-row:hover {
+  background: rgb(30 41 59 / 80%);
+}
+
+.v2-topic-title {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #333;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.v2-topic-title:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+.dark .v2-topic-title {
+  color: #e2e8f0;
+}
+
+.dark .v2-topic-title:hover {
+  color: #fff;
+}
+
+.v2-label {
+  border-radius: 3px;
+  background: #f5f5f5;
+  padding: 2px 5px;
+  color: #778087;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.dark .v2-label {
+  background: rgb(255 255 255 / 10%);
+  color: #cbd5e1;
+}
+
+.v2-reply-count {
+  min-width: 26px;
+  border-radius: 12px;
+  background: #aab0c6;
+  padding: 2px 8px;
+  text-align: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.v2-reply-count:hover {
+  background: #969cb1;
+}
+
+.v2-primary-button {
+  border-radius: 8px;
+  background: rgb(37 99 235);
+  border: 0;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 10px;
+  text-align: center;
+}
+
+.v2-primary-button:hover {
+  background: rgb(29 78 216);
+}
+
+.dark .v2-primary-button {
+  border-color: rgb(255 255 255 / 14%);
+  background: rgb(255 255 255 / 10%);
+  color: #fff;
+}
+
+.v2-side-header {
+  border-bottom: 1px solid #eee;
+  background: #fafafa;
+  color: #999;
+  font-size: 12px;
+  padding: 10px 12px;
+}
+
+.dark .v2-side-header {
+  border-color: rgb(255 255 255 / 10%);
+  background: rgb(15 23 42 / 88%);
+  color: #94a3b8;
+}
+
+.v2-box {
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+}
+
+.dark .v2-box {
+  background: rgb(255 255 255 / 10%);
+  box-shadow: none;
+}
+
+.v2-node-header,
+.v2-side-header {
+  border-color: rgb(226 232 240);
+  background: #fff;
+  color: rgb(100 116 139);
+}
+
+.dark .v2-node-header,
+.dark .v2-side-header {
+  border-color: rgb(255 255 255 / 10%);
+  background: transparent;
+}
+
+.v2-node-icon,
+.v2-avatar {
+  border-radius: 8px;
+  background: rgb(241 245 249);
+  color: rgb(37 99 235);
+}
+
+.v2-topic-row {
+  min-height: 76px;
+  padding: 12px;
+}
+
+.v2-topic-row:hover {
+  background: rgb(248 250 252);
+}
+
+.v2-topic-title {
+  color: rgb(15 23 42);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.v2-topic-title:hover {
+  color: rgb(37 99 235);
+  text-decoration: none;
+}
+
+.v2-label {
+  border-radius: 6px;
+  background: rgb(241 245 249);
+  color: rgb(100 116 139);
+}
+
+.v2-reply-count {
+  border-radius: 999px;
+  background: rgb(241 245 249);
+  color: rgb(100 116 139);
+}
+
+.v2-reply-count:hover {
+  background: rgb(37 99 235);
+  color: white;
+}
+
+.v2-primary-button {
+  border: 0;
+  border-radius: 8px;
+  background: rgb(37 99 235);
+  color: #fff;
+  font-size: 12px;
+  padding: 8px 12px;
+}
+
+.v2-primary-button:hover {
+  background: rgb(29 78 216);
 }
 
 .forum-pagination.el-pagination.is-background .el-pager li:not(.is-disabled).is-active {

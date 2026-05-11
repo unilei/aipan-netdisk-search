@@ -1,52 +1,41 @@
 <template>
-  <div class="overflow-hidden rounded-lg bg-white dark:bg-white/10">
-    <div class="grid md:grid-cols-[150px_minmax(0,1fr)]">
-      <aside class="border-b border-slate-100 bg-slate-50/80 px-3 py-3 dark:border-white/10 dark:bg-white/5 md:border-b-0 md:border-r">
-        <div class="flex items-center gap-3 md:block md:text-center">
-          <div class="inline-flex h-11 w-11 items-center justify-center overflow-hidden rounded-lg bg-blue-50 text-sm font-semibold text-blue-600 dark:bg-blue-500/10 dark:text-blue-300 md:h-14 md:w-14">
-            {{ getInitial(post.author?.username) }}
-          </div>
-          <div class="min-w-0 md:mt-2">
-            <div class="truncate text-xs font-semibold text-slate-900 dark:text-white">
-              {{ post.author.username }}
-            </div>
-            <div class="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-              普通会员
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <article class="min-w-0">
-        <header class="flex items-center justify-between border-b border-slate-100 bg-white px-3 py-2 text-xs text-slate-500 dark:border-white/10 dark:bg-transparent dark:text-slate-400">
-          <span><client-only>{{ formatDate(post.createdAt) }}</client-only></span>
-          <span>#{{ index }}</span>
-        </header>
-
-        <div class="px-4 py-4">
-          <div class="forum-markdown markdown-body" v-html="parsedContent"></div>
-        </div>
-
-        <footer class="flex items-center justify-between border-t border-slate-100 px-3 py-2 dark:border-white/10">
-          <CommonReportButton
-            content-type="topic"
-            :content-id="post.id"
-            :content-title="`${post.author.username}的回复`"
-          />
-
-          <button
-            v-if="user && canReply"
-            class="text-xs font-medium text-blue-600 hover:text-blue-700 dark:text-blue-300"
-            @click="$emit('reply', post.id)"
-          >
-            <i class="fas fa-reply mr-1"></i>
-            回复
-          </button>
-        </footer>
-      </article>
+  <article class="v2-reply-cell">
+    <div class="v2-reply-avatar" :title="post.author?.username">
+      {{ getInitial(post.author?.username) }}
     </div>
 
-    <div v-if="post.children && post.children.length > 0" class="space-y-3 border-t border-slate-100 bg-slate-50/80 p-3 pl-6 dark:border-white/10 dark:bg-white/5">
+    <div class="min-w-0 flex-1">
+      <header class="flex flex-wrap items-center justify-between gap-2 text-xs text-[#999] dark:text-slate-400">
+        <div class="min-w-0">
+          <span class="font-semibold text-[#555] dark:text-slate-200">{{ post.author.username }}</span>
+          <span class="mx-1">·</span>
+          <span><client-only>{{ formatDate(post.createdAt) }}</client-only></span>
+        </div>
+        <span class="shrink-0 text-[#ccc] dark:text-slate-500">#{{ index }}</span>
+      </header>
+
+      <div class="mt-3 forum-markdown markdown-body" v-html="parsedContent"></div>
+
+      <footer class="mt-3 flex items-center justify-end gap-3">
+        <CommonReportButton
+          content-type="post"
+          :content-id="post.id"
+          :content-title="`${post.author.username}的回复`"
+        />
+
+        <button
+          v-if="user && canReply"
+          class="text-xs font-medium text-[#778087] hover:text-[#4d5256] dark:text-slate-400 dark:hover:text-white"
+          @click="$emit('reply', post.id)"
+        >
+          <i class="fas fa-reply mr-1"></i>
+          回复
+        </button>
+      </footer>
+    </div>
+  </article>
+
+  <div v-if="post.children && post.children.length > 0" class="v2-reply-children">
       <ForumPostItem
         v-for="(child, childIndex) in post.children"
         :key="child.id"
@@ -57,7 +46,6 @@
         :can-reply="canReply"
         @reply="$emit('reply', $event)"
       />
-    </div>
   </div>
 </template>
 
@@ -115,8 +103,102 @@ function formatDate(dateString) {
 </script>
 
 <style scoped>
+.v2-reply-cell {
+  align-items: flex-start;
+  background: white;
+  border-bottom: 1px solid #e2e2e2;
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+}
+
+.dark .v2-reply-cell {
+  background: rgb(15 23 42 / 0.92);
+  border-bottom-color: rgb(255 255 255 / 0.1);
+}
+
+.v2-reply-cell:hover {
+  background: #fafafa;
+}
+
+.dark .v2-reply-cell:hover {
+  background: rgb(30 41 59 / 0.8);
+}
+
+.v2-reply-avatar {
+  align-items: center;
+  background: linear-gradient(135deg, #f5f5f5, #d8d8d8);
+  border-radius: 4px;
+  color: #666;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 16px;
+  font-weight: 700;
+  height: 48px;
+  justify-content: center;
+  line-height: 1;
+  overflow: hidden;
+  text-transform: uppercase;
+  width: 48px;
+}
+
+.dark .v2-reply-avatar {
+  background: linear-gradient(135deg, rgb(51 65 85), rgb(15 23 42));
+  color: rgb(226 232 240);
+}
+
+.v2-reply-children {
+  background: #f9f9f9;
+  border-bottom: 1px solid #e2e2e2;
+  padding-left: 44px;
+}
+
+.dark .v2-reply-children {
+  background: rgb(15 23 42 / 0.7);
+  border-bottom-color: rgb(255 255 255 / 0.1);
+}
+
+.v2-reply-cell {
+  background: #fff;
+  border-bottom-color: rgb(226 232 240);
+  gap: 12px;
+  padding: 14px;
+}
+
+.dark .v2-reply-cell {
+  background: transparent;
+}
+
+.v2-reply-cell:hover {
+  background: rgb(248 250 252);
+}
+
+.dark .v2-reply-cell:hover {
+  background: rgb(255 255 255 / 0.06);
+}
+
+.v2-reply-avatar {
+  border-radius: 8px;
+  background: rgb(241 245 249);
+  color: rgb(37 99 235);
+}
+
+.dark .v2-reply-avatar {
+  background: rgb(255 255 255 / 0.1);
+  color: rgb(191 219 254);
+}
+
+.v2-reply-children {
+  background: rgb(248 250 252);
+  border-bottom-color: rgb(226 232 240);
+}
+
+.dark .v2-reply-children {
+  background: rgb(255 255 255 / 0.04);
+}
+
 :deep(.forum-markdown) {
-  color: #334155;
+  color: rgb(51 65 85);
   font-size: 13px;
   line-height: 1.8;
   overflow-wrap: anywhere;
@@ -133,7 +215,7 @@ function formatDate(dateString) {
 }
 
 :deep(.forum-markdown a) {
-  color: rgb(37 99 235);
+  color: #778087;
 }
 
 :deep(.forum-markdown pre) {

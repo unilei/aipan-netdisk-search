@@ -20,6 +20,25 @@ const btnLoading = ref(false);
 const pendingActivationEmail = ref('');
 const resendLoading = ref(false);
 
+const safeRedirectPath = computed(() => {
+  const redirect = route.query.redirect;
+  const requestedRedirect = Array.isArray(redirect) ? redirect[0] : redirect;
+
+  if (
+    typeof requestedRedirect === "string" &&
+    requestedRedirect.startsWith("/") &&
+    !requestedRedirect.startsWith("//")
+  ) {
+    return requestedRedirect;
+  }
+
+  return "";
+});
+
+const defaultRedirectPath = (user) => {
+  return user?.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
+};
+
 // 动态表单验证规则
 const formRules = computed(() => ({
   email: [
@@ -148,11 +167,10 @@ const handleSubmit = async () => {
 
     ElMessage.success(res.msg);
 
-    // 根据用户角色跳转到不同的仪表盘
-    const redirectPath = res.data.user.role === 'admin' ? '/admin/dashboard' : '/user/dashboard';
+    const redirectPath = safeRedirectPath.value || defaultRedirectPath(res.data.user);
 
     // 先跳转，再在后台刷新用户信息
-    await navigateTo({ path: redirectPath });
+    await navigateTo(redirectPath);
 
     // 在后台安全刷新用户信息以确保数据一致性（不影响跳转）
     userStore.safeRefreshUser().catch(error => {
@@ -180,8 +198,7 @@ onMounted(async () => {
   }
 
   if (userStore.loggedIn) {
-    // 根据用户角色跳转
-    const redirectPath = userStore.isAdmin ? '/admin/dashboard' : '/user/dashboard';
+    const redirectPath = safeRedirectPath.value || defaultRedirectPath(userStore.user);
     router.push(redirectPath);
   }
 });
