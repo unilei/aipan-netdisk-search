@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma"
+import { attachViewerStatesToTopics } from "~/server/services/forum/readStates.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -39,7 +40,7 @@ export default defineEventHandler(async (event) => {
         const total = await prisma.forumTopic.count({ where })
 
         // 查询主题列表
-        const topics = await prisma.forumTopic.findMany({
+        const rawTopics = await prisma.forumTopic.findMany({
             where,
             include: {
                 category: {
@@ -57,6 +58,7 @@ export default defineEventHandler(async (event) => {
             skip: (page - 1) * pageSize,
             take: pageSize
         })
+        const topics = await attachViewerStatesToTopics(rawTopics, user.userId, prisma)
 
         return {
             success: true,
@@ -80,4 +82,4 @@ export default defineEventHandler(async (event) => {
             message: '获取用户主题列表失败'
         }
     }
-}) 
+})

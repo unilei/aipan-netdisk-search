@@ -4,6 +4,7 @@ import {
     MODERATION_CONTEXTS,
     summarizeModerationDecision,
 } from "~/server/utils/moderation";
+import { updateForumReadStatesForApprovedReply } from "~/server/services/forum/readStates.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -95,17 +96,19 @@ export default defineEventHandler(async (event) => {
         })
 
         // 如果是已审核状态，则更新主题的最后活动时间
+        let activeTopic = topic;
         if (status === 'approved') {
-            await prisma.forumTopic.update({
+            activeTopic = await prisma.forumTopic.update({
                 where: { id: topic.id },
-                data: { lastActivityAt: new Date() }
+                data: { lastActivityAt: new Date() },
+                include: { author: true }
             })
         }
         const userData = await prisma.user.findUnique({
             where: { id: user.userId },
         })
 
-        if (status !== 'approved') {
+        if (status !== "approved") {
             return {
                 success: true,
                 message: '回复已提交，等待审核',
@@ -114,7 +117,7 @@ export default defineEventHandler(async (event) => {
         }
 
         // 获取需要通知的用户ID列表(去重)
-        let notifyUserIds = new Set();
+        let notifyUserIds = new Set<number>();
 
         // 如果回复的是主题作者，且不是自己回复自己，则添加主题作者到通知列表
         if (topic.authorId !== user.userId) {
@@ -133,18 +136,20 @@ export default defineEventHandler(async (event) => {
             }
         }
 
+        const createdNotifications: any[] = [];
+
         // 为每个需要通知的用户创建相应的通知
         for (const userId of notifyUserIds) {
             let notificationContent = '';
 
             // 根据用户身份生成不同的通知内容
             if (userId === topic.authorId) {
-                notificationContent = `用户 ${userData.username} 在您的主题 "${topic.title}" 中发表了新回复`;
+                notificationContent = `用户 ${userData?.username || "用户"} 在您的主题 "${topic.title}" 中发表了新回复`;
             } else {
-                notificationContent = `用户 ${userData.username} 回复了您在主题 "${topic.title}" 中的评论`;
+                notificationContent = `用户 ${userData?.username || "用户"} 回复了您在主题 "${topic.title}" 中的评论`;
             }
 
-            await prisma.notification.create({
+            const notification = await prisma.notification.create({
                 data: {
                     userId: userId,
                     type: 'reply',
@@ -153,6 +158,26 @@ export default defineEventHandler(async (event) => {
                     relatedId: post.id
                 }
             });
+            createdNotifications.push(notification);
+        }
+
+        const unreadTargets = await updateForumReadStatesForApprovedReply({
+            topic: activeTopic,
+            post,
+            actorId: user.userId,
+            authorUsername: userData?.username || "用户",
+            prismaClient: prisma,
+        });
+
+        const io = event.context.io;
+        if (io) {
+            for (const target of unreadTargets) {
+                io.to(`user:${target.userId}`).emit("forum:new_reply", target.payload);
+            }
+
+            for (const notification of createdNotifications) {
+                io.to(`user:${notification.userId}`).emit("notification:new", notification);
+            }
         }
 
         return {

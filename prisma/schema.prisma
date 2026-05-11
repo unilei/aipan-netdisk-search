@@ -41,6 +41,7 @@ model User {
   vodConfigs    UserVodConfig[]
   forumTopics   ForumTopic[] // 用户的论坛主题
   forumPosts    ForumPost[] // 用户的论坛回复
+  forumTopicReadStates ForumTopicReadState[] // 用户参与主题的未读状态
   notifications Notification[] // 用户的通知
 
   // Chat related
@@ -368,6 +369,7 @@ model ForumTopic {
   author         User          @relation(fields: [authorId], references: [id])
   category       ForumCategory @relation(fields: [categoryId], references: [id])
   posts          ForumPost[]
+  readStates     ForumTopicReadState[]
 
   @@index([categoryId])
   @@index([authorId])
@@ -389,11 +391,34 @@ model ForumPost {
   topic     ForumTopic  @relation(fields: [topicId], references: [id])
   parent    ForumPost?  @relation("PostToPost", fields: [parentId], references: [id], onDelete: SetNull)
   replies   ForumPost[] @relation("PostToPost")
+  lastUnreadForStates ForumTopicReadState[] @relation("LastUnreadPost")
 
   @@index([topicId])
   @@index([authorId])
   @@index([status])
   @@index([parentId])
+}
+
+// 论坛参与主题未读状态
+model ForumTopicReadState {
+  id               Int        @id @default(autoincrement())
+  userId           Int
+  topicId          Int
+  lastReadAt       DateTime?
+  unreadCount      Int        @default(0)
+  lastUnreadPostId Int?
+  lastUnreadAt     DateTime?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic          ForumTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  lastUnreadPost ForumPost? @relation("LastUnreadPost", fields: [lastUnreadPostId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, topicId])
+  @@index([userId, unreadCount])
+  @@index([topicId])
+  @@index([lastUnreadAt])
 }
 
 // 通知模型

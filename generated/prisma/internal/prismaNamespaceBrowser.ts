@@ -64,10 +64,12 @@ export const ModelName = {
   SearchRecord: 'SearchRecord',
   DailySearchStats: 'DailySearchStats',
   UserVodConfig: 'UserVodConfig',
+  TvboxSource: 'TvboxSource',
   EmailVerificationToken: 'EmailVerificationToken',
   ForumCategory: 'ForumCategory',
   ForumTopic: 'ForumTopic',
   ForumPost: 'ForumPost',
+  ForumTopicReadState: 'ForumTopicReadState',
   Notification: 'Notification',
   ChatRoom: 'ChatRoom',
   ChatRoomUser: 'ChatRoomUser',
@@ -306,6 +308,24 @@ export const UserVodConfigScalarFieldEnum = {
 export type UserVodConfigScalarFieldEnum = (typeof UserVodConfigScalarFieldEnum)[keyof typeof UserVodConfigScalarFieldEnum]
 
 
+export const TvboxSourceScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  link: 'link',
+  sourceType: 'sourceType',
+  sourceTypeLabel: 'sourceTypeLabel',
+  upstream: 'upstream',
+  active: 'active',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt',
+  lastSyncedAt: 'lastSyncedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TvboxSourceScalarFieldEnum = (typeof TvboxSourceScalarFieldEnum)[keyof typeof TvboxSourceScalarFieldEnum]
+
+
 export const EmailVerificationTokenScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -364,6 +384,21 @@ export const ForumPostScalarFieldEnum = {
 } as const
 
 export type ForumPostScalarFieldEnum = (typeof ForumPostScalarFieldEnum)[keyof typeof ForumPostScalarFieldEnum]
+
+
+export const ForumTopicReadStateScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  topicId: 'topicId',
+  lastReadAt: 'lastReadAt',
+  unreadCount: 'unreadCount',
+  lastUnreadPostId: 'lastUnreadPostId',
+  lastUnreadAt: 'lastUnreadAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ForumTopicReadStateScalarFieldEnum = (typeof ForumTopicReadStateScalarFieldEnum)[keyof typeof ForumTopicReadStateScalarFieldEnum]
 
 
 export const NotificationScalarFieldEnum = {

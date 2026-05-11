@@ -1,4 +1,6 @@
 import prisma from '~/lib/prisma'
+import { getOptionalForumUser } from "~/server/utils/forumAuth";
+import { attachViewerStatesToTopics } from "~/server/services/forum/readStates.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -17,7 +19,7 @@ export default defineEventHandler(async (event) => {
         const total = await prisma.forumTopic.count({ where })
 
         // 按条件查询
-        const topics = await prisma.forumTopic.findMany({
+        const rawTopics = await prisma.forumTopic.findMany({
             where,
             orderBy: [
                 { isSticky: 'desc' },
@@ -48,6 +50,9 @@ export default defineEventHandler(async (event) => {
             skip: (page - 1) * pageSize,
             take: pageSize,
         })
+        const viewer = getOptionalForumUser(event)
+        // 登录用户会在每个主题上附加 viewerState，游客保持公共返回结构。
+        const topics = await attachViewerStatesToTopics(rawTopics, viewer?.userId, prisma)
 
         return {
             success: true,
@@ -68,4 +73,4 @@ export default defineEventHandler(async (event) => {
             message: '获取论坛主题列表失败'
         }
     }
-}) 
+})

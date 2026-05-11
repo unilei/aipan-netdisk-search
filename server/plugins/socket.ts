@@ -119,6 +119,7 @@ export default defineNitroPlugin((nitroApp) => {
         const userId = socket.data.user.userId;
         const username = socket.data.user.username || '用户';
         console.log(`User connected: ${userId} (${username})`);
+        socket.join(`user:${userId}`);
 
         // Add user to online users map
         onlineUsers.set(userId, {

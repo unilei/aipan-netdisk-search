@@ -255,6 +255,7 @@ export type ForumPostWhereInput = {
   topic?: Prisma.XOR<Prisma.ForumTopicScalarRelationFilter, Prisma.ForumTopicWhereInput>
   parent?: Prisma.XOR<Prisma.ForumPostNullableScalarRelationFilter, Prisma.ForumPostWhereInput> | null
   replies?: Prisma.ForumPostListRelationFilter
+  lastUnreadForStates?: Prisma.ForumTopicReadStateListRelationFilter
 }
 
 export type ForumPostOrderByWithRelationInput = {
@@ -270,6 +271,7 @@ export type ForumPostOrderByWithRelationInput = {
   topic?: Prisma.ForumTopicOrderByWithRelationInput
   parent?: Prisma.ForumPostOrderByWithRelationInput
   replies?: Prisma.ForumPostOrderByRelationAggregateInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateOrderByRelationAggregateInput
 }
 
 export type ForumPostWhereUniqueInput = Prisma.AtLeast<{
@@ -288,6 +290,7 @@ export type ForumPostWhereUniqueInput = Prisma.AtLeast<{
   topic?: Prisma.XOR<Prisma.ForumTopicScalarRelationFilter, Prisma.ForumTopicWhereInput>
   parent?: Prisma.XOR<Prisma.ForumPostNullableScalarRelationFilter, Prisma.ForumPostWhereInput> | null
   replies?: Prisma.ForumPostListRelationFilter
+  lastUnreadForStates?: Prisma.ForumTopicReadStateListRelationFilter
 }, "id">
 
 export type ForumPostOrderByWithAggregationInput = {
@@ -329,6 +332,7 @@ export type ForumPostCreateInput = {
   topic: Prisma.ForumTopicCreateNestedOneWithoutPostsInput
   parent?: Prisma.ForumPostCreateNestedOneWithoutRepliesInput
   replies?: Prisma.ForumPostCreateNestedManyWithoutParentInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostUncheckedCreateInput = {
@@ -341,6 +345,7 @@ export type ForumPostUncheckedCreateInput = {
   authorId: number
   parentId?: number | null
   replies?: Prisma.ForumPostUncheckedCreateNestedManyWithoutParentInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostUpdateInput = {
@@ -352,6 +357,7 @@ export type ForumPostUpdateInput = {
   topic?: Prisma.ForumTopicUpdateOneRequiredWithoutPostsNestedInput
   parent?: Prisma.ForumPostUpdateOneWithoutRepliesNestedInput
   replies?: Prisma.ForumPostUpdateManyWithoutParentNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUncheckedUpdateInput = {
@@ -364,6 +370,7 @@ export type ForumPostUncheckedUpdateInput = {
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   parentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   replies?: Prisma.ForumPostUncheckedUpdateManyWithoutParentNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostCreateManyInput = {
@@ -599,6 +606,22 @@ export type ForumPostUncheckedUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.ForumPostScalarWhereInput | Prisma.ForumPostScalarWhereInput[]
 }
 
+export type ForumPostCreateNestedOneWithoutLastUnreadForStatesInput = {
+  create?: Prisma.XOR<Prisma.ForumPostCreateWithoutLastUnreadForStatesInput, Prisma.ForumPostUncheckedCreateWithoutLastUnreadForStatesInput>
+  connectOrCreate?: Prisma.ForumPostCreateOrConnectWithoutLastUnreadForStatesInput
+  connect?: Prisma.ForumPostWhereUniqueInput
+}
+
+export type ForumPostUpdateOneWithoutLastUnreadForStatesNestedInput = {
+  create?: Prisma.XOR<Prisma.ForumPostCreateWithoutLastUnreadForStatesInput, Prisma.ForumPostUncheckedCreateWithoutLastUnreadForStatesInput>
+  connectOrCreate?: Prisma.ForumPostCreateOrConnectWithoutLastUnreadForStatesInput
+  upsert?: Prisma.ForumPostUpsertWithoutLastUnreadForStatesInput
+  disconnect?: Prisma.ForumPostWhereInput | boolean
+  delete?: Prisma.ForumPostWhereInput | boolean
+  connect?: Prisma.ForumPostWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ForumPostUpdateToOneWithWhereWithoutLastUnreadForStatesInput, Prisma.ForumPostUpdateWithoutLastUnreadForStatesInput>, Prisma.ForumPostUncheckedUpdateWithoutLastUnreadForStatesInput>
+}
+
 export type ForumPostCreateWithoutAuthorInput = {
   content: string
   status?: string
@@ -607,6 +630,7 @@ export type ForumPostCreateWithoutAuthorInput = {
   topic: Prisma.ForumTopicCreateNestedOneWithoutPostsInput
   parent?: Prisma.ForumPostCreateNestedOneWithoutRepliesInput
   replies?: Prisma.ForumPostCreateNestedManyWithoutParentInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostUncheckedCreateWithoutAuthorInput = {
@@ -618,6 +642,7 @@ export type ForumPostUncheckedCreateWithoutAuthorInput = {
   topicId: number
   parentId?: number | null
   replies?: Prisma.ForumPostUncheckedCreateNestedManyWithoutParentInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostCreateOrConnectWithoutAuthorInput = {
@@ -668,6 +693,7 @@ export type ForumPostCreateWithoutTopicInput = {
   author: Prisma.UserCreateNestedOneWithoutForumPostsInput
   parent?: Prisma.ForumPostCreateNestedOneWithoutRepliesInput
   replies?: Prisma.ForumPostCreateNestedManyWithoutParentInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostUncheckedCreateWithoutTopicInput = {
@@ -679,6 +705,7 @@ export type ForumPostUncheckedCreateWithoutTopicInput = {
   authorId: number
   parentId?: number | null
   replies?: Prisma.ForumPostUncheckedCreateNestedManyWithoutParentInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostCreateOrConnectWithoutTopicInput = {
@@ -715,6 +742,7 @@ export type ForumPostCreateWithoutRepliesInput = {
   author: Prisma.UserCreateNestedOneWithoutForumPostsInput
   topic: Prisma.ForumTopicCreateNestedOneWithoutPostsInput
   parent?: Prisma.ForumPostCreateNestedOneWithoutRepliesInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostUncheckedCreateWithoutRepliesInput = {
@@ -726,6 +754,7 @@ export type ForumPostUncheckedCreateWithoutRepliesInput = {
   topicId: number
   authorId: number
   parentId?: number | null
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostCreateOrConnectWithoutRepliesInput = {
@@ -741,6 +770,7 @@ export type ForumPostCreateWithoutParentInput = {
   author: Prisma.UserCreateNestedOneWithoutForumPostsInput
   topic: Prisma.ForumTopicCreateNestedOneWithoutPostsInput
   replies?: Prisma.ForumPostCreateNestedManyWithoutParentInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostUncheckedCreateWithoutParentInput = {
@@ -752,6 +782,7 @@ export type ForumPostUncheckedCreateWithoutParentInput = {
   topicId: number
   authorId: number
   replies?: Prisma.ForumPostUncheckedCreateNestedManyWithoutParentInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutLastUnreadPostInput
 }
 
 export type ForumPostCreateOrConnectWithoutParentInput = {
@@ -783,6 +814,7 @@ export type ForumPostUpdateWithoutRepliesInput = {
   author?: Prisma.UserUpdateOneRequiredWithoutForumPostsNestedInput
   topic?: Prisma.ForumTopicUpdateOneRequiredWithoutPostsNestedInput
   parent?: Prisma.ForumPostUpdateOneWithoutRepliesNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUncheckedUpdateWithoutRepliesInput = {
@@ -794,6 +826,7 @@ export type ForumPostUncheckedUpdateWithoutRepliesInput = {
   topicId?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   parentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUpsertWithWhereUniqueWithoutParentInput = {
@@ -810,6 +843,68 @@ export type ForumPostUpdateWithWhereUniqueWithoutParentInput = {
 export type ForumPostUpdateManyWithWhereWithoutParentInput = {
   where: Prisma.ForumPostScalarWhereInput
   data: Prisma.XOR<Prisma.ForumPostUpdateManyMutationInput, Prisma.ForumPostUncheckedUpdateManyWithoutParentInput>
+}
+
+export type ForumPostCreateWithoutLastUnreadForStatesInput = {
+  content: string
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  author: Prisma.UserCreateNestedOneWithoutForumPostsInput
+  topic: Prisma.ForumTopicCreateNestedOneWithoutPostsInput
+  parent?: Prisma.ForumPostCreateNestedOneWithoutRepliesInput
+  replies?: Prisma.ForumPostCreateNestedManyWithoutParentInput
+}
+
+export type ForumPostUncheckedCreateWithoutLastUnreadForStatesInput = {
+  id?: number
+  content: string
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  topicId: number
+  authorId: number
+  parentId?: number | null
+  replies?: Prisma.ForumPostUncheckedCreateNestedManyWithoutParentInput
+}
+
+export type ForumPostCreateOrConnectWithoutLastUnreadForStatesInput = {
+  where: Prisma.ForumPostWhereUniqueInput
+  create: Prisma.XOR<Prisma.ForumPostCreateWithoutLastUnreadForStatesInput, Prisma.ForumPostUncheckedCreateWithoutLastUnreadForStatesInput>
+}
+
+export type ForumPostUpsertWithoutLastUnreadForStatesInput = {
+  update: Prisma.XOR<Prisma.ForumPostUpdateWithoutLastUnreadForStatesInput, Prisma.ForumPostUncheckedUpdateWithoutLastUnreadForStatesInput>
+  create: Prisma.XOR<Prisma.ForumPostCreateWithoutLastUnreadForStatesInput, Prisma.ForumPostUncheckedCreateWithoutLastUnreadForStatesInput>
+  where?: Prisma.ForumPostWhereInput
+}
+
+export type ForumPostUpdateToOneWithWhereWithoutLastUnreadForStatesInput = {
+  where?: Prisma.ForumPostWhereInput
+  data: Prisma.XOR<Prisma.ForumPostUpdateWithoutLastUnreadForStatesInput, Prisma.ForumPostUncheckedUpdateWithoutLastUnreadForStatesInput>
+}
+
+export type ForumPostUpdateWithoutLastUnreadForStatesInput = {
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  author?: Prisma.UserUpdateOneRequiredWithoutForumPostsNestedInput
+  topic?: Prisma.ForumTopicUpdateOneRequiredWithoutPostsNestedInput
+  parent?: Prisma.ForumPostUpdateOneWithoutRepliesNestedInput
+  replies?: Prisma.ForumPostUpdateManyWithoutParentNestedInput
+}
+
+export type ForumPostUncheckedUpdateWithoutLastUnreadForStatesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  content?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  topicId?: Prisma.IntFieldUpdateOperationsInput | number
+  authorId?: Prisma.IntFieldUpdateOperationsInput | number
+  parentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  replies?: Prisma.ForumPostUncheckedUpdateManyWithoutParentNestedInput
 }
 
 export type ForumPostCreateManyAuthorInput = {
@@ -830,6 +925,7 @@ export type ForumPostUpdateWithoutAuthorInput = {
   topic?: Prisma.ForumTopicUpdateOneRequiredWithoutPostsNestedInput
   parent?: Prisma.ForumPostUpdateOneWithoutRepliesNestedInput
   replies?: Prisma.ForumPostUpdateManyWithoutParentNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUncheckedUpdateWithoutAuthorInput = {
@@ -841,6 +937,7 @@ export type ForumPostUncheckedUpdateWithoutAuthorInput = {
   topicId?: Prisma.IntFieldUpdateOperationsInput | number
   parentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   replies?: Prisma.ForumPostUncheckedUpdateManyWithoutParentNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUncheckedUpdateManyWithoutAuthorInput = {
@@ -871,6 +968,7 @@ export type ForumPostUpdateWithoutTopicInput = {
   author?: Prisma.UserUpdateOneRequiredWithoutForumPostsNestedInput
   parent?: Prisma.ForumPostUpdateOneWithoutRepliesNestedInput
   replies?: Prisma.ForumPostUpdateManyWithoutParentNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUncheckedUpdateWithoutTopicInput = {
@@ -882,6 +980,7 @@ export type ForumPostUncheckedUpdateWithoutTopicInput = {
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   parentId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   replies?: Prisma.ForumPostUncheckedUpdateManyWithoutParentNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUncheckedUpdateManyWithoutTopicInput = {
@@ -912,6 +1011,7 @@ export type ForumPostUpdateWithoutParentInput = {
   author?: Prisma.UserUpdateOneRequiredWithoutForumPostsNestedInput
   topic?: Prisma.ForumTopicUpdateOneRequiredWithoutPostsNestedInput
   replies?: Prisma.ForumPostUpdateManyWithoutParentNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUncheckedUpdateWithoutParentInput = {
@@ -923,6 +1023,7 @@ export type ForumPostUncheckedUpdateWithoutParentInput = {
   topicId?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   replies?: Prisma.ForumPostUncheckedUpdateManyWithoutParentNestedInput
+  lastUnreadForStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutLastUnreadPostNestedInput
 }
 
 export type ForumPostUncheckedUpdateManyWithoutParentInput = {
@@ -942,10 +1043,12 @@ export type ForumPostUncheckedUpdateManyWithoutParentInput = {
 
 export type ForumPostCountOutputType = {
   replies: number
+  lastUnreadForStates: number
 }
 
 export type ForumPostCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   replies?: boolean | ForumPostCountOutputTypeCountRepliesArgs
+  lastUnreadForStates?: boolean | ForumPostCountOutputTypeCountLastUnreadForStatesArgs
 }
 
 /**
@@ -965,6 +1068,13 @@ export type ForumPostCountOutputTypeCountRepliesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.ForumPostWhereInput
 }
 
+/**
+ * ForumPostCountOutputType without action
+ */
+export type ForumPostCountOutputTypeCountLastUnreadForStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ForumTopicReadStateWhereInput
+}
+
 
 export type ForumPostSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -979,6 +1089,7 @@ export type ForumPostSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   topic?: boolean | Prisma.ForumTopicDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.ForumPost$parentArgs<ExtArgs>
   replies?: boolean | Prisma.ForumPost$repliesArgs<ExtArgs>
+  lastUnreadForStates?: boolean | Prisma.ForumPost$lastUnreadForStatesArgs<ExtArgs>
   _count?: boolean | Prisma.ForumPostCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["forumPost"]>
 
@@ -1027,6 +1138,7 @@ export type ForumPostInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   topic?: boolean | Prisma.ForumTopicDefaultArgs<ExtArgs>
   parent?: boolean | Prisma.ForumPost$parentArgs<ExtArgs>
   replies?: boolean | Prisma.ForumPost$repliesArgs<ExtArgs>
+  lastUnreadForStates?: boolean | Prisma.ForumPost$lastUnreadForStatesArgs<ExtArgs>
   _count?: boolean | Prisma.ForumPostCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ForumPostIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1047,6 +1159,7 @@ export type $ForumPostPayload<ExtArgs extends runtime.Types.Extensions.InternalA
     topic: Prisma.$ForumTopicPayload<ExtArgs>
     parent: Prisma.$ForumPostPayload<ExtArgs> | null
     replies: Prisma.$ForumPostPayload<ExtArgs>[]
+    lastUnreadForStates: Prisma.$ForumTopicReadStatePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1455,6 +1568,7 @@ export interface Prisma__ForumPostClient<T, Null = never, ExtArgs extends runtim
   topic<T extends Prisma.ForumTopicDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ForumTopicDefaultArgs<ExtArgs>>): Prisma.Prisma__ForumTopicClient<runtime.Types.Result.GetResult<Prisma.$ForumTopicPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   parent<T extends Prisma.ForumPost$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ForumPost$parentArgs<ExtArgs>>): Prisma.Prisma__ForumPostClient<runtime.Types.Result.GetResult<Prisma.$ForumPostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   replies<T extends Prisma.ForumPost$repliesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ForumPost$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ForumPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  lastUnreadForStates<T extends Prisma.ForumPost$lastUnreadForStatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ForumPost$lastUnreadForStatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ForumTopicReadStatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1928,6 +2042,30 @@ export type ForumPost$repliesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.ForumPostScalarFieldEnum | Prisma.ForumPostScalarFieldEnum[]
+}
+
+/**
+ * ForumPost.lastUnreadForStates
+ */
+export type ForumPost$lastUnreadForStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ForumTopicReadState
+   */
+  select?: Prisma.ForumTopicReadStateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ForumTopicReadState
+   */
+  omit?: Prisma.ForumTopicReadStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ForumTopicReadStateInclude<ExtArgs> | null
+  where?: Prisma.ForumTopicReadStateWhereInput
+  orderBy?: Prisma.ForumTopicReadStateOrderByWithRelationInput | Prisma.ForumTopicReadStateOrderByWithRelationInput[]
+  cursor?: Prisma.ForumTopicReadStateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ForumTopicReadStateScalarFieldEnum | Prisma.ForumTopicReadStateScalarFieldEnum[]
 }
 
 /**

@@ -58,6 +58,9 @@
                   <NuxtLink :to="`/forum/topic/${topic.slug}`" class="v2-topic-title">
                     {{ topic.title }}
                   </NuxtLink>
+                  <span v-if="topic.viewerState?.hasUnread" class="v2-unread-badge">
+                    {{ topic.viewerState.unreadCount > 1 ? `未读 ${topic.viewerState.unreadCount}` : "有新回复" }}
+                  </span>
                 </div>
                 <div class="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[#999]">
                   <span>{{ topic.author.username }}</span>
@@ -146,6 +149,10 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const user = computed(() => userStore.user);
+const token = useCookie("token");
+const authHeaders = computed(() =>
+  user.value && token.value ? { authorization: `Bearer ${token.value}` } : {}
+);
 
 const slug = String(route.params.slug || "");
 const page = ref(parseInt(route.query.page || "1"));
@@ -210,6 +217,7 @@ const {
     page,
     pageSize,
   },
+  headers: authHeaders,
 });
 
 const loading = computed(() => categoryLoading.value || topicsLoading.value);
@@ -272,6 +280,41 @@ const navigateToCategory = (categorySlug) => {
   if (!categorySlug) return;
   router.push(`/forum/category/${categorySlug}`);
 };
+
+let forumSocket = null;
+
+const handleForumNewReply = () => {
+  refreshTopics();
+};
+
+const initForumRealtime = () => {
+  if (!user.value || !token.value) return;
+
+  const socketIo = useSocketIo();
+  forumSocket = socketIo.initSocket();
+  if (!forumSocket) return;
+
+  forumSocket.off("forum:new_reply", handleForumNewReply);
+  forumSocket.on("forum:new_reply", handleForumNewReply);
+};
+
+onMounted(() => {
+  initForumRealtime();
+});
+
+onUnmounted(() => {
+  if (forumSocket) {
+    forumSocket.off("forum:new_reply", handleForumNewReply);
+  }
+});
+
+watch(
+  () => user.value?.id,
+  () => {
+    initForumRealtime();
+    refreshTopics();
+  }
+);
 
 watch(
   () => route.query.page,
@@ -508,6 +551,22 @@ watch(
   border-radius: 6px;
   background: rgb(241 245 249);
   color: rgb(100 116 139);
+}
+
+.v2-unread-badge {
+  background: rgb(219 234 254);
+  border-radius: 999px;
+  color: rgb(29 78 216);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 7px;
+}
+
+.dark .v2-unread-badge {
+  background: rgb(37 99 235 / 18%);
+  color: rgb(147 197 253);
 }
 
 .v2-reply-count {

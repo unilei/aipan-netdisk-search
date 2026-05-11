@@ -124,6 +124,11 @@ export type DailySearchStats = Prisma.DailySearchStatsModel
  */
 export type UserVodConfig = Prisma.UserVodConfigModel
 /**
+ * Model TvboxSource
+ *
+ */
+export type TvboxSource = Prisma.TvboxSourceModel
+/**
  * Model EmailVerificationToken
  *
  */
@@ -143,6 +148,11 @@ export type ForumTopic = Prisma.ForumTopicModel
  *
  */
 export type ForumPost = Prisma.ForumPostModel
+/**
+ * Model ForumTopicReadState
+ *
+ */
+export type ForumTopicReadState = Prisma.ForumTopicReadStateModel
 /**
  * Model Notification
  *

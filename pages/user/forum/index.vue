@@ -83,6 +83,9 @@
                                                             :class="{ 'text-gray-400 dark:text-gray-500 pointer-events-none': topic.status !== 'approved' }">
                                                             {{ truncate(topic.title, 50) }}
                                                         </nuxt-link>
+                                                        <span v-if="topic.viewerState?.hasUnread" class="v2-unread-badge">
+                                                            {{ topic.viewerState.unreadCount > 1 ? `未读 ${topic.viewerState.unreadCount}` : '有新回复' }}
+                                                        </span>
                                                         <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                                             <span>{{ topic.category?.name || '未设置板块' }}</span>
                                                             <span class="mx-1">·</span>
@@ -289,7 +292,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 import { useUserStore } from '~/stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { formatDistanceToNow } from 'date-fns'
@@ -337,6 +340,7 @@ const repliesPagination = reactive({
     pageSize: 10,
     total: 0
 })
+let forumSocket = null
 
 // 对话框状态
 const dialogs = reactive({
@@ -697,6 +701,13 @@ const getStatusType = (status) => {
 onMounted(() => {
     fetchTopics()
     fetchCategories()
+    initForumRealtime()
+})
+
+onUnmounted(() => {
+    if (forumSocket) {
+        forumSocket.off('forum:new_reply', handleForumNewReply)
+    }
 })
 
 // 标签页切换事件
@@ -705,6 +716,21 @@ watch(activeTab, (newVal) => {
         fetchReplies()
     }
 })
+
+const handleForumNewReply = () => {
+    fetchTopics()
+}
+
+const initForumRealtime = () => {
+    if (!userStore.token) return
+
+    const socketIo = useSocketIo()
+    forumSocket = socketIo.initSocket()
+    if (!forumSocket) return
+
+    forumSocket.off('forum:new_reply', handleForumNewReply)
+    forumSocket.on('forum:new_reply', handleForumNewReply)
+}
 </script>
 
 <style>
@@ -828,6 +854,24 @@ watch(activeTab, (newVal) => {
 .v2-muted-button:hover {
     background: rgb(226 232 240);
     color: rgb(37 99 235);
+}
+
+.v2-unread-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: rgb(219 234 254);
+    color: rgb(29 78 216);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    margin-left: 6px;
+    padding: 4px 7px;
+}
+
+.dark .v2-unread-badge {
+    background: rgb(37 99 235 / 18%);
+    color: rgb(147 197 253);
 }
 
 .v2-user-tabs > .el-tabs__header {

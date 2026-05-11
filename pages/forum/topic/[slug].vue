@@ -79,6 +79,11 @@
             <div class="v2-content forum-markdown markdown-body" v-html="parsedContent"></div>
           </article>
 
+          <div v-if="newReplyNotice" class="v2-new-reply-notice">
+            <span>有新回复，点击刷新</span>
+            <button type="button" @click="refreshNewReplies">刷新</button>
+          </div>
+
           <section class="v2-box">
             <div class="v2-side-header flex items-center justify-between">
               <span>{{ replyTotal }} 条回复</span>
@@ -208,7 +213,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { zhCN } from "date-fns/locale";
 import { ElMessage } from "element-plus";
-import { computed, ref, onMounted } from "vue";
+import { computed, ref, onMounted, onUnmounted, watch } from "vue";
 import { marked } from "marked";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
@@ -220,6 +225,7 @@ const router = useRouter();
 const userStore = useUserStore();
 const user = computed(() => userStore.user);
 const slug = String(route.params.slug || "");
+const token = useCookie("token");
 const page = ref(parseInt(route.query.page || "1"));
 const pageSize = 20;
 
@@ -323,6 +329,8 @@ const submitting = ref(false);
 const replyingTo = ref(null);
 const mdEditorRef = ref(null);
 const replySectionRef = ref(null);
+const newReplyNotice = ref(false);
+let forumSocket = null;
 
 const parsedContent = computed(() => {
   if (!topic.value?.content) return "";
@@ -398,7 +406,8 @@ async function submitReply() {
       replyingTo.value = null;
 
       if (response.data && response.data.status === "approved") {
-        refresh();
+        await refresh();
+        await markTopicRead();
       }
     } else {
       ElMessage.error(response.message || "回复失败");
@@ -409,6 +418,43 @@ async function submitReply() {
   } finally {
     submitting.value = false;
   }
+}
+
+async function markTopicRead() {
+  if (!user.value || !token.value || !slug) return;
+
+  try {
+    await $fetch(`/api/forum/topics/${slug}/read`, {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token.value}`,
+      },
+    });
+  } catch (error) {
+    console.error("标记主题已读失败:", error);
+  }
+}
+
+async function refreshNewReplies() {
+  await refresh();
+  newReplyNotice.value = false;
+  await markTopicRead();
+}
+
+function handleForumNewReply(payload) {
+  if (!payload || payload.slug !== slug) return;
+  newReplyNotice.value = true;
+}
+
+function initForumRealtime() {
+  if (!user.value || !token.value) return;
+
+  const socketIo = useSocketIo();
+  forumSocket = socketIo.initSocket();
+  if (!forumSocket) return;
+
+  forumSocket.off("forum:new_reply", handleForumNewReply);
+  forumSocket.on("forum:new_reply", handleForumNewReply);
 }
 
 function replyToPost(postId) {
@@ -506,7 +552,24 @@ onMounted(async () => {
   } catch (error) {
     console.error("增加浏览量失败:", error);
   }
+
+  await markTopicRead();
+  initForumRealtime();
 });
+
+onUnmounted(() => {
+  if (forumSocket) {
+    forumSocket.off("forum:new_reply", handleForumNewReply);
+  }
+});
+
+watch(
+  () => user.value?.id,
+  async () => {
+    await markTopicRead();
+    initForumRealtime();
+  }
+);
 </script>
 
 <style>
@@ -696,6 +759,36 @@ onMounted(async () => {
 
 .dark .v2-topic-tools {
   background: transparent;
+}
+
+.v2-new-reply-notice {
+  align-items: center;
+  background: rgb(239 246 255);
+  border: 1px solid rgb(191 219 254);
+  border-radius: 8px;
+  color: rgb(30 64 175);
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.v2-new-reply-notice button {
+  border-radius: 8px;
+  color: rgb(37 99 235);
+  font-size: 12px;
+  padding: 5px 8px;
+}
+
+.v2-new-reply-notice button:hover {
+  background: rgb(219 234 254);
+}
+
+.dark .v2-new-reply-notice {
+  background: rgb(30 41 59 / 75%);
+  border-color: rgb(255 255 255 / 10%);
+  color: rgb(147 197 253);
 }
 
 .v2-avatar {

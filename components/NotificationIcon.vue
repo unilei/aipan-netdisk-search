@@ -70,9 +70,13 @@ import { zhCN } from "date-fns/locale";
 const isOpen = ref(false);
 const notifications = ref([]);
 const unreadCount = ref(0);
+let notificationPollTimer = null;
+let notificationSocket = null;
 
 // 获取通知列表
 const fetchNotifications = async () => {
+  if (!useCookie("token").value) return;
+
   try {
     const response = await fetch("/api/notifications?page=1&pageSize=5", {
       method: "GET",
@@ -100,6 +104,11 @@ const fetchNotifications = async () => {
 
 // 获取未读通知数量
 const fetchUnreadCount = async () => {
+  if (!useCookie("token").value) {
+    unreadCount.value = 0;
+    return;
+  }
+
   try {
     const response = await fetch("/api/notifications/unread-count", {
       headers: {
@@ -113,6 +122,28 @@ const fetchUnreadCount = async () => {
   } catch (error) {
     console.error("获取未读通知数量失败:", error);
   }
+};
+
+const handleRealtimeNotification = (notification) => {
+  if (!notification) return;
+
+  unreadCount.value += notification.isRead ? 0 : 1;
+  notifications.value = [
+    notification,
+    ...notifications.value.filter((item) => item.id !== notification.id),
+  ].slice(0, 5);
+  fetchUnreadCount();
+};
+
+const initRealtimeNotifications = () => {
+  if (!useCookie("token").value) return;
+
+  const socketIo = useSocketIo();
+  notificationSocket = socketIo.initSocket();
+  if (!notificationSocket) return;
+
+  notificationSocket.off("notification:new", handleRealtimeNotification);
+  notificationSocket.on("notification:new", handleRealtimeNotification);
 };
 
 // 标记所有通知为已读
@@ -196,10 +227,18 @@ const handleClickOutside = (event) => {
 
 onMounted(() => {
   fetchUnreadCount();
+  notificationPollTimer = setInterval(fetchUnreadCount, 60000);
+  initRealtimeNotifications();
   document.addEventListener("click", handleClickOutside);
 });
 
 onUnmounted(() => {
+  if (notificationPollTimer) {
+    clearInterval(notificationPollTimer);
+  }
+  if (notificationSocket) {
+    notificationSocket.off("notification:new", handleRealtimeNotification);
+  }
   document.removeEventListener("click", handleClickOutside);
 });
 </script>

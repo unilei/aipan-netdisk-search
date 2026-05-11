@@ -29,6 +29,37 @@
             </button>
           </div>
 
+          <div v-if="user && unreadSummary?.unreadTopicCount > 0" class="v2-unread-banner">
+            <div class="min-w-0">
+              <div class="text-sm font-semibold text-slate-900 dark:text-white">
+                你参与的 {{ unreadSummary.unreadTopicCount }} 个主题有新回复
+              </div>
+              <div class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                共 {{ unreadSummary.unreadReplyCount }} 条未读回复
+              </div>
+            </div>
+            <div class="flex shrink-0 items-center gap-2">
+              <button class="v2-inline-button" type="button" @click="showUnreadTopics = !showUnreadTopics">
+                {{ showUnreadTopics ? "收起" : "查看未读" }}
+              </button>
+              <button class="v2-inline-button" type="button" :disabled="markingAllRead" @click="markAllForumRead">
+                {{ markingAllRead ? "处理中..." : "全部已读" }}
+              </button>
+            </div>
+          </div>
+
+          <div v-if="user && showUnreadTopics && unreadSummary?.topics?.length" class="v2-unread-list">
+            <NuxtLink
+              v-for="item in unreadSummary.topics"
+              :key="item.id"
+              :to="`/forum/topic/${item.slug}`"
+              class="v2-unread-item"
+            >
+              <span class="min-w-0 truncate">{{ item.title }}</span>
+              <span class="v2-unread-badge">未读 {{ item.unreadCount }}</span>
+            </NuxtLink>
+          </div>
+
           <div v-if="loading || topicsLoading" class="divide-y divide-[#e2e2e2] dark:divide-white/10">
             <div v-for="item in 10" :key="item" class="v2-topic-row">
               <div class="h-12 w-12 shrink-0 animate-pulse rounded bg-[#f0f0f0] dark:bg-white/10"></div>
@@ -60,6 +91,9 @@
                   <NuxtLink :to="`/forum/topic/${topic.slug}`" class="v2-topic-title">
                     {{ topic.title }}
                   </NuxtLink>
+                  <span v-if="topic.viewerState?.hasUnread" class="v2-unread-badge">
+                    {{ topic.viewerState.unreadCount > 1 ? `未读 ${topic.viewerState.unreadCount}` : "有新回复" }}
+                  </span>
                 </div>
                 <div class="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-[#999]">
                   <NuxtLink :to="`/forum/category/${topic.category.slug}`" class="v2-node">
@@ -205,6 +239,10 @@ definePageMeta({
 const router = useRouter();
 const userStore = useUserStore();
 const user = computed(() => userStore.user);
+const token = useCookie("token");
+const authHeaders = computed(() =>
+  user.value && token.value ? { authorization: `Bearer ${token.value}` } : {}
+);
 
 const {
   data: categoriesData,
@@ -232,7 +270,10 @@ const {
   pending: topicsLoading,
   refresh: refreshTopics,
 } = await useFetch(
-  () => `/api/forum/topics?page=${page.value}&pageSize=${pageSize.value}`
+  () => `/api/forum/topics?page=${page.value}&pageSize=${pageSize.value}`,
+  {
+    headers: authHeaders,
+  }
 );
 
 const topics = computed(() => {
@@ -252,6 +293,11 @@ const pagination = computed(() => {
 });
 
 const isRefreshing = computed(() => loading.value || topicsLoading.value);
+const unreadSummary = ref(null);
+const showUnreadTopics = ref(false);
+const markingAllRead = ref(false);
+let forumUnreadPollTimer = null;
+let forumSocket = null;
 
 const formatDate = (dateString) => {
   if (!dateString) return "";
@@ -279,7 +325,71 @@ const handlePageChange = (newPage) => {
 
 const handleRefresh = async () => {
   page.value = 1;
-  await Promise.all([refresh(), refreshTopics()]);
+  await Promise.all([refresh(), refreshTopics(), fetchUnreadSummary()]);
+};
+
+const fetchUnreadSummary = async () => {
+  if (!user.value || !token.value) {
+    unreadSummary.value = null;
+    showUnreadTopics.value = false;
+    return;
+  }
+
+  try {
+    const response = await $fetch("/api/forum/unread-summary", {
+      headers: {
+        authorization: `Bearer ${token.value}`,
+      },
+    });
+
+    if (response.success) {
+      unreadSummary.value = response.data;
+      if (!response.data?.unreadTopicCount) {
+        showUnreadTopics.value = false;
+      }
+    }
+  } catch (error) {
+    console.error("获取论坛未读摘要失败:", error);
+  }
+};
+
+const markAllForumRead = async () => {
+  if (!user.value || !token.value || markingAllRead.value) return;
+
+  try {
+    markingAllRead.value = true;
+    const response = await $fetch("/api/forum/unread/mark-all-read", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token.value}`,
+      },
+    });
+
+    if (response.success) {
+      unreadSummary.value = response.data?.summary || null;
+      showUnreadTopics.value = false;
+      await refreshTopics();
+    }
+  } catch (error) {
+    console.error("标记论坛未读为已读失败:", error);
+  } finally {
+    markingAllRead.value = false;
+  }
+};
+
+const handleForumNewReply = async () => {
+  await Promise.all([fetchUnreadSummary(), refreshTopics()]);
+};
+
+const initForumRealtime = () => {
+  if (!user.value || !token.value) return;
+
+  const socketIo = useSocketIo();
+  forumSocket = socketIo.initSocket();
+  if (!forumSocket) return;
+
+  forumSocket.off("forum:new_reply", handleForumNewReply);
+  forumSocket.on("forum:new_reply", handleForumNewReply);
 };
 
 const navigateToCreateTopic = (categoryId) => {
@@ -303,7 +413,28 @@ const navigateToCategory = (slug) => {
 onMounted(() => {
   refresh();
   refreshTopics();
+  fetchUnreadSummary();
+  forumUnreadPollTimer = window.setInterval(fetchUnreadSummary, 60000);
+  initForumRealtime();
 });
+
+onUnmounted(() => {
+  if (forumUnreadPollTimer) {
+    window.clearInterval(forumUnreadPollTimer);
+  }
+  if (forumSocket) {
+    forumSocket.off("forum:new_reply", handleForumNewReply);
+  }
+});
+
+watch(
+  () => user.value?.id,
+  () => {
+    fetchUnreadSummary();
+    initForumRealtime();
+    refreshTopics();
+  }
+);
 </script>
 
 <style>
@@ -570,6 +701,73 @@ onMounted(() => {
 
 .v2-topic-row:hover {
   background: rgb(248 250 252);
+}
+
+.v2-unread-banner {
+  align-items: center;
+  background: rgb(239 246 255);
+  border-bottom: 1px solid rgb(191 219 254);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 10px 12px;
+}
+
+.dark .v2-unread-banner {
+  background: rgb(30 41 59 / 75%);
+  border-color: rgb(255 255 255 / 10%);
+}
+
+.v2-unread-list {
+  border-bottom: 1px solid rgb(226 232 240);
+  padding: 6px 12px;
+}
+
+.v2-unread-item {
+  align-items: center;
+  color: rgb(51 65 85);
+  display: flex;
+  font-size: 12px;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.v2-unread-item:hover {
+  color: rgb(37 99 235);
+}
+
+.v2-unread-badge {
+  background: rgb(219 234 254);
+  border-radius: 999px;
+  color: rgb(29 78 216);
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 7px;
+}
+
+.dark .v2-unread-badge {
+  background: rgb(37 99 235 / 18%);
+  color: rgb(147 197 253);
+}
+
+.v2-inline-button {
+  border-radius: 8px;
+  color: rgb(37 99 235);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 8px;
+}
+
+.v2-inline-button:hover {
+  background: rgb(219 234 254);
+}
+
+.v2-inline-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .v2-avatar {

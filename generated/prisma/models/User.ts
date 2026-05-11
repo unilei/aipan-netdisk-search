@@ -300,6 +300,7 @@ export type UserWhereInput = {
   vodConfigs?: Prisma.UserVodConfigListRelationFilter
   forumTopics?: Prisma.ForumTopicListRelationFilter
   forumPosts?: Prisma.ForumPostListRelationFilter
+  forumTopicReadStates?: Prisma.ForumTopicReadStateListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   messages?: Prisma.ChatMessageListRelationFilter
   chatRooms?: Prisma.ChatRoomUserListRelationFilter
@@ -337,6 +338,7 @@ export type UserOrderByWithRelationInput = {
   vodConfigs?: Prisma.UserVodConfigOrderByRelationAggregateInput
   forumTopics?: Prisma.ForumTopicOrderByRelationAggregateInput
   forumPosts?: Prisma.ForumPostOrderByRelationAggregateInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateOrderByRelationAggregateInput
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   messages?: Prisma.ChatMessageOrderByRelationAggregateInput
   chatRooms?: Prisma.ChatRoomUserOrderByRelationAggregateInput
@@ -377,6 +379,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   vodConfigs?: Prisma.UserVodConfigListRelationFilter
   forumTopics?: Prisma.ForumTopicListRelationFilter
   forumPosts?: Prisma.ForumPostListRelationFilter
+  forumTopicReadStates?: Prisma.ForumTopicReadStateListRelationFilter
   notifications?: Prisma.NotificationListRelationFilter
   messages?: Prisma.ChatMessageListRelationFilter
   chatRooms?: Prisma.ChatRoomUserListRelationFilter
@@ -455,6 +458,7 @@ export type UserCreateInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -492,6 +496,7 @@ export type UserUncheckedCreateInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -528,6 +533,7 @@ export type UserUpdateInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -565,6 +571,7 @@ export type UserUncheckedUpdateInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -867,6 +874,20 @@ export type UserUpdateOneRequiredWithoutForumPostsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutForumPostsInput, Prisma.UserUpdateWithoutForumPostsInput>, Prisma.UserUncheckedUpdateWithoutForumPostsInput>
 }
 
+export type UserCreateNestedOneWithoutForumTopicReadStatesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutForumTopicReadStatesInput, Prisma.UserUncheckedCreateWithoutForumTopicReadStatesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutForumTopicReadStatesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutForumTopicReadStatesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutForumTopicReadStatesInput, Prisma.UserUncheckedCreateWithoutForumTopicReadStatesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutForumTopicReadStatesInput
+  upsert?: Prisma.UserUpsertWithoutForumTopicReadStatesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutForumTopicReadStatesInput, Prisma.UserUpdateWithoutForumTopicReadStatesInput>, Prisma.UserUncheckedUpdateWithoutForumTopicReadStatesInput>
+}
+
 export type UserCreateNestedOneWithoutNotificationsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutNotificationsInput, Prisma.UserUncheckedCreateWithoutNotificationsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutNotificationsInput
@@ -1031,6 +1052,7 @@ export type UserCreateWithoutResourceTypesInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -1067,6 +1089,7 @@ export type UserUncheckedCreateWithoutResourceTypesInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -1118,6 +1141,7 @@ export type UserUpdateWithoutResourceTypesInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -1154,6 +1178,7 @@ export type UserUncheckedUpdateWithoutResourceTypesInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -1189,6 +1214,7 @@ export type UserCreateWithoutResourcesInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -1225,6 +1251,7 @@ export type UserUncheckedCreateWithoutResourcesInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -1276,6 +1303,7 @@ export type UserUpdateWithoutResourcesInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -1312,6 +1340,7 @@ export type UserUncheckedUpdateWithoutResourcesInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -1347,6 +1376,7 @@ export type UserCreateWithoutPostsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -1383,6 +1413,7 @@ export type UserUncheckedCreateWithoutPostsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -1434,6 +1465,7 @@ export type UserUpdateWithoutPostsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -1470,6 +1502,7 @@ export type UserUncheckedUpdateWithoutPostsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -1505,6 +1538,7 @@ export type UserCreateWithoutAlistInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -1541,6 +1575,7 @@ export type UserUncheckedCreateWithoutAlistInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -1592,6 +1627,7 @@ export type UserUpdateWithoutAlistInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -1628,6 +1664,7 @@ export type UserUncheckedUpdateWithoutAlistInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -1663,6 +1700,7 @@ export type UserCreateWithoutBlogPostsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -1699,6 +1737,7 @@ export type UserUncheckedCreateWithoutBlogPostsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -1750,6 +1789,7 @@ export type UserUpdateWithoutBlogPostsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -1786,6 +1826,7 @@ export type UserUncheckedUpdateWithoutBlogPostsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -1821,6 +1862,7 @@ export type UserCreateWithoutUserResourcesInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -1857,6 +1899,7 @@ export type UserUncheckedCreateWithoutUserResourcesInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -1908,6 +1951,7 @@ export type UserUpdateWithoutUserResourcesInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -1944,6 +1988,7 @@ export type UserUncheckedUpdateWithoutUserResourcesInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -1979,6 +2024,7 @@ export type UserCreateWithoutVodConfigsInput = {
   userResources?: Prisma.UserResourceCreateNestedManyWithoutCreatorInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -2015,6 +2061,7 @@ export type UserUncheckedCreateWithoutVodConfigsInput = {
   userResources?: Prisma.UserResourceUncheckedCreateNestedManyWithoutCreatorInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -2066,6 +2113,7 @@ export type UserUpdateWithoutVodConfigsInput = {
   userResources?: Prisma.UserResourceUpdateManyWithoutCreatorNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -2102,6 +2150,7 @@ export type UserUncheckedUpdateWithoutVodConfigsInput = {
   userResources?: Prisma.UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -2138,6 +2187,7 @@ export type UserCreateWithoutEmailVerificationTokensInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -2174,6 +2224,7 @@ export type UserUncheckedCreateWithoutEmailVerificationTokensInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -2225,6 +2276,7 @@ export type UserUpdateWithoutEmailVerificationTokensInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -2261,6 +2313,7 @@ export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -2295,6 +2348,7 @@ export type UserCreateWithoutForumTopicsInput = {
   userResources?: Prisma.UserResourceCreateNestedManyWithoutCreatorInput
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -2331,6 +2385,7 @@ export type UserUncheckedCreateWithoutForumTopicsInput = {
   userResources?: Prisma.UserResourceUncheckedCreateNestedManyWithoutCreatorInput
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -2382,6 +2437,7 @@ export type UserUpdateWithoutForumTopicsInput = {
   userResources?: Prisma.UserResourceUpdateManyWithoutCreatorNestedInput
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -2418,6 +2474,7 @@ export type UserUncheckedUpdateWithoutForumTopicsInput = {
   userResources?: Prisma.UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -2453,6 +2510,7 @@ export type UserCreateWithoutForumPostsInput = {
   userResources?: Prisma.UserResourceCreateNestedManyWithoutCreatorInput
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -2489,6 +2547,7 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   userResources?: Prisma.UserResourceUncheckedCreateNestedManyWithoutCreatorInput
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -2540,6 +2599,7 @@ export type UserUpdateWithoutForumPostsInput = {
   userResources?: Prisma.UserResourceUpdateManyWithoutCreatorNestedInput
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -2576,6 +2636,169 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   userResources?: Prisma.UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+  chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
+  createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+  checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
+  pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+  redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutForumTopicReadStatesInput = {
+  username: string
+  email: string
+  password: string
+  role?: string
+  status?: string
+  avatarStyle?: string
+  salt?: string | null
+  points?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
+  resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
+  resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
+  posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
+  alist?: Prisma.AlistCreateNestedManyWithoutCreatorInput
+  blogPosts?: Prisma.BlogPostCreateNestedManyWithoutAuthorInput
+  userResources?: Prisma.UserResourceCreateNestedManyWithoutCreatorInput
+  vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
+  forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
+  chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
+  createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
+  checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
+  pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
+  redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
+  redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutForumTopicReadStatesInput = {
+  id?: number
+  username: string
+  email: string
+  password: string
+  role?: string
+  status?: string
+  avatarStyle?: string
+  salt?: string | null
+  points?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
+  resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
+  alist?: Prisma.AlistUncheckedCreateNestedManyWithoutCreatorInput
+  blogPosts?: Prisma.BlogPostUncheckedCreateNestedManyWithoutAuthorInput
+  userResources?: Prisma.UserResourceUncheckedCreateNestedManyWithoutCreatorInput
+  vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
+  forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
+  chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
+  createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+  checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
+  pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+  redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutForumTopicReadStatesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutForumTopicReadStatesInput, Prisma.UserUncheckedCreateWithoutForumTopicReadStatesInput>
+}
+
+export type UserUpsertWithoutForumTopicReadStatesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutForumTopicReadStatesInput, Prisma.UserUncheckedUpdateWithoutForumTopicReadStatesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutForumTopicReadStatesInput, Prisma.UserUncheckedCreateWithoutForumTopicReadStatesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutForumTopicReadStatesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutForumTopicReadStatesInput, Prisma.UserUncheckedUpdateWithoutForumTopicReadStatesInput>
+}
+
+export type UserUpdateWithoutForumTopicReadStatesInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarStyle?: Prisma.StringFieldUpdateOperationsInput | string
+  salt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
+  resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
+  alist?: Prisma.AlistUpdateManyWithoutCreatorNestedInput
+  blogPosts?: Prisma.BlogPostUpdateManyWithoutAuthorNestedInput
+  userResources?: Prisma.UserResourceUpdateManyWithoutCreatorNestedInput
+  vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
+  forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
+  chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
+  createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
+  checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
+  pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
+  redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
+  redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutForumTopicReadStatesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarStyle?: Prisma.StringFieldUpdateOperationsInput | string
+  salt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
+  alist?: Prisma.AlistUncheckedUpdateManyWithoutCreatorNestedInput
+  blogPosts?: Prisma.BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
+  userResources?: Prisma.UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
+  forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -2612,6 +2835,7 @@ export type UserCreateWithoutNotificationsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
@@ -2648,6 +2872,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
@@ -2699,6 +2924,7 @@ export type UserUpdateWithoutNotificationsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
@@ -2735,6 +2961,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
@@ -2770,6 +2997,7 @@ export type UserCreateWithoutCreatedRoomsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -2806,6 +3034,7 @@ export type UserUncheckedCreateWithoutCreatedRoomsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -2857,6 +3086,7 @@ export type UserUpdateWithoutCreatedRoomsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -2893,6 +3123,7 @@ export type UserUncheckedUpdateWithoutCreatedRoomsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -2928,6 +3159,7 @@ export type UserCreateWithoutChatRoomsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
@@ -2964,6 +3196,7 @@ export type UserUncheckedCreateWithoutChatRoomsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
@@ -3015,6 +3248,7 @@ export type UserUpdateWithoutChatRoomsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
@@ -3051,6 +3285,7 @@ export type UserUncheckedUpdateWithoutChatRoomsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
@@ -3086,6 +3321,7 @@ export type UserCreateWithoutMessagesInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
@@ -3122,6 +3358,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
   createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
@@ -3173,6 +3410,7 @@ export type UserUpdateWithoutMessagesInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
@@ -3209,6 +3447,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
   createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
@@ -3244,6 +3483,7 @@ export type UserCreateWithoutCheckInsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -3280,6 +3520,7 @@ export type UserUncheckedCreateWithoutCheckInsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -3331,6 +3572,7 @@ export type UserUpdateWithoutCheckInsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -3367,6 +3609,7 @@ export type UserUncheckedUpdateWithoutCheckInsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -3402,6 +3645,7 @@ export type UserCreateWithoutPointsHistoryInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -3438,6 +3682,7 @@ export type UserUncheckedCreateWithoutPointsHistoryInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -3489,6 +3734,7 @@ export type UserUpdateWithoutPointsHistoryInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -3525,6 +3771,7 @@ export type UserUncheckedUpdateWithoutPointsHistoryInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -3560,6 +3807,7 @@ export type UserCreateWithoutTransferPointGrantsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -3596,6 +3844,7 @@ export type UserUncheckedCreateWithoutTransferPointGrantsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -3647,6 +3896,7 @@ export type UserUpdateWithoutTransferPointGrantsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -3683,6 +3933,7 @@ export type UserUncheckedUpdateWithoutTransferPointGrantsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -3718,6 +3969,7 @@ export type UserCreateWithoutPointTaskCompletionsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -3754,6 +4006,7 @@ export type UserUncheckedCreateWithoutPointTaskCompletionsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -3805,6 +4058,7 @@ export type UserUpdateWithoutPointTaskCompletionsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -3841,6 +4095,7 @@ export type UserUncheckedUpdateWithoutPointTaskCompletionsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -3876,6 +4131,7 @@ export type UserCreateWithoutRedemptionCodeCampaignsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -3912,6 +4168,7 @@ export type UserUncheckedCreateWithoutRedemptionCodeCampaignsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -3963,6 +4220,7 @@ export type UserUpdateWithoutRedemptionCodeCampaignsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -3999,6 +4257,7 @@ export type UserUncheckedUpdateWithoutRedemptionCodeCampaignsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -4034,6 +4293,7 @@ export type UserCreateWithoutRedemptionCodeRedemptionsInput = {
   vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
@@ -4070,6 +4330,7 @@ export type UserUncheckedCreateWithoutRedemptionCodeRedemptionsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
   forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
   forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
   chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
@@ -4121,6 +4382,7 @@ export type UserUpdateWithoutRedemptionCodeRedemptionsInput = {
   vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
@@ -4157,6 +4419,7 @@ export type UserUncheckedUpdateWithoutRedemptionCodeRedemptionsInput = {
   vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
   forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
   forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
   chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
@@ -4184,6 +4447,7 @@ export type UserCountOutputType = {
   vodConfigs: number
   forumTopics: number
   forumPosts: number
+  forumTopicReadStates: number
   notifications: number
   messages: number
   chatRooms: number
@@ -4207,6 +4471,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   vodConfigs?: boolean | UserCountOutputTypeCountVodConfigsArgs
   forumTopics?: boolean | UserCountOutputTypeCountForumTopicsArgs
   forumPosts?: boolean | UserCountOutputTypeCountForumPostsArgs
+  forumTopicReadStates?: boolean | UserCountOutputTypeCountForumTopicReadStatesArgs
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   messages?: boolean | UserCountOutputTypeCountMessagesArgs
   chatRooms?: boolean | UserCountOutputTypeCountChatRoomsArgs
@@ -4291,6 +4556,13 @@ export type UserCountOutputTypeCountForumTopicsArgs<ExtArgs extends runtime.Type
  */
 export type UserCountOutputTypeCountForumPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ForumPostWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountForumTopicReadStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ForumTopicReadStateWhereInput
 }
 
 /**
@@ -4395,6 +4667,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   vodConfigs?: boolean | Prisma.User$vodConfigsArgs<ExtArgs>
   forumTopics?: boolean | Prisma.User$forumTopicsArgs<ExtArgs>
   forumPosts?: boolean | Prisma.User$forumPostsArgs<ExtArgs>
+  forumTopicReadStates?: boolean | Prisma.User$forumTopicReadStatesArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
   chatRooms?: boolean | Prisma.User$chatRoomsArgs<ExtArgs>
@@ -4471,6 +4744,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   vodConfigs?: boolean | Prisma.User$vodConfigsArgs<ExtArgs>
   forumTopics?: boolean | Prisma.User$forumTopicsArgs<ExtArgs>
   forumPosts?: boolean | Prisma.User$forumPostsArgs<ExtArgs>
+  forumTopicReadStates?: boolean | Prisma.User$forumTopicReadStatesArgs<ExtArgs>
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   messages?: boolean | Prisma.User$messagesArgs<ExtArgs>
   chatRooms?: boolean | Prisma.User$chatRoomsArgs<ExtArgs>
@@ -4499,6 +4773,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     vodConfigs: Prisma.$UserVodConfigPayload<ExtArgs>[]
     forumTopics: Prisma.$ForumTopicPayload<ExtArgs>[]
     forumPosts: Prisma.$ForumPostPayload<ExtArgs>[]
+    forumTopicReadStates: Prisma.$ForumTopicReadStatePayload<ExtArgs>[]
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     messages: Prisma.$ChatMessagePayload<ExtArgs>[]
     chatRooms: Prisma.$ChatRoomUserPayload<ExtArgs>[]
@@ -4929,6 +5204,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   vodConfigs<T extends Prisma.User$vodConfigsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$vodConfigsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserVodConfigPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   forumTopics<T extends Prisma.User$forumTopicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$forumTopicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ForumTopicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   forumPosts<T extends Prisma.User$forumPostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$forumPostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ForumPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  forumTopicReadStates<T extends Prisma.User$forumTopicReadStatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$forumTopicReadStatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ForumTopicReadStatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messages<T extends Prisma.User$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chatRooms<T extends Prisma.User$chatRoomsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$chatRoomsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatRoomUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5584,6 +5860,30 @@ export type User$forumPostsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.ForumPostScalarFieldEnum | Prisma.ForumPostScalarFieldEnum[]
+}
+
+/**
+ * User.forumTopicReadStates
+ */
+export type User$forumTopicReadStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ForumTopicReadState
+   */
+  select?: Prisma.ForumTopicReadStateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ForumTopicReadState
+   */
+  omit?: Prisma.ForumTopicReadStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ForumTopicReadStateInclude<ExtArgs> | null
+  where?: Prisma.ForumTopicReadStateWhereInput
+  orderBy?: Prisma.ForumTopicReadStateOrderByWithRelationInput | Prisma.ForumTopicReadStateOrderByWithRelationInput[]
+  cursor?: Prisma.ForumTopicReadStateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ForumTopicReadStateScalarFieldEnum | Prisma.ForumTopicReadStateScalarFieldEnum[]
 }
 
 /**
