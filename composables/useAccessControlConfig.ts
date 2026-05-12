@@ -6,6 +6,7 @@ export const DEFAULT_FEATURE_ACCESS_CONFIG = {
     netdiskSearch: true,
     aiSearch: true,
     tvLive: true,
+    alist: true,
     tvbox: true,
     dailyMovieResources: true,
     music: true,
@@ -47,6 +48,9 @@ const normalizeAccessControlConfig = (
       tvLive:
         protectedFeatures.tvLive ??
         DEFAULT_FEATURE_ACCESS_CONFIG.protectedFeatures.tvLive,
+      alist:
+        protectedFeatures.alist ??
+        DEFAULT_FEATURE_ACCESS_CONFIG.protectedFeatures.alist,
       tvbox:
         protectedFeatures.tvbox ??
         DEFAULT_FEATURE_ACCESS_CONFIG.protectedFeatures.tvbox,

@@ -47,7 +47,8 @@ async function initNavigationData() {
         items: [
           { title: "音乐下载", path: "/music", icon: "fa-music", sortOrder: 1 },
           { title: "TV直播", path: "/tv", icon: "fa-tv", sortOrder: 2 },
-          { title: "小说阅读", path: "/novel", icon: "fa-book", sortOrder: 3 },
+          { title: "AList", path: "/alist", icon: "fa-server", sortOrder: 3 },
+          { title: "小说阅读", path: "/novel", icon: "fa-book", sortOrder: 4 },
         ],
       },
       {

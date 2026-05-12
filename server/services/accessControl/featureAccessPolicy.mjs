@@ -4,6 +4,7 @@ export const FEATURE_ACCESS_KEYS = {
   netdiskSearch: "netdiskSearch",
   aiSearch: "aiSearch",
   tvLive: "tvLive",
+  alist: "alist",
   tvbox: "tvbox",
   dailyMovieResources: "dailyMovieResources",
   music: "music",
@@ -17,6 +18,7 @@ export const DEFAULT_FEATURE_ACCESS_CONFIG = {
     netdiskSearch: true,
     aiSearch: true,
     tvLive: true,
+    alist: true,
     tvbox: true,
     dailyMovieResources: true,
     music: true,
@@ -62,6 +64,10 @@ export const normalizeFeatureAccessConfig = (input = {}) => {
         inputProtectedFeatures.tvLive,
         DEFAULT_FEATURE_ACCESS_CONFIG.protectedFeatures.tvLive,
       ),
+      alist: normalizeBoolean(
+        inputProtectedFeatures.alist,
+        DEFAULT_FEATURE_ACCESS_CONFIG.protectedFeatures.alist,
+      ),
       tvbox: normalizeBoolean(
         inputProtectedFeatures.tvbox,
         DEFAULT_FEATURE_ACCESS_CONFIG.protectedFeatures.tvbox,
@@ -101,6 +107,10 @@ export const resolveFeatureAccessKeysForPath = (requestPath = "") => {
 
   if (requestPath === "/api/tv/sources") {
     return [FEATURE_ACCESS_KEYS.tvLive];
+  }
+
+  if (requestPath.startsWith("/api/alist/")) {
+    return [FEATURE_ACCESS_KEYS.alist];
   }
 
   if (

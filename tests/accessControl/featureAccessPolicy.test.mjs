@@ -26,12 +26,22 @@ test("resolveFeatureAccessKeysForPath protects core resource APIs", () => {
   assert.deepEqual(resolveFeatureAccessKeysForPath("/api/music/deezer-chart"), [
     FEATURE_ACCESS_KEYS.music,
   ]);
+  assert.deepEqual(resolveFeatureAccessKeysForPath("/api/alist/sources"), [
+    FEATURE_ACCESS_KEYS.alist,
+  ]);
+  assert.deepEqual(resolveFeatureAccessKeysForPath("/api/alist/list"), [
+    FEATURE_ACCESS_KEYS.alist,
+  ]);
+  assert.deepEqual(resolveFeatureAccessKeysForPath("/api/alist/get"), [
+    FEATURE_ACCESS_KEYS.alist,
+  ]);
 });
 
 test("resolveFeatureAccessKeysForPath leaves public and unrelated APIs open", () => {
   assert.deepEqual(resolveFeatureAccessKeysForPath("/api/music/password"), []);
   assert.deepEqual(resolveFeatureAccessKeysForPath("/api/access-control/config"), []);
   assert.deepEqual(resolveFeatureAccessKeysForPath("/api/radio/stations"), []);
+  assert.deepEqual(resolveFeatureAccessKeysForPath("/api/admin/alist/test"), []);
 });
 
 test("evaluateFeatureAccessPolicy returns 401 when protected API has no token", () => {

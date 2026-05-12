@@ -1,3 +1,5 @@
+import { filterTvSources } from "~/server/services/tv/sources.mjs";
+
 const REMOTE_TV_SOURCES_URL = "https://r2cf.aipan.me/tv.json";
 
 interface TvSource {
@@ -16,7 +18,7 @@ export default defineEventHandler(async (event) => {
 
     setHeader(event, "Cache-Control", "public, max-age=300, s-maxage=300");
 
-    return Array.isArray(data) ? data : [];
+    return filterTvSources(data);
   } catch (error: any) {
     console.error("Failed to fetch remote TV sources:", error?.message || error);
 

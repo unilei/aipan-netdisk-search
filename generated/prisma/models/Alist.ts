@@ -39,6 +39,14 @@ export type AlistMinAggregateOutputType = {
   id: number | null
   name: string | null
   link: string | null
+  authMode: string | null
+  username: string | null
+  secretEncrypted: string | null
+  rootPath: string | null
+  enabled: boolean | null
+  healthStatus: string | null
+  healthMessage: string | null
+  lastCheckedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   creatorId: number | null
@@ -48,6 +56,14 @@ export type AlistMaxAggregateOutputType = {
   id: number | null
   name: string | null
   link: string | null
+  authMode: string | null
+  username: string | null
+  secretEncrypted: string | null
+  rootPath: string | null
+  enabled: boolean | null
+  healthStatus: string | null
+  healthMessage: string | null
+  lastCheckedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   creatorId: number | null
@@ -57,6 +73,14 @@ export type AlistCountAggregateOutputType = {
   id: number
   name: number
   link: number
+  authMode: number
+  username: number
+  secretEncrypted: number
+  rootPath: number
+  enabled: number
+  healthStatus: number
+  healthMessage: number
+  lastCheckedAt: number
   createdAt: number
   updatedAt: number
   creatorId: number
@@ -78,6 +102,14 @@ export type AlistMinAggregateInputType = {
   id?: true
   name?: true
   link?: true
+  authMode?: true
+  username?: true
+  secretEncrypted?: true
+  rootPath?: true
+  enabled?: true
+  healthStatus?: true
+  healthMessage?: true
+  lastCheckedAt?: true
   createdAt?: true
   updatedAt?: true
   creatorId?: true
@@ -87,6 +119,14 @@ export type AlistMaxAggregateInputType = {
   id?: true
   name?: true
   link?: true
+  authMode?: true
+  username?: true
+  secretEncrypted?: true
+  rootPath?: true
+  enabled?: true
+  healthStatus?: true
+  healthMessage?: true
+  lastCheckedAt?: true
   createdAt?: true
   updatedAt?: true
   creatorId?: true
@@ -96,6 +136,14 @@ export type AlistCountAggregateInputType = {
   id?: true
   name?: true
   link?: true
+  authMode?: true
+  username?: true
+  secretEncrypted?: true
+  rootPath?: true
+  enabled?: true
+  healthStatus?: true
+  healthMessage?: true
+  lastCheckedAt?: true
   createdAt?: true
   updatedAt?: true
   creatorId?: true
@@ -192,6 +240,14 @@ export type AlistGroupByOutputType = {
   id: number
   name: string
   link: string
+  authMode: string
+  username: string | null
+  secretEncrypted: string | null
+  rootPath: string
+  enabled: boolean
+  healthStatus: string | null
+  healthMessage: string | null
+  lastCheckedAt: Date | null
   createdAt: Date
   updatedAt: Date
   creatorId: number
@@ -224,6 +280,14 @@ export type AlistWhereInput = {
   id?: Prisma.IntFilter<"Alist"> | number
   name?: Prisma.StringFilter<"Alist"> | string
   link?: Prisma.StringFilter<"Alist"> | string
+  authMode?: Prisma.StringFilter<"Alist"> | string
+  username?: Prisma.StringNullableFilter<"Alist"> | string | null
+  secretEncrypted?: Prisma.StringNullableFilter<"Alist"> | string | null
+  rootPath?: Prisma.StringFilter<"Alist"> | string
+  enabled?: Prisma.BoolFilter<"Alist"> | boolean
+  healthStatus?: Prisma.StringNullableFilter<"Alist"> | string | null
+  healthMessage?: Prisma.StringNullableFilter<"Alist"> | string | null
+  lastCheckedAt?: Prisma.DateTimeNullableFilter<"Alist"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Alist"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Alist"> | Date | string
   creatorId?: Prisma.IntFilter<"Alist"> | number
@@ -234,6 +298,14 @@ export type AlistOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   link?: Prisma.SortOrder
+  authMode?: Prisma.SortOrder
+  username?: Prisma.SortOrderInput | Prisma.SortOrder
+  secretEncrypted?: Prisma.SortOrderInput | Prisma.SortOrder
+  rootPath?: Prisma.SortOrder
+  enabled?: Prisma.SortOrder
+  healthStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  healthMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastCheckedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
@@ -247,6 +319,14 @@ export type AlistWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.AlistWhereInput | Prisma.AlistWhereInput[]
   name?: Prisma.StringFilter<"Alist"> | string
   link?: Prisma.StringFilter<"Alist"> | string
+  authMode?: Prisma.StringFilter<"Alist"> | string
+  username?: Prisma.StringNullableFilter<"Alist"> | string | null
+  secretEncrypted?: Prisma.StringNullableFilter<"Alist"> | string | null
+  rootPath?: Prisma.StringFilter<"Alist"> | string
+  enabled?: Prisma.BoolFilter<"Alist"> | boolean
+  healthStatus?: Prisma.StringNullableFilter<"Alist"> | string | null
+  healthMessage?: Prisma.StringNullableFilter<"Alist"> | string | null
+  lastCheckedAt?: Prisma.DateTimeNullableFilter<"Alist"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Alist"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Alist"> | Date | string
   creatorId?: Prisma.IntFilter<"Alist"> | number
@@ -257,6 +337,14 @@ export type AlistOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   link?: Prisma.SortOrder
+  authMode?: Prisma.SortOrder
+  username?: Prisma.SortOrderInput | Prisma.SortOrder
+  secretEncrypted?: Prisma.SortOrderInput | Prisma.SortOrder
+  rootPath?: Prisma.SortOrder
+  enabled?: Prisma.SortOrder
+  healthStatus?: Prisma.SortOrderInput | Prisma.SortOrder
+  healthMessage?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastCheckedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
@@ -274,6 +362,14 @@ export type AlistScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"Alist"> | number
   name?: Prisma.StringWithAggregatesFilter<"Alist"> | string
   link?: Prisma.StringWithAggregatesFilter<"Alist"> | string
+  authMode?: Prisma.StringWithAggregatesFilter<"Alist"> | string
+  username?: Prisma.StringNullableWithAggregatesFilter<"Alist"> | string | null
+  secretEncrypted?: Prisma.StringNullableWithAggregatesFilter<"Alist"> | string | null
+  rootPath?: Prisma.StringWithAggregatesFilter<"Alist"> | string
+  enabled?: Prisma.BoolWithAggregatesFilter<"Alist"> | boolean
+  healthStatus?: Prisma.StringNullableWithAggregatesFilter<"Alist"> | string | null
+  healthMessage?: Prisma.StringNullableWithAggregatesFilter<"Alist"> | string | null
+  lastCheckedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Alist"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Alist"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Alist"> | Date | string
   creatorId?: Prisma.IntWithAggregatesFilter<"Alist"> | number
@@ -282,6 +378,14 @@ export type AlistScalarWhereWithAggregatesInput = {
 export type AlistCreateInput = {
   name: string
   link: string
+  authMode?: string
+  username?: string | null
+  secretEncrypted?: string | null
+  rootPath?: string
+  enabled?: boolean
+  healthStatus?: string | null
+  healthMessage?: string | null
+  lastCheckedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutAlistInput
@@ -291,6 +395,14 @@ export type AlistUncheckedCreateInput = {
   id?: number
   name: string
   link: string
+  authMode?: string
+  username?: string | null
+  secretEncrypted?: string | null
+  rootPath?: string
+  enabled?: boolean
+  healthStatus?: string | null
+  healthMessage?: string | null
+  lastCheckedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   creatorId: number
@@ -299,6 +411,14 @@ export type AlistUncheckedCreateInput = {
 export type AlistUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  authMode?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secretEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootPath?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  healthStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  healthMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutAlistNestedInput
@@ -308,6 +428,14 @@ export type AlistUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  authMode?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secretEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootPath?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  healthStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  healthMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creatorId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -317,6 +445,14 @@ export type AlistCreateManyInput = {
   id?: number
   name: string
   link: string
+  authMode?: string
+  username?: string | null
+  secretEncrypted?: string | null
+  rootPath?: string
+  enabled?: boolean
+  healthStatus?: string | null
+  healthMessage?: string | null
+  lastCheckedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   creatorId: number
@@ -325,6 +461,14 @@ export type AlistCreateManyInput = {
 export type AlistUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  authMode?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secretEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootPath?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  healthStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  healthMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -333,6 +477,14 @@ export type AlistUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  authMode?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secretEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootPath?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  healthStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  healthMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creatorId?: Prisma.IntFieldUpdateOperationsInput | number
@@ -352,6 +504,14 @@ export type AlistCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   link?: Prisma.SortOrder
+  authMode?: Prisma.SortOrder
+  username?: Prisma.SortOrder
+  secretEncrypted?: Prisma.SortOrder
+  rootPath?: Prisma.SortOrder
+  enabled?: Prisma.SortOrder
+  healthStatus?: Prisma.SortOrder
+  healthMessage?: Prisma.SortOrder
+  lastCheckedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
@@ -366,6 +526,14 @@ export type AlistMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   link?: Prisma.SortOrder
+  authMode?: Prisma.SortOrder
+  username?: Prisma.SortOrder
+  secretEncrypted?: Prisma.SortOrder
+  rootPath?: Prisma.SortOrder
+  enabled?: Prisma.SortOrder
+  healthStatus?: Prisma.SortOrder
+  healthMessage?: Prisma.SortOrder
+  lastCheckedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
@@ -375,6 +543,14 @@ export type AlistMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   link?: Prisma.SortOrder
+  authMode?: Prisma.SortOrder
+  username?: Prisma.SortOrder
+  secretEncrypted?: Prisma.SortOrder
+  rootPath?: Prisma.SortOrder
+  enabled?: Prisma.SortOrder
+  healthStatus?: Prisma.SortOrder
+  healthMessage?: Prisma.SortOrder
+  lastCheckedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
@@ -430,6 +606,14 @@ export type AlistUncheckedUpdateManyWithoutCreatorNestedInput = {
 export type AlistCreateWithoutCreatorInput = {
   name: string
   link: string
+  authMode?: string
+  username?: string | null
+  secretEncrypted?: string | null
+  rootPath?: string
+  enabled?: boolean
+  healthStatus?: string | null
+  healthMessage?: string | null
+  lastCheckedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -438,6 +622,14 @@ export type AlistUncheckedCreateWithoutCreatorInput = {
   id?: number
   name: string
   link: string
+  authMode?: string
+  username?: string | null
+  secretEncrypted?: string | null
+  rootPath?: string
+  enabled?: boolean
+  healthStatus?: string | null
+  healthMessage?: string | null
+  lastCheckedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -475,6 +667,14 @@ export type AlistScalarWhereInput = {
   id?: Prisma.IntFilter<"Alist"> | number
   name?: Prisma.StringFilter<"Alist"> | string
   link?: Prisma.StringFilter<"Alist"> | string
+  authMode?: Prisma.StringFilter<"Alist"> | string
+  username?: Prisma.StringNullableFilter<"Alist"> | string | null
+  secretEncrypted?: Prisma.StringNullableFilter<"Alist"> | string | null
+  rootPath?: Prisma.StringFilter<"Alist"> | string
+  enabled?: Prisma.BoolFilter<"Alist"> | boolean
+  healthStatus?: Prisma.StringNullableFilter<"Alist"> | string | null
+  healthMessage?: Prisma.StringNullableFilter<"Alist"> | string | null
+  lastCheckedAt?: Prisma.DateTimeNullableFilter<"Alist"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Alist"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Alist"> | Date | string
   creatorId?: Prisma.IntFilter<"Alist"> | number
@@ -484,6 +684,14 @@ export type AlistCreateManyCreatorInput = {
   id?: number
   name: string
   link: string
+  authMode?: string
+  username?: string | null
+  secretEncrypted?: string | null
+  rootPath?: string
+  enabled?: boolean
+  healthStatus?: string | null
+  healthMessage?: string | null
+  lastCheckedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -491,6 +699,14 @@ export type AlistCreateManyCreatorInput = {
 export type AlistUpdateWithoutCreatorInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  authMode?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secretEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootPath?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  healthStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  healthMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -499,6 +715,14 @@ export type AlistUncheckedUpdateWithoutCreatorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  authMode?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secretEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootPath?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  healthStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  healthMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -507,6 +731,14 @@ export type AlistUncheckedUpdateManyWithoutCreatorInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   name?: Prisma.StringFieldUpdateOperationsInput | string
   link?: Prisma.StringFieldUpdateOperationsInput | string
+  authMode?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  secretEncrypted?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootPath?: Prisma.StringFieldUpdateOperationsInput | string
+  enabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  healthStatus?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  healthMessage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastCheckedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -517,6 +749,14 @@ export type AlistSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   id?: boolean
   name?: boolean
   link?: boolean
+  authMode?: boolean
+  username?: boolean
+  secretEncrypted?: boolean
+  rootPath?: boolean
+  enabled?: boolean
+  healthStatus?: boolean
+  healthMessage?: boolean
+  lastCheckedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creatorId?: boolean
@@ -527,6 +767,14 @@ export type AlistSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   name?: boolean
   link?: boolean
+  authMode?: boolean
+  username?: boolean
+  secretEncrypted?: boolean
+  rootPath?: boolean
+  enabled?: boolean
+  healthStatus?: boolean
+  healthMessage?: boolean
+  lastCheckedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creatorId?: boolean
@@ -537,6 +785,14 @@ export type AlistSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   id?: boolean
   name?: boolean
   link?: boolean
+  authMode?: boolean
+  username?: boolean
+  secretEncrypted?: boolean
+  rootPath?: boolean
+  enabled?: boolean
+  healthStatus?: boolean
+  healthMessage?: boolean
+  lastCheckedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creatorId?: boolean
@@ -547,12 +803,20 @@ export type AlistSelectScalar = {
   id?: boolean
   name?: boolean
   link?: boolean
+  authMode?: boolean
+  username?: boolean
+  secretEncrypted?: boolean
+  rootPath?: boolean
+  enabled?: boolean
+  healthStatus?: boolean
+  healthMessage?: boolean
+  lastCheckedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creatorId?: boolean
 }
 
-export type AlistOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "link" | "createdAt" | "updatedAt" | "creatorId", ExtArgs["result"]["alist"]>
+export type AlistOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "link" | "authMode" | "username" | "secretEncrypted" | "rootPath" | "enabled" | "healthStatus" | "healthMessage" | "lastCheckedAt" | "createdAt" | "updatedAt" | "creatorId", ExtArgs["result"]["alist"]>
 export type AlistInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -572,6 +836,14 @@ export type $AlistPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     id: number
     name: string
     link: string
+    authMode: string
+    username: string | null
+    secretEncrypted: string | null
+    rootPath: string
+    enabled: boolean
+    healthStatus: string | null
+    healthMessage: string | null
+    lastCheckedAt: Date | null
     createdAt: Date
     updatedAt: Date
     creatorId: number
@@ -1002,6 +1274,14 @@ export interface AlistFieldRefs {
   readonly id: Prisma.FieldRef<"Alist", 'Int'>
   readonly name: Prisma.FieldRef<"Alist", 'String'>
   readonly link: Prisma.FieldRef<"Alist", 'String'>
+  readonly authMode: Prisma.FieldRef<"Alist", 'String'>
+  readonly username: Prisma.FieldRef<"Alist", 'String'>
+  readonly secretEncrypted: Prisma.FieldRef<"Alist", 'String'>
+  readonly rootPath: Prisma.FieldRef<"Alist", 'String'>
+  readonly enabled: Prisma.FieldRef<"Alist", 'Boolean'>
+  readonly healthStatus: Prisma.FieldRef<"Alist", 'String'>
+  readonly healthMessage: Prisma.FieldRef<"Alist", 'String'>
+  readonly lastCheckedAt: Prisma.FieldRef<"Alist", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Alist", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Alist", 'DateTime'>
   readonly creatorId: Prisma.FieldRef<"Alist", 'Int'>

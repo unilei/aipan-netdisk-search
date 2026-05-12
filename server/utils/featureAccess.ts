@@ -24,6 +24,7 @@ export type FeatureAccessKey =
   | "netdiskSearch"
   | "aiSearch"
   | "tvLive"
+  | "alist"
   | "tvbox"
   | "dailyMovieResources"
   | "music";

@@ -1,4 +1,8 @@
 import prisma from '~/lib/prisma';
+import {
+  getAlistSourceSelect,
+  toAdminAlistSource,
+} from "~/server/services/alist/records";
 
 export default defineEventHandler(async (event) => {
   const query = await getQuery(event);
@@ -11,12 +15,7 @@ export default defineEventHandler(async (event) => {
   const alists = await prisma.alist.findMany({
     skip,
     take,
-    include: {
-      creator: {
-        select: { username: true }, // 包含创建者的用户名
-      },
-
-    },
+    select: getAlistSourceSelect(),
     orderBy: {
       createdAt: 'desc',
     },
@@ -26,6 +25,6 @@ export default defineEventHandler(async (event) => {
     totalCount,
     page,
     pageSize,
-    alists,
+    alists: alists.map(toAdminAlistSource),
   };
 });

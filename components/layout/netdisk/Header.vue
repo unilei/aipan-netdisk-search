@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, watch } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useColorMode, useRoute } from "#imports";
 import { useUserStore } from "~/stores/user";
 import NotificationIcon from "~/components/NotificationIcon.vue";
 import { useI18n } from "vue-i18n";
+import { publicNavigation, isPublicNavItemActive, isPublicNavPathActive } from "~/utils/publicNavigation";
 
 const { t, locale, locales, setLocale } = useI18n();
 const colorMode = useColorMode();
@@ -11,13 +12,10 @@ const isMenuOpen = ref(false);
 const userStore = useUserStore();
 const route = useRoute();
 const dropdownVisible = ref(false);
-const aboutDropdownVisible = ref(false);
+const navDropdownVisible = ref("");
 const userMenuRef = ref(null);
-const aboutMenuRef = ref(null);
-const latestReleaseIdentity = ref("");
-const latestReleaseTitle = ref("");
-const hasUnreadRelease = ref(false);
-const RELEASE_SEEN_STORAGE_KEY = "aipan:last-seen-release";
+const navMenuRef = ref(null);
+const { latestReleaseTitle, hasUnreadRelease, markReleaseRead } = useReleaseNotice();
 
 // 获取可用的语言列表（当前语言除外）
 const availableLocales = computed(() => {
@@ -38,65 +36,51 @@ const handleLogout = () => {
   navigateTo("/");
 };
 
-const syncReleaseReadState = () => {
-  if (!process.client || !latestReleaseIdentity.value) return;
-  hasUnreadRelease.value =
-    localStorage.getItem(RELEASE_SEEN_STORAGE_KEY) !== latestReleaseIdentity.value;
+const toggleNavDropdown = (key) => {
+  navDropdownVisible.value = navDropdownVisible.value === key ? "" : key;
 };
 
-const markReleaseRead = () => {
-  if (process.client && latestReleaseIdentity.value) {
-    localStorage.setItem(RELEASE_SEEN_STORAGE_KEY, latestReleaseIdentity.value);
-    hasUnreadRelease.value = false;
-  }
-  aboutDropdownVisible.value = false;
+const closeNavDropdown = () => {
+  navDropdownVisible.value = "";
 };
 
-const loadLatestRelease = async () => {
-  try {
-    const res = await $fetch("/api/releases/latest");
-    latestReleaseIdentity.value = res?.data?.identity || "";
-    latestReleaseTitle.value = res?.data?.title || "";
-    syncReleaseReadState();
-    if (route.path === "/releases") {
-      markReleaseRead();
-    }
-  } catch (error) {
-    latestReleaseIdentity.value = "";
-    latestReleaseTitle.value = "";
-    hasUnreadRelease.value = false;
+const handleNavClick = (itemKey = "") => {
+  if (itemKey === "releases") {
+    markReleaseRead();
   }
+  closeNavDropdown();
+  isMenuOpen.value = false;
+};
+
+const isNavItemActive = (item) => isPublicNavItemActive(route.path, item);
+
+const isNavChildActive = (child) => isPublicNavPathActive(route.path, child.path);
+
+const showReleaseBadge = (key) => key === "releases" && hasUnreadRelease.value;
+
+const getChildTitle = (child) => {
+  if (child.key === "releases") return latestReleaseTitle.value || "有新的发布日志";
+  if (child.gated) return "需要登录";
+  return "";
 };
 
 const closeDropdown = (event) => {
   if (userMenuRef.value && !userMenuRef.value.contains(event.target)) {
     dropdownVisible.value = false;
   }
-  if (aboutMenuRef.value && !aboutMenuRef.value.contains(event.target)) {
-    aboutDropdownVisible.value = false;
+  if (navMenuRef.value && !navMenuRef.value.contains(event.target)) {
+    closeNavDropdown();
   }
 };
 
 onMounted(() => {
   userStore.fetchUser();
-  loadLatestRelease();
-  window.addEventListener("aipan:release-seen", syncReleaseReadState);
   document.addEventListener("click", closeDropdown);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener("aipan:release-seen", syncReleaseReadState);
   document.removeEventListener("click", closeDropdown);
 });
-
-watch(
-  () => route.path,
-  (path) => {
-    if (path === "/releases") {
-      markReleaseRead();
-    }
-  }
-);
 </script>
 <template>
   <div class="backdrop-blur py-4 fixed top-0 left-0 w-full z-50">
@@ -108,133 +92,102 @@ watch(
       </button>
 
       <!-- Desktop Navigation -->
-      <div class="hidden md:flex flex-row items-center gap-4">
-        <nuxt-link to="/" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-house"></i> {{ $t('header.navItems.home') }}
-        </nuxt-link>
-        <nuxt-link to="/blog" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-book"></i> {{ $t('header.navItems.blog') }}
-        </nuxt-link>
-        <nuxt-link to="/forum" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-comments"></i> {{ $t('header.navItems.forum') }}
-        </nuxt-link>
-        <nuxt-link to="/tv" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tv') }}
-        </nuxt-link>
-        <nuxt-link to="/tvbox" class="text-sm text-slate-600 dark:text-white">
-          <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tvbox') }}
-        </nuxt-link>
+      <nav ref="navMenuRef" class="hidden md:flex flex-row items-center gap-1">
+        <div v-for="item in publicNavigation" :key="item.key" class="relative">
+          <nuxt-link
+            v-if="item.path"
+            :to="item.path"
+            class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-white dark:hover:bg-white/10"
+            :class="isNavItemActive(item) ? 'text-blue-600 dark:text-blue-300' : ''"
+            @click="handleNavClick(item.key)"
+          >
+            <i :class="item.icon"></i>
+            {{ $t(item.labelKey) }}
+          </nuxt-link>
 
-        <!-- 关于网站下拉菜单 -->
-        <div class="relative" ref="aboutMenuRef">
-          <div class="flex items-center cursor-pointer group"
-            @click.stop="aboutDropdownVisible = !aboutDropdownVisible">
-            <span class="text-sm text-slate-600 dark:text-white flex items-center">
-              <i class="fa-solid fa-circle-info mr-1"></i> {{ $t('header.about.disclaimer') }}
+          <template v-else>
+            <button
+              class="flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-950 dark:text-white dark:hover:bg-white/10"
+              :class="isNavItemActive(item) || navDropdownVisible === item.key ? 'text-blue-600 dark:text-blue-300' : ''"
+              @click.stop="toggleNavDropdown(item.key)"
+            >
+              <i :class="item.icon"></i>
+              {{ $t(item.labelKey) }}
               <span
-                v-if="hasUnreadRelease"
-                class="ml-1 h-2 w-2 rounded-full bg-red-500"
+                v-if="item.key === 'more' && hasUnreadRelease"
+                class="h-2 w-2 rounded-full bg-red-500"
                 :title="latestReleaseTitle || '有新的发布日志'"
               ></span>
-              <i
-                class="fa-solid fa-chevron-down text-xs group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors"></i>
-            </span>
-          </div>
+              <i class="fa-solid fa-chevron-down text-[10px] transition-transform" :class="navDropdownVisible === item.key ? 'rotate-180' : ''"></i>
+            </button>
 
-          <!-- 下拉菜单内容 -->
-          <div v-show="aboutDropdownVisible"
-            class="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-1 z-50 border border-gray-100 dark:border-gray-700">
-            <nuxt-link to="/about"
-              class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              @click="aboutDropdownVisible = false">
-              <i class="fa-solid fa-circle-info mr-2"></i> {{ $t('header.about.about') }}
-            </nuxt-link>
-            <nuxt-link to="/disclaimer"
-              class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              @click="aboutDropdownVisible = false">
-              <i class="fa-solid fa-shield mr-2"></i> {{ $t('header.about.disclaimer') }}
-            </nuxt-link>
-            <nuxt-link to="/copyright"
-              class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              @click="aboutDropdownVisible = false">
-              <i class="fa-solid fa-copyright mr-2"></i> {{ $t('header.about.copyright') }}
-            </nuxt-link>
-            <nuxt-link to="/releases"
-              class="flex items-center px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-              @click="markReleaseRead">
-              <i class="fa-solid fa-bullhorn mr-2"></i>
-              <span class="flex-1">{{ $t('header.about.releases') }}</span>
-              <span
-                v-if="hasUnreadRelease"
-                class="ml-2 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white"
+            <div
+              v-show="navDropdownVisible === item.key"
+              class="absolute left-0 top-full z-50 mt-2 w-56 overflow-hidden rounded-lg border border-gray-100 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+            >
+              <nuxt-link
+                v-for="child in item.children"
+                :key="child.key"
+                :to="child.path"
+                :title="getChildTitle(child)"
+                class="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 transition-colors hover:bg-gray-100 hover:text-slate-950 dark:text-white dark:hover:bg-gray-700"
+                :class="isNavChildActive(child) ? 'bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300' : ''"
+                @click="handleNavClick(child.key)"
               >
-                NEW
-              </span>
-            </nuxt-link>
-          </div>
+                <i :class="child.icon" class="w-4 text-center"></i>
+                <span class="min-w-0 flex-1 truncate">{{ $t(child.labelKey) }}</span>
+                <span
+                  v-if="showReleaseBadge(child.key)"
+                  class="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white"
+                >
+                  NEW
+                </span>
+              </nuxt-link>
+            </div>
+          </template>
         </div>
-      </div>
+      </nav>
 
       <!-- Mobile Navigation -->
       <div v-show="isMenuOpen" class="md:hidden absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg">
-        <div class="flex flex-col py-2">
-          <nuxt-link to="/"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-house"></i> {{ $t('header.navItems.home') }}
-          </nuxt-link>
-          <nuxt-link to="/blog"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-book"></i> {{ $t('header.navItems.blog') }}
-          </nuxt-link>
-          <nuxt-link to="/forum"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-comments"></i> {{ $t('header.navItems.forum') }}
-          </nuxt-link>
-          <nuxt-link to="/tv"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tv') }}
-          </nuxt-link>
-          <nuxt-link to="/tvbox"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-tv"></i> {{ $t('header.navItems.tvbox') }}
-          </nuxt-link>
-
-          <!-- 移动端关于网站分组标题 -->
-          <div class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-750">
-            <i class="fa-solid fa-circle-info"></i> {{ $t('header.about.about_title') }}
-          </div>
-
-          <nuxt-link to="/about"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-circle-info"></i> {{ $t('header.about.about') }}
-          </nuxt-link>
-          <nuxt-link to="/disclaimer"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-shield"></i> {{ $t('header.about.disclaimer') }}
-          </nuxt-link>
-          <nuxt-link to="/copyright"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
-            @click="isMenuOpen = false">
-            <i class="fa-solid fa-copyright"></i> {{ $t('header.about.copyright') }}
-          </nuxt-link>
-          <nuxt-link to="/releases"
-            class="px-4 py-2 text-sm text-slate-600 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 pl-8"
-            @click="markReleaseRead(); isMenuOpen = false">
-            <i class="fa-solid fa-bullhorn"></i> {{ $t('header.about.releases') }}
-            <span
-              v-if="hasUnreadRelease"
-              class="ml-2 rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white"
+        <div class="max-h-[calc(100vh-72px)] overflow-y-auto py-2">
+          <template v-for="item in publicNavigation" :key="item.key">
+            <nuxt-link
+              v-if="item.path"
+              :to="item.path"
+              class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+              :class="isNavItemActive(item) ? 'text-blue-600 dark:text-blue-300' : ''"
+              @click="handleNavClick(item.key)"
             >
-              NEW
-            </span>
-          </nuxt-link>
+              <i :class="item.icon" class="w-4 text-center"></i>
+              {{ $t(item.labelKey) }}
+            </nuxt-link>
+
+            <div v-else>
+              <div class="mt-1 flex items-center gap-2 bg-gray-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-gray-750 dark:text-gray-300">
+                <i :class="item.icon"></i>
+                {{ $t(item.labelKey) }}
+              </div>
+              <nuxt-link
+                v-for="child in item.children"
+                :key="child.key"
+                :to="child.path"
+                :title="getChildTitle(child)"
+                class="flex items-center gap-3 px-8 py-2.5 text-sm text-slate-600 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                :class="isNavChildActive(child) ? 'text-blue-600 dark:text-blue-300' : ''"
+                @click="handleNavClick(child.key)"
+              >
+                <i :class="child.icon" class="w-4 text-center"></i>
+                <span class="min-w-0 flex-1 truncate">{{ $t(child.labelKey) }}</span>
+                <span
+                  v-if="showReleaseBadge(child.key)"
+                  class="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white"
+                >
+                  NEW
+                </span>
+              </nuxt-link>
+            </div>
+          </template>
 
           <!-- 移动端语言切换按钮 -->
           <div class="px-4 py-2 text-sm font-medium text-slate-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-750">
@@ -255,9 +208,11 @@ watch(
           <!-- 语言切换按钮 (仅桌面显示) -->
           <div class="hidden md:flex items-center mr-2">
             <button v-for="loc in availableLocales" :key="loc.code"
-              class="px-2 py-1 text-xs rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-all duration-300 hover:bg-gray-200 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-blue-300"
+              :aria-label="`${$t('language.switch')}: ${$t(`language.${loc.code}`)}`"
+              :title="$t(`language.${loc.code}`)"
               @click="switchLanguage(loc.code)">
-              {{ $t(`language.${loc.code}`) }}
+              <i class="fa-solid fa-language"></i>
             </button>
           </div>
 
@@ -267,10 +222,6 @@ watch(
           <el-button v-if="colorMode.preference === 'light'" link @click="colorMode.preference = 'dark'">
             <i class="fa-solid fa-moon text-base"></i>
           </el-button>
-
-          <nuxt-link class="text-sm text-slate-600 font-bold dark:text-white" href="/music" title="音乐搜索小助手">
-            <i class="fa-solid fa-music text-base"></i>
-          </nuxt-link>
 
           <!-- 通知组件 -->
           <NotificationIcon v-if="userStore.loggedIn" />

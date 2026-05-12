@@ -142,12 +142,20 @@ model PostToCategory {
 }
 
 model Alist {
-  id        Int      @id @default(autoincrement())
-  name      String
-  link      String // alist 源链接
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  creatorId Int
+  id              Int       @id @default(autoincrement())
+  name            String
+  link            String // alist 源链接
+  authMode        String    @default("public")
+  username        String?
+  secretEncrypted String?   @db.Text
+  rootPath        String    @default("/")
+  enabled         Boolean   @default(true)
+  healthStatus    String?
+  healthMessage   String?   @db.Text
+  lastCheckedAt   DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  creatorId       Int
 
   creator User @relation(fields: [creatorId], references: [id])
 }
