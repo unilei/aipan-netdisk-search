@@ -1,21 +1,26 @@
 import prisma from "~/lib/prisma";
+import {
+    getAlistSourceSelect,
+    normalizeAlistSourceInput,
+    toAdminAlistSource,
+} from "~/server/services/alist/records";
 
 export default defineEventHandler(async (event) => {
-    const { name, link } = await readBody(event)
+    const body = await readBody(event)
 
     const userId = event.context.user.userId;
     const alist = await prisma.alist.create({
         data: {
-            name,
-            link,
+            ...normalizeAlistSourceInput(body),
             creatorId: userId
-        }
+        },
+        select: getAlistSourceSelect(),
     })
 
     return {
         code: 200,
         msg: 'success',
-        data: alist
+        data: toAdminAlistSource(alist)
     }
 
 })

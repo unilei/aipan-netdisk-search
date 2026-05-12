@@ -593,6 +593,7 @@ const DEFAULT_ACCESS_CONTROL_FEATURES = {
   netdiskSearch: true,
   aiSearch: true,
   tvLive: true,
+  alist: true,
   tvbox: true,
   dailyMovieResources: true,
   music: true,
@@ -620,6 +621,11 @@ const accessControlFeatureOptions = [
     key: "tvLive",
     label: "TV 直播",
     description: "直播频道源和播放入口",
+  },
+  {
+    key: "alist",
+    label: "AList",
+    description: "AList 目录浏览、文件播放和下载接口",
   },
   {
     key: "tvbox",

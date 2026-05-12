@@ -26,7 +26,16 @@
       "chat": "聊天",
       "games": "游戏",
       "home": "首页",
+      "search": "搜索",
+      "cloudSearch": "网盘搜索",
+      "aiSearch": "AI搜索",
+      "media": "影音",
+      "dailyMovie": "每日电影",
+      "fm": "FM电台",
+      "community": "社区",
+      "more": "更多",
       "tv": "电视TV",
+      "alist": "AList",
       "tvbox": "TVbox接口"
     },
     "user": {

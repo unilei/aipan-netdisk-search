@@ -945,6 +945,18 @@ const playMusic = async (music) => {
       isPlaying.value = false;
     }
 
+    if (music.source === "alist" && !music.url) {
+      const res = await $fetch("/api/alist/get", {
+        method: "POST",
+        body: {
+          sourceId: music.sourceId,
+          path: music.path,
+          password: "",
+        },
+      });
+      music.url = res.data.playUrl;
+    }
+
     // 设置新的音乐
     currentPlaying.value = music;
     audioPlayer.value.src = music.url;
@@ -1080,18 +1092,25 @@ const fetchAlistMusic = async () => {
   isLoadingAlist.value = true;
 
   try {
-    // 获取Alist源列表
-    const { data: alistData } = await $fetch(
-      "https://alist.aipan.me/api/fs/list",
-      {
-        query: {
-          page: 1,
-          per_page: 0,
-          path: "/tianyi/music/DJ（280 首无损）/无损音乐1",
-        },
-      }
-    );
-    console.log(alistData);
+    const sourcesRes = await $fetch("/api/alist/sources");
+    const source = sourcesRes.data?.[0];
+
+    if (!source?.id) {
+      return;
+    }
+
+    const musicPath = "/tianyi/music/DJ（280 首无损）/无损音乐1";
+    const { data: alistData } = await $fetch("/api/alist/list", {
+      method: "POST",
+      body: {
+        sourceId: source.id,
+        page: 1,
+        perPage: 0,
+        path: musicPath,
+        password: "",
+      },
+    });
+
     if (alistData?.content && alistData?.content?.length > 0) {
       // 过滤出音乐文件
       const musicFiles = alistData.content.filter(
@@ -1102,11 +1121,12 @@ const fetchAlistMusic = async () => {
       // 转换为播放器可用的格式
       const musicItems = musicFiles.map((file) => ({
         name: file.name.replace(/\.[^/.]+$/, ""), // Remove extension
-        path: file.name,
-        url: `https://alist.aipan.me/d/tianyi/music/DJ（280 首无损）/无损音乐1/${file.name}?sign=${file.sign}`,
+        path: `${musicPath}/${file.name}`,
+        url: "",
         format: file.name.substring(file.name.lastIndexOf(".")).toLowerCase(),
         duration: 0, // We can't get duration without loading the file
         source: "alist",
+        sourceId: source.id,
       }));
 
       // Add to playlist

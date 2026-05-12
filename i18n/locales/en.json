@@ -26,7 +26,16 @@
       "chat": "Chat",
       "games": "Games",
       "home": "Home",
+      "search": "Search",
+      "cloudSearch": "Cloud Search",
+      "aiSearch": "AI Search",
+      "media": "Media",
+      "dailyMovie": "Daily Movie",
+      "fm": "FM Radio",
+      "community": "Community",
+      "more": "More",
       "tv": "TV",
+      "alist": "AList",
       "tvbox": "TVbox API"
     },
     "user": {
