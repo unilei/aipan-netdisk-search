@@ -3552,7 +3552,10 @@ export const ChatRoomScalarFieldEnum = {
   updatedAt: 'updatedAt',
   creatorId: 'creatorId',
   isPublic: 'isPublic',
-  avatar: 'avatar'
+  avatar: 'avatar',
+  privateKey: 'privateKey',
+  lastMessageAt: 'lastMessageAt',
+  sourceForumTopicId: 'sourceForumTopicId'
 } as const
 
 export type ChatRoomScalarFieldEnum = (typeof ChatRoomScalarFieldEnum)[keyof typeof ChatRoomScalarFieldEnum]
@@ -3562,7 +3565,8 @@ export const ChatRoomUserScalarFieldEnum = {
   userId: 'userId',
   roomId: 'roomId',
   joinedAt: 'joinedAt',
-  role: 'role'
+  role: 'role',
+  lastReadAt: 'lastReadAt'
 } as const
 
 export type ChatRoomUserScalarFieldEnum = (typeof ChatRoomUserScalarFieldEnum)[keyof typeof ChatRoomUserScalarFieldEnum]

@@ -450,15 +450,18 @@ model Notification {
 
 // 聊天室模型
 model ChatRoom {
-  id          Int      @id @default(autoincrement())
-  name        String // 聊天室名称
-  description String? // 聊天室描述
-  type        String // 聊天室类型: 'group', 'private'
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  creatorId   Int // 创建者ID
-  isPublic    Boolean  @default(false) // 是否是公开聊天室
-  avatar      String? // 聊天室头像
+  id                 Int       @id @default(autoincrement())
+  name               String // 聊天室名称
+  description        String? // 聊天室描述
+  type               String // 聊天室类型: 'group', 'private'
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  creatorId          Int // 创建者ID
+  isPublic           Boolean   @default(false) // 是否是公开聊天室
+  avatar             String? // 聊天室头像
+  privateKey         String?   @unique // 一对一私聊的稳定用户对 key
+  lastMessageAt      DateTime? // 收件箱排序用的最后消息时间
+  sourceForumTopicId Int? // 从论坛发起私信时的来源主题
 
   creator  User           @relation(fields: [creatorId], references: [id])
   users    ChatRoomUser[] // 聊天室用户
@@ -466,14 +469,17 @@ model ChatRoom {
 
   @@index([creatorId])
   @@index([type])
+  @@index([lastMessageAt])
+  @@index([sourceForumTopicId])
 }
 
 // 聊天室用户关系模型
 model ChatRoomUser {
-  userId   Int
-  roomId   Int
-  joinedAt DateTime @default(now())
-  role     String   @default("member") // 用户在聊天室中的角色: 'admin', 'member'
+  userId     Int
+  roomId     Int
+  joinedAt   DateTime  @default(now())
+  role       String    @default("member") // 用户在聊天室中的角色: 'admin', 'member'
+  lastReadAt DateTime? // 当前成员最后阅读该会话的时间
 
   user User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   room ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)

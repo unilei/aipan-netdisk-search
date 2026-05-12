@@ -5,14 +5,6 @@ import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient } from 'redis';
 import { createRoom, joinRoom, getRoomById, getRooms, leaveRoom } from '../services/roomService';
 
-// 定义聊天室接口
-interface ChatRoom {
-  id: number;
-  name: string;
-  type: string;
-  isPublic: boolean;
-}
-
 let io: Server | null = null;
 const normalizeRedisUrl = (value?: string) => value?.trim().replace(/^['"]|['"]$/g, '') || '';
 const REDIS_CONNECT_TIMEOUT_MS = 1000;
@@ -221,89 +213,6 @@ export default defineNitroPlugin((nitroApp) => {
           } catch (error) {
             console.error('Error sending message:', error);
             socket.emit('error', 'Failed to send message');
-          }
-        });
-
-        // Handle private message
-        socket.on('private_message', async (data) => {
-          const { recipientId, message } = data;
-          const senderId = userId;
-
-          // Get recipient socket
-          const recipientSocket = onlineUsers.get(recipientId)?.socketId;
-
-          try {
-            // Create or get private room
-            const roomIds = [senderId, recipientId].sort();
-            const privateRoomId = `private_${roomIds[0]}_${roomIds[1]}`;
-
-            // Check if the room exists, if not create it
-            let room: ChatRoom | null = null;
-            try {
-              room = await $fetch<ChatRoom>(`/api/chat/rooms/${privateRoomId}`, {
-                headers: {
-                  Authorization: `Bearer ${socket.handshake.auth.token}`
-                },
-                method: 'GET'
-              });
-            } catch (error) {
-              console.log('Private room not found, creating one');
-            }
-
-            if (!room) {
-              // Create the private room
-              room = await $fetch<ChatRoom>(`/api/chat/rooms`, {
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${socket.handshake.auth.token}`
-                },
-                body: {
-                  name: privateRoomId,
-                  type: 'private',
-                  isPublic: false,
-                  userIds: [recipientId]
-                }
-              });
-            }
-
-            if (!room || !room.id) {
-              throw new Error('Failed to create or find private room');
-            }
-
-            // Store message in database
-            const response = await $fetch(`/api/chat/messages`, {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${socket.handshake.auth.token}`
-              },
-              body: {
-                roomId: room.id,
-                content: message
-              }
-            });
-
-            // Send message to sender
-            socket.emit('receive_message', response);
-
-            // Send message to recipient if online
-            if (recipientSocket && io) {
-              io.to(recipientSocket).emit('receive_message', response);
-            }
-
-            // Send notification to recipient if online
-            if (recipientSocket && io) {
-              io.to(recipientSocket).emit('new_message_notification', {
-                from: {
-                  userId: senderId,
-                  username: username
-                },
-                message: message,
-                roomId: room.id
-              });
-            }
-          } catch (error) {
-            console.error('Error sending private message:', error);
-            socket.emit('error', 'Failed to send private message');
           }
         });
 

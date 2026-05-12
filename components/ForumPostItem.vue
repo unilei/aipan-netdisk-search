@@ -24,6 +24,15 @@
         />
 
         <button
+          v-if="canPrivateMessage"
+          class="text-xs font-medium text-[#778087] hover:text-[#4d5256] dark:text-slate-400 dark:hover:text-white"
+          @click="$emit('private-message', post.author)"
+        >
+          <i class="fas fa-envelope mr-1"></i>
+          私信
+        </button>
+
+        <button
           v-if="user && canReply"
           class="text-xs font-medium text-[#778087] hover:text-[#4d5256] dark:text-slate-400 dark:hover:text-white"
           @click="$emit('reply', post.id)"
@@ -45,6 +54,7 @@
         :user="user"
         :can-reply="canReply"
         @reply="$emit('reply', $event)"
+        @private-message="$emit('private-message', $event)"
       />
   </div>
 </template>
@@ -79,7 +89,15 @@ const props = defineProps({
   },
 });
 
-defineEmits(["reply"]);
+defineEmits(["reply", "private-message"]);
+
+const canPrivateMessage = computed(() => {
+  return Boolean(
+    props.user &&
+      props.post?.author?.id &&
+      Number(props.user.id) !== Number(props.post.author.id),
+  );
+});
 
 const parsedContent = computed(() => {
   if (!props.post.content) return "";

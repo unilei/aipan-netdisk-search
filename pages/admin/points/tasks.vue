@@ -18,7 +18,7 @@
             </p>
           </div>
           <div class="flex flex-wrap gap-3">
-            <el-button @click="loadPageData" :loading="loading || transferLoading">
+            <el-button @click="loadPageData" :loading="loading || transferLoading || privateMessageLoading">
               <el-icon class="mr-1"><Refresh /></el-icon>
               刷新
             </el-button>
@@ -56,7 +56,7 @@
             按任务来源拆分管理入口，避免积分规则散落在系统配置里。
           </p>
         </div>
-        <div class="grid gap-4 lg:grid-cols-3">
+        <div class="grid gap-4 lg:grid-cols-4">
           <div
             v-for="item in taskPlanItems"
             :key="item.key"
@@ -148,6 +148,63 @@
               @click="saveTransferConfig"
             >
               保存转存任务
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 class="m-0 text-lg font-semibold text-gray-900 dark:text-white">私信发起门槛</h2>
+            <p class="m-0 mt-1 text-sm text-gray-500 dark:text-gray-400">
+              用户当前有效积分达到门槛后可以主动发起新私信；不会扣除积分，已有私信回复不受限制。
+            </p>
+          </div>
+          <el-tag type="success">
+            当前 {{ privateMessageForm.privateMessageMinimumPoints }} 积分
+          </el-tag>
+        </div>
+
+        <div v-if="privateMessageLoading" class="py-6">
+          <el-skeleton :rows="3" animated />
+        </div>
+
+        <el-form
+          v-else
+          ref="privateMessageFormRef"
+          :model="privateMessageForm"
+          :rules="privateMessageRules"
+          label-width="120px"
+        >
+          <el-form-item label="发起门槛" prop="privateMessageMinimumPoints">
+            <el-input-number
+              v-model="privateMessageForm.privateMessageMinimumPoints"
+              :min="0"
+              :max="100000000"
+              :step="1000"
+              class="w-full"
+            />
+            <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              这是资格门槛，不是消费扣费；用户达到后发起新私信不会减少积分。
+            </div>
+          </el-form-item>
+
+          <el-form-item label="管理员绕过">
+            <el-switch
+              v-model="privateMessageForm.adminBypass"
+              active-text="允许"
+              inactive-text="不允许"
+            />
+          </el-form-item>
+
+          <el-form-item>
+            <el-button
+              type="primary"
+              :loading="privateMessageSaving"
+              @click="savePrivateMessageConfig"
+            >
+              保存私信门槛
             </el-button>
           </el-form-item>
         </el-form>
@@ -268,13 +325,17 @@ const loading = ref(false);
 const saving = ref(false);
 const transferLoading = ref(false);
 const transferSaving = ref(false);
+const privateMessageLoading = ref(false);
+const privateMessageSaving = ref(false);
 const dialogVisible = ref(false);
 const editingTaskId = ref(null);
 const formRef = ref();
 const transferFormRef = ref();
+const privateMessageFormRef = ref();
 
 const DEFAULT_TRANSFER_REWARD_POINTS = 1000;
 const DEFAULT_TRANSFER_REWARD_DURATION = 1440;
+const DEFAULT_PRIVATE_MESSAGE_MINIMUM_POINTS = 10000;
 
 const form = reactive({
   title: "",
@@ -291,6 +352,11 @@ const transferForm = reactive({
   transferRewardShareLink: "",
   transferRewardPoints: DEFAULT_TRANSFER_REWARD_POINTS,
   transferRewardDurationMinutes: DEFAULT_TRANSFER_REWARD_DURATION,
+});
+
+const privateMessageForm = reactive({
+  privateMessageMinimumPoints: DEFAULT_PRIVATE_MESSAGE_MINIMUM_POINTS,
+  adminBypass: true,
 });
 
 const stats = computed(() => ({
@@ -348,6 +414,16 @@ const taskPlanItems = computed(() => [
     tone: "purple",
     reward: "按任务配置发放永久积分",
     rule: `当前共 ${stats.value.total} 个任务，累计领取 ${stats.value.completions} 次。`,
+  },
+  {
+    key: "private-message",
+    title: "私信发起",
+    description: "达到积分门槛后可主动发起新私信。",
+    status: "资格门槛",
+    tagType: "warning",
+    tone: "amber",
+    reward: "不扣除积分",
+    rule: `当前门槛 ${privateMessageForm.privateMessageMinimumPoints} 有效积分，已有私信回复免费。`,
   },
 ]);
 
@@ -429,6 +505,24 @@ const transferRules = {
   ],
 };
 
+const validatePrivateMessageMinimumPoints = (_rule, value, callback) => {
+  if (typeof value !== "number" || value < 0 || value > 100000000) {
+    callback(new Error("私信发起门槛需要在 0 到 100000000 之间"));
+    return;
+  }
+
+  callback();
+};
+
+const privateMessageRules = {
+  privateMessageMinimumPoints: [
+    {
+      validator: validatePrivateMessageMinimumPoints,
+      trigger: ["blur", "change"],
+    },
+  ],
+};
+
 const getPlanCardClass = (tone) => {
   const base =
     "rounded-lg border p-4 transition-colors duration-200 dark:bg-gray-900/40";
@@ -436,6 +530,7 @@ const getPlanCardClass = (tone) => {
     green: "border-emerald-100 bg-emerald-50/60 dark:border-emerald-900/60",
     blue: "border-blue-100 bg-blue-50/60 dark:border-blue-900/60",
     purple: "border-violet-100 bg-violet-50/60 dark:border-violet-900/60",
+    amber: "border-amber-100 bg-amber-50/60 dark:border-amber-900/60",
   };
 
   return `${base} ${tones[tone] || tones.blue}`;
@@ -509,7 +604,7 @@ const loadTransferConfig = async () => {
 };
 
 const loadPageData = async () => {
-  await Promise.all([loadTasks(), loadTransferConfig()]);
+  await Promise.all([loadTasks(), loadTransferConfig(), loadPrivateMessageConfig()]);
 };
 
 const saveTransferConfig = async () => {
@@ -544,6 +639,58 @@ const saveTransferConfig = async () => {
     ElMessage.error(error.data?.message || error.message || "保存失败");
   } finally {
     transferSaving.value = false;
+  }
+};
+
+const loadPrivateMessageConfig = async () => {
+  try {
+    privateMessageLoading.value = true;
+    const res = await $fetch("/api/admin/points/private-message", {
+      headers: authHeaders(),
+    });
+    if (res.code === 200) {
+      Object.assign(privateMessageForm, {
+        privateMessageMinimumPoints:
+          res.data?.privateMessageMinimumPoints ?? DEFAULT_PRIVATE_MESSAGE_MINIMUM_POINTS,
+        adminBypass: res.data?.adminBypass ?? true,
+      });
+      return;
+    }
+    ElMessage.error(res.msg || "加载私信门槛失败");
+  } catch (error) {
+    ElMessage.error(error.data?.message || "加载私信门槛失败");
+  } finally {
+    privateMessageLoading.value = false;
+  }
+};
+
+const savePrivateMessageConfig = async () => {
+  try {
+    await privateMessageFormRef.value.validate();
+    privateMessageSaving.value = true;
+    const res = await $fetch("/api/admin/points/private-message", {
+      method: "POST",
+      body: {
+        privateMessageMinimumPoints: privateMessageForm.privateMessageMinimumPoints,
+        adminBypass: privateMessageForm.adminBypass,
+      },
+      headers: authHeaders(),
+    });
+
+    if (res.code === 200) {
+      Object.assign(privateMessageForm, {
+        privateMessageMinimumPoints:
+          res.data?.privateMessageMinimumPoints ?? DEFAULT_PRIVATE_MESSAGE_MINIMUM_POINTS,
+        adminBypass: res.data?.adminBypass ?? true,
+      });
+      ElMessage.success(res.msg || "保存成功");
+      return;
+    }
+    ElMessage.error(res.msg || "保存失败");
+  } catch (error) {
+    ElMessage.error(error.data?.message || error.message || "保存失败");
+  } finally {
+    privateMessageSaving.value = false;
   }
 };
 

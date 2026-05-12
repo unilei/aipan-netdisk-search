@@ -1,9 +1,126 @@
 import prisma from '~/lib/prisma'
 
+const USER_SELECT = {
+  id: true,
+  username: true,
+  avatarStyle: true,
+  role: true,
+}
+
+const ROOM_INCLUDE = {
+  users: {
+    include: {
+      user: {
+        select: USER_SELECT,
+      },
+    },
+  },
+  creator: {
+    select: USER_SELECT,
+  },
+  messages: {
+    orderBy: {
+      createdAt: 'desc',
+    },
+    take: 1,
+    include: {
+      user: {
+        select: USER_SELECT,
+      },
+    },
+  },
+  _count: {
+    select: {
+      messages: true,
+    },
+  },
+}
+
+const toValidRoomType = (value: unknown) => {
+  const type = String(value || '')
+  return ['private', 'group'].includes(type) ? type : null
+}
+
+const getRecipient = (room: any, currentUserId: number) =>
+  room.type === 'private'
+    ? room.users.find((member: any) => member.user.id !== currentUserId)?.user || null
+    : null
+
+const getUnreadCount = async ({
+  room,
+  currentUserId,
+  membership,
+}: {
+  room: any
+  currentUserId: number
+  membership?: any
+}) => {
+  if (!membership) return 0
+
+  return prisma.chatMessage.count({
+    where: {
+      roomId: room.id,
+      userId: { not: currentUserId },
+      ...(membership.lastReadAt
+        ? {
+            createdAt: {
+              gt: membership.lastReadAt,
+            },
+          }
+        : {}),
+    },
+  })
+}
+
+const toRoomPayload = async ({
+  room,
+  currentUserId,
+  membership,
+}: {
+  room: any
+  currentUserId: number
+  membership?: any
+}) => {
+  const recipient = getRecipient(room, currentUserId)
+  const lastMessage = room.messages?.[0] || null
+  const unreadCount = await getUnreadCount({ room, currentUserId, membership })
+
+  return {
+    id: room.id,
+    name: room.name,
+    description: room.description,
+    type: room.type,
+    isPublic: room.isPublic,
+    privateKey: room.privateKey,
+    sourceForumTopicId: room.sourceForumTopicId,
+    createdAt: room.createdAt,
+    updatedAt: room.updatedAt,
+    lastMessageAt: room.lastMessageAt || lastMessage?.createdAt || room.updatedAt,
+    creator: room.creator,
+    recipient,
+    memberCount: room.users.length,
+    messageCount: room._count.messages,
+    unreadCount,
+    lastMessage: lastMessage
+      ? {
+          id: lastMessage.id,
+          content: lastMessage.content,
+          type: lastMessage.type,
+          createdAt: lastMessage.createdAt,
+          userId: lastMessage.userId,
+          user: lastMessage.user,
+        }
+      : null,
+    displayName:
+      room.type === 'private'
+        ? recipient?.username || room.name
+        : room.name,
+  }
+}
+
 // 获取用户的聊天室列表
 export default defineEventHandler(async (event) => {
   try {
-    // 验证用户身份
     const user = event.context.user
     if (!user || !user.userId) {
       throw createError({
@@ -13,109 +130,72 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // 根据查询参数决定是获取所有公开聊天室还是用户加入的聊天室
     const query = getQuery(event)
     const showPublic = query.public === 'true'
-    
-    let chatRooms = []
-    
+    const requestedType = toValidRoomType(query.type)
+
     if (showPublic) {
-      // 获取所有公开聊天室
-      chatRooms = await prisma.chatRoom.findMany({
+      const rooms = await prisma.chatRoom.findMany({
         where: {
-          isPublic: true
+          isPublic: true,
+          ...(requestedType ? { type: requestedType } : {}),
         },
-        include: {
-          users: {
-            include: {
-              user: {
-                select: {
-                  id: true,
-                  username: true,
-                  avatarStyle: true
-                }
-              }
-            }
-          },
-          creator: {
-            select: {
-              id: true,
-              username: true,
-              avatarStyle: true
-            }
-          },
-          _count: {
-            select: {
-              messages: true
-            }
-          }
-        },
-        orderBy: {
-          updatedAt: 'desc'
-        }
+        include: ROOM_INCLUDE,
+        orderBy: [
+          { lastMessageAt: 'desc' },
+          { updatedAt: 'desc' },
+        ],
       })
-    } else {
-      // 获取用户加入的聊天室
-      const userRooms = await prisma.chatRoomUser.findMany({
-        where: {
-          userId: user.userId
-        },
-        include: {
-          room: {
-            include: {
-              users: {
-                include: {
-                  user: {
-                    select: {
-                      id: true,
-                      username: true,
-                      avatarStyle: true
-                    }
-                  }
-                }
-              },
-              creator: {
-                select: {
-                  id: true,
-                  username: true,
-                  avatarStyle: true
-                }
-              },
-              _count: {
-                select: {
-                  messages: true
-                }
-              }
-            }
-          }
-        },
-        orderBy: {
-          room: {
-            updatedAt: 'desc'
-          }
-        }
-      })
-      
-      chatRooms = userRooms.map((ur: any) => ur.room)
+
+      return Promise.all(
+        rooms.map((room: any) =>
+          toRoomPayload({
+            room,
+            currentUserId: user.userId,
+          }),
+        ),
+      )
     }
-    
-    // 格式化数据以便前端使用
-    return chatRooms.map((room: any) => ({
-      id: room.id,
-      name: room.name,
-      description: room.description,
-      type: room.type,
-      isPublic: room.isPublic,
-      createdAt: room.createdAt,
-      updatedAt: room.updatedAt,
-      creator: room.creator,
-      memberCount: room.users.length,
-      messageCount: room._count.messages,
-      // 对于私聊，如果聊天室名称是自动生成的，则显示对方用户名
-      displayName: room.type === 'private' && room.name.startsWith('private_') 
-        ? room.users.find((u: any) => u.user.id !== user.userId)?.user?.username || room.name
-        : room.name
-    }))
+
+    const userRooms = await prisma.chatRoomUser.findMany({
+      where: {
+        userId: user.userId,
+        ...(requestedType
+          ? {
+              room: {
+                type: requestedType,
+              },
+            }
+          : {}),
+      },
+      include: {
+        room: {
+          include: ROOM_INCLUDE,
+        },
+      },
+      orderBy: [
+        {
+          room: {
+            lastMessageAt: 'desc',
+          },
+        },
+        {
+          room: {
+            updatedAt: 'desc',
+          },
+        },
+      ],
+    })
+
+    return Promise.all(
+      userRooms.map((membership: any) =>
+        toRoomPayload({
+          room: membership.room,
+          currentUserId: user.userId,
+          membership,
+        }),
+      ),
+    )
   } catch (error: any) {
     console.error('获取聊天室列表失败:', error)
     throw createError({

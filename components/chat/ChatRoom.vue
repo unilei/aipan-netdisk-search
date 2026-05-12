@@ -1,96 +1,126 @@
 <template>
-  <div class="flex flex-col h-full">
-    <!-- 聊天室头部 -->
-    <div class="p-4 border-b flex justify-between items-center">
-      <div v-if="loading">
-        <div
-          class="h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"
-        ></div>
-      </div>
-      <div v-else class="flex items-center">
-        <h2 class="text-lg font-semibold">
-          {{ roomInfo?.displayName || roomInfo?.name }}
-        </h2>
-        <span
-          v-if="roomInfo?.type === 'group'"
-          class="ml-2 text-sm text-gray-500"
-        >
-          ({{ roomInfo?.members?.length || 0 }}人)
-        </span>
-      </div>
+  <div class="flex h-full min-h-0 flex-col bg-white dark:bg-slate-900">
+    <div class="shrink-0 border-b border-slate-200 bg-white px-3 py-3 dark:border-white/10 dark:bg-slate-900 sm:px-4">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex min-w-0 items-center gap-3">
+          <button
+            class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-900 dark:border-white/10 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-white lg:hidden"
+            type="button"
+            aria-label="返回会话列表"
+            @click="$emit('leave')"
+          >
+            <i class="fas fa-arrow-left text-sm"></i>
+          </button>
 
-      <div class="flex gap-3">
-        <button
-          @click="showInviteDrawer = true"
-          class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-          v-if="
-            roomInfo &&
-            !roomInfo.isPublic &&
-            roomInfo.creator &&
-            roomInfo.creator.id === props.currentUserId &&
-            roomInfo.type === 'group'
-          "
-          title="邀请用户"
-        >
-          <i class="fas fa-user-plus text-lg w-5 text-center"></i>
-        </button>
-        <button
-          @click="showMembersDrawer = true"
-          class="text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-          v-if="roomInfo?.type === 'group'"
-          title="查看成员"
-        >
-          <i class="fas fa-users text-lg w-5 text-center"></i>
-        </button>
-        <!-- 添加删除聊天室按钮 -->
-        <button
-          @click="confirmDeleteRoom"
-          class="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-          v-if="
-            roomInfo &&
-            roomInfo.creator &&
-            roomInfo.creator.id === props.currentUserId
-          "
-          title="删除聊天室"
-        >
-          <i class="fas fa-trash-alt text-lg w-5 text-center"></i>
-        </button>
-        <button
-          @click="$emit('leave')"
-          class="text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition duration-200 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
-          title="关闭聊天"
-        >
-          <i class="fas fa-times text-lg w-5 text-center"></i>
-        </button>
+          <div
+            v-if="loading"
+            class="h-11 w-11 shrink-0 animate-pulse rounded-lg bg-slate-100 dark:bg-white/10"
+          ></div>
+          <div
+            v-else
+            class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-sm font-bold text-blue-700 dark:bg-blue-500/15 dark:text-blue-300"
+          >
+            {{ roomInitial }}
+          </div>
+
+          <div v-if="loading" class="min-w-0 flex-1 space-y-2">
+            <div class="h-4 w-36 animate-pulse rounded bg-slate-100 dark:bg-white/10"></div>
+            <div class="h-3 w-48 animate-pulse rounded bg-slate-100 dark:bg-white/10"></div>
+          </div>
+          <div v-else class="min-w-0">
+            <div class="flex min-w-0 items-center gap-2">
+              <h2 class="m-0 truncate text-base font-semibold text-slate-950 dark:text-white">
+                {{ roomTitle }}
+              </h2>
+              <span class="hidden shrink-0 rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600 dark:bg-white/10 dark:text-slate-300 sm:inline-flex">
+                {{ roomTypeLabel }}
+              </span>
+            </div>
+            <p class="m-0 mt-0.5 truncate text-xs text-slate-500 dark:text-slate-400">
+              {{ roomSubtitle }}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex shrink-0 items-center gap-1">
+          <button
+            v-if="
+              roomInfo &&
+              !roomInfo.isPublic &&
+              isRoomCreator &&
+              roomInfo.type === 'group'
+            "
+            class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-blue-300"
+            type="button"
+            title="邀请用户"
+            @click="showInviteDrawer = true"
+          >
+            <i class="fas fa-user-plus text-sm"></i>
+          </button>
+          <button
+            v-if="roomInfo?.type === 'group'"
+            class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-blue-600 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-blue-300"
+            type="button"
+            title="查看成员"
+            @click="showMembersDrawer = true"
+          >
+            <i class="fas fa-users text-sm"></i>
+          </button>
+          <button
+            v-if="
+              roomInfo &&
+              isRoomCreator
+            "
+            class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+            type="button"
+            title="删除聊天室"
+            @click="confirmDeleteRoom"
+          >
+            <i class="fas fa-trash-alt text-sm"></i>
+          </button>
+          <button
+            class="hidden h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white lg:inline-flex"
+            type="button"
+            title="关闭聊天"
+            @click="$emit('leave')"
+          >
+            <i class="fas fa-times text-sm"></i>
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- 聊天消息区域 -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-4" ref="messagesContainer">
-      <div v-if="messagesLoading" class="flex justify-center py-6">
-        <i
-          class="fas fa-circle-notch fa-spin text-2xl text-blue-500 opacity-80"
-        ></i>
+    <div ref="messagesContainer" class="min-h-0 flex-1 overflow-y-auto bg-slate-50 px-3 py-4 dark:bg-slate-950/40 sm:px-5">
+      <div v-if="messagesLoading" class="flex h-full items-center justify-center">
+        <div class="inline-flex items-center rounded-lg bg-white px-3 py-2 text-sm font-medium text-slate-500 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:text-slate-300 dark:ring-white/10">
+          <i class="fas fa-circle-notch fa-spin mr-2 text-blue-500"></i>
+          加载消息
+        </div>
       </div>
 
       <div
         v-else-if="messages.length === 0"
-        class="flex flex-col items-center justify-center h-full text-gray-500 py-12"
+        class="flex h-full items-center justify-center text-center"
       >
-        <i
-          class="fas fa-comment-alt text-5xl mb-4 text-gray-300 dark:text-gray-600"
-        ></i>
-        <p>还没有消息，发送第一条消息开始聊天吧！</p>
+        <div class="max-w-[300px]">
+          <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-lg bg-white text-slate-400 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-white/10">
+            <i class="fas fa-comment-alt text-xl"></i>
+          </div>
+          <p class="m-0 mt-4 text-sm font-semibold text-slate-800 dark:text-slate-100">还没有消息</p>
+          <p class="m-0 mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">发送第一条消息后，历史记录会保存在这里。</p>
+        </div>
       </div>
 
-      <template v-else>
+      <div v-else class="mx-auto flex w-full max-w-3xl flex-col gap-3">
         <button
           v-if="hasMoreMessages"
-          @click="loadMoreMessages"
-          class="mx-auto block text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          class="mx-auto inline-flex h-8 items-center rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-500 transition hover:border-slate-300 hover:text-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-slate-900 dark:text-slate-300 dark:hover:text-white"
+          type="button"
           :disabled="loadingMore"
+          @click="loadMoreMessages"
         >
-          {{ loadingMore ? "加载中..." : "加载更多消息" }}
+          <i v-if="loadingMore" class="fas fa-circle-notch fa-spin mr-2"></i>
+          {{ loadingMore ? "加载中" : "加载更多消息" }}
         </button>
 
         <ChatMessage
@@ -100,95 +130,99 @@
           :currentUserId="currentUserId"
           @reply="replyToMessage"
         />
-      </template>
-    </div>
-
-    <!-- 回复信息提示 -->
-    <div
-      v-if="replyTo"
-      class="px-4 py-2 bg-gray-100 dark:bg-gray-700 flex justify-between items-center"
-    >
-      <div class="flex items-center text-sm">
-        <span class="text-gray-500 mr-2">回复</span>
-        <span class="font-medium">{{ replyTo.user.username }}:</span>
-        <span class="ml-2 text-gray-600 dark:text-gray-400 truncate max-w-md">{{
-          replyTo.content
-        }}</span>
       </div>
-      <button @click="replyTo = null" class="text-gray-500 hover:text-gray-700">
-        <i class="fas fa-times"></i>
-      </button>
     </div>
 
-    <!-- 正在输入提示 -->
-    <div v-if="someoneTyping" class="px-4 py-1 text-xs text-gray-500 italic">
-      {{ typingUser }} 正在输入...
-    </div>
-
-    <!-- 消息输入区域 -->
-    <div class="p-4 border-t">
-      <div class="flex items-end gap-2">
-        <textarea
-          v-model="newMessage"
-          ref="inputElement"
-          class="flex-1 px-3 py-2 border rounded-md dark:bg-gray-700 resize-none"
-          placeholder="输入消息..."
-          rows="2"
-          @keydown.enter.exact.prevent="sendMessage"
-          @input="handleTyping"
-        ></textarea>
-
-        <button
-          @click="sendMessage"
-          class="px-4 py-2 h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition duration-200 flex items-center justify-center"
-          :disabled="sending || !newMessage.trim()"
+    <div class="shrink-0 border-t border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-slate-900 sm:p-4">
+      <div class="mx-auto w-full max-w-3xl">
+        <div
+          v-if="replyTo"
+          class="mb-2 flex items-center justify-between gap-3 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm dark:border-blue-500/20 dark:bg-blue-500/10"
         >
-          <i
-            v-if="sending"
-            class="fas fa-circle-notch fa-spin mr-1 text-base"
-          ></i>
-          <i v-else class="fas fa-paper-plane mr-1 text-base"></i>
-          <span class="text-sm font-medium">发送</span>
-        </button>
+          <div class="min-w-0">
+            <div class="text-xs font-semibold text-blue-700 dark:text-blue-300">
+              回复 {{ replyTo.user?.username || "用户" }}
+            </div>
+            <div class="mt-0.5 truncate text-xs text-blue-900/80 dark:text-blue-100/80">
+              {{ replyTo.content }}
+            </div>
+          </div>
+          <button
+            class="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-blue-700 transition hover:bg-blue-100 dark:text-blue-200 dark:hover:bg-blue-500/20"
+            type="button"
+            aria-label="取消回复"
+            @click="resetReply"
+          >
+            <i class="fas fa-times text-xs"></i>
+          </button>
+        </div>
+
+        <div v-if="someoneTyping" class="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+          {{ typingUser }} 正在输入...
+        </div>
+
+        <div class="rounded-lg border border-slate-200 bg-white p-2 shadow-sm shadow-slate-200/60 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 dark:border-white/10 dark:bg-slate-950 dark:shadow-none dark:focus-within:ring-blue-500/20">
+          <textarea
+            ref="inputElement"
+            v-model="newMessage"
+            class="block max-h-32 min-h-11 w-full resize-none border-0 bg-transparent px-2 py-2 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
+            placeholder="输入消息..."
+            rows="2"
+            @keydown.enter.exact.prevent="sendMessage"
+            @input="handleTyping"
+          ></textarea>
+
+          <div class="mt-1 flex items-center justify-end">
+            <button
+              class="inline-flex h-9 items-center rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700"
+              type="button"
+              :disabled="sending || !newMessage.trim()"
+              @click="sendMessage"
+            >
+              <i v-if="sending" class="fas fa-circle-notch fa-spin mr-2 text-xs"></i>
+              <i v-else class="fas fa-paper-plane mr-2 text-xs"></i>
+              发送
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- 成员列表抽屉 -->
     <ClientOnly>
       <el-drawer
         v-model="showMembersDrawer"
         direction="rtl"
-        size="300px"
+        size="320px"
         title="聊天室成员"
       >
-        <div class="p-4 h-full">
-          <div v-if="!roomInfo" class="py-4 text-center text-gray-500">
+        <div class="h-full p-4">
+          <div v-if="!roomInfo" class="py-4 text-center text-sm text-slate-500">
             加载中...
           </div>
 
           <div
             v-else-if="!roomInfo.members?.length"
-            class="py-4 text-center text-gray-500"
+            class="py-4 text-center text-sm text-slate-500"
           >
             没有成员
           </div>
 
-          <div v-else class="space-y-3">
+          <div v-else class="space-y-2">
             <div
               v-for="member in roomInfo.members"
               :key="member.id"
-              class="flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
+              class="flex items-center rounded-lg border border-slate-200 p-3 dark:border-white/10"
             >
               <div
-                class="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mr-3"
+                class="mr-3 flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-sm font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-200"
               >
-                <span class="text-sm">{{ member.username.charAt(0) }}</span>
+                {{ member.username.charAt(0).toUpperCase() }}
               </div>
-              <div>
-                <p class="font-medium">{{ member.username }}</p>
-                <p class="text-xs text-gray-500">
+              <div class="min-w-0">
+                <p class="m-0 truncate text-sm font-semibold text-slate-900 dark:text-white">{{ member.username }}</p>
+                <p class="m-0 mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                   {{ member.chatRole === "admin" ? "管理员" : "成员" }}
-                  {{ member.id === roomInfo.creator.id ? "(创建者)" : "" }}
+                  {{ Number(member.id) === Number(roomInfo.creator.id) ? "(创建者)" : "" }}
                 </p>
               </div>
             </div>
@@ -197,78 +231,70 @@
       </el-drawer>
     </ClientOnly>
 
-    <!-- 邀请用户抽屉 -->
     <ClientOnly>
       <el-drawer
         v-model="showInviteDrawer"
         direction="rtl"
-        size="300px"
+        size="340px"
         title="邀请用户加入"
       >
-        <div class="p-4 h-full flex flex-col">
+        <div class="flex h-full flex-col p-4">
           <div v-if="loadingInviteUsers" class="flex justify-center py-8">
-            <i
-              class="fas fa-circle-notch fa-spin text-2xl text-blue-500 opacity-80"
-            ></i>
+            <i class="fas fa-circle-notch fa-spin text-2xl text-blue-500"></i>
           </div>
           <div
             v-else-if="availableUsers.length === 0"
-            class="text-center py-8 text-gray-500"
+            class="py-8 text-center text-sm text-slate-500"
           >
-            <i
-              class="fas fa-user-search text-5xl mb-4 text-gray-300 dark:text-gray-600"
-            ></i>
-            <p>没有可邀请的用户</p>
+            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100 text-slate-400 dark:bg-white/10">
+              <i class="fas fa-user-search text-lg"></i>
+            </div>
+            <p class="m-0">没有可邀请的用户</p>
           </div>
-          <div v-else class="flex-1 overflow-y-auto">
+          <div v-else class="min-h-0 flex-1 overflow-y-auto">
             <div class="mb-4">
               <input
                 v-model="inviteSearchQuery"
                 type="text"
                 placeholder="搜索用户..."
-                class="w-full px-3 py-2 border rounded-lg dark:bg-gray-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                class="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:border-white/10 dark:bg-slate-950 dark:text-white dark:focus:ring-blue-500/20"
               />
             </div>
-            <div class="space-y-2 flex-1">
+            <div class="space-y-2">
               <div
                 v-for="user in filteredAvailableUsers"
                 :key="user.id"
-                class="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                class="flex items-center justify-between gap-3 rounded-lg border border-slate-200 p-3 dark:border-white/10"
               >
-                <div class="flex items-center">
+                <div class="flex min-w-0 items-center">
                   <div
-                    class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 font-medium"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 font-semibold text-blue-700 dark:bg-blue-500/15 dark:text-blue-300"
                   >
                     {{ user.username.charAt(0).toUpperCase() }}
                   </div>
-                  <div class="ml-3">
-                    <p class="font-medium">{{ user.username }}</p>
+                  <div class="ml-3 min-w-0">
+                    <p class="m-0 truncate text-sm font-semibold text-slate-900 dark:text-white">{{ user.username }}</p>
                   </div>
                 </div>
                 <button
-                  @click="inviteUser(user.id)"
-                  class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition duration-200 flex items-center"
+                  class="inline-flex h-8 shrink-0 items-center rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  type="button"
                   :disabled="invitingUser === user.id"
+                  @click="inviteUser(user.id)"
                 >
-                  <i
-                    v-if="invitingUser === user.id"
-                    class="fas fa-circle-notch fa-spin mr-1.5 text-sm"
-                  ></i>
-                  <span>邀请</span>
+                  <i v-if="invitingUser === user.id" class="fas fa-circle-notch fa-spin mr-1.5 text-xs"></i>
+                  邀请
                 </button>
               </div>
-              <!-- 加载更多按钮 -->
               <div v-if="hasMoreUsers" class="py-3 text-center">
                 <button
-                  @click="loadMoreUsers"
-                  class="text-blue-600 hover:text-blue-800 text-sm font-medium px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200"
+                  class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-white/5"
+                  type="button"
                   :disabled="loadingMoreUsers"
+                  @click="loadMoreUsers"
                 >
-                  <i
-                    v-if="loadingMoreUsers"
-                    class="fas fa-circle-notch fa-spin mr-1.5 text-sm"
-                  ></i>
-                  <span>{{ loadingMoreUsers ? "加载中..." : "加载更多" }}</span>
+                  <i v-if="loadingMoreUsers" class="fas fa-circle-notch fa-spin mr-2 text-xs"></i>
+                  {{ loadingMoreUsers ? "加载中" : "加载更多" }}
                 </button>
               </div>
             </div>
@@ -298,12 +324,39 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["leave", "delete-room"]);
+const emit = defineEmits(["leave", "delete-room", "message-sent"]);
 
 // 聊天室信息
 const roomInfo = ref(null);
 const loading = ref(true);
 const members = ref([]);
+
+const roomTitle = computed(() => {
+  return roomInfo.value?.displayName || roomInfo.value?.name || "聊天会话";
+});
+
+const roomInitial = computed(() => {
+  return String(roomTitle.value || "?").charAt(0).toUpperCase();
+});
+
+const roomTypeLabel = computed(() => {
+  if (roomInfo.value?.type === "private") return "私信";
+  if (roomInfo.value?.isPublic) return "公开聊天室";
+  return "群聊";
+});
+
+const roomSubtitle = computed(() => {
+  if (!roomInfo.value) return "正在加载会话信息";
+  if (roomInfo.value.type === "private") return "一对一私信会话";
+  const memberCount = roomInfo.value.members?.length || members.value.length || 0;
+  return roomInfo.value.isPublic
+    ? `${memberCount} 位成员 · 公开可加入`
+    : `${memberCount} 位成员 · 仅成员可见`;
+});
+
+const isRoomCreator = computed(() => {
+  return Number(roomInfo.value?.creator?.id) === Number(props.currentUserId);
+});
 
 // 消息相关
 const messages = ref([]);
@@ -688,6 +741,7 @@ async function sendMessage() {
           // 移除临时消息的pending状态
           messages.value[index].pending = false;
         }
+        emit("message-sent");
       })
       .catch((error) => {
         console.error("发送消息失败:", error);
