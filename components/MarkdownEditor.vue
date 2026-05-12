@@ -15,6 +15,7 @@
       :toolbars="toolbars"
       :autoHeight="autoHeight"
       :minHeight="minHeight"
+      :preview="preview"
       :previewTheme="previewTheme"
       :style="{ width: '100%' }"
       @onUploadImg="handleImageUpload"
@@ -29,6 +30,7 @@ import { ref, shallowRef, computed, watch, onMounted } from "vue";
 import { MdEditor } from "md-editor-v3";
 import "md-editor-v3/lib/style.css";
 import { ElMessage } from "element-plus";
+import { uploadImages } from "~/utils/uploadImage";
 
 // Props
 const props = defineProps({
@@ -51,6 +53,10 @@ const props = defineProps({
   previewTheme: {
     type: String,
     default: "github",
+  },
+  preview: {
+    type: Boolean,
+    default: false,
   },
   customToolbars: {
     type: Array,
@@ -115,27 +121,16 @@ function updateValue(value) {
 // 处理编辑器中的图片上传
 async function handleImageUpload(files, callback) {
   try {
-    const formData = new FormData();
+    const result = await uploadImages(files);
 
-    // 添加所有文件到formData
-    files.forEach((file) => {
-      formData.append("files", file);
+    result.errors.forEach((error) => {
+      ElMessage.error(error);
     });
 
-    const response = await $fetch("/api/upload/image", {
-      method: "POST",
-      body: formData,
-      headers: {
-        authorization: "Bearer " + useCookie("token").value,
-      },
-    });
-
-    if (response.success && response.data && response.data.urls) {
-      // 返回图片URL数组给编辑器
-      callback(response.data.urls);
-      ElMessage.success("图片上传成功");
+    if (result.urls.length > 0) {
+      callback(result.urls);
+      ElMessage.success(`成功上传 ${result.urls.length} 张图片`);
     } else {
-      ElMessage.error(response.message || "图片上传失败");
       callback([]);
     }
   } catch (error) {

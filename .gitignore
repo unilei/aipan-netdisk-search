@@ -30,6 +30,7 @@ public/image-cache/*
 .agent
 .shared
 .gemini
+.playwright-cli/
 
 # Database backups
 *.sql

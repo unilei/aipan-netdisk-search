@@ -34,36 +34,14 @@ const validateFile = (file: File): { valid: boolean; error?: string } => {
     return { valid: true }
 }
 
-// 将文件转换为 Base64
-const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-            if (e.target?.result) {
-                const result = e.target.result.toString().split(',')[1]
-                if (result) {
-                    resolve(result)
-                } else {
-                    reject(new Error('Failed to extract Base64 data'))
-                }
-            } else {
-                reject(new Error('Failed to convert file to Base64'))
-            }
-        }
-        reader.onerror = (error) => reject(error)
-        reader.readAsDataURL(file)
-    })
-}
-
 // 批量上传图片（通过服务端代理）
 export const uploadImages = async (
     files: File[]
 ): Promise<{ urls: string[]; errors: string[] }> => {
     try {
         const errors: string[] = []
-        const validFiles: { fileName: string; base64: string }[] = []
+        const formData = new FormData()
 
-        // 验证并准备文件数据
         for (const file of files) {
             const validation = validateFile(file)
             if (!validation.valid) {
@@ -71,25 +49,23 @@ export const uploadImages = async (
                 continue
             }
 
-            try {
-                const base64 = await fileToBase64(file)
-                const fileName = generateUniqueFileName(file)
-                validFiles.push({ fileName, base64 })
-            } catch (error) {
-                errors.push(`${file.name}: 文件读取失败`)
-            }
+            const uploadFile = new File([file], generateUniqueFileName(file), {
+                type: file.type
+            })
+            formData.append('files', uploadFile)
         }
 
-        if (validFiles.length === 0) {
+        if (!formData.has('files')) {
             return { urls: [], errors }
         }
 
-        // 调用服务端上传接口
+        const token = useCookie('token').value
+        const headers = token ? { authorization: `Bearer ${token}` } : undefined
+
         const result: { code: number; urls: string[]; errors: string[] } = await ($fetch as Function)('/api/upload/image', {
             method: 'POST',
-            body: {
-                files: validFiles
-            }
+            body: formData,
+            headers
         })
 
         return {
