@@ -270,14 +270,14 @@ export default defineNitroPlugin((nitroApp) => {
 
         // 屏幕共享相关处理
         // 创建屏幕共享房间
-        socket.on('create_room', (data, callback) => {
+        socket.on('screen:create_room', (data, callback) => {
           const { roomName } = data;
           const room = createRoom(userId, roomName);
           socket.join(room.id);
           console.log(`用户 ${userId} (${username}) 创建了屏幕共享房间: ${room.id}, 房间名: ${roomName}`);
           
           // 修改返回格式以符合客户端期望
-          socket.emit('room_created', {
+          socket.emit('screen:room_created', {
             id: room.id,
             name: room.name,
             hostId: room.hostId,
@@ -286,7 +286,7 @@ export default defineNitroPlugin((nitroApp) => {
         });
         
         // 加入屏幕共享房间
-        socket.on('join_room', (roomId) => {
+        socket.on('screen:join_room', (roomId) => {
           console.log(`用户 ${userId} (${username}) 尝试加入屏幕共享房间: ${roomId}`);
           const room = joinRoom(roomId, userId);
           
@@ -298,14 +298,14 @@ export default defineNitroPlugin((nitroApp) => {
             socket.data.roomId = roomId;
             
             // 通知房间内所有其他用户有新用户加入
-            socket.to(roomId).emit('user_joined', {
+            socket.to(roomId).emit('screen:user_joined', {
               userId,
               username,
               socketId: socket.id
             });
             
             // 向加入者发送房间信息
-            socket.emit('room_joined', {
+            socket.emit('screen:room_joined', {
               id: room.id,
               name: room.name,
               hostId: room.hostId,
@@ -330,15 +330,15 @@ export default defineNitroPlugin((nitroApp) => {
               }
               
               // 立即广播给房间内所有用户
-              io.to(roomId).emit('room_users', roomUsers);
+              io.to(roomId).emit('screen:room_users', roomUsers);
             }
           } else {
-            socket.emit('error', { message: '房间不存在或已关闭' });
+            socket.emit('screen:error', { message: '房间不存在或已关闭' });
           }
         });
         
         // 离开屏幕共享房间
-        socket.on('leave_room', (roomId) => {
+        socket.on('screen:leave_room', (roomId) => {
           const room = leaveRoom(roomId, userId);
           
           if (room) {
@@ -346,7 +346,7 @@ export default defineNitroPlugin((nitroApp) => {
             console.log(`用户 ${userId} (${username}) 离开了屏幕共享房间: ${roomId}`);
             
             // 通知房间内其他用户
-            socket.to(roomId).emit('user_left', {
+            socket.to(roomId).emit('screen:user_left', {
               userId,
               username
             });

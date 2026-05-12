@@ -63,6 +63,21 @@ test("socket no longer creates private rooms through a separate private_message 
   assert.doesNotMatch(socket, /socket\.on\(['"]private_message['"]/);
 });
 
+test("screen sharing socket events do not reuse chat room event names", () => {
+  const socket = read("server/plugins/socket.ts");
+  const screenSharing = read("composables/useScreenSharing.ts");
+
+  assert.equal((socket.match(/socket\.on\(['"]join_room['"]/g) || []).length, 1);
+  assert.equal((socket.match(/socket\.on\(['"]leave_room['"]/g) || []).length, 1);
+  assert.match(socket, /socket\.on\(['"]screen:join_room['"]/);
+  assert.match(socket, /socket\.emit\(['"]screen:error['"], \{ message: ['"]房间不存在或已关闭['"] \}/);
+
+  assert.match(screenSharing, /emit\(['"]screen:join_room['"]/);
+  assert.match(screenSharing, /emit\(['"]screen:create_room['"]/);
+  assert.doesNotMatch(screenSharing, /emit\(['"]join_room['"]/);
+  assert.doesNotMatch(screenSharing, /emit\(['"]create_room['"]/);
+});
+
 test("admin points page exposes private message threshold config", () => {
   const endpoint = read("server/api/admin/points/private-message.ts");
   const page = read("pages/admin/points/tasks.vue");

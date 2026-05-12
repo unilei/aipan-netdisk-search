@@ -100,10 +100,10 @@ export const useScreenSharing = () => {
         console.log('正在创建屏幕共享房间:', roomName);
         
         // 移除之前的监听器
-        socket.off('room_created');
+        socket.off('screen:room_created');
         
         // 监听房间创建成功事件
-        socket.once('room_created', (roomData: any) => {
+        socket.once('screen:room_created', (roomData: any) => {
           console.log('房间创建成功:', roomData);
           
           // 更新当前房间信息
@@ -113,7 +113,7 @@ export const useScreenSharing = () => {
           isHost.value = true;
           
           // 加入房间
-          socket.emit('join_room', roomData.id);
+          socket.emit('screen:join_room', roomData.id);
           
           // 设置信号处理
           setupSignalListeners();
@@ -122,13 +122,13 @@ export const useScreenSharing = () => {
         });
         
         // 监听错误
-        socket.once('error', (error: any) => {
+        socket.once('screen:error', (error: any) => {
           console.error('创建房间失败:', error);
           reject(new Error(error.message || '创建房间失败'));
         });
         
         // 发送创建房间请求
-        socket.emit('create_room', { roomName });
+        socket.emit('screen:create_room', { roomName });
       });
     } catch (err: any) {
       console.error('创建房间失败', err);
@@ -156,11 +156,11 @@ export const useScreenSharing = () => {
         console.log('正在加入屏幕共享房间:', roomId);
         
         // 移除之前的监听器
-        socket.off('room_joined');
-        socket.off('error');
+        socket.off('screen:room_joined');
+        socket.off('screen:error');
         
         // 监听加入房间成功事件
-        socket.once('room_joined', (roomData: { id: string, name: string, hostId: string, viewers: string[] }) => {
+        socket.once('screen:room_joined', (roomData: { id: string, name: string, hostId: string, viewers: string[] }) => {
           console.log('加入房间成功:', roomData);
           
           // 设置主持人状态
@@ -181,13 +181,13 @@ export const useScreenSharing = () => {
         });
         
         // 监听错误
-        socket.once('error', (error: any) => {
+        socket.once('screen:error', (error: any) => {
           console.error('加入房间失败:', error);
           reject(new Error(error.message || '加入房间失败'));
         });
         
         // 发送加入房间请求
-        socket.emit('join_room', roomId);
+        socket.emit('screen:join_room', roomId);
       });
     } catch (error) {
       console.error('加入房间异常:', error);
@@ -198,7 +198,7 @@ export const useScreenSharing = () => {
   
   const leaveRoom = () => {
     if (currentRoom.id && socketInstance.value) {
-      socketInstance.value.emit('leave-screen-room', currentRoom.id);
+      socketInstance.value.emit('screen:leave_room', currentRoom.id);
       
       if (isSharing.value) {
         stopScreenShare();
@@ -496,8 +496,8 @@ export const useScreenSharing = () => {
     handleSignaling();
     
     // 处理房间用户信息更新
-    socket.off('room_users');
-    socket.on('room_users', (users: { userId: string, socketId: string }[]) => {
+    socket.off('screen:room_users');
+    socket.on('screen:room_users', (users: { userId: string, socketId: string }[]) => {
       console.log('收到房间用户列表更新:', users);
       
       // 更新socketId映射表
@@ -513,8 +513,8 @@ export const useScreenSharing = () => {
     const socket = socketIo.getSocket();
     if (!socket) return;
     
-    // 修正事件名称为user_joined和user_left，与服务器端一致
-    socket.on('user_joined', (data: { userId: string, username: string }) => {
+    socket.off('screen:user_joined');
+    socket.on('screen:user_joined', (data: { userId: string, username: string }) => {
       console.log(`用户 ${data.username}(${data.userId}) 加入了房间`);
       
       // 更新房间观众列表
@@ -529,7 +529,8 @@ export const useScreenSharing = () => {
       }
     });
     
-    socket.on('user_left', (data: { userId: string, username: string }) => {
+    socket.off('screen:user_left');
+    socket.on('screen:user_left', (data: { userId: string, username: string }) => {
       console.log(`用户 ${data.username}(${data.userId}) 离开了房间`);
       
       // 更新房间观众列表
