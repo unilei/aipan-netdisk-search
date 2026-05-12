@@ -115,6 +115,17 @@ export default defineEventHandler(async (event) => {
     // 将所有未读消息标记为已读（使用单独的Promise，不阻塞主流程）
     Promise.resolve().then(async () => {
       try {
+        await prisma.chatRoomUser.update({
+          where: {
+            userId_roomId: {
+              userId: user.userId,
+              roomId
+            }
+          },
+          data: {
+            lastReadAt: new Date()
+          }
+        });
         await prisma.chatMessage.updateMany({
           where: {
             roomId,

@@ -57,6 +57,15 @@
             </div>
 
             <div class="v2-topic-tools">
+              <button
+                v-if="canMessageTopicAuthor"
+                class="v2-muted-button"
+                type="button"
+                @click="openPrivateMessage(topic.author)"
+              >
+                <i class="fas fa-envelope mr-1"></i>
+                私信楼主
+              </button>
               <CommonReportButton
                 v-if="topic?.id"
                 content-type="topic"
@@ -102,6 +111,7 @@
                 :user="user"
                 :can-reply="!topic.isLocked"
                 @reply="replyToPost"
+                @private-message="openPrivateMessage"
               />
             </div>
             <div v-else class="px-4 py-6 text-center text-xs text-[#999]">
@@ -206,6 +216,13 @@
         </section>
       </aside>
     </section>
+
+    <PrivateMessageStartDialog
+      v-model="showPrivateMessageDialog"
+      :recipient="privateMessageTarget"
+      :source-forum-topic-id="topic?.id"
+      @started="handlePrivateMessageStarted"
+    />
   </main>
 </template>
 
@@ -218,6 +235,7 @@ import { marked } from "marked";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 import MarkdownEditor from "~/components/MarkdownEditor.vue";
+import PrivateMessageStartDialog from "~/components/chat/PrivateMessageStartDialog.vue";
 import { sanitizeHtml } from "~/utils/sanitize";
 
 const route = useRoute();
@@ -272,6 +290,16 @@ const pagination = computed(() => {
 });
 
 const replyTotal = computed(() => pagination.value?.total || 0);
+const showPrivateMessageDialog = ref(false);
+const privateMessageTarget = ref(null);
+
+const canMessageTopicAuthor = computed(() => {
+  return Boolean(
+    user.value &&
+      topic.value?.author?.id &&
+      Number(user.value.id) !== Number(topic.value.author.id),
+  );
+});
 
 const topicDescription = computed(() => {
   if (!topic.value?.content) {
@@ -460,6 +488,29 @@ function initForumRealtime() {
 function replyToPost(postId) {
   replyingTo.value = postId;
   scrollToReplyEditor();
+}
+
+function openPrivateMessage(target) {
+  if (!user.value) {
+    navigateToLogin();
+    return;
+  }
+
+  if (!target?.id || Number(target.id) === Number(user.value.id)) {
+    return;
+  }
+
+  privateMessageTarget.value = {
+    id: target.id,
+    username: target.username,
+    avatarStyle: target.avatarStyle,
+    role: target.role,
+  };
+  showPrivateMessageDialog.value = true;
+}
+
+function handlePrivateMessageStarted() {
+  showPrivateMessageDialog.value = false;
 }
 
 function cancelReply() {

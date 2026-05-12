@@ -21,6 +21,13 @@ export default defineEventHandler(async (event) => {
         message: '聊天室名称和类型为必填项'
       })
     }
+
+    if (type === 'private') {
+      throw createError({
+        statusCode: 403,
+        message: '请通过私信入口发起私聊'
+      })
+    }
     
     // 确保userIds是数字数组
     const userIds = rawUserIds ? rawUserIds.map((id: any) => 
@@ -73,6 +80,9 @@ export default defineEventHandler(async (event) => {
     }
   } catch (error: any) {
     console.error('创建聊天室失败:', error)
+    if (error.statusCode) {
+      throw error
+    }
     throw createError({
       statusCode: 500,
       message: `创建聊天室失败: ${error.message}`

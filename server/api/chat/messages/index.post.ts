@@ -27,6 +27,39 @@ export default defineEventHandler(async (event) => {
       })
     }
     
+    const messageContent = String(content || '').trim()
+    if (!messageContent) {
+      throw createError({
+        statusCode: 400,
+        message: '消息内容不能为空'
+      })
+    }
+
+    const room = await prisma.chatRoom.findUnique({
+      where: { id: roomId },
+      include: {
+        users: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                avatarStyle: true,
+                role: true
+              }
+            }
+          }
+        }
+      }
+    })
+
+    if (!room) {
+      throw createError({
+        statusCode: 404,
+        message: '聊天室不存在'
+      })
+    }
+
     // 验证用户是否有权限在该聊天室发送消息
     const userRoom = await prisma.chatRoomUser.findUnique({
       where: {
@@ -39,17 +72,6 @@ export default defineEventHandler(async (event) => {
     
     // 如果用户不是聊天室成员，检查聊天室是否为公开的
     if (!userRoom) {
-      const room = await prisma.chatRoom.findUnique({
-        where: { id: roomId }
-      })
-      
-      if (!room) {
-        throw createError({
-          statusCode: 404,
-          message: '聊天室不存在'
-        })
-      }
-      
       if (!room.isPublic) {
         throw createError({
           statusCode: 403,
@@ -70,7 +92,7 @@ export default defineEventHandler(async (event) => {
     // 创建消息
     const message = await prisma.chatMessage.create({
       data: {
-        content,
+        content: messageContent,
         type: type || 'text',
         fileUrl,
         user: {
@@ -109,15 +131,40 @@ export default defineEventHandler(async (event) => {
     })
     
     // 更新聊天室最后活动时间
+    const now = new Date()
     await prisma.chatRoom.update({
       where: { id: roomId },
-      data: { updatedAt: new Date() }
+      data: {
+        updatedAt: now,
+        lastMessageAt: now
+      }
     })
+
+    const privateRecipients = room.type === 'private'
+      ? room.users.filter((member: any) => member.userId !== user.userId)
+      : []
+
+    const createdNotifications = []
+    for (const member of privateRecipients) {
+      const notification = await prisma.notification.create({
+        data: {
+          userId: member.userId,
+          type: 'private_message',
+          title: '收到新的私信',
+          content: `${message.user?.username || '用户'}：${messageContent.slice(0, 80)}`,
+          relatedId: roomId
+        }
+      })
+      createdNotifications.push(notification)
+    }
     
     // 通过 WebSocket 通知聊天室其他成员
     if (event.context.io) {
       const socketIo = event.context.io
       socketIo.to(roomId.toString()).emit('receive_message', message)
+      for (const notification of createdNotifications) {
+        socketIo.to(`user:${notification.userId}`).emit('notification:new', notification)
+      }
     }
     
     return message
