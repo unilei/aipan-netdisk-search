@@ -2,6 +2,10 @@ import prisma from "~/lib/prisma";
 import jwt from "jsonwebtoken";
 import { sendVerificationEmail } from "~/server/services/email/emailVerification";
 import { getEmailServiceConfig } from "~/server/services/email/resend";
+import {
+    REGISTRATION_GIFT_SOURCE,
+    grantRegistrationGiftForUser
+} from "~/server/services/points/registrationGift.mjs";
 import { hashPassword } from "~/server/utils/password";
 
 export default defineEventHandler(async (event) => {
@@ -87,6 +91,11 @@ export default defineEventHandler(async (event) => {
             }
         }
 
+        const registrationGift = isAdminRegistration ? null : await grantRegistrationGiftForUser({
+            userId: user.id,
+            source: REGISTRATION_GIFT_SOURCE.auto
+        });
+
         // 生成 JWT token
         const token = jwt.sign(
             { userId: user.id, role: user.role },
@@ -105,8 +114,20 @@ export default defineEventHandler(async (event) => {
                     email: user.email,
                     role: user.role,
                     isVerified: user.isVerified,
-                    emailVerificationRequired: user.emailVerificationRequired
-                }
+                    emailVerificationRequired: user.emailVerificationRequired,
+                    points: registrationGift?.effectivePoints ?? user.points,
+                    permanentPoints: registrationGift?.permanentPoints ?? user.points,
+                    temporaryPoints: registrationGift?.temporaryPoints ?? 0,
+                    effectivePoints: registrationGift?.effectivePoints ?? user.points,
+                    nextExpiringAt: registrationGift?.nextExpiringAt ?? null,
+                    pointsBreakdown: registrationGift?.pointsBreakdown ?? {
+                        permanentPoints: user.points,
+                        temporaryPoints: 0,
+                        effectivePoints: user.points,
+                        nextExpiringAt: null
+                    }
+                },
+                registrationGift
             }
         }
 

@@ -54,6 +54,7 @@ model User {
   pointsHistory             PointsHistory[] // 用户的积分历史
   transferPointGrants       TransferPointGrant[] // 用户转存限时积分记录
   pointTaskCompletions      PointTaskCompletion[] // 用户积分任务完成记录
+  registrationGiftGrant     RegistrationGiftGrant? // 用户注册礼包领取记录
   emailVerificationTokens   EmailVerificationToken[]
   redemptionCodeCampaigns   RedemptionCodeCampaign[]   @relation("RedemptionCodeCampaignCreator")
   redemptionCodeRedemptions RedemptionCodeRedemption[]
@@ -543,6 +544,7 @@ model PointsHistory {
   user                     User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
   transferPointGrant       TransferPointGrant?
   pointTaskCompletion      PointTaskCompletion?
+  registrationGiftGrant    RegistrationGiftGrant?
   redemptionCodeRedemption RedemptionCodeRedemption?
 
   @@index([userId])
@@ -612,6 +614,24 @@ model PointTaskCompletion {
   @@unique([userId, taskId, claimNo])
   @@index([userId])
   @@index([taskId])
+  @@index([createdAt])
+}
+
+// 用户注册限时积分礼包发放记录
+model RegistrationGiftGrant {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  points          Int
+  expiresAt       DateTime
+  source          String   @default("auto")
+  pointsHistoryId Int?     @unique
+  createdAt       DateTime @default(now())
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pointsHistory PointsHistory? @relation(fields: [pointsHistoryId], references: [id], onDelete: SetNull)
+
+  @@index([expiresAt])
+  @@index([source])
   @@index([createdAt])
 }
 

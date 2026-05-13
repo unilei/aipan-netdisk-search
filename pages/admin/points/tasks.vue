@@ -18,7 +18,7 @@
             </p>
           </div>
           <div class="flex flex-wrap gap-3">
-            <el-button @click="loadPageData" :loading="loading || transferLoading || privateMessageLoading">
+            <el-button @click="loadPageData" :loading="loading || registrationGiftLoading || transferLoading || privateMessageLoading">
               <el-icon class="mr-1"><Refresh /></el-icon>
               刷新
             </el-button>
@@ -56,7 +56,7 @@
             按任务来源拆分管理入口，避免积分规则散落在系统配置里。
           </p>
         </div>
-        <div class="grid gap-4 lg:grid-cols-4">
+        <div class="grid gap-4 lg:grid-cols-5">
           <div
             v-for="item in taskPlanItems"
             :key="item.key"
@@ -73,6 +73,98 @@
             <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ item.rule }}</div>
           </div>
         </div>
+      </div>
+
+      <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
+        <div class="mb-5 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 class="m-0 text-lg font-semibold text-gray-900 dark:text-white">注册限时积分礼包</h2>
+            <p class="m-0 mt-1 text-sm text-gray-500 dark:text-gray-400">
+              配置新注册用户自动发放和老用户在积分中心领取的限时积分礼包。
+            </p>
+          </div>
+          <el-tag :type="registrationGiftForm.enabled ? 'success' : 'info'">
+            {{ registrationGiftForm.enabled ? '启用中' : '已关闭' }}
+          </el-tag>
+        </div>
+
+        <div v-if="registrationGiftLoading" class="py-6">
+          <el-skeleton :rows="4" animated />
+        </div>
+
+        <el-form
+          v-else
+          ref="registrationGiftFormRef"
+          :model="registrationGiftForm"
+          :rules="registrationGiftRules"
+          label-width="130px"
+        >
+          <el-form-item label="礼包状态">
+            <el-switch
+              v-model="registrationGiftForm.enabled"
+              active-text="启用礼包"
+              inactive-text="关闭礼包"
+            />
+          </el-form-item>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <el-form-item label="奖励积分" prop="points">
+              <el-input-number
+                v-model="registrationGiftForm.points"
+                :min="1"
+                :max="100000000"
+                :step="100"
+                :disabled="!registrationGiftForm.enabled"
+                class="w-full"
+              />
+            </el-form-item>
+            <el-form-item label="有效期(分钟)" prop="durationMinutes">
+              <el-input-number
+                v-model="registrationGiftForm.durationMinutes"
+                :min="1"
+                :max="525600"
+                :step="60"
+                :disabled="!registrationGiftForm.enabled"
+                class="w-full"
+              />
+            </el-form-item>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <el-form-item label="新用户自动发放">
+              <el-switch
+                v-model="registrationGiftForm.autoGrantNewUsers"
+                active-text="开启"
+                inactive-text="关闭"
+                :disabled="!registrationGiftForm.enabled"
+              />
+              <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                不需要激活的账号注册后发放；需要邮箱激活的账号在激活成功后发放。
+              </div>
+            </el-form-item>
+            <el-form-item label="老用户领取入口">
+              <el-switch
+                v-model="registrationGiftForm.legacyClaimEnabled"
+                active-text="开放"
+                inactive-text="关闭"
+                :disabled="!registrationGiftForm.enabled"
+              />
+              <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                开启后，未领取过礼包的老用户可在积分中心领取一次。
+              </div>
+            </el-form-item>
+          </div>
+
+          <el-form-item>
+            <el-button
+              type="primary"
+              :loading="registrationGiftSaving"
+              @click="saveRegistrationGiftConfig"
+            >
+              保存注册礼包
+            </el-button>
+          </el-form-item>
+        </el-form>
       </div>
 
       <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
@@ -323,6 +415,8 @@ definePageMeta({
 const tasks = ref([]);
 const loading = ref(false);
 const saving = ref(false);
+const registrationGiftLoading = ref(false);
+const registrationGiftSaving = ref(false);
 const transferLoading = ref(false);
 const transferSaving = ref(false);
 const privateMessageLoading = ref(false);
@@ -330,9 +424,12 @@ const privateMessageSaving = ref(false);
 const dialogVisible = ref(false);
 const editingTaskId = ref(null);
 const formRef = ref();
+const registrationGiftFormRef = ref();
 const transferFormRef = ref();
 const privateMessageFormRef = ref();
 
+const DEFAULT_REGISTRATION_GIFT_POINTS = 1000;
+const DEFAULT_REGISTRATION_GIFT_DURATION = 1440;
 const DEFAULT_TRANSFER_REWARD_POINTS = 1000;
 const DEFAULT_TRANSFER_REWARD_DURATION = 1440;
 const DEFAULT_PRIVATE_MESSAGE_MINIMUM_POINTS = 10000;
@@ -345,6 +442,14 @@ const form = reactive({
   enabled: true,
   sortOrder: 0,
   claimLimit: 1,
+});
+
+const registrationGiftForm = reactive({
+  enabled: true,
+  points: DEFAULT_REGISTRATION_GIFT_POINTS,
+  durationMinutes: DEFAULT_REGISTRATION_GIFT_DURATION,
+  autoGrantNewUsers: true,
+  legacyClaimEnabled: true,
 });
 
 const transferForm = reactive({
@@ -371,6 +476,10 @@ const transferTaskConfigured = computed(() =>
     transferForm.transferRewardEnabled &&
       String(transferForm.transferRewardShareLink || "").trim(),
   ),
+);
+
+const registrationGiftConfigured = computed(() =>
+  Boolean(registrationGiftForm.enabled),
 );
 
 const formatDurationText = (minutes) => {
@@ -404,6 +513,16 @@ const taskPlanItems = computed(() => [
     tone: "blue",
     reward: `+${transferForm.transferRewardPoints} 限时积分`,
     rule: `有效期 ${formatDurationText(transferForm.transferRewardDurationMinutes)}，同一次转存只奖励一次。`,
+  },
+  {
+    key: "registration-gift",
+    title: "注册礼包",
+    description: "新用户自动发放，老用户可在积分中心领取。",
+    status: registrationGiftConfigured.value ? "启用中" : "已关闭",
+    tagType: registrationGiftConfigured.value ? "success" : "info",
+    tone: "amber",
+    reward: `+${registrationGiftForm.points} 限时积分`,
+    rule: `有效期 ${formatDurationText(registrationGiftForm.durationMinutes)}，每个账号最多一次。`,
   },
   {
     key: "custom",
@@ -500,6 +619,37 @@ const transferRules = {
   transferRewardDurationMinutes: [
     {
       validator: validateTransferPositiveInteger("有效期需要大于 0 分钟", 525600),
+      trigger: ["blur", "change"],
+    },
+  ],
+};
+
+const validateRegistrationGiftPositiveInteger = (message, max) => {
+  return (_rule, value, callback) => {
+    if (!registrationGiftForm.enabled) {
+      callback();
+      return;
+    }
+
+    if (typeof value !== "number" || value < 1 || value > max) {
+      callback(new Error(message));
+      return;
+    }
+
+    callback();
+  };
+};
+
+const registrationGiftRules = {
+  points: [
+    {
+      validator: validateRegistrationGiftPositiveInteger("奖励积分需要在 1 到 100000000 之间", 100000000),
+      trigger: ["blur", "change"],
+    },
+  ],
+  durationMinutes: [
+    {
+      validator: validateRegistrationGiftPositiveInteger("有效期需要在 1 到 525600 分钟之间", 525600),
       trigger: ["blur", "change"],
     },
   ],
@@ -604,7 +754,73 @@ const loadTransferConfig = async () => {
 };
 
 const loadPageData = async () => {
-  await Promise.all([loadTasks(), loadTransferConfig(), loadPrivateMessageConfig()]);
+  await Promise.all([
+    loadTasks(),
+    loadRegistrationGiftConfig(),
+    loadTransferConfig(),
+    loadPrivateMessageConfig(),
+  ]);
+};
+
+const loadRegistrationGiftConfig = async () => {
+  try {
+    registrationGiftLoading.value = true;
+    const res = await $fetch("/api/admin/points/registration-gift", {
+      headers: authHeaders(),
+    });
+    if (res.code === 200) {
+      Object.assign(registrationGiftForm, {
+        enabled: res.data?.enabled ?? true,
+        points: res.data?.points ?? DEFAULT_REGISTRATION_GIFT_POINTS,
+        durationMinutes:
+          res.data?.durationMinutes ?? DEFAULT_REGISTRATION_GIFT_DURATION,
+        autoGrantNewUsers: res.data?.autoGrantNewUsers ?? true,
+        legacyClaimEnabled: res.data?.legacyClaimEnabled ?? true,
+      });
+      return;
+    }
+    ElMessage.error(res.msg || "加载注册礼包失败");
+  } catch (error) {
+    ElMessage.error(error.data?.message || "加载注册礼包失败");
+  } finally {
+    registrationGiftLoading.value = false;
+  }
+};
+
+const saveRegistrationGiftConfig = async () => {
+  try {
+    await registrationGiftFormRef.value.validate();
+    registrationGiftSaving.value = true;
+    const res = await $fetch("/api/admin/points/registration-gift", {
+      method: "POST",
+      body: {
+        enabled: registrationGiftForm.enabled,
+        points: registrationGiftForm.points,
+        durationMinutes: registrationGiftForm.durationMinutes,
+        autoGrantNewUsers: registrationGiftForm.autoGrantNewUsers,
+        legacyClaimEnabled: registrationGiftForm.legacyClaimEnabled,
+      },
+      headers: authHeaders(),
+    });
+
+    if (res.code === 200) {
+      Object.assign(registrationGiftForm, {
+        enabled: res.data?.enabled ?? true,
+        points: res.data?.points ?? DEFAULT_REGISTRATION_GIFT_POINTS,
+        durationMinutes:
+          res.data?.durationMinutes ?? DEFAULT_REGISTRATION_GIFT_DURATION,
+        autoGrantNewUsers: res.data?.autoGrantNewUsers ?? true,
+        legacyClaimEnabled: res.data?.legacyClaimEnabled ?? true,
+      });
+      ElMessage.success(res.msg || "保存成功");
+      return;
+    }
+    ElMessage.error(res.msg || "保存失败");
+  } catch (error) {
+    ElMessage.error(error.data?.message || error.message || "保存失败");
+  } finally {
+    registrationGiftSaving.value = false;
+  }
 };
 
 const saveTransferConfig = async () => {

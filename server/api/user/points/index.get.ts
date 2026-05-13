@@ -10,6 +10,7 @@ import {
     getTransferTaskFromQuarkConfig,
     normalizeQuarkConfig,
 } from "~/server/services/quark/quarkConfig.mjs";
+import { getRegistrationGiftStatusForUser } from "~/server/services/points/registrationGift.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -56,7 +57,10 @@ export default defineEventHandler(async (event) => {
             },
             take: 10
         })
-        const transferTask = await getTransferTaskConfig()
+        const [transferTask, registrationGift] = await Promise.all([
+            getTransferTaskConfig(),
+            getRegistrationGiftStatusForUser({ userId })
+        ])
 
         return {
             code: 200,
@@ -71,7 +75,8 @@ export default defineEventHandler(async (event) => {
                 userSince: user.createdAt,
                 stats: pointsStats,
                 recentHistory: decoratePointsHistory(recentHistory),
-                transferTask
+                transferTask,
+                registrationGift
             }
         }
 

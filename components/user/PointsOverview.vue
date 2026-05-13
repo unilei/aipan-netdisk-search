@@ -289,6 +289,7 @@ const getTypeName = (type) => {
     activity: "活动奖励",
     task: "任务奖励",
     transfer: "转存奖励",
+    registration_gift: "注册礼包",
     redemption: "兑换码奖励",
   };
   return typeNames[type] || type;

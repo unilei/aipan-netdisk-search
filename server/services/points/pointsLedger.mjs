@@ -9,6 +9,7 @@ export const POINT_TYPES = {
   task: "task",
   transfer: "transfer",
   redemption: "redemption",
+  registrationGift: "registration_gift",
 };
 
 export const DEFAULT_TRANSFER_REWARD_CONFIG = {

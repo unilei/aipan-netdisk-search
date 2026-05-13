@@ -59,6 +59,13 @@
               @redeemed="handleRedemptionCodeRedeemed"
             />
 
+            <UserRegistrationGiftCard
+              v-if="registrationGiftVisible"
+              :gift="registrationGift"
+              :claiming="registrationGiftClaiming"
+              @claim="handleClaimRegistrationGift"
+            />
+
             <article class="flex min-h-[220px] flex-col rounded-xl border border-gray-200 bg-white p-5 transition-colors duration-200 hover:border-blue-200 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-blue-700">
               <div class="flex items-start justify-between gap-4">
                 <div class="flex min-w-0 items-start gap-4">
@@ -280,6 +287,7 @@
                     <el-option label="连续签到奖励" value="bonus" />
                     <el-option label="任务奖励" value="task" />
                     <el-option label="转存奖励" value="transfer" />
+                    <el-option label="注册礼包" value="registration_gift" />
                     <el-option label="兑换码奖励" value="redemption" />
                     <el-option label="积分消费" value="consume" />
                     <el-option label="管理员调整" value="admin" />
@@ -475,6 +483,7 @@ import { ElMessage } from 'element-plus'
 import UserCheckInCard from '~/components/user/CheckInCard.vue'
 import UserPointTaskCard from '~/components/user/PointTaskCard.vue'
 import UserPointsOverview from '~/components/user/PointsOverview.vue'
+import UserRegistrationGiftCard from '~/components/user/RegistrationGiftCard.vue'
 import UserRedemptionCodeCard from '~/components/user/RedemptionCodeCard.vue'
 import { useUserStore } from '~/stores/user'
 
@@ -495,12 +504,25 @@ const defaultTransferTask = {
   rewardPoints: 1000,
   durationMinutes: 1440
 }
+const defaultRegistrationGift = {
+  enabled: false,
+  points: 1000,
+  durationMinutes: 1440,
+  autoGrantNewUsers: true,
+  legacyClaimEnabled: true,
+  claimable: false,
+  status: 'disabled',
+  grantedAt: null,
+  expiresAt: null
+}
 const pointsSummary = ref({
-  transferTask: defaultTransferTask
+  transferTask: defaultTransferTask,
+  registrationGift: defaultRegistrationGift
 })
 const pointsSummaryLoaded = ref(false)
 const pointTasks = ref([])
 const pointTasksLoaded = ref(false)
+const registrationGiftClaiming = ref(false)
 const openedPointTasks = ref({})
 const pointTaskReadyAt = ref({})
 const pointTaskClaiming = ref({})
@@ -508,6 +530,17 @@ const nowTick = ref(Date.now())
 let pointTaskTimer = null
 const POINT_TASK_READ_DELAY_SECONDS = 10
 const transferTask = computed(() => pointsSummary.value.transferTask || defaultTransferTask)
+const registrationGift = computed(() => pointsSummary.value.registrationGift || defaultRegistrationGift)
+const registrationGiftVisible = computed(() => Boolean(
+  pointsSummaryLoaded.value &&
+    registrationGift.value.enabled &&
+    registrationGift.value.status !== 'admin_excluded' &&
+    (
+      registrationGift.value.claimable ||
+      registrationGift.value.status === 'claimed' ||
+      registrationGift.value.legacyClaimEnabled
+    )
+))
 const transferTaskLabel = computed(() => {
   if (!pointsSummaryLoaded.value) return '读取中'
   return transferTask.value.enabled ? `+${transferTask.value.rewardPoints || 0} 积分` : '未开启'
@@ -518,7 +551,7 @@ const transferDurationLabel = computed(() => {
 })
 const taskSummaryText = computed(() => {
   if (!pointsSummaryLoaded.value || !pointTasksLoaded.value) return '正在读取任务配置'
-  return `${2 + (transferTask.value.enabled ? 1 : 0) + pointTasks.value.length} 个可用任务`
+  return `${2 + (registrationGiftVisible.value ? 1 : 0) + (transferTask.value.enabled ? 1 : 0) + pointTasks.value.length} 个可用任务`
 })
 const checkInStatusSnapshot = ref(null)
 
@@ -640,6 +673,14 @@ const handlePointsChanged = async () => {
 }
 
 const handleRedemptionCodeRedeemed = async (data) => {
+  applyPointsPayloadToUser(data)
+  refreshAccessControlConfig().catch(error => {
+    console.warn('Failed to refresh access control config after redemption code:', error)
+  })
+  await handlePointsChanged()
+}
+
+const applyPointsPayloadToUser = (data) => {
   if (userStore.user) {
     userStore.user.points = data.totalPoints
     userStore.user.permanentPoints = data.permanentPoints
@@ -648,10 +689,6 @@ const handleRedemptionCodeRedeemed = async (data) => {
     userStore.user.nextExpiringAt = data.nextExpiringAt
     userStore.user.pointsBreakdown = data.pointsBreakdown
   }
-  refreshAccessControlConfig().catch(error => {
-    console.warn('Failed to refresh access control config after redemption code:', error)
-  })
-  await handlePointsChanged()
 }
 
 const fetchPointTasks = async () => {
@@ -732,6 +769,41 @@ const handleClaimPointTask = async (task) => {
   }
 }
 
+const handleClaimRegistrationGift = async () => {
+  if (registrationGiftClaiming.value || !registrationGift.value.claimable) return
+
+  registrationGiftClaiming.value = true
+  try {
+    const response = await $fetch('/api/user/points/registration-gift/claim', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${useCookie('token').value}`
+      }
+    })
+
+    if (response.code === 200 && response.data) {
+      applyPointsPayloadToUser(response.data)
+      refreshAccessControlConfig().catch(error => {
+        console.warn('Failed to refresh access control config after registration gift claim:', error)
+      })
+      if (response.data.granted) {
+        ElMessage.success(`领取成功，获得 ${response.data.points} 限时积分`)
+      } else {
+        ElMessage.info(response.msg || '注册礼包已领取')
+      }
+      await handlePointsChanged()
+      return
+    }
+
+    ElMessage.error(response.msg || '领取注册礼包失败')
+  } catch (error) {
+    console.error('领取注册礼包失败:', error)
+    ElMessage.error(error?.data?.message || '领取注册礼包失败，请稍后重试')
+  } finally {
+    registrationGiftClaiming.value = false
+  }
+}
+
 const handleCheckInStatusLoaded = (status) => {
   checkInStatusSnapshot.value = status
 }
@@ -803,6 +875,7 @@ const getTypeName = (type) => {
     activity: '活动奖励',
     task: '任务奖励',
     transfer: '转存奖励',
+    registration_gift: '注册礼包',
     redemption: '兑换码奖励'
   }
   return typeNames[type] || type
