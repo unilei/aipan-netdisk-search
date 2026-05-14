@@ -1,9 +1,3 @@
-export const DEFAULT_PANSOU_INSTANCE_URLS = [
-  "https://so.252035.xyz/api/search",
-  "https://pansou.aipan.me/api/search",
-  "https://pansou.app/api/search",
-];
-
 export const DEFAULT_PANSOU_CLOUD_TYPES = [
   "baidu",
   "aliyun",
@@ -98,10 +92,15 @@ const normalizePansouApiUrl = (rawUrl) => {
 
 export const resolvePansouInstanceUrls = (config = {}) => {
   const configuredUrls = parseList(config.pansouApiUrls).map(normalizePansouApiUrl).filter(Boolean);
-  const sourceUrls = configuredUrls.length > 0 ? configuredUrls : DEFAULT_PANSOU_INSTANCE_URLS;
 
-  return Array.from(new Set(sourceUrls));
+  return Array.from(new Set(configuredUrls));
 };
+
+export const createPansouConfigurationError = () => ({
+  list: [],
+  code: 500,
+  msg: "PanSou API URL is not configured. Set PANSOU_API_URLS or NUXT_PANSOU_API_URLS.",
+});
 
 export const getPansouMaxResults = (config = {}) =>
   parseInteger(config.pansouMaxResults, 120, { min: 1, max: 300 });

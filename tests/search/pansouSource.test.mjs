@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  createPansouConfigurationError,
   buildPansouSearchRequest,
   resolvePansouInstanceUrls,
   transformPansouResponses,
@@ -17,6 +18,19 @@ test("resolvePansouInstanceUrls uses configured URLs without appending public de
     "http://host.docker.internal:8888/api/search",
     "https://fallback.example/api/search",
   ]);
+});
+
+test("resolvePansouInstanceUrls returns no public fallback URLs when configuration is missing", () => {
+  assert.deepEqual(resolvePansouInstanceUrls({}), []);
+  assert.deepEqual(resolvePansouInstanceUrls({ pansouApiUrls: "   " }), []);
+});
+
+test("createPansouConfigurationError reports missing explicit PanSou configuration", () => {
+  assert.deepEqual(createPansouConfigurationError(), {
+    list: [],
+    code: 500,
+    msg: "PanSou API URL is not configured. Set PANSOU_API_URLS or NUXT_PANSOU_API_URLS.",
+  });
 });
 
 test("buildPansouSearchRequest sends a POST JSON request with configured search options", () => {

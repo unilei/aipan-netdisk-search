@@ -78,8 +78,8 @@ services:
       - REDIS_URL=${REDIS_URL}
 
       # PanSou source配置
-      - PANSOU_API_URLS=${PANSOU_API_URLS:-http://pansou:8888/api/search}
-      - NUXT_PANSOU_API_URLS=${PANSOU_API_URLS:-http://pansou:8888/api/search}
+      - PANSOU_API_URLS=${PANSOU_API_URLS:?PANSOU_API_URLS is required}
+      - NUXT_PANSOU_API_URLS=${PANSOU_API_URLS:?PANSOU_API_URLS is required}
       - PANSOU_AUTH_TOKEN=${PANSOU_AUTH_TOKEN:-}
       - NUXT_PANSOU_AUTH_TOKEN=${PANSOU_AUTH_TOKEN:-}
       - PANSOU_CLOUD_TYPES=${PANSOU_CLOUD_TYPES:-baidu,aliyun,quark,guangya,tianyi,uc,mobile,115,pikpak,xunlei,123,magnet,ed2k}

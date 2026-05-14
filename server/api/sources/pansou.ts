@@ -1,6 +1,7 @@
 import type { H3Event } from "h3";
 import { $fetch } from "ofetch";
 import {
+  createPansouConfigurationError,
   fetchPansouInstance,
   getPansouMaxResults,
   resolvePansouInstanceUrls,
@@ -74,6 +75,10 @@ export default defineEventHandler(
 
       const config = useRuntimeConfig(event);
       const instanceUrls = resolvePansouInstanceUrls(config);
+      if (instanceUrls.length === 0) {
+        return createPansouConfigurationError();
+      }
+
       const settled = await Promise.allSettled(
         instanceUrls.map((apiUrl) =>
           fetchPansouInstance($fetch, apiUrl, searchTerm, config)
