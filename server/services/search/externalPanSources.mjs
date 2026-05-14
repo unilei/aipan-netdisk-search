@@ -36,6 +36,9 @@ const REMAN_DISK_SERVICE = {
   115: "115",
 };
 
+const buildFlarumSearchUrl = (baseUrl, searchTerm) =>
+  `${baseUrl}/api/discussions?page%5Blimit%5D=8&include=firstPost,mostRelevantPost&filter%5Bq%5D=${encodeURIComponent(searchTerm)}`;
+
 export const getExternalPanSourceConfigs = () => [
   {
     id: "panclub-quark",
@@ -82,6 +85,56 @@ export const getExternalPanSourceConfigs = () => [
     searchUrl: () => "https://www.duanjuso.cc/v1/search/disk",
     baseUrl: "https://www.duanjuso.cc",
   },
+  {
+    id: "zlxapp",
+    label: "知了搜",
+    type: "qingfeiApi",
+    searchUrl: () => "https://www.zlxapp.top/api/search",
+    baseUrl: "https://www.zlxapp.top",
+  },
+  {
+    id: "haitunsou",
+    label: "海豚搜索",
+    type: "embeddedQingfei",
+    searchUrl: (searchTerm) =>
+      `https://www.haitunsou.com/s/${encodeURIComponent(searchTerm)}`,
+    baseUrl: "https://www.haitunsou.com",
+  },
+  {
+    id: "wpzy-vip",
+    label: "AQ网盘搜索",
+    type: "flarumApi",
+    searchUrl: (searchTerm) => buildFlarumSearchUrl("https://wpzy.vip", searchTerm),
+    baseUrl: "https://wpzy.vip",
+  },
+  {
+    id: "wpzy-cc",
+    label: "AQ网盘论坛",
+    type: "flarumApi",
+    searchUrl: (searchTerm) => buildFlarumSearchUrl("https://wpzy.cc", searchTerm),
+    baseUrl: "https://wpzy.cc",
+  },
+  {
+    id: "wpzy-me",
+    label: "AQ影视资源",
+    type: "flarumApi",
+    searchUrl: (searchTerm) => buildFlarumSearchUrl("https://wpzy.me", searchTerm),
+    baseUrl: "https://wpzy.me",
+  },
+  {
+    id: "sosoyunpan",
+    label: "SOSO云盘",
+    type: "sosoApi",
+    searchUrl: () => "https://www.sosoyunpan.com/list",
+    baseUrl: "https://www.sosoyunpan.com",
+  },
+  {
+    id: "soxunleipan",
+    label: "搜迅雷盘",
+    type: "soxunleiApi",
+    searchUrl: () => "https://www.soxunleipan.com/search/list",
+    baseUrl: "https://www.soxunleipan.com",
+  },
 ];
 
 const normalizeWhitespace = (value) => String(value || "").replace(/\s+/g, " ").trim();
@@ -122,7 +175,7 @@ const normalizeLink = (rawUrl) =>
     .replace(/\\\//g, "/")
     .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
-    .replace(/[?&](?:pwd|password)=(?:undefined|null)(?=(?:[&#]|$))/gi, "")
+    .replace(/[?&](?:pwd|password)=(?:undefined|null|#)(?=(?:[&#]|$))/gi, "")
     .trim()
     .replace(/[?&](?=#|$)/g, "")
     .replace(/[\\)\]】'"，。；;]+$/g, "")
@@ -296,6 +349,159 @@ export const parseRemanApiResults = (responseText, searchTerm) => {
   return mergeItems(items);
 };
 
+const parseQingfeiItems = (list, searchTerm) => {
+  const items = [];
+
+  list.forEach((item) => {
+    const name = normalizeTitle(item.title || item.name || "");
+    const searchableText = `${name} ${stripHtml(item.description || item.content || "")}`;
+    const links = extractCloudLinks(item.url || item.link || "", item.code || item.password);
+
+    if (!links.length || !isRelevantTitle(searchableText, searchTerm)) {
+      return;
+    }
+
+    links.forEach((link) => addLink(items, name || searchTerm, link));
+  });
+
+  return mergeItems(items);
+};
+
+export const parseQingfeiApiResults = (responseText, searchTerm) => {
+  const response = JSON.parse(responseText || "{}");
+  const list = Array.isArray(response?.data?.items)
+    ? response.data.items
+    : Array.isArray(response?.data?.list)
+      ? response.data.list
+      : [];
+
+  return parseQingfeiItems(list, searchTerm);
+};
+
+const parseEmbeddedJsonArray = (rawJson) => {
+  try {
+    return JSON.parse(
+      String(rawJson || "")
+        .replace(/\\\//g, "/")
+        .replace(/\\'/g, "'"),
+    );
+  } catch {
+    return [];
+  }
+};
+
+export const parseEmbeddedQingfeiResults = (html, searchTerm) => {
+  const patterns = [
+    /const\s+listItemsData\s*=\s*(\[[\s\S]*?\]);/g,
+    /const\s+list\s*=\s*JSON\.parse\('(\[[\s\S]*?\])'\);/g,
+  ];
+  const list = [];
+
+  patterns.forEach((pattern) => {
+    for (const match of String(html || "").matchAll(pattern)) {
+      const items = parseEmbeddedJsonArray(match[1]);
+      if (Array.isArray(items)) {
+        list.push(...items);
+      }
+    }
+  });
+
+  return parseQingfeiItems(list, searchTerm);
+};
+
+const getFlarumPostText = (discussion, includedPosts) => {
+  const relationshipIds = [
+    discussion?.relationships?.firstPost?.data?.id,
+    discussion?.relationships?.mostRelevantPost?.data?.id,
+    discussion?.relationships?.lastPost?.data?.id,
+  ].filter(Boolean);
+  const postTexts = relationshipIds.map((id) => includedPosts.get(String(id))).filter(Boolean);
+
+  return [
+    discussion?.attributes?.content,
+    discussion?.attributes?.contentHtml,
+    discussion?.attributes?.excerpt,
+    ...postTexts,
+  ]
+    .filter(Boolean)
+    .join(" ");
+};
+
+export const parseFlarumApiResults = (responseText, searchTerm) => {
+  const response = JSON.parse(responseText || "{}");
+  const discussions = Array.isArray(response?.data) ? response.data : [];
+  const includedPosts = new Map();
+  const items = [];
+
+  (Array.isArray(response?.included) ? response.included : []).forEach((item) => {
+    if (item?.type !== "posts" || !item?.id) {
+      return;
+    }
+
+    includedPosts.set(
+      String(item.id),
+      [item.attributes?.contentHtml, item.attributes?.content, item.attributes?.plainContent]
+        .filter(Boolean)
+        .join(" "),
+    );
+  });
+
+  discussions.forEach((discussion) => {
+    const title = normalizeTitle(discussion?.attributes?.title || "");
+    const postText = getFlarumPostText(discussion, includedPosts);
+    const searchableText = `${title} ${stripHtml(postText)}`;
+    const links = extractCloudLinks(postText);
+
+    if (!title || !links.length || !isRelevantTitle(searchableText, searchTerm)) {
+      return;
+    }
+
+    links.forEach((link) => addLink(items, title, link));
+  });
+
+  return mergeItems(items);
+};
+
+export const parseSosoApiResults = (responseText, searchTerm) => {
+  const response = JSON.parse(responseText || "{}");
+  const list = Array.isArray(response?.results) ? response.results : [];
+  const items = [];
+
+  list.forEach((item) => {
+    const name = normalizeTitle(item.fileTitle || item.title || item.tag || "");
+    const searchableText = `${name} ${stripHtml(item.filePath || item.fileDesc || "")}`;
+    const links = extractCloudLinks(item.fileLink || item.shareId || "", item.fileCode);
+
+    if (!name || !links.length || !isRelevantTitle(searchableText, searchTerm)) {
+      return;
+    }
+
+    links.forEach((link) => addLink(items, name, link));
+  });
+
+  return mergeItems(items);
+};
+
+export const parseSoxunleiApiResults = (responseText, searchTerm) => {
+  const response = JSON.parse(responseText || "{}");
+  const list = Array.isArray(response?.list) ? response.list : [];
+  const items = [];
+
+  list.forEach((item) => {
+    const name = normalizeTitle(item.title || item.tag || "");
+    const searchableText = `${name} ${stripHtml(item.filePath || "")}`;
+    const links = extractCloudLinks(item.shareId || item.fileLink || "");
+
+    if (!name || !links.length || !isRelevantTitle(searchableText, searchTerm)) {
+      return;
+    }
+
+    links.forEach((link) => addLink(items, name, link));
+  });
+
+  return mergeItems(items);
+};
+
 const buildRemanRequest = (searchTerm) => ({
   method: "POST",
   headers: {
@@ -322,6 +528,36 @@ const buildRemanRequest = (searchTerm) => ({
       fp_data: "",
       automated: "0",
     },
+  }),
+});
+
+const buildSosoRequest = (searchTerm) => ({
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    keyword: searchTerm,
+    source: "all",
+    formats: [],
+    year: "all",
+    sort: "relevance",
+    page: 1,
+  }),
+});
+
+const buildSoxunleiRequest = (searchTerm) => ({
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    keyword: searchTerm,
+    page: 1,
+    pageSize: 10,
+    source: 0,
+    ext: 0,
+    sort: 0,
   }),
 });
 
@@ -376,6 +612,55 @@ const runAdapter = async (source, searchTerm) => {
       origin: source.baseUrl,
     });
     return parseRemanApiResults(responseText, searchTerm);
+  }
+
+  if (source.type === "qingfeiApi") {
+    const responseText = await fetchText(searchUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        title: searchTerm,
+        page: 1,
+        size: 12,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      referer: `${source.baseUrl}/s/${encodeURIComponent(searchTerm)}`,
+      origin: source.baseUrl,
+    });
+    return parseQingfeiApiResults(responseText, searchTerm);
+  }
+
+  if (source.type === "embeddedQingfei") {
+    const html = await fetchText(searchUrl, { referer: source.baseUrl || searchUrl });
+    return parseEmbeddedQingfeiResults(html, searchTerm);
+  }
+
+  if (source.type === "flarumApi") {
+    const responseText = await fetchText(searchUrl, {
+      referer: `${source.baseUrl}/search/?kw=${encodeURIComponent(searchTerm)}`,
+    });
+    return parseFlarumApiResults(responseText, searchTerm);
+  }
+
+  if (source.type === "sosoApi") {
+    const request = buildSosoRequest(searchTerm);
+    const responseText = await fetchText(searchUrl, {
+      ...request,
+      referer: `${source.baseUrl}/file/Search?keyword=${encodeURIComponent(searchTerm)}`,
+      origin: source.baseUrl,
+    });
+    return parseSosoApiResults(responseText, searchTerm);
+  }
+
+  if (source.type === "soxunleiApi") {
+    const request = buildSoxunleiRequest(searchTerm);
+    const responseText = await fetchText(searchUrl, {
+      ...request,
+      referer: `${source.baseUrl}/Search?keyword=${encodeURIComponent(searchTerm)}`,
+      origin: source.baseUrl,
+    });
+    return parseSoxunleiApiResults(responseText, searchTerm);
   }
 
   if (source.type === "panClubDetail") {
