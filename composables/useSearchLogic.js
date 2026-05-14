@@ -6,6 +6,7 @@ export const useSearchLogic = () => {
 
   // 请求去重管理
   let currentSearchController = null;
+  let activeSearchId = 0;
 
   // 队列管理
   let queue = [];
@@ -25,6 +26,10 @@ export const useSearchLogic = () => {
   };
 
   // 带重试的请求函数
+  const isAbortError = (error) => {
+    return error?.name === "AbortError" || error?.cause?.name === "AbortError";
+  };
+
   const fetchWithRetry = async (url, options = {}, maxRetries = 3) => {
     let lastError;
 
@@ -33,6 +38,10 @@ export const useSearchLogic = () => {
 
     for (let i = 0; i < maxRetries; i++) {
       try {
+        if (options.signal?.aborted) {
+          throw new DOMException("The operation was aborted.", "AbortError");
+        }
+
         const headers = { ...options.headers };
         // 如果有token，添加到请求头
         if (token) {
@@ -47,6 +56,9 @@ export const useSearchLogic = () => {
         return response;
       } catch (error) {
         lastError = error;
+        if (isAbortError(error) || options.signal?.aborted) {
+          throw error;
+        }
         if (i < maxRetries - 1) {
           await new Promise((resolve) => setTimeout(resolve, 1000 * (i + 1)));
         }
@@ -61,17 +73,33 @@ export const useSearchLogic = () => {
     item,
     keyword,
     sources,
-    loadingProgress
+    loadingProgress,
+    searchContext = {}
   ) => {
     const encodedKeyword = encodeURIComponent(keyword.trim());
     const cacheKey = `${item.api}-${encodedKeyword}`;
+    const effectiveSearchId = searchContext.searchId ?? activeSearchId;
+    const isCurrentSearch = () => {
+      return (
+        activeSearchId === effectiveSearchId &&
+        !searchContext.signal?.aborted
+      );
+    };
 
     const task = async () => {
       try {
+        if (!isCurrentSearch()) {
+          return;
+        }
+
         // 尝试从缓存获取
         const cachedData = await smartCache.getWithStrategy(cacheKey);
 
         if (cachedData) {
+          if (!isCurrentSearch()) {
+            return;
+          }
+
           if (item.api === "/api/sources/local") {
             sources.value.unshift(...cachedData);
             if (cachedData.length === 0) {
@@ -88,9 +116,14 @@ export const useSearchLogic = () => {
         const res = await fetchWithRetry(item.api, {
           method: "POST",
           body: { name: keyword },
+          signal: searchContext.signal,
         });
 
         if (res.list && Array.isArray(res.list)) {
+          if (!isCurrentSearch()) {
+            return;
+          }
+
           // 设置缓存
           await smartCache.setWithStrategy(cacheKey, res.list, "search");
 
@@ -131,6 +164,10 @@ export const useSearchLogic = () => {
           }
         }
       } catch (err) {
+        if (isAbortError(err) || searchContext.signal?.aborted) {
+          return;
+        }
+
         console.error(`搜索失败 ${item.api}:`, {
           error: err.message || err,
           api: item.api,
@@ -138,10 +175,12 @@ export const useSearchLogic = () => {
           timestamp: new Date().toISOString(),
         });
       } finally {
-        loadingProgress.value.completed++;
-        if (loadingProgress.value.completed >= loadingProgress.value.total) {
-          loadingProgress.value.isLoading = false;
-          delete window._needProcessQuarkLinks;
+        if (isCurrentSearch()) {
+          loadingProgress.value.completed++;
+          if (loadingProgress.value.completed >= loadingProgress.value.total) {
+            loadingProgress.value.isLoading = false;
+            delete window._needProcessQuarkLinks;
+          }
         }
       }
     };
@@ -168,16 +207,21 @@ export const useSearchLogic = () => {
     }
 
     currentSearchController = new AbortController();
+    const searchId = ++activeSearchId;
+    const searchContext = {
+      searchId,
+      signal: currentSearchController.signal,
+    };
 
     // 记录搜索
     try {
       await $fetch("/api/search/record", {
         method: "POST",
         body: { keyword: keyword },
-        signal: currentSearchController.signal,
+        signal: searchContext.signal,
       });
     } catch (error) {
-      if (error.name !== "AbortError") {
+      if (!isAbortError(error)) {
         console.error("记录搜索失败:", {
           error: error.message || error,
           keyword: keyword,
@@ -186,10 +230,13 @@ export const useSearchLogic = () => {
       }
     }
 
+    if (searchContext.signal.aborted || activeSearchId !== searchId) {
+      return;
+    }
+
     // 更新搜索状态
     sources.value = [];
     queue.length = 0;
-    running = 0;
     window._needProcessQuarkLinks = false;
 
     // 确保加载状态已设置（如果外部没有设置的话）
@@ -214,13 +261,14 @@ export const useSearchLogic = () => {
         aipanEndpoint,
         keyword,
         sources,
-        loadingProgress
+        loadingProgress,
+        searchContext
       );
     }
 
     // 处理其他接口
     otherEndpoints.forEach((item) => {
-      handleSingleSearch(item, keyword, sources, loadingProgress);
+      handleSingleSearch(item, keyword, sources, loadingProgress, searchContext);
     });
   };
 
@@ -232,7 +280,6 @@ export const useSearchLogic = () => {
     }
 
     queue.length = 0;
-    running = 0;
   };
 
   return {

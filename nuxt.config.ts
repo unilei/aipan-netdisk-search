@@ -253,6 +253,28 @@ export default defineNuxtConfig({
       process.env.NUXT_SETTINGS_ENCRYPTION_KEY ||
       process.env.SETTINGS_ENCRYPTION_KEY,
     pansouApiUrls: process.env.NUXT_PANSOU_API_URLS || process.env.PANSOU_API_URLS || 'https://so.252035.xyz/api/search,https://pansou.aipan.me/api/search,https://pansou.app/api/search',
+    pansouAuthToken:
+      process.env.NUXT_PANSOU_AUTH_TOKEN || process.env.PANSOU_AUTH_TOKEN || '',
+    pansouCloudTypes:
+      process.env.NUXT_PANSOU_CLOUD_TYPES ||
+      process.env.PANSOU_CLOUD_TYPES ||
+      'baidu,aliyun,quark,guangya,tianyi,uc,mobile,115,pikpak,xunlei,123,magnet,ed2k',
+    pansouPlugins:
+      process.env.NUXT_PANSOU_PLUGINS || process.env.PANSOU_PLUGINS || '',
+    pansouChannels:
+      process.env.NUXT_PANSOU_CHANNELS || process.env.PANSOU_CHANNELS || '',
+    pansouResultMode:
+      process.env.NUXT_PANSOU_RESULT_MODE || process.env.PANSOU_RESULT_MODE || 'merge',
+    pansouSourceMode:
+      process.env.NUXT_PANSOU_SOURCE_MODE || process.env.PANSOU_SOURCE_MODE || 'all',
+    pansouRefresh:
+      process.env.NUXT_PANSOU_REFRESH || process.env.PANSOU_REFRESH || 'false',
+    pansouRequestTimeoutMs:
+      process.env.NUXT_PANSOU_REQUEST_TIMEOUT_MS ||
+      process.env.PANSOU_REQUEST_TIMEOUT_MS ||
+      '15000',
+    pansouMaxResults:
+      process.env.NUXT_PANSOU_MAX_RESULTS || process.env.PANSOU_MAX_RESULTS || '120',
     elasticsearchNode:
       process.env.NUXT_ELASTICSEARCH_NODE || process.env.ELASTICSEARCH_NODE,
     elasticsearchUsername:

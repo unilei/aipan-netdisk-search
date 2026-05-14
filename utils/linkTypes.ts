@@ -2,6 +2,7 @@ export type LinkService =
   | "BAIDU"
   | "XUNLEI"
   | "QUARK"
+  | "GUANGYA"
   | "ALIYUN"
   | "UC"
   | "TIANYI"
@@ -16,6 +17,7 @@ export type LinkService =
 export const LINK_SERVICE_NAMES: Record<LinkService, string> = {
   ALIYUN: "阿里云盘",
   QUARK: "夸克网盘",
+  GUANGYA: "光亚网盘",
   BAIDU: "百度网盘",
   XUNLEI: "迅雷网盘",
   UC: "UC网盘",
@@ -33,6 +35,7 @@ const SERVICE_PATTERNS: Array<{ service: LinkService; pattern: RegExp }> = [
   { service: "BAIDU", pattern: /https?:\/\/pan\.baidu\.com\/s\/[A-Za-z0-9_-]+(?:\?pwd=[A-Za-z0-9]+)?/i },
   { service: "XUNLEI", pattern: /https?:\/\/pan\.xunlei\.com\/s\/[A-Za-z0-9_-]+(?:\?pwd=[A-Za-z0-9]+)?#?/i },
   { service: "QUARK", pattern: /https?:\/\/pan\.quark\.cn\/s\/[A-Za-z0-9]+/i },
+  { service: "GUANGYA", pattern: /https?:\/\/pan\.guangya\.cn\/s\/[^?"\\\s]+/i },
   { service: "ALIYUN", pattern: /https?:\/\/(?:www\.)?(?:aliyundrive|alipan)\.com\/s\/[A-Za-z0-9]+/i },
   { service: "UC", pattern: /https?:\/\/drive\.uc\.cn\/s\/[A-Za-z0-9]+(?:\?public=1)?/i },
   { service: "TIANYI", pattern: /https?:\/\/cloud\.189\.cn\/(?:t\/|web\/share\?code=)[^"\\\s]+/i },
@@ -48,6 +51,7 @@ export const CLOUD_DRIVE_SERVICES = new Set<LinkService>([
   "BAIDU",
   "XUNLEI",
   "QUARK",
+  "GUANGYA",
   "ALIYUN",
   "UC",
   "TIANYI",

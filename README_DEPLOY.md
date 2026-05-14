@@ -134,6 +134,13 @@ ELASTICSEARCH_USERNAME=elastic
 ELASTICSEARCH_PASSWORD=change-me
 ELASTICSEARCH_CA_FINGERPRINT=AA:BB:CC:DD
 ELASTICSEARCH_USER_RESOURCE_INDEX=user-resources
+
+PANSOU_API_URLS=http://pansou:8888/api/search
+PANSOU_CLOUD_TYPES=baidu,aliyun,quark,guangya,tianyi,uc,mobile,115,pikpak,xunlei,123,magnet,ed2k
+PANSOU_RESULT_MODE=merge
+PANSOU_SOURCE_MODE=all
+PANSOU_REQUEST_TIMEOUT_MS=15000
+PANSOU_MAX_RESULTS=120
 ```
 
 注意：
@@ -141,6 +148,7 @@ ELASTICSEARCH_USER_RESOURCE_INDEX=user-resources
 - `SETTINGS_ENCRYPTION_KEY` 用于解密后台系统配置，已有生产环境必须复用原值。
 - `JWT_SECRET` 变更会导致已有登录 token 失效。
 - ES 变量不完整时，`/api/sources/1` 会降级为只返回本地 `Resource`，但审核同步和 ES 索引页面会不可用。
+- `PANSOU_API_URLS` 建议指向自建 PanSou 实例。若 PanSou 独立运行，需要把 `pansou` 容器连接到应用 compose 网络，让应用容器可访问 `http://pansou:8888`。
 
 ## PostgreSQL R2 备份
 
@@ -308,6 +316,17 @@ curl --cacert ./http_ca.crt -u "elastic:<ES_PASSWORD>" https://<ELASTICSEARCH_HO
 curl -s http://127.0.0.1:3000/api/sources/1 \
   -H 'content-type: application/json' \
   -d '{"keyword":"测试关键词"}'
+```
+
+验证 PanSou 搜索源：
+
+```bash
+docker exec aipan-netdisk-search-app node -e "fetch('http://pansou:8888/api/health').then(r=>r.json()).then(console.log)"
+curl -s http://127.0.0.1:3000/api/sources/pansou \
+  -H 'host: aipan.me' \
+  -H 'referer: https://aipan.me/search' \
+  -H 'content-type: application/json' \
+  -d '{"name":"测试关键词"}'
 ```
 
 ## 回滚

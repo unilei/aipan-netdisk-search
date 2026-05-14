@@ -92,6 +92,7 @@ const verificationConfig = ref({
 const diskIcons = {
   ALIYUN: new URL("@/assets/netdisk/aliyun1.png", import.meta.url).href,
   QUARK: new URL("@/assets/netdisk/quark1.png", import.meta.url).href,
+  GUANGYA: new URL("@/assets/netdisk/other.svg", import.meta.url).href,
   BAIDU: new URL("@/assets/netdisk/baidu.png", import.meta.url).href,
   XUNLEI: new URL("@/assets/netdisk/xunlei.png", import.meta.url).href,
   UC: new URL("@/assets/netdisk/uc.png", import.meta.url).href,
@@ -126,6 +127,7 @@ const getServiceToneClass = (service) => {
   const toneMap = {
     BAIDU: "bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300",
     QUARK: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+    GUANGYA: "bg-lime-100 text-lime-700 dark:bg-lime-900/40 dark:text-lime-300",
     ALIYUN: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
     XUNLEI: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300",
     UC: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
