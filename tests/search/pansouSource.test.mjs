@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   createPansouConfigurationError,
   buildPansouSearchRequest,
+  getPansouMaxResults,
   resolvePansouInstanceUrls,
   transformPansouResponses,
 } from "../../server/services/search/pansouSource.mjs";
@@ -33,6 +34,11 @@ test("createPansouConfigurationError reports missing explicit PanSou configurati
   });
 });
 
+test("getPansouMaxResults defaults to the PanSou response cap", () => {
+  assert.equal(getPansouMaxResults({}), 300);
+  assert.equal(getPansouMaxResults({ pansouMaxResults: "500" }), 300);
+});
+
 test("buildPansouSearchRequest sends a POST JSON request with configured search options", () => {
   const request = buildPansouSearchRequest(
     "http://host.docker.internal:8888/api/search",
@@ -58,6 +64,16 @@ test("buildPansouSearchRequest sends a POST JSON request with configured search 
     cloud_types: ["quark", "aliyun", "baidu"],
     plugins: ["labi", "duoduo"],
   });
+});
+
+test("buildPansouSearchRequest does not restrict cloud types when unset", () => {
+  const request = buildPansouSearchRequest(
+    "http://host.docker.internal:8888/api/search",
+    "速度与激情",
+    {},
+  );
+
+  assert.equal(Object.hasOwn(request.options.body, "cloud_types"), false);
 });
 
 test("transformPansouResponses keeps Guangya links and limits configured result count", () => {

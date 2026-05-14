@@ -1,19 +1,3 @@
-export const DEFAULT_PANSOU_CLOUD_TYPES = [
-  "baidu",
-  "aliyun",
-  "quark",
-  "guangya",
-  "tianyi",
-  "uc",
-  "mobile",
-  "115",
-  "pikpak",
-  "xunlei",
-  "123",
-  "magnet",
-  "ed2k",
-];
-
 const DEFAULT_USER_AGENT =
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36";
 
@@ -103,7 +87,7 @@ export const createPansouConfigurationError = () => ({
 });
 
 export const getPansouMaxResults = (config = {}) =>
-  parseInteger(config.pansouMaxResults, 120, { min: 1, max: 300 });
+  parseInteger(config.pansouMaxResults, 300, { min: 1, max: 300 });
 
 const normalizeTitle = (note, searchTerm) => {
   const headline = String(note || "").split(/(?:描述|链接)[:：]/)[0] || note;

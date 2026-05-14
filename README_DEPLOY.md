@@ -136,11 +136,11 @@ ELASTICSEARCH_CA_FINGERPRINT=AA:BB:CC:DD
 ELASTICSEARCH_USER_RESOURCE_INDEX=user-resources
 
 PANSOU_API_URLS=http://pansou:8888/api/search
-PANSOU_CLOUD_TYPES=baidu,aliyun,quark,guangya,tianyi,uc,mobile,115,pikpak,xunlei,123,magnet,ed2k
+PANSOU_CLOUD_TYPES=
 PANSOU_RESULT_MODE=merge
 PANSOU_SOURCE_MODE=all
 PANSOU_REQUEST_TIMEOUT_MS=15000
-PANSOU_MAX_RESULTS=120
+PANSOU_MAX_RESULTS=300
 ```
 
 注意：
@@ -148,6 +148,7 @@ PANSOU_MAX_RESULTS=120
 - `SETTINGS_ENCRYPTION_KEY` 用于解密后台系统配置，已有生产环境必须复用原值。
 - `JWT_SECRET` 变更会导致已有登录 token 失效。
 - ES 变量不完整时，`/api/sources/1` 会降级为只返回本地 `Resource`，但审核同步和 ES 索引页面会不可用。
+- `PANSOU_CLOUD_TYPES` 留空时不会向 PanSou 传 `cloud_types` 过滤条件，可返回 PanSou 服务端支持的全部链接类型。
 - `PANSOU_API_URLS` 必须显式配置，建议指向自建 PanSou 实例。缺失时 `/api/sources/pansou` 会返回配置错误，生产 compose 也会拒绝启动。若 PanSou 独立运行，需要把 `pansou` 容器连接到应用 compose 网络，让应用容器可访问 `http://pansou:8888`。
 
 ## PostgreSQL R2 备份

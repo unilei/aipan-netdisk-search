@@ -256,9 +256,7 @@ export default defineNuxtConfig({
     pansouAuthToken:
       process.env.NUXT_PANSOU_AUTH_TOKEN || process.env.PANSOU_AUTH_TOKEN || '',
     pansouCloudTypes:
-      process.env.NUXT_PANSOU_CLOUD_TYPES ||
-      process.env.PANSOU_CLOUD_TYPES ||
-      'baidu,aliyun,quark,guangya,tianyi,uc,mobile,115,pikpak,xunlei,123,magnet,ed2k',
+      process.env.NUXT_PANSOU_CLOUD_TYPES ?? process.env.PANSOU_CLOUD_TYPES ?? '',
     pansouPlugins:
       process.env.NUXT_PANSOU_PLUGINS || process.env.PANSOU_PLUGINS || '',
     pansouChannels:
@@ -274,7 +272,7 @@ export default defineNuxtConfig({
       process.env.PANSOU_REQUEST_TIMEOUT_MS ||
       '15000',
     pansouMaxResults:
-      process.env.NUXT_PANSOU_MAX_RESULTS || process.env.PANSOU_MAX_RESULTS || '120',
+      process.env.NUXT_PANSOU_MAX_RESULTS ?? process.env.PANSOU_MAX_RESULTS ?? '300',
     elasticsearchNode:
       process.env.NUXT_ELASTICSEARCH_NODE || process.env.ELASTICSEARCH_NODE,
     elasticsearchUsername:
