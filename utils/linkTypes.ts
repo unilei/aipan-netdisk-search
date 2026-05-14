@@ -17,7 +17,7 @@ export type LinkService =
 export const LINK_SERVICE_NAMES: Record<LinkService, string> = {
   ALIYUN: "阿里云盘",
   QUARK: "夸克网盘",
-  GUANGYA: "光亚网盘",
+  GUANGYA: "光鸭网盘",
   BAIDU: "百度网盘",
   XUNLEI: "迅雷网盘",
   UC: "UC网盘",
