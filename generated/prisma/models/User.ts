@@ -313,6 +313,7 @@ export type UserWhereInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenListRelationFilter
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignListRelationFilter
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionListRelationFilter
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -352,6 +353,7 @@ export type UserOrderByWithRelationInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenOrderByRelationAggregateInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignOrderByRelationAggregateInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionOrderByRelationAggregateInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -394,6 +396,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   emailVerificationTokens?: Prisma.EmailVerificationTokenListRelationFilter
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignListRelationFilter
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionListRelationFilter
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimListRelationFilter
 }, "id" | "username" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -474,6 +477,7 @@ export type UserCreateInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -513,6 +517,7 @@ export type UserUncheckedCreateInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -551,6 +556,7 @@ export type UserUpdateInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -590,6 +596,7 @@ export type UserUncheckedUpdateInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -1051,6 +1058,20 @@ export type UserUpdateOneRequiredWithoutRedemptionCodeRedemptionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRedemptionCodeRedemptionsInput, Prisma.UserUpdateWithoutRedemptionCodeRedemptionsInput>, Prisma.UserUncheckedUpdateWithoutRedemptionCodeRedemptionsInput>
 }
 
+export type UserCreateNestedOneWithoutDailyRedemptionDropClaimsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDailyRedemptionDropClaimsInput, Prisma.UserUncheckedCreateWithoutDailyRedemptionDropClaimsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDailyRedemptionDropClaimsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutDailyRedemptionDropClaimsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutDailyRedemptionDropClaimsInput, Prisma.UserUncheckedCreateWithoutDailyRedemptionDropClaimsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutDailyRedemptionDropClaimsInput
+  upsert?: Prisma.UserUpsertWithoutDailyRedemptionDropClaimsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDailyRedemptionDropClaimsInput, Prisma.UserUpdateWithoutDailyRedemptionDropClaimsInput>, Prisma.UserUncheckedUpdateWithoutDailyRedemptionDropClaimsInput>
+}
+
 export type UserCreateWithoutResourceTypesInput = {
   username: string
   email: string
@@ -1086,6 +1107,7 @@ export type UserCreateWithoutResourceTypesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutResourceTypesInput = {
@@ -1124,6 +1146,7 @@ export type UserUncheckedCreateWithoutResourceTypesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutResourceTypesInput = {
@@ -1177,6 +1200,7 @@ export type UserUpdateWithoutResourceTypesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResourceTypesInput = {
@@ -1215,6 +1239,7 @@ export type UserUncheckedUpdateWithoutResourceTypesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutResourcesInput = {
@@ -1252,6 +1277,7 @@ export type UserCreateWithoutResourcesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutResourcesInput = {
@@ -1290,6 +1316,7 @@ export type UserUncheckedCreateWithoutResourcesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutResourcesInput = {
@@ -1343,6 +1370,7 @@ export type UserUpdateWithoutResourcesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutResourcesInput = {
@@ -1381,6 +1409,7 @@ export type UserUncheckedUpdateWithoutResourcesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPostsInput = {
@@ -1418,6 +1447,7 @@ export type UserCreateWithoutPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPostsInput = {
@@ -1456,6 +1486,7 @@ export type UserUncheckedCreateWithoutPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPostsInput = {
@@ -1509,6 +1540,7 @@ export type UserUpdateWithoutPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPostsInput = {
@@ -1547,6 +1579,7 @@ export type UserUncheckedUpdateWithoutPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAlistInput = {
@@ -1584,6 +1617,7 @@ export type UserCreateWithoutAlistInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAlistInput = {
@@ -1622,6 +1656,7 @@ export type UserUncheckedCreateWithoutAlistInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAlistInput = {
@@ -1675,6 +1710,7 @@ export type UserUpdateWithoutAlistInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAlistInput = {
@@ -1713,6 +1749,7 @@ export type UserUncheckedUpdateWithoutAlistInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBlogPostsInput = {
@@ -1750,6 +1787,7 @@ export type UserCreateWithoutBlogPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBlogPostsInput = {
@@ -1788,6 +1826,7 @@ export type UserUncheckedCreateWithoutBlogPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBlogPostsInput = {
@@ -1841,6 +1880,7 @@ export type UserUpdateWithoutBlogPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlogPostsInput = {
@@ -1879,6 +1919,7 @@ export type UserUncheckedUpdateWithoutBlogPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutUserResourcesInput = {
@@ -1916,6 +1957,7 @@ export type UserCreateWithoutUserResourcesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutUserResourcesInput = {
@@ -1954,6 +1996,7 @@ export type UserUncheckedCreateWithoutUserResourcesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutUserResourcesInput = {
@@ -2007,6 +2050,7 @@ export type UserUpdateWithoutUserResourcesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserResourcesInput = {
@@ -2045,6 +2089,7 @@ export type UserUncheckedUpdateWithoutUserResourcesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutVodConfigsInput = {
@@ -2082,6 +2127,7 @@ export type UserCreateWithoutVodConfigsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutVodConfigsInput = {
@@ -2120,6 +2166,7 @@ export type UserUncheckedCreateWithoutVodConfigsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutVodConfigsInput = {
@@ -2173,6 +2220,7 @@ export type UserUpdateWithoutVodConfigsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVodConfigsInput = {
@@ -2211,6 +2259,7 @@ export type UserUncheckedUpdateWithoutVodConfigsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutEmailVerificationTokensInput = {
@@ -2248,6 +2297,7 @@ export type UserCreateWithoutEmailVerificationTokensInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutEmailVerificationTokensInput = {
@@ -2286,6 +2336,7 @@ export type UserUncheckedCreateWithoutEmailVerificationTokensInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutEmailVerificationTokensInput = {
@@ -2339,6 +2390,7 @@ export type UserUpdateWithoutEmailVerificationTokensInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
@@ -2377,6 +2429,7 @@ export type UserUncheckedUpdateWithoutEmailVerificationTokensInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumTopicsInput = {
@@ -2414,6 +2467,7 @@ export type UserCreateWithoutForumTopicsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumTopicsInput = {
@@ -2452,6 +2506,7 @@ export type UserUncheckedCreateWithoutForumTopicsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumTopicsInput = {
@@ -2505,6 +2560,7 @@ export type UserUpdateWithoutForumTopicsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumTopicsInput = {
@@ -2543,6 +2599,7 @@ export type UserUncheckedUpdateWithoutForumTopicsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumPostsInput = {
@@ -2580,6 +2637,7 @@ export type UserCreateWithoutForumPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumPostsInput = {
@@ -2618,6 +2676,7 @@ export type UserUncheckedCreateWithoutForumPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumPostsInput = {
@@ -2671,6 +2730,7 @@ export type UserUpdateWithoutForumPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumPostsInput = {
@@ -2709,6 +2769,7 @@ export type UserUncheckedUpdateWithoutForumPostsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutForumTopicReadStatesInput = {
@@ -2746,6 +2807,7 @@ export type UserCreateWithoutForumTopicReadStatesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutForumTopicReadStatesInput = {
@@ -2784,6 +2846,7 @@ export type UserUncheckedCreateWithoutForumTopicReadStatesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutForumTopicReadStatesInput = {
@@ -2837,6 +2900,7 @@ export type UserUpdateWithoutForumTopicReadStatesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutForumTopicReadStatesInput = {
@@ -2875,6 +2939,7 @@ export type UserUncheckedUpdateWithoutForumTopicReadStatesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -2912,6 +2977,7 @@ export type UserCreateWithoutNotificationsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -2950,6 +3016,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -3003,6 +3070,7 @@ export type UserUpdateWithoutNotificationsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -3041,6 +3109,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedRoomsInput = {
@@ -3078,6 +3147,7 @@ export type UserCreateWithoutCreatedRoomsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedRoomsInput = {
@@ -3116,6 +3186,7 @@ export type UserUncheckedCreateWithoutCreatedRoomsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedRoomsInput = {
@@ -3169,6 +3240,7 @@ export type UserUpdateWithoutCreatedRoomsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedRoomsInput = {
@@ -3207,6 +3279,7 @@ export type UserUncheckedUpdateWithoutCreatedRoomsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutChatRoomsInput = {
@@ -3244,6 +3317,7 @@ export type UserCreateWithoutChatRoomsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutChatRoomsInput = {
@@ -3282,6 +3356,7 @@ export type UserUncheckedCreateWithoutChatRoomsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutChatRoomsInput = {
@@ -3335,6 +3410,7 @@ export type UserUpdateWithoutChatRoomsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChatRoomsInput = {
@@ -3373,6 +3449,7 @@ export type UserUncheckedUpdateWithoutChatRoomsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessagesInput = {
@@ -3410,6 +3487,7 @@ export type UserCreateWithoutMessagesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessagesInput = {
@@ -3448,6 +3526,7 @@ export type UserUncheckedCreateWithoutMessagesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessagesInput = {
@@ -3501,6 +3580,7 @@ export type UserUpdateWithoutMessagesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -3539,6 +3619,7 @@ export type UserUncheckedUpdateWithoutMessagesInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCheckInsInput = {
@@ -3576,6 +3657,7 @@ export type UserCreateWithoutCheckInsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCheckInsInput = {
@@ -3614,6 +3696,7 @@ export type UserUncheckedCreateWithoutCheckInsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCheckInsInput = {
@@ -3667,6 +3750,7 @@ export type UserUpdateWithoutCheckInsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCheckInsInput = {
@@ -3705,6 +3789,7 @@ export type UserUncheckedUpdateWithoutCheckInsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPointsHistoryInput = {
@@ -3742,6 +3827,7 @@ export type UserCreateWithoutPointsHistoryInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPointsHistoryInput = {
@@ -3780,6 +3866,7 @@ export type UserUncheckedCreateWithoutPointsHistoryInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPointsHistoryInput = {
@@ -3833,6 +3920,7 @@ export type UserUpdateWithoutPointsHistoryInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPointsHistoryInput = {
@@ -3871,6 +3959,7 @@ export type UserUncheckedUpdateWithoutPointsHistoryInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTransferPointGrantsInput = {
@@ -3908,6 +3997,7 @@ export type UserCreateWithoutTransferPointGrantsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTransferPointGrantsInput = {
@@ -3946,6 +4036,7 @@ export type UserUncheckedCreateWithoutTransferPointGrantsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTransferPointGrantsInput = {
@@ -3999,6 +4090,7 @@ export type UserUpdateWithoutTransferPointGrantsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTransferPointGrantsInput = {
@@ -4037,6 +4129,7 @@ export type UserUncheckedUpdateWithoutTransferPointGrantsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutPointTaskCompletionsInput = {
@@ -4074,6 +4167,7 @@ export type UserCreateWithoutPointTaskCompletionsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutPointTaskCompletionsInput = {
@@ -4112,6 +4206,7 @@ export type UserUncheckedCreateWithoutPointTaskCompletionsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutPointTaskCompletionsInput = {
@@ -4165,6 +4260,7 @@ export type UserUpdateWithoutPointTaskCompletionsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutPointTaskCompletionsInput = {
@@ -4203,6 +4299,7 @@ export type UserUncheckedUpdateWithoutPointTaskCompletionsInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRegistrationGiftGrantInput = {
@@ -4240,6 +4337,7 @@ export type UserCreateWithoutRegistrationGiftGrantInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRegistrationGiftGrantInput = {
@@ -4278,6 +4376,7 @@ export type UserUncheckedCreateWithoutRegistrationGiftGrantInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRegistrationGiftGrantInput = {
@@ -4331,6 +4430,7 @@ export type UserUpdateWithoutRegistrationGiftGrantInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRegistrationGiftGrantInput = {
@@ -4369,6 +4469,7 @@ export type UserUncheckedUpdateWithoutRegistrationGiftGrantInput = {
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRedemptionCodeCampaignsInput = {
@@ -4406,6 +4507,7 @@ export type UserCreateWithoutRedemptionCodeCampaignsInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRedemptionCodeCampaignsInput = {
@@ -4444,6 +4546,7 @@ export type UserUncheckedCreateWithoutRedemptionCodeCampaignsInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRedemptionCodeCampaignsInput = {
@@ -4497,6 +4600,7 @@ export type UserUpdateWithoutRedemptionCodeCampaignsInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRedemptionCodeCampaignsInput = {
@@ -4535,6 +4639,7 @@ export type UserUncheckedUpdateWithoutRedemptionCodeCampaignsInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRedemptionCodeRedemptionsInput = {
@@ -4572,6 +4677,7 @@ export type UserCreateWithoutRedemptionCodeRedemptionsInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRedemptionCodeRedemptionsInput = {
@@ -4610,6 +4716,7 @@ export type UserUncheckedCreateWithoutRedemptionCodeRedemptionsInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutUserInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRedemptionCodeRedemptionsInput = {
@@ -4663,6 +4770,7 @@ export type UserUpdateWithoutRedemptionCodeRedemptionsInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRedemptionCodeRedemptionsInput = {
@@ -4701,6 +4809,177 @@ export type UserUncheckedUpdateWithoutRedemptionCodeRedemptionsInput = {
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutUserNestedInput
   emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
   redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  dailyRedemptionDropClaims?: Prisma.DailyRedemptionDropClaimUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutDailyRedemptionDropClaimsInput = {
+  username: string
+  email: string
+  password: string
+  role?: string
+  status?: string
+  avatarStyle?: string
+  salt?: string | null
+  points?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
+  resources?: Prisma.ResourceCreateNestedManyWithoutCreatorInput
+  resourceTypes?: Prisma.ResourceTypeCreateNestedManyWithoutCreatorInput
+  posts?: Prisma.PostCreateNestedManyWithoutCreatorInput
+  alist?: Prisma.AlistCreateNestedManyWithoutCreatorInput
+  blogPosts?: Prisma.BlogPostCreateNestedManyWithoutAuthorInput
+  userResources?: Prisma.UserResourceCreateNestedManyWithoutCreatorInput
+  vodConfigs?: Prisma.UserVodConfigCreateNestedManyWithoutUserInput
+  forumTopics?: Prisma.ForumTopicCreateNestedManyWithoutAuthorInput
+  forumPosts?: Prisma.ForumPostCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  messages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
+  chatRooms?: Prisma.ChatRoomUserCreateNestedManyWithoutUserInput
+  createdRooms?: Prisma.ChatRoomCreateNestedManyWithoutCreatorInput
+  checkIns?: Prisma.CheckInCreateNestedManyWithoutUserInput
+  pointsHistory?: Prisma.PointsHistoryCreateNestedManyWithoutUserInput
+  transferPointGrants?: Prisma.TransferPointGrantCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionCreateNestedManyWithoutUserInput
+  registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenCreateNestedManyWithoutUserInput
+  redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignCreateNestedManyWithoutCreatedByInput
+  redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutDailyRedemptionDropClaimsInput = {
+  id?: number
+  username: string
+  email: string
+  password: string
+  role?: string
+  status?: string
+  avatarStyle?: string
+  salt?: string | null
+  points?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  isVerified?: boolean
+  emailVerifiedAt?: Date | string | null
+  emailVerificationRequired?: boolean
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutCreatorInput
+  resourceTypes?: Prisma.ResourceTypeUncheckedCreateNestedManyWithoutCreatorInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutCreatorInput
+  alist?: Prisma.AlistUncheckedCreateNestedManyWithoutCreatorInput
+  blogPosts?: Prisma.BlogPostUncheckedCreateNestedManyWithoutAuthorInput
+  userResources?: Prisma.UserResourceUncheckedCreateNestedManyWithoutCreatorInput
+  vodConfigs?: Prisma.UserVodConfigUncheckedCreateNestedManyWithoutUserInput
+  forumTopics?: Prisma.ForumTopicUncheckedCreateNestedManyWithoutAuthorInput
+  forumPosts?: Prisma.ForumPostUncheckedCreateNestedManyWithoutAuthorInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedCreateNestedManyWithoutUserInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
+  chatRooms?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutUserInput
+  createdRooms?: Prisma.ChatRoomUncheckedCreateNestedManyWithoutCreatorInput
+  checkIns?: Prisma.CheckInUncheckedCreateNestedManyWithoutUserInput
+  pointsHistory?: Prisma.PointsHistoryUncheckedCreateNestedManyWithoutUserInput
+  transferPointGrants?: Prisma.TransferPointGrantUncheckedCreateNestedManyWithoutUserInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedCreateNestedManyWithoutUserInput
+  registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutUserInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+  redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedCreateNestedManyWithoutCreatedByInput
+  redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutDailyRedemptionDropClaimsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutDailyRedemptionDropClaimsInput, Prisma.UserUncheckedCreateWithoutDailyRedemptionDropClaimsInput>
+}
+
+export type UserUpsertWithoutDailyRedemptionDropClaimsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutDailyRedemptionDropClaimsInput, Prisma.UserUncheckedUpdateWithoutDailyRedemptionDropClaimsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutDailyRedemptionDropClaimsInput, Prisma.UserUncheckedCreateWithoutDailyRedemptionDropClaimsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutDailyRedemptionDropClaimsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutDailyRedemptionDropClaimsInput, Prisma.UserUncheckedUpdateWithoutDailyRedemptionDropClaimsInput>
+}
+
+export type UserUpdateWithoutDailyRedemptionDropClaimsInput = {
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarStyle?: Prisma.StringFieldUpdateOperationsInput | string
+  salt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resources?: Prisma.ResourceUpdateManyWithoutCreatorNestedInput
+  resourceTypes?: Prisma.ResourceTypeUpdateManyWithoutCreatorNestedInput
+  posts?: Prisma.PostUpdateManyWithoutCreatorNestedInput
+  alist?: Prisma.AlistUpdateManyWithoutCreatorNestedInput
+  blogPosts?: Prisma.BlogPostUpdateManyWithoutAuthorNestedInput
+  userResources?: Prisma.UserResourceUpdateManyWithoutCreatorNestedInput
+  vodConfigs?: Prisma.UserVodConfigUpdateManyWithoutUserNestedInput
+  forumTopics?: Prisma.ForumTopicUpdateManyWithoutAuthorNestedInput
+  forumPosts?: Prisma.ForumPostUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  messages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
+  chatRooms?: Prisma.ChatRoomUserUpdateManyWithoutUserNestedInput
+  createdRooms?: Prisma.ChatRoomUpdateManyWithoutCreatorNestedInput
+  checkIns?: Prisma.CheckInUpdateManyWithoutUserNestedInput
+  pointsHistory?: Prisma.PointsHistoryUpdateManyWithoutUserNestedInput
+  transferPointGrants?: Prisma.TransferPointGrantUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUpdateManyWithoutUserNestedInput
+  registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUpdateManyWithoutUserNestedInput
+  redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUpdateManyWithoutCreatedByNestedInput
+  redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutDailyRedemptionDropClaimsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  avatarStyle?: Prisma.StringFieldUpdateOperationsInput | string
+  salt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  emailVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  emailVerificationRequired?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  resourceTypes?: Prisma.ResourceTypeUncheckedUpdateManyWithoutCreatorNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutCreatorNestedInput
+  alist?: Prisma.AlistUncheckedUpdateManyWithoutCreatorNestedInput
+  blogPosts?: Prisma.BlogPostUncheckedUpdateManyWithoutAuthorNestedInput
+  userResources?: Prisma.UserResourceUncheckedUpdateManyWithoutCreatorNestedInput
+  vodConfigs?: Prisma.UserVodConfigUncheckedUpdateManyWithoutUserNestedInput
+  forumTopics?: Prisma.ForumTopicUncheckedUpdateManyWithoutAuthorNestedInput
+  forumPosts?: Prisma.ForumPostUncheckedUpdateManyWithoutAuthorNestedInput
+  forumTopicReadStates?: Prisma.ForumTopicReadStateUncheckedUpdateManyWithoutUserNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+  chatRooms?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutUserNestedInput
+  createdRooms?: Prisma.ChatRoomUncheckedUpdateManyWithoutCreatorNestedInput
+  checkIns?: Prisma.CheckInUncheckedUpdateManyWithoutUserNestedInput
+  pointsHistory?: Prisma.PointsHistoryUncheckedUpdateManyWithoutUserNestedInput
+  transferPointGrants?: Prisma.TransferPointGrantUncheckedUpdateManyWithoutUserNestedInput
+  pointTaskCompletions?: Prisma.PointTaskCompletionUncheckedUpdateManyWithoutUserNestedInput
+  registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutUserNestedInput
+  emailVerificationTokens?: Prisma.EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+  redemptionCodeCampaigns?: Prisma.RedemptionCodeCampaignUncheckedUpdateManyWithoutCreatedByNestedInput
+  redemptionCodeRedemptions?: Prisma.RedemptionCodeRedemptionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -4730,6 +5009,7 @@ export type UserCountOutputType = {
   emailVerificationTokens: number
   redemptionCodeCampaigns: number
   redemptionCodeRedemptions: number
+  dailyRedemptionDropClaims: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4754,6 +5034,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   emailVerificationTokens?: boolean | UserCountOutputTypeCountEmailVerificationTokensArgs
   redemptionCodeCampaigns?: boolean | UserCountOutputTypeCountRedemptionCodeCampaignsArgs
   redemptionCodeRedemptions?: boolean | UserCountOutputTypeCountRedemptionCodeRedemptionsArgs
+  dailyRedemptionDropClaims?: boolean | UserCountOutputTypeCountDailyRedemptionDropClaimsArgs
 }
 
 /**
@@ -4913,6 +5194,13 @@ export type UserCountOutputTypeCountRedemptionCodeRedemptionsArgs<ExtArgs extend
   where?: Prisma.RedemptionCodeRedemptionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountDailyRedemptionDropClaimsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DailyRedemptionDropClaimWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -4951,6 +5239,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   emailVerificationTokens?: boolean | Prisma.User$emailVerificationTokensArgs<ExtArgs>
   redemptionCodeCampaigns?: boolean | Prisma.User$redemptionCodeCampaignsArgs<ExtArgs>
   redemptionCodeRedemptions?: boolean | Prisma.User$redemptionCodeRedemptionsArgs<ExtArgs>
+  dailyRedemptionDropClaims?: boolean | Prisma.User$dailyRedemptionDropClaimsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -5029,6 +5318,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   emailVerificationTokens?: boolean | Prisma.User$emailVerificationTokensArgs<ExtArgs>
   redemptionCodeCampaigns?: boolean | Prisma.User$redemptionCodeCampaignsArgs<ExtArgs>
   redemptionCodeRedemptions?: boolean | Prisma.User$redemptionCodeRedemptionsArgs<ExtArgs>
+  dailyRedemptionDropClaims?: boolean | Prisma.User$dailyRedemptionDropClaimsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -5059,6 +5349,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     emailVerificationTokens: Prisma.$EmailVerificationTokenPayload<ExtArgs>[]
     redemptionCodeCampaigns: Prisma.$RedemptionCodeCampaignPayload<ExtArgs>[]
     redemptionCodeRedemptions: Prisma.$RedemptionCodeRedemptionPayload<ExtArgs>[]
+    dailyRedemptionDropClaims: Prisma.$DailyRedemptionDropClaimPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -5491,6 +5782,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   emailVerificationTokens<T extends Prisma.User$emailVerificationTokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$emailVerificationTokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EmailVerificationTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   redemptionCodeCampaigns<T extends Prisma.User$redemptionCodeCampaignsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$redemptionCodeCampaignsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RedemptionCodeCampaignPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   redemptionCodeRedemptions<T extends Prisma.User$redemptionCodeRedemptionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$redemptionCodeRedemptionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RedemptionCodeRedemptionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  dailyRedemptionDropClaims<T extends Prisma.User$dailyRedemptionDropClaimsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$dailyRedemptionDropClaimsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DailyRedemptionDropClaimPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6442,6 +6734,30 @@ export type User$redemptionCodeRedemptionsArgs<ExtArgs extends runtime.Types.Ext
   take?: number
   skip?: number
   distinct?: Prisma.RedemptionCodeRedemptionScalarFieldEnum | Prisma.RedemptionCodeRedemptionScalarFieldEnum[]
+}
+
+/**
+ * User.dailyRedemptionDropClaims
+ */
+export type User$dailyRedemptionDropClaimsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DailyRedemptionDropClaim
+   */
+  select?: Prisma.DailyRedemptionDropClaimSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DailyRedemptionDropClaim
+   */
+  omit?: Prisma.DailyRedemptionDropClaimOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DailyRedemptionDropClaimInclude<ExtArgs> | null
+  where?: Prisma.DailyRedemptionDropClaimWhereInput
+  orderBy?: Prisma.DailyRedemptionDropClaimOrderByWithRelationInput | Prisma.DailyRedemptionDropClaimOrderByWithRelationInput[]
+  cursor?: Prisma.DailyRedemptionDropClaimWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DailyRedemptionDropClaimScalarFieldEnum | Prisma.DailyRedemptionDropClaimScalarFieldEnum[]
 }
 
 /**

@@ -256,6 +256,7 @@ export type PointsHistoryWhereInput = {
   pointTaskCompletion?: Prisma.XOR<Prisma.PointTaskCompletionNullableScalarRelationFilter, Prisma.PointTaskCompletionWhereInput> | null
   registrationGiftGrant?: Prisma.XOR<Prisma.RegistrationGiftGrantNullableScalarRelationFilter, Prisma.RegistrationGiftGrantWhereInput> | null
   redemptionCodeRedemption?: Prisma.XOR<Prisma.RedemptionCodeRedemptionNullableScalarRelationFilter, Prisma.RedemptionCodeRedemptionWhereInput> | null
+  dailyRedemptionDropClaim?: Prisma.XOR<Prisma.DailyRedemptionDropClaimNullableScalarRelationFilter, Prisma.DailyRedemptionDropClaimWhereInput> | null
 }
 
 export type PointsHistoryOrderByWithRelationInput = {
@@ -272,6 +273,7 @@ export type PointsHistoryOrderByWithRelationInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionOrderByWithRelationInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantOrderByWithRelationInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionOrderByWithRelationInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimOrderByWithRelationInput
 }
 
 export type PointsHistoryWhereUniqueInput = Prisma.AtLeast<{
@@ -291,6 +293,7 @@ export type PointsHistoryWhereUniqueInput = Prisma.AtLeast<{
   pointTaskCompletion?: Prisma.XOR<Prisma.PointTaskCompletionNullableScalarRelationFilter, Prisma.PointTaskCompletionWhereInput> | null
   registrationGiftGrant?: Prisma.XOR<Prisma.RegistrationGiftGrantNullableScalarRelationFilter, Prisma.RegistrationGiftGrantWhereInput> | null
   redemptionCodeRedemption?: Prisma.XOR<Prisma.RedemptionCodeRedemptionNullableScalarRelationFilter, Prisma.RedemptionCodeRedemptionWhereInput> | null
+  dailyRedemptionDropClaim?: Prisma.XOR<Prisma.DailyRedemptionDropClaimNullableScalarRelationFilter, Prisma.DailyRedemptionDropClaimWhereInput> | null
 }, "id">
 
 export type PointsHistoryOrderByWithAggregationInput = {
@@ -335,6 +338,7 @@ export type PointsHistoryCreateInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUncheckedCreateInput = {
@@ -350,6 +354,7 @@ export type PointsHistoryUncheckedCreateInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUpdateInput = {
@@ -364,6 +369,7 @@ export type PointsHistoryUpdateInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateInput = {
@@ -379,6 +385,7 @@ export type PointsHistoryUncheckedUpdateInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryCreateManyInput = {
@@ -580,6 +587,22 @@ export type PointsHistoryUpdateOneWithoutRedemptionCodeRedemptionNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.PointsHistoryUpdateToOneWithWhereWithoutRedemptionCodeRedemptionInput, Prisma.PointsHistoryUpdateWithoutRedemptionCodeRedemptionInput>, Prisma.PointsHistoryUncheckedUpdateWithoutRedemptionCodeRedemptionInput>
 }
 
+export type PointsHistoryCreateNestedOneWithoutDailyRedemptionDropClaimInput = {
+  create?: Prisma.XOR<Prisma.PointsHistoryCreateWithoutDailyRedemptionDropClaimInput, Prisma.PointsHistoryUncheckedCreateWithoutDailyRedemptionDropClaimInput>
+  connectOrCreate?: Prisma.PointsHistoryCreateOrConnectWithoutDailyRedemptionDropClaimInput
+  connect?: Prisma.PointsHistoryWhereUniqueInput
+}
+
+export type PointsHistoryUpdateOneWithoutDailyRedemptionDropClaimNestedInput = {
+  create?: Prisma.XOR<Prisma.PointsHistoryCreateWithoutDailyRedemptionDropClaimInput, Prisma.PointsHistoryUncheckedCreateWithoutDailyRedemptionDropClaimInput>
+  connectOrCreate?: Prisma.PointsHistoryCreateOrConnectWithoutDailyRedemptionDropClaimInput
+  upsert?: Prisma.PointsHistoryUpsertWithoutDailyRedemptionDropClaimInput
+  disconnect?: Prisma.PointsHistoryWhereInput | boolean
+  delete?: Prisma.PointsHistoryWhereInput | boolean
+  connect?: Prisma.PointsHistoryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.PointsHistoryUpdateToOneWithWhereWithoutDailyRedemptionDropClaimInput, Prisma.PointsHistoryUpdateWithoutDailyRedemptionDropClaimInput>, Prisma.PointsHistoryUncheckedUpdateWithoutDailyRedemptionDropClaimInput>
+}
+
 export type PointsHistoryCreateWithoutUserInput = {
   points: number
   type: string
@@ -591,6 +614,7 @@ export type PointsHistoryCreateWithoutUserInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUncheckedCreateWithoutUserInput = {
@@ -605,6 +629,7 @@ export type PointsHistoryUncheckedCreateWithoutUserInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryCreateOrConnectWithoutUserInput = {
@@ -658,6 +683,7 @@ export type PointsHistoryCreateWithoutTransferPointGrantInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUncheckedCreateWithoutTransferPointGrantInput = {
@@ -672,6 +698,7 @@ export type PointsHistoryUncheckedCreateWithoutTransferPointGrantInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryCreateOrConnectWithoutTransferPointGrantInput = {
@@ -701,6 +728,7 @@ export type PointsHistoryUpdateWithoutTransferPointGrantInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateWithoutTransferPointGrantInput = {
@@ -715,6 +743,7 @@ export type PointsHistoryUncheckedUpdateWithoutTransferPointGrantInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryCreateWithoutPointTaskCompletionInput = {
@@ -728,6 +757,7 @@ export type PointsHistoryCreateWithoutPointTaskCompletionInput = {
   transferPointGrant?: Prisma.TransferPointGrantCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUncheckedCreateWithoutPointTaskCompletionInput = {
@@ -742,6 +772,7 @@ export type PointsHistoryUncheckedCreateWithoutPointTaskCompletionInput = {
   transferPointGrant?: Prisma.TransferPointGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryCreateOrConnectWithoutPointTaskCompletionInput = {
@@ -771,6 +802,7 @@ export type PointsHistoryUpdateWithoutPointTaskCompletionInput = {
   transferPointGrant?: Prisma.TransferPointGrantUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateWithoutPointTaskCompletionInput = {
@@ -785,6 +817,7 @@ export type PointsHistoryUncheckedUpdateWithoutPointTaskCompletionInput = {
   transferPointGrant?: Prisma.TransferPointGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryCreateWithoutRegistrationGiftGrantInput = {
@@ -798,6 +831,7 @@ export type PointsHistoryCreateWithoutRegistrationGiftGrantInput = {
   transferPointGrant?: Prisma.TransferPointGrantCreateNestedOneWithoutPointsHistoryInput
   pointTaskCompletion?: Prisma.PointTaskCompletionCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUncheckedCreateWithoutRegistrationGiftGrantInput = {
@@ -812,6 +846,7 @@ export type PointsHistoryUncheckedCreateWithoutRegistrationGiftGrantInput = {
   transferPointGrant?: Prisma.TransferPointGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedCreateNestedOneWithoutPointsHistoryInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryCreateOrConnectWithoutRegistrationGiftGrantInput = {
@@ -841,6 +876,7 @@ export type PointsHistoryUpdateWithoutRegistrationGiftGrantInput = {
   transferPointGrant?: Prisma.TransferPointGrantUpdateOneWithoutPointsHistoryNestedInput
   pointTaskCompletion?: Prisma.PointTaskCompletionUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateWithoutRegistrationGiftGrantInput = {
@@ -855,6 +891,7 @@ export type PointsHistoryUncheckedUpdateWithoutRegistrationGiftGrantInput = {
   transferPointGrant?: Prisma.TransferPointGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryCreateWithoutRedemptionCodeRedemptionInput = {
@@ -868,6 +905,7 @@ export type PointsHistoryCreateWithoutRedemptionCodeRedemptionInput = {
   transferPointGrant?: Prisma.TransferPointGrantCreateNestedOneWithoutPointsHistoryInput
   pointTaskCompletion?: Prisma.PointTaskCompletionCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryUncheckedCreateWithoutRedemptionCodeRedemptionInput = {
@@ -882,6 +920,7 @@ export type PointsHistoryUncheckedCreateWithoutRedemptionCodeRedemptionInput = {
   transferPointGrant?: Prisma.TransferPointGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedCreateNestedOneWithoutPointsHistoryInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedCreateNestedOneWithoutPointsHistoryInput
 }
 
 export type PointsHistoryCreateOrConnectWithoutRedemptionCodeRedemptionInput = {
@@ -911,6 +950,7 @@ export type PointsHistoryUpdateWithoutRedemptionCodeRedemptionInput = {
   transferPointGrant?: Prisma.TransferPointGrantUpdateOneWithoutPointsHistoryNestedInput
   pointTaskCompletion?: Prisma.PointTaskCompletionUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateWithoutRedemptionCodeRedemptionInput = {
@@ -925,6 +965,81 @@ export type PointsHistoryUncheckedUpdateWithoutRedemptionCodeRedemptionInput = {
   transferPointGrant?: Prisma.TransferPointGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedUpdateOneWithoutPointsHistoryNestedInput
+}
+
+export type PointsHistoryCreateWithoutDailyRedemptionDropClaimInput = {
+  points: number
+  type: string
+  description?: string | null
+  relatedId?: number | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutPointsHistoryInput
+  transferPointGrant?: Prisma.TransferPointGrantCreateNestedOneWithoutPointsHistoryInput
+  pointTaskCompletion?: Prisma.PointTaskCompletionCreateNestedOneWithoutPointsHistoryInput
+  registrationGiftGrant?: Prisma.RegistrationGiftGrantCreateNestedOneWithoutPointsHistoryInput
+  redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionCreateNestedOneWithoutPointsHistoryInput
+}
+
+export type PointsHistoryUncheckedCreateWithoutDailyRedemptionDropClaimInput = {
+  id?: number
+  userId: number
+  points: number
+  type: string
+  description?: string | null
+  relatedId?: number | null
+  expiresAt?: Date | string | null
+  createdAt?: Date | string
+  transferPointGrant?: Prisma.TransferPointGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
+  pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedCreateNestedOneWithoutPointsHistoryInput
+  registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedCreateNestedOneWithoutPointsHistoryInput
+  redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedCreateNestedOneWithoutPointsHistoryInput
+}
+
+export type PointsHistoryCreateOrConnectWithoutDailyRedemptionDropClaimInput = {
+  where: Prisma.PointsHistoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.PointsHistoryCreateWithoutDailyRedemptionDropClaimInput, Prisma.PointsHistoryUncheckedCreateWithoutDailyRedemptionDropClaimInput>
+}
+
+export type PointsHistoryUpsertWithoutDailyRedemptionDropClaimInput = {
+  update: Prisma.XOR<Prisma.PointsHistoryUpdateWithoutDailyRedemptionDropClaimInput, Prisma.PointsHistoryUncheckedUpdateWithoutDailyRedemptionDropClaimInput>
+  create: Prisma.XOR<Prisma.PointsHistoryCreateWithoutDailyRedemptionDropClaimInput, Prisma.PointsHistoryUncheckedCreateWithoutDailyRedemptionDropClaimInput>
+  where?: Prisma.PointsHistoryWhereInput
+}
+
+export type PointsHistoryUpdateToOneWithWhereWithoutDailyRedemptionDropClaimInput = {
+  where?: Prisma.PointsHistoryWhereInput
+  data: Prisma.XOR<Prisma.PointsHistoryUpdateWithoutDailyRedemptionDropClaimInput, Prisma.PointsHistoryUncheckedUpdateWithoutDailyRedemptionDropClaimInput>
+}
+
+export type PointsHistoryUpdateWithoutDailyRedemptionDropClaimInput = {
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutPointsHistoryNestedInput
+  transferPointGrant?: Prisma.TransferPointGrantUpdateOneWithoutPointsHistoryNestedInput
+  pointTaskCompletion?: Prisma.PointTaskCompletionUpdateOneWithoutPointsHistoryNestedInput
+  registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutPointsHistoryNestedInput
+  redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUpdateOneWithoutPointsHistoryNestedInput
+}
+
+export type PointsHistoryUncheckedUpdateWithoutDailyRedemptionDropClaimInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  points?: Prisma.IntFieldUpdateOperationsInput | number
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  relatedId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  transferPointGrant?: Prisma.TransferPointGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryCreateManyUserInput = {
@@ -948,6 +1063,7 @@ export type PointsHistoryUpdateWithoutUserInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateWithoutUserInput = {
@@ -962,6 +1078,7 @@ export type PointsHistoryUncheckedUpdateWithoutUserInput = {
   pointTaskCompletion?: Prisma.PointTaskCompletionUncheckedUpdateOneWithoutPointsHistoryNestedInput
   registrationGiftGrant?: Prisma.RegistrationGiftGrantUncheckedUpdateOneWithoutPointsHistoryNestedInput
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionUncheckedUpdateOneWithoutPointsHistoryNestedInput
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimUncheckedUpdateOneWithoutPointsHistoryNestedInput
 }
 
 export type PointsHistoryUncheckedUpdateManyWithoutUserInput = {
@@ -990,6 +1107,7 @@ export type PointsHistorySelect<ExtArgs extends runtime.Types.Extensions.Interna
   pointTaskCompletion?: boolean | Prisma.PointsHistory$pointTaskCompletionArgs<ExtArgs>
   registrationGiftGrant?: boolean | Prisma.PointsHistory$registrationGiftGrantArgs<ExtArgs>
   redemptionCodeRedemption?: boolean | Prisma.PointsHistory$redemptionCodeRedemptionArgs<ExtArgs>
+  dailyRedemptionDropClaim?: boolean | Prisma.PointsHistory$dailyRedemptionDropClaimArgs<ExtArgs>
 }, ExtArgs["result"]["pointsHistory"]>
 
 export type PointsHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1034,6 +1152,7 @@ export type PointsHistoryInclude<ExtArgs extends runtime.Types.Extensions.Intern
   pointTaskCompletion?: boolean | Prisma.PointsHistory$pointTaskCompletionArgs<ExtArgs>
   registrationGiftGrant?: boolean | Prisma.PointsHistory$registrationGiftGrantArgs<ExtArgs>
   redemptionCodeRedemption?: boolean | Prisma.PointsHistory$redemptionCodeRedemptionArgs<ExtArgs>
+  dailyRedemptionDropClaim?: boolean | Prisma.PointsHistory$dailyRedemptionDropClaimArgs<ExtArgs>
 }
 export type PointsHistoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1050,6 +1169,7 @@ export type $PointsHistoryPayload<ExtArgs extends runtime.Types.Extensions.Inter
     pointTaskCompletion: Prisma.$PointTaskCompletionPayload<ExtArgs> | null
     registrationGiftGrant: Prisma.$RegistrationGiftGrantPayload<ExtArgs> | null
     redemptionCodeRedemption: Prisma.$RedemptionCodeRedemptionPayload<ExtArgs> | null
+    dailyRedemptionDropClaim: Prisma.$DailyRedemptionDropClaimPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
@@ -1459,6 +1579,7 @@ export interface Prisma__PointsHistoryClient<T, Null = never, ExtArgs extends ru
   pointTaskCompletion<T extends Prisma.PointsHistory$pointTaskCompletionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PointsHistory$pointTaskCompletionArgs<ExtArgs>>): Prisma.Prisma__PointTaskCompletionClient<runtime.Types.Result.GetResult<Prisma.$PointTaskCompletionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   registrationGiftGrant<T extends Prisma.PointsHistory$registrationGiftGrantArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PointsHistory$registrationGiftGrantArgs<ExtArgs>>): Prisma.Prisma__RegistrationGiftGrantClient<runtime.Types.Result.GetResult<Prisma.$RegistrationGiftGrantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   redemptionCodeRedemption<T extends Prisma.PointsHistory$redemptionCodeRedemptionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PointsHistory$redemptionCodeRedemptionArgs<ExtArgs>>): Prisma.Prisma__RedemptionCodeRedemptionClient<runtime.Types.Result.GetResult<Prisma.$RedemptionCodeRedemptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  dailyRedemptionDropClaim<T extends Prisma.PointsHistory$dailyRedemptionDropClaimArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.PointsHistory$dailyRedemptionDropClaimArgs<ExtArgs>>): Prisma.Prisma__DailyRedemptionDropClaimClient<runtime.Types.Result.GetResult<Prisma.$DailyRedemptionDropClaimPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1965,6 +2086,25 @@ export type PointsHistory$redemptionCodeRedemptionArgs<ExtArgs extends runtime.T
    */
   include?: Prisma.RedemptionCodeRedemptionInclude<ExtArgs> | null
   where?: Prisma.RedemptionCodeRedemptionWhereInput
+}
+
+/**
+ * PointsHistory.dailyRedemptionDropClaim
+ */
+export type PointsHistory$dailyRedemptionDropClaimArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DailyRedemptionDropClaim
+   */
+  select?: Prisma.DailyRedemptionDropClaimSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DailyRedemptionDropClaim
+   */
+  omit?: Prisma.DailyRedemptionDropClaimOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DailyRedemptionDropClaimInclude<ExtArgs> | null
+  where?: Prisma.DailyRedemptionDropClaimWhereInput
 }
 
 /**

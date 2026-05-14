@@ -56,6 +56,7 @@
                             <el-option label="待审核" value="pending" />
                             <el-option label="已批准" value="approved" />
                             <el-option label="已拒绝" value="rejected" />
+                            <el-option label="回收站" value="trashed" />
                         </el-select>
                     </div>
                     <div class="w-64">
@@ -141,6 +142,7 @@
                                 <el-tag v-if="scope.row.status === 'pending'" type="warning">待审核</el-tag>
                                 <el-tag v-else-if="scope.row.status === 'approved'" type="success">已批准</el-tag>
                                 <el-tag v-else-if="scope.row.status === 'rejected'" type="danger">已拒绝</el-tag>
+                                <el-tag v-else-if="scope.row.status === 'trashed'" type="info">回收站</el-tag>
                                 <el-tag v-else type="info">未知</el-tag>
                             </template>
                         </el-table-column>
@@ -176,18 +178,28 @@
                                         </el-button>
                                         <template #dropdown>
                                             <el-dropdown-menu>
-                                                <el-dropdown-item @click="toggleSticky(scope.row)">
+                                                <el-dropdown-item v-if="scope.row.status !== 'trashed'" @click="toggleSticky(scope.row)">
                                                     <i class="fas fa-thumbtack mr-1"></i>
                                                     {{ scope.row.isSticky ? '取消置顶' : '置顶' }}
                                                 </el-dropdown-item>
-                                                <el-dropdown-item @click="toggleLock(scope.row)">
+                                                <el-dropdown-item v-if="scope.row.status !== 'trashed'" @click="toggleLock(scope.row)">
                                                     <i class="fas fa-lock mr-1"></i>
                                                     {{ scope.row.isLocked ? '解锁主题' : '锁定主题' }}
                                                 </el-dropdown-item>
-                                                <el-dropdown-item divided @click="confirmDelete(scope.row)">
+                                                <el-dropdown-item v-if="scope.row.status !== 'trashed'" divided @click="trashTopic(scope.row)">
                                                     <span class="text-red-500">
                                                         <i class="fas fa-trash-alt mr-1"></i>
-                                                        删除
+                                                        移入回收站
+                                                    </span>
+                                                </el-dropdown-item>
+                                                <el-dropdown-item v-if="scope.row.status === 'trashed'" @click="restoreTopic(scope.row)">
+                                                    <i class="fas fa-rotate-left mr-1"></i>
+                                                    恢复
+                                                </el-dropdown-item>
+                                                <el-dropdown-item v-if="scope.row.status === 'trashed'" divided @click="confirmDelete(scope.row)">
+                                                    <span class="text-red-500">
+                                                        <i class="fas fa-trash-alt mr-1"></i>
+                                                        永久删除
                                                     </span>
                                                 </el-dropdown-item>
                                             </el-dropdown-menu>
@@ -261,6 +273,7 @@
                         <el-option label="待审核" value="pending" />
                         <el-option label="已批准" value="approved" />
                         <el-option label="已拒绝" value="rejected" />
+                        <el-option label="回收站" value="trashed" disabled />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="选项">
@@ -278,14 +291,14 @@
             </template>
         </el-dialog>
 
-        <!-- 删除确认对话框 -->
-        <el-dialog v-model="deleteDialogVisible" title="确认删除" width="400px">
-            <p>确定要删除主题 "{{ selectedTopic?.title }}" 吗？</p>
-            <p class="text-red-500 mt-2">注意: 删除主题将会同时删除该主题下的所有回复！</p>
+        <!-- 永久删除确认对话框 -->
+        <el-dialog v-model="deleteDialogVisible" title="永久删除" width="400px">
+            <p>确定要永久删除主题 "{{ selectedTopic?.title }}" 吗？</p>
+            <p class="text-red-500 mt-2">该操作会同时删除该主题下的所有回复，删除后不可恢复。</p>
             <template #footer>
                 <el-button @click="deleteDialogVisible = false">取消</el-button>
                 <el-button type="danger" :disabled="deleting" @click="deleteTopic">
-                    {{ deleting ? '删除中...' : '确认删除' }}
+                    {{ deleting ? '删除中...' : '确认永久删除' }}
                 </el-button>
             </template>
         </el-dialog>
@@ -333,7 +346,7 @@ const selectedTopic = ref(null)
 const isEdit = ref(false)
 const submitting = ref(false)
 const deleting = ref(false)
-const statusQueryValues = new Set(['pending', 'approved', 'rejected'])
+const statusQueryValues = new Set(['pending', 'approved', 'rejected', 'trashed'])
 
 function applyRouteStatusFilter() {
     const status = Array.isArray(route.query.status)
@@ -649,13 +662,73 @@ async function toggleLock(topic) {
     }
 }
 
-// 删除前确认
+// 移入回收站
+async function trashTopic(topic) {
+    try {
+        await ElMessageBox.confirm(
+            `确定要将主题 "${topic.title}" 移入回收站吗？移入后用户将无法看到该主题。`,
+            '移入回收站',
+            {
+                confirmButtonText: '移入回收站',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }
+        )
+
+        const token = useCookie('token').value
+        const response = await $fetch(`/api/admin/forum/topics/${topic.id}/trash`, {
+            method: 'POST',
+            body: {
+                reason: '管理员从后台主题列表移入回收站'
+            },
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        if (response.success) {
+            ElMessage.success('已移入回收站')
+            loadTopics()
+        } else {
+            ElMessage.error(response.message || '移入回收站失败')
+        }
+    } catch (error) {
+        if (error === 'cancel' || error === 'close') return
+        console.error('移入回收站失败:', error)
+        ElMessage.error('移入回收站失败')
+    }
+}
+
+// 恢复主题
+async function restoreTopic(topic) {
+    try {
+        const token = useCookie('token').value
+        const response = await $fetch(`/api/admin/forum/topics/${topic.id}/restore`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        if (response.success) {
+            ElMessage.success('主题已恢复')
+            loadTopics()
+        } else {
+            ElMessage.error(response.message || '恢复失败')
+        }
+    } catch (error) {
+        console.error('恢复主题失败:', error)
+        ElMessage.error('恢复失败')
+    }
+}
+
+// 永久删除前确认
 function confirmDelete(topic) {
     selectedTopic.value = topic
     deleteDialogVisible.value = true
 }
 
-// 删除主题
+// 永久删除主题
 async function deleteTopic(topicId) {
     if (!selectedTopic.value || deleting.value) return
 
@@ -672,15 +745,15 @@ async function deleteTopic(topicId) {
         })
 
         if (response.success) {
-            ElMessage.success('主题已删除')
+            ElMessage.success('主题已永久删除')
             deleteDialogVisible.value = false
             loadTopics()
         } else {
-            ElMessage.error(response.message || '删除失败')
+            ElMessage.error(response.message || '永久删除失败')
         }
     } catch (error) {
-        console.error('删除主题失败:', error)
-        ElMessage.error('删除主题失败')
+        console.error('永久删除主题失败:', error)
+        ElMessage.error('永久删除失败')
     } finally {
         deleting.value = false
     }

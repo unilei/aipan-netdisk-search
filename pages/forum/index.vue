@@ -164,6 +164,26 @@
           </template>
         </section>
 
+        <section class="v2-box p-4" data-feature="daily-redemption-drop">
+          <div class="flex items-start gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-200">
+              <i class="fa-solid fa-bolt"></i>
+            </div>
+            <div class="min-w-0">
+              <div class="text-sm font-semibold text-[#333] dark:text-white">每日福利</div>
+              <p class="mt-1 text-xs leading-5 text-[#778087] dark:text-slate-400">
+                每天固定时间发放积分，先到先得。
+              </p>
+            </div>
+          </div>
+          <div class="mt-3 rounded bg-[#f8f8f8] px-3 py-2 text-xs leading-5 text-[#666] dark:bg-white/10 dark:text-slate-300">
+            {{ dailyRedemptionDropHint }}
+          </div>
+          <button class="mt-3 w-full v2-primary-button" type="button" @click="navigateToDailyRedemptionDrop">
+            {{ user ? '去领取' : '登录领取' }}
+          </button>
+        </section>
+
         <section class="v2-box">
           <div class="v2-side-header">社区统计</div>
           <dl class="divide-y divide-[#eee] text-sm dark:divide-white/10">
@@ -296,6 +316,8 @@ const isRefreshing = computed(() => loading.value || topicsLoading.value);
 const unreadSummary = ref(null);
 const showUnreadTopics = ref(false);
 const markingAllRead = ref(false);
+const dailyRedemptionDrop = ref(null);
+const dailyRedemptionDropLoading = ref(false);
 let forumUnreadPollTimer = null;
 let forumSocket = null;
 
@@ -325,8 +347,24 @@ const handlePageChange = (newPage) => {
 
 const handleRefresh = async () => {
   page.value = 1;
-  await Promise.all([refresh(), refreshTopics(), fetchUnreadSummary()]);
+  await Promise.all([refresh(), refreshTopics(), fetchUnreadSummary(), fetchDailyRedemptionDrop()]);
 };
+
+const dailyRedemptionDropHint = computed(() => {
+  if (!user.value) return "登录后查看开放时间和剩余份数。";
+  if (dailyRedemptionDropLoading.value) return "正在读取今日福利。";
+  if (!dailyRedemptionDrop.value) return "今日福利暂不可用。";
+  if (!dailyRedemptionDrop.value.enabled) return "今日福利暂未开放。";
+  if (dailyRedemptionDrop.value.status === "not_released") {
+    return dailyRedemptionDrop.value.message || `今日 ${dailyRedemptionDrop.value.releaseTime} 开始领取。`;
+  }
+  if (dailyRedemptionDrop.value.status === "sold_out") return "今日已领完，明天再来。";
+  if (dailyRedemptionDrop.value.status === "already_claimed") return "今日已领取，明天再来。";
+  if (dailyRedemptionDrop.value.claimable) {
+    return `剩余 ${dailyRedemptionDrop.value.remainingQuota || 0} 份，每份 ${dailyRedemptionDrop.value.points || 0} 积分。`;
+  }
+  return dailyRedemptionDrop.value.message || "到用户中心查看领取状态。";
+});
 
 const fetchUnreadSummary = async () => {
   if (!user.value || !token.value) {
@@ -377,6 +415,31 @@ const markAllForumRead = async () => {
   }
 };
 
+const fetchDailyRedemptionDrop = async () => {
+  if (!user.value || !token.value) {
+    dailyRedemptionDrop.value = null;
+    return;
+  }
+
+  try {
+    dailyRedemptionDropLoading.value = true;
+    const response = await $fetch("/api/user/points/daily-redemption-drop/status", {
+      headers: {
+        authorization: `Bearer ${token.value}`,
+      },
+    });
+
+    if (response.code === 200) {
+      dailyRedemptionDrop.value = response.data;
+    }
+  } catch (error) {
+    console.error("获取每日福利状态失败:", error);
+    dailyRedemptionDrop.value = null;
+  } finally {
+    dailyRedemptionDropLoading.value = false;
+  }
+};
+
 const handleForumNewReply = async () => {
   await Promise.all([fetchUnreadSummary(), refreshTopics()]);
 };
@@ -405,6 +468,14 @@ const navigateToLogin = (redirect = "/forum/create") => {
   router.push(`/login?redirect=${encodeURIComponent(redirect)}`);
 };
 
+const navigateToDailyRedemptionDrop = () => {
+  if (!user.value) {
+    navigateToLogin("/user/checkin");
+    return;
+  }
+  router.push("/user/checkin");
+};
+
 const navigateToCategory = (slug) => {
   if (!slug) return;
   router.push(`/forum/category/${slug}`);
@@ -414,6 +485,7 @@ onMounted(() => {
   refresh();
   refreshTopics();
   fetchUnreadSummary();
+  fetchDailyRedemptionDrop();
   forumUnreadPollTimer = window.setInterval(fetchUnreadSummary, 60000);
   initForumRealtime();
 });
@@ -431,6 +503,7 @@ watch(
   () => user.value?.id,
   () => {
     fetchUnreadSummary();
+    fetchDailyRedemptionDrop();
     initForumRealtime();
     refreshTopics();
   }

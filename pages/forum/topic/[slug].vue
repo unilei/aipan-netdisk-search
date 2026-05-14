@@ -79,6 +79,9 @@
                 <button v-if="canModerate" class="v2-muted-button" type="button" @click="toggleLock">
                   {{ topic.isLocked ? "解除锁定" : "锁定" }}
                 </button>
+                <button v-if="canTrashTopic" class="v2-muted-button text-red-600 hover:text-red-700" type="button" @click="trashTopic">
+                  移入回收站
+                </button>
               </client-only>
             </div>
           </section>
@@ -229,7 +232,7 @@
 <script setup>
 import { formatDistanceToNow } from "date-fns";
 import { zhCN } from "date-fns/locale";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { computed, ref, onMounted, onUnmounted, watch } from "vue";
 import { marked } from "marked";
 import hljs from "highlight.js";
@@ -350,6 +353,11 @@ const canModerate = computed(() => {
   if (!user.value) return false;
   const role = String(user.value.role || "").toLowerCase();
   return role === "admin" || role === "moderator";
+});
+
+const canTrashTopic = computed(() => {
+  if (!user.value || !topic.value) return false;
+  return String(user.value.role || "").toLowerCase() === "admin" && topic.value.status !== "trashed";
 });
 
 const replyContent = ref("");
@@ -585,6 +593,43 @@ async function toggleLock() {
   } catch (error) {
     console.error("操作失败:", error);
     ElMessage.error("操作失败，请稍后重试");
+  }
+}
+
+async function trashTopic() {
+  if (!topic.value || !canTrashTopic.value) return;
+
+  try {
+    await ElMessageBox.confirm(
+      "移入后普通用户将无法看到这个主题，管理员可以在后台回收站恢复。",
+      "移入回收站",
+      {
+        confirmButtonText: "移入回收站",
+        cancelButtonText: "取消",
+        type: "warning",
+      },
+    );
+
+    const response = await $fetch(`/api/admin/forum/topics/${topic.value.id}/trash`, {
+      method: "POST",
+      body: {
+        reason: "管理员从主题详情移入回收站",
+      },
+      headers: {
+        authorization: `Bearer ${token.value}`,
+      },
+    });
+
+    if (response.success) {
+      ElMessage.success("已移入回收站");
+      router.push("/forum");
+    } else {
+      ElMessage.error(response.message || "移入回收站失败");
+    }
+  } catch (error) {
+    if (error === "cancel" || error === "close") return;
+    console.error("移入回收站失败:", error);
+    ElMessage.error("移入回收站失败");
   }
 }
 

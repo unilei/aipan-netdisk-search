@@ -11,6 +11,7 @@ import {
     normalizeQuarkConfig,
 } from "~/server/services/quark/quarkConfig.mjs";
 import { getRegistrationGiftStatusForUser } from "~/server/services/points/registrationGift.mjs";
+import { getDailyRedemptionDropStatusForUser } from "~/server/services/points/dailyRedemptionDrops.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -57,9 +58,10 @@ export default defineEventHandler(async (event) => {
             },
             take: 10
         })
-        const [transferTask, registrationGift] = await Promise.all([
+        const [transferTask, registrationGift, dailyRedemptionDrop] = await Promise.all([
             getTransferTaskConfig(),
-            getRegistrationGiftStatusForUser({ userId })
+            getRegistrationGiftStatusForUser({ userId }),
+            getDailyRedemptionDropStatusForUser({ userId })
         ])
 
         return {
@@ -76,7 +78,8 @@ export default defineEventHandler(async (event) => {
                 stats: pointsStats,
                 recentHistory: decoratePointsHistory(recentHistory),
                 transferTask,
-                registrationGift
+                registrationGift,
+                dailyRedemptionDrop
             }
         }
 

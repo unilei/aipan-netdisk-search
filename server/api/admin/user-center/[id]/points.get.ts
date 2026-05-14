@@ -14,6 +14,7 @@ const POINT_TYPE_NAMES: Record<string, string> = {
   transfer: "转存奖励",
   registration_gift: "注册礼包",
   redemption: "兑换码奖励",
+  daily_redemption_drop: "每日福利",
 };
 
 export default defineEventHandler(async (event) => {

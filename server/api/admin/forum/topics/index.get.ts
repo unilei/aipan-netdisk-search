@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma"
+import { FORUM_TOPIC_TRASHED_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -25,6 +26,8 @@ export default defineEventHandler(async (event) => {
 
         if (status) {
             where.status = status
+        } else {
+            where.status = { not: FORUM_TOPIC_TRASHED_STATUS }
         }
 
         if (categoryId) {
@@ -84,4 +87,4 @@ export default defineEventHandler(async (event) => {
             message: '获取主题列表失败'
         }
     }
-}) 
+})

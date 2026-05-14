@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma"
+import { FORUM_TOPIC_TRASHED_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -29,7 +30,8 @@ export default defineEventHandler(async (event) => {
         // 获取用户论坛主题数量
         const forumTopicCount = await prisma.forumTopic.count({
             where: {
-                authorId: user.userId
+                authorId: user.userId,
+                status: { not: FORUM_TOPIC_TRASHED_STATUS }
             }
         })
 
@@ -114,4 +116,4 @@ export default defineEventHandler(async (event) => {
             message: '获取用户统计数据失败'
         }
     }
-}) 
+})

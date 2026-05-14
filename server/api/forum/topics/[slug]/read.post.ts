@@ -1,6 +1,7 @@
 import prisma from "~/lib/prisma";
 import { markForumTopicRead } from "~/server/services/forum/readStates.mjs";
 import { requireForumUser } from "~/server/utils/forumAuth";
+import { FORUM_TOPIC_PUBLIC_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
   try {
@@ -14,8 +15,11 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    const topic = await prisma.forumTopic.findUnique({
-      where: { slug: decodeURI(slug) },
+    const topic = await prisma.forumTopic.findFirst({
+      where: {
+        slug: decodeURI(slug),
+        status: FORUM_TOPIC_PUBLIC_STATUS,
+      },
       select: { id: true },
     });
 

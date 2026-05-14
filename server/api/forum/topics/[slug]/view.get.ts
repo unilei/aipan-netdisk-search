@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma"
+import { FORUM_TOPIC_PUBLIC_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -12,8 +13,11 @@ export default defineEventHandler(async (event) => {
         }
 
         // 查找主题
-        const topic = await prisma.forumTopic.findUnique({
-            where: { slug: decodeURI(slug) }
+        const topic = await prisma.forumTopic.findFirst({
+            where: {
+                slug: decodeURI(slug),
+                status: FORUM_TOPIC_PUBLIC_STATUS,
+            }
         })
 
         if (!topic) {
@@ -40,4 +44,4 @@ export default defineEventHandler(async (event) => {
             message: '更新浏览量失败'
         }
     }
-}) 
+})

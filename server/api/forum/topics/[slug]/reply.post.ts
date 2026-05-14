@@ -5,6 +5,7 @@ import {
     summarizeModerationDecision,
 } from "~/server/utils/moderation";
 import { updateForumReadStatesForApprovedReply } from "~/server/services/forum/readStates.mjs";
+import { FORUM_TOPIC_PUBLIC_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -40,8 +41,11 @@ export default defineEventHandler(async (event) => {
         }
 
         // 检查主题是否存在且未锁定
-        const topic = await prisma.forumTopic.findUnique({
-            where: { slug: decodeURI(slug) },
+        const topic = await prisma.forumTopic.findFirst({
+            where: {
+                slug: decodeURI(slug),
+                status: FORUM_TOPIC_PUBLIC_STATUS,
+            },
             include: { author: true }
         })
 

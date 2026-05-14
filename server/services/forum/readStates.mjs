@@ -1,3 +1,5 @@
+import { FORUM_TOPIC_PUBLIC_STATUS } from "./topicTrash.mjs";
+
 const toPositiveInt = (value) => {
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
@@ -177,6 +179,9 @@ export const getForumUnreadSummary = async ({
   const where = {
     userId: viewerId,
     unreadCount: { gt: 0 },
+    topic: {
+      status: FORUM_TOPIC_PUBLIC_STATUS,
+    },
   };
 
   const [aggregate, readStates] = await Promise.all([

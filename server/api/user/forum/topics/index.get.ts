@@ -1,5 +1,6 @@
 import prisma from "~/lib/prisma"
 import { attachViewerStatesToTopics } from "~/server/services/forum/readStates.mjs";
+import { FORUM_TOPIC_TRASHED_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -19,14 +20,17 @@ export default defineEventHandler(async (event) => {
         const pageSize = parseInt(query.pageSize as string) || 10
         const status = query.status as string || undefined
         const keyword = query.keyword as string || undefined
+        const userVisibleStatuses = new Set(["pending", "approved", "rejected"])
 
         // 构建查询条件
         const where: any = {
             authorId: user.userId // 只查询当前用户的主题
         }
 
-        if (status) {
+        if (status && userVisibleStatuses.has(status)) {
             where.status = status
+        } else {
+            where.status = { not: FORUM_TOPIC_TRASHED_STATUS }
         }
 
         if (keyword) {

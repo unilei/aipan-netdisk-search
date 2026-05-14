@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma"
+import { FORUM_TOPIC_PUBLIC_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 // 定义回复类型接口
 interface PostWithChildren extends Omit<any, 'children'> {
@@ -23,7 +24,7 @@ export default defineEventHandler(async (event) => {
         const topic = await prisma.forumTopic.findFirst({
             where: {
                 slug: decodeURI(slug),
-                status: 'approved' // 只返回已批准的主题
+                status: FORUM_TOPIC_PUBLIC_STATUS
             },
             include: {
                 author: {

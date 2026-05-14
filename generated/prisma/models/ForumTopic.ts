@@ -28,6 +28,7 @@ export type AggregateForumTopic = {
 export type ForumTopicAvgAggregateOutputType = {
   id: number | null
   viewCount: number | null
+  trashedById: number | null
   categoryId: number | null
   authorId: number | null
 }
@@ -35,6 +36,7 @@ export type ForumTopicAvgAggregateOutputType = {
 export type ForumTopicSumAggregateOutputType = {
   id: number | null
   viewCount: number | null
+  trashedById: number | null
   categoryId: number | null
   authorId: number | null
 }
@@ -48,6 +50,10 @@ export type ForumTopicMinAggregateOutputType = {
   isLocked: boolean | null
   viewCount: number | null
   status: string | null
+  statusBeforeTrash: string | null
+  trashedAt: Date | null
+  trashedById: number | null
+  trashReason: string | null
   categoryId: number | null
   authorId: number | null
   lastActivityAt: Date | null
@@ -64,6 +70,10 @@ export type ForumTopicMaxAggregateOutputType = {
   isLocked: boolean | null
   viewCount: number | null
   status: string | null
+  statusBeforeTrash: string | null
+  trashedAt: Date | null
+  trashedById: number | null
+  trashReason: string | null
   categoryId: number | null
   authorId: number | null
   lastActivityAt: Date | null
@@ -80,6 +90,10 @@ export type ForumTopicCountAggregateOutputType = {
   isLocked: number
   viewCount: number
   status: number
+  statusBeforeTrash: number
+  trashedAt: number
+  trashedById: number
+  trashReason: number
   categoryId: number
   authorId: number
   lastActivityAt: number
@@ -92,6 +106,7 @@ export type ForumTopicCountAggregateOutputType = {
 export type ForumTopicAvgAggregateInputType = {
   id?: true
   viewCount?: true
+  trashedById?: true
   categoryId?: true
   authorId?: true
 }
@@ -99,6 +114,7 @@ export type ForumTopicAvgAggregateInputType = {
 export type ForumTopicSumAggregateInputType = {
   id?: true
   viewCount?: true
+  trashedById?: true
   categoryId?: true
   authorId?: true
 }
@@ -112,6 +128,10 @@ export type ForumTopicMinAggregateInputType = {
   isLocked?: true
   viewCount?: true
   status?: true
+  statusBeforeTrash?: true
+  trashedAt?: true
+  trashedById?: true
+  trashReason?: true
   categoryId?: true
   authorId?: true
   lastActivityAt?: true
@@ -128,6 +148,10 @@ export type ForumTopicMaxAggregateInputType = {
   isLocked?: true
   viewCount?: true
   status?: true
+  statusBeforeTrash?: true
+  trashedAt?: true
+  trashedById?: true
+  trashReason?: true
   categoryId?: true
   authorId?: true
   lastActivityAt?: true
@@ -144,6 +168,10 @@ export type ForumTopicCountAggregateInputType = {
   isLocked?: true
   viewCount?: true
   status?: true
+  statusBeforeTrash?: true
+  trashedAt?: true
+  trashedById?: true
+  trashReason?: true
   categoryId?: true
   authorId?: true
   lastActivityAt?: true
@@ -247,6 +275,10 @@ export type ForumTopicGroupByOutputType = {
   isLocked: boolean
   viewCount: number
   status: string
+  statusBeforeTrash: string | null
+  trashedAt: Date | null
+  trashedById: number | null
+  trashReason: string | null
   categoryId: number
   authorId: number
   lastActivityAt: Date
@@ -286,6 +318,10 @@ export type ForumTopicWhereInput = {
   isLocked?: Prisma.BoolFilter<"ForumTopic"> | boolean
   viewCount?: Prisma.IntFilter<"ForumTopic"> | number
   status?: Prisma.StringFilter<"ForumTopic"> | string
+  statusBeforeTrash?: Prisma.StringNullableFilter<"ForumTopic"> | string | null
+  trashedAt?: Prisma.DateTimeNullableFilter<"ForumTopic"> | Date | string | null
+  trashedById?: Prisma.IntNullableFilter<"ForumTopic"> | number | null
+  trashReason?: Prisma.StringNullableFilter<"ForumTopic"> | string | null
   categoryId?: Prisma.IntFilter<"ForumTopic"> | number
   authorId?: Prisma.IntFilter<"ForumTopic"> | number
   lastActivityAt?: Prisma.DateTimeFilter<"ForumTopic"> | Date | string
@@ -306,6 +342,10 @@ export type ForumTopicOrderByWithRelationInput = {
   isLocked?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  statusBeforeTrash?: Prisma.SortOrderInput | Prisma.SortOrder
+  trashedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  trashedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  trashReason?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   lastActivityAt?: Prisma.SortOrder
@@ -329,6 +369,10 @@ export type ForumTopicWhereUniqueInput = Prisma.AtLeast<{
   isLocked?: Prisma.BoolFilter<"ForumTopic"> | boolean
   viewCount?: Prisma.IntFilter<"ForumTopic"> | number
   status?: Prisma.StringFilter<"ForumTopic"> | string
+  statusBeforeTrash?: Prisma.StringNullableFilter<"ForumTopic"> | string | null
+  trashedAt?: Prisma.DateTimeNullableFilter<"ForumTopic"> | Date | string | null
+  trashedById?: Prisma.IntNullableFilter<"ForumTopic"> | number | null
+  trashReason?: Prisma.StringNullableFilter<"ForumTopic"> | string | null
   categoryId?: Prisma.IntFilter<"ForumTopic"> | number
   authorId?: Prisma.IntFilter<"ForumTopic"> | number
   lastActivityAt?: Prisma.DateTimeFilter<"ForumTopic"> | Date | string
@@ -349,6 +393,10 @@ export type ForumTopicOrderByWithAggregationInput = {
   isLocked?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  statusBeforeTrash?: Prisma.SortOrderInput | Prisma.SortOrder
+  trashedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  trashedById?: Prisma.SortOrderInput | Prisma.SortOrder
+  trashReason?: Prisma.SortOrderInput | Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   lastActivityAt?: Prisma.SortOrder
@@ -373,6 +421,10 @@ export type ForumTopicScalarWhereWithAggregatesInput = {
   isLocked?: Prisma.BoolWithAggregatesFilter<"ForumTopic"> | boolean
   viewCount?: Prisma.IntWithAggregatesFilter<"ForumTopic"> | number
   status?: Prisma.StringWithAggregatesFilter<"ForumTopic"> | string
+  statusBeforeTrash?: Prisma.StringNullableWithAggregatesFilter<"ForumTopic"> | string | null
+  trashedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ForumTopic"> | Date | string | null
+  trashedById?: Prisma.IntNullableWithAggregatesFilter<"ForumTopic"> | number | null
+  trashReason?: Prisma.StringNullableWithAggregatesFilter<"ForumTopic"> | string | null
   categoryId?: Prisma.IntWithAggregatesFilter<"ForumTopic"> | number
   authorId?: Prisma.IntWithAggregatesFilter<"ForumTopic"> | number
   lastActivityAt?: Prisma.DateTimeWithAggregatesFilter<"ForumTopic"> | Date | string
@@ -388,6 +440,10 @@ export type ForumTopicCreateInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   lastActivityAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -406,6 +462,10 @@ export type ForumTopicUncheckedCreateInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   categoryId: number
   authorId: number
   lastActivityAt?: Date | string
@@ -423,6 +483,10 @@ export type ForumTopicUpdateInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -441,6 +505,10 @@ export type ForumTopicUncheckedUpdateInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -459,6 +527,10 @@ export type ForumTopicCreateManyInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   categoryId: number
   authorId: number
   lastActivityAt?: Date | string
@@ -474,6 +546,10 @@ export type ForumTopicUpdateManyMutationInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -488,6 +564,10 @@ export type ForumTopicUncheckedUpdateManyInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -514,6 +594,10 @@ export type ForumTopicCountOrderByAggregateInput = {
   isLocked?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  statusBeforeTrash?: Prisma.SortOrder
+  trashedAt?: Prisma.SortOrder
+  trashedById?: Prisma.SortOrder
+  trashReason?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   lastActivityAt?: Prisma.SortOrder
@@ -524,6 +608,7 @@ export type ForumTopicCountOrderByAggregateInput = {
 export type ForumTopicAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
+  trashedById?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
 }
@@ -537,6 +622,10 @@ export type ForumTopicMaxOrderByAggregateInput = {
   isLocked?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  statusBeforeTrash?: Prisma.SortOrder
+  trashedAt?: Prisma.SortOrder
+  trashedById?: Prisma.SortOrder
+  trashReason?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   lastActivityAt?: Prisma.SortOrder
@@ -553,6 +642,10 @@ export type ForumTopicMinOrderByAggregateInput = {
   isLocked?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  statusBeforeTrash?: Prisma.SortOrder
+  trashedAt?: Prisma.SortOrder
+  trashedById?: Prisma.SortOrder
+  trashReason?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
   lastActivityAt?: Prisma.SortOrder
@@ -563,6 +656,7 @@ export type ForumTopicMinOrderByAggregateInput = {
 export type ForumTopicSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   viewCount?: Prisma.SortOrder
+  trashedById?: Prisma.SortOrder
   categoryId?: Prisma.SortOrder
   authorId?: Prisma.SortOrder
 }
@@ -692,6 +786,10 @@ export type ForumTopicCreateWithoutAuthorInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   lastActivityAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -709,6 +807,10 @@ export type ForumTopicUncheckedCreateWithoutAuthorInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   categoryId: number
   lastActivityAt?: Date | string
   createdAt?: Date | string
@@ -755,6 +857,10 @@ export type ForumTopicScalarWhereInput = {
   isLocked?: Prisma.BoolFilter<"ForumTopic"> | boolean
   viewCount?: Prisma.IntFilter<"ForumTopic"> | number
   status?: Prisma.StringFilter<"ForumTopic"> | string
+  statusBeforeTrash?: Prisma.StringNullableFilter<"ForumTopic"> | string | null
+  trashedAt?: Prisma.DateTimeNullableFilter<"ForumTopic"> | Date | string | null
+  trashedById?: Prisma.IntNullableFilter<"ForumTopic"> | number | null
+  trashReason?: Prisma.StringNullableFilter<"ForumTopic"> | string | null
   categoryId?: Prisma.IntFilter<"ForumTopic"> | number
   authorId?: Prisma.IntFilter<"ForumTopic"> | number
   lastActivityAt?: Prisma.DateTimeFilter<"ForumTopic"> | Date | string
@@ -770,6 +876,10 @@ export type ForumTopicCreateWithoutCategoryInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   lastActivityAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -787,6 +897,10 @@ export type ForumTopicUncheckedCreateWithoutCategoryInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   authorId: number
   lastActivityAt?: Date | string
   createdAt?: Date | string
@@ -829,6 +943,10 @@ export type ForumTopicCreateWithoutPostsInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   lastActivityAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -846,6 +964,10 @@ export type ForumTopicUncheckedCreateWithoutPostsInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   categoryId: number
   authorId: number
   lastActivityAt?: Date | string
@@ -878,6 +1000,10 @@ export type ForumTopicUpdateWithoutPostsInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -895,6 +1021,10 @@ export type ForumTopicUncheckedUpdateWithoutPostsInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -911,6 +1041,10 @@ export type ForumTopicCreateWithoutReadStatesInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   lastActivityAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -928,6 +1062,10 @@ export type ForumTopicUncheckedCreateWithoutReadStatesInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   categoryId: number
   authorId: number
   lastActivityAt?: Date | string
@@ -960,6 +1098,10 @@ export type ForumTopicUpdateWithoutReadStatesInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -977,6 +1119,10 @@ export type ForumTopicUncheckedUpdateWithoutReadStatesInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -994,6 +1140,10 @@ export type ForumTopicCreateManyAuthorInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   categoryId: number
   lastActivityAt?: Date | string
   createdAt?: Date | string
@@ -1008,6 +1158,10 @@ export type ForumTopicUpdateWithoutAuthorInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1025,6 +1179,10 @@ export type ForumTopicUncheckedUpdateWithoutAuthorInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1042,6 +1200,10 @@ export type ForumTopicUncheckedUpdateManyWithoutAuthorInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   categoryId?: Prisma.IntFieldUpdateOperationsInput | number
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1057,6 +1219,10 @@ export type ForumTopicCreateManyCategoryInput = {
   isLocked?: boolean
   viewCount?: number
   status?: string
+  statusBeforeTrash?: string | null
+  trashedAt?: Date | string | null
+  trashedById?: number | null
+  trashReason?: string | null
   authorId: number
   lastActivityAt?: Date | string
   createdAt?: Date | string
@@ -1071,6 +1237,10 @@ export type ForumTopicUpdateWithoutCategoryInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1088,6 +1258,10 @@ export type ForumTopicUncheckedUpdateWithoutCategoryInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1105,6 +1279,10 @@ export type ForumTopicUncheckedUpdateManyWithoutCategoryInput = {
   isLocked?: Prisma.BoolFieldUpdateOperationsInput | boolean
   viewCount?: Prisma.IntFieldUpdateOperationsInput | number
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  statusBeforeTrash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  trashedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  trashedById?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  trashReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   authorId?: Prisma.IntFieldUpdateOperationsInput | number
   lastActivityAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1160,6 +1338,10 @@ export type ForumTopicSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   isLocked?: boolean
   viewCount?: boolean
   status?: boolean
+  statusBeforeTrash?: boolean
+  trashedAt?: boolean
+  trashedById?: boolean
+  trashReason?: boolean
   categoryId?: boolean
   authorId?: boolean
   lastActivityAt?: boolean
@@ -1181,6 +1363,10 @@ export type ForumTopicSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
   isLocked?: boolean
   viewCount?: boolean
   status?: boolean
+  statusBeforeTrash?: boolean
+  trashedAt?: boolean
+  trashedById?: boolean
+  trashReason?: boolean
   categoryId?: boolean
   authorId?: boolean
   lastActivityAt?: boolean
@@ -1199,6 +1385,10 @@ export type ForumTopicSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
   isLocked?: boolean
   viewCount?: boolean
   status?: boolean
+  statusBeforeTrash?: boolean
+  trashedAt?: boolean
+  trashedById?: boolean
+  trashReason?: boolean
   categoryId?: boolean
   authorId?: boolean
   lastActivityAt?: boolean
@@ -1217,6 +1407,10 @@ export type ForumTopicSelectScalar = {
   isLocked?: boolean
   viewCount?: boolean
   status?: boolean
+  statusBeforeTrash?: boolean
+  trashedAt?: boolean
+  trashedById?: boolean
+  trashReason?: boolean
   categoryId?: boolean
   authorId?: boolean
   lastActivityAt?: boolean
@@ -1224,7 +1418,7 @@ export type ForumTopicSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ForumTopicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "slug" | "isSticky" | "isLocked" | "viewCount" | "status" | "categoryId" | "authorId" | "lastActivityAt" | "createdAt" | "updatedAt", ExtArgs["result"]["forumTopic"]>
+export type ForumTopicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "content" | "slug" | "isSticky" | "isLocked" | "viewCount" | "status" | "statusBeforeTrash" | "trashedAt" | "trashedById" | "trashReason" | "categoryId" | "authorId" | "lastActivityAt" | "createdAt" | "updatedAt", ExtArgs["result"]["forumTopic"]>
 export type ForumTopicInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   category?: boolean | Prisma.ForumCategoryDefaultArgs<ExtArgs>
@@ -1258,6 +1452,10 @@ export type $ForumTopicPayload<ExtArgs extends runtime.Types.Extensions.Internal
     isLocked: boolean
     viewCount: number
     status: string
+    statusBeforeTrash: string | null
+    trashedAt: Date | null
+    trashedById: number | null
+    trashReason: string | null
     categoryId: number
     authorId: number
     lastActivityAt: Date
@@ -1698,6 +1896,10 @@ export interface ForumTopicFieldRefs {
   readonly isLocked: Prisma.FieldRef<"ForumTopic", 'Boolean'>
   readonly viewCount: Prisma.FieldRef<"ForumTopic", 'Int'>
   readonly status: Prisma.FieldRef<"ForumTopic", 'String'>
+  readonly statusBeforeTrash: Prisma.FieldRef<"ForumTopic", 'String'>
+  readonly trashedAt: Prisma.FieldRef<"ForumTopic", 'DateTime'>
+  readonly trashedById: Prisma.FieldRef<"ForumTopic", 'Int'>
+  readonly trashReason: Prisma.FieldRef<"ForumTopic", 'String'>
   readonly categoryId: Prisma.FieldRef<"ForumTopic", 'Int'>
   readonly authorId: Prisma.FieldRef<"ForumTopic", 'Int'>
   readonly lastActivityAt: Prisma.FieldRef<"ForumTopic", 'DateTime'>

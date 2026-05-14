@@ -1,6 +1,7 @@
 import prisma from '~/lib/prisma'
 import { getOptionalForumUser } from "~/server/utils/forumAuth";
 import { attachViewerStatesToTopics } from "~/server/services/forum/readStates.mjs";
+import { FORUM_TOPIC_PUBLIC_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -12,7 +13,7 @@ export default defineEventHandler(async (event) => {
         // 构建查询条件，添加状态过滤，只显示已批准的主题
         const where = {
             ...(categoryId ? { categoryId } : {}),
-            status: 'approved'  // 只返回已批准的主题
+            status: FORUM_TOPIC_PUBLIC_STATUS
         }
 
         // 获取总数

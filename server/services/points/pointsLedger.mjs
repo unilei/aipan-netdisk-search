@@ -10,6 +10,7 @@ export const POINT_TYPES = {
   transfer: "transfer",
   redemption: "redemption",
   registrationGift: "registration_gift",
+  dailyRedemptionDrop: "daily_redemption_drop",
 };
 
 export const DEFAULT_TRANSFER_REWARD_CONFIG = {

@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma"
+import { FORUM_TOPIC_TRASHED_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -33,6 +34,13 @@ export default defineEventHandler(async (event) => {
             }
         }
 
+        if (topic.status !== FORUM_TOPIC_TRASHED_STATUS) {
+            return {
+                success: false,
+                message: '请先将主题移入回收站，再执行永久删除'
+            }
+        }
+
         // 先删除所有相关的回复
         await prisma.forumPost.deleteMany({
             where: { topicId: id }
@@ -54,4 +62,4 @@ export default defineEventHandler(async (event) => {
             message: '删除主题失败'
         }
     }
-}) 
+})

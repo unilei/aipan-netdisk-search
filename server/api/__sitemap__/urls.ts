@@ -1,4 +1,5 @@
 import prisma from '~/lib/prisma';
+import { FORUM_TOPIC_PUBLIC_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 interface Post {
     id: number,
@@ -39,7 +40,7 @@ export default defineEventHandler(async () => {
         }),
         prisma.forumTopic.findMany({
             where: {
-                status: 'approved',
+                status: FORUM_TOPIC_PUBLIC_STATUS,
             },
             select: {
                 slug: true,

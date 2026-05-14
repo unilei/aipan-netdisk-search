@@ -59,6 +59,13 @@
               @redeemed="handleRedemptionCodeRedeemed"
             />
 
+            <UserDailyRedemptionDropCard
+              v-if="dailyRedemptionDropVisible"
+              :drop="dailyRedemptionDrop"
+              :claiming="dailyRedemptionDropClaiming"
+              @claim="handleClaimDailyRedemptionDrop"
+            />
+
             <UserRegistrationGiftCard
               v-if="registrationGiftVisible"
               :gift="registrationGift"
@@ -289,6 +296,7 @@
                     <el-option label="转存奖励" value="transfer" />
                     <el-option label="注册礼包" value="registration_gift" />
                     <el-option label="兑换码奖励" value="redemption" />
+                    <el-option label="每日福利" value="daily_redemption_drop" />
                     <el-option label="积分消费" value="consume" />
                     <el-option label="管理员调整" value="admin" />
                   </el-select>
@@ -483,6 +491,7 @@ import { ElMessage } from 'element-plus'
 import UserCheckInCard from '~/components/user/CheckInCard.vue'
 import UserPointTaskCard from '~/components/user/PointTaskCard.vue'
 import UserPointsOverview from '~/components/user/PointsOverview.vue'
+import UserDailyRedemptionDropCard from '~/components/user/DailyRedemptionDropCard.vue'
 import UserRegistrationGiftCard from '~/components/user/RegistrationGiftCard.vue'
 import UserRedemptionCodeCard from '~/components/user/RedemptionCodeCard.vue'
 import { useUserStore } from '~/stores/user'
@@ -515,14 +524,26 @@ const defaultRegistrationGift = {
   grantedAt: null,
   expiresAt: null
 }
+const defaultDailyRedemptionDrop = {
+  enabled: false,
+  name: '每日福利',
+  releaseTime: '12:00',
+  points: 100,
+  isTemporary: false,
+  claimable: false,
+  status: 'disabled',
+  remainingQuota: 0
+}
 const pointsSummary = ref({
   transferTask: defaultTransferTask,
-  registrationGift: defaultRegistrationGift
+  registrationGift: defaultRegistrationGift,
+  dailyRedemptionDrop: defaultDailyRedemptionDrop
 })
 const pointsSummaryLoaded = ref(false)
 const pointTasks = ref([])
 const pointTasksLoaded = ref(false)
 const registrationGiftClaiming = ref(false)
+const dailyRedemptionDropClaiming = ref(false)
 const openedPointTasks = ref({})
 const pointTaskReadyAt = ref({})
 const pointTaskClaiming = ref({})
@@ -531,6 +552,7 @@ let pointTaskTimer = null
 const POINT_TASK_READ_DELAY_SECONDS = 10
 const transferTask = computed(() => pointsSummary.value.transferTask || defaultTransferTask)
 const registrationGift = computed(() => pointsSummary.value.registrationGift || defaultRegistrationGift)
+const dailyRedemptionDrop = computed(() => pointsSummary.value.dailyRedemptionDrop || defaultDailyRedemptionDrop)
 const registrationGiftVisible = computed(() => Boolean(
   pointsSummaryLoaded.value &&
     registrationGift.value.enabled &&
@@ -540,6 +562,11 @@ const registrationGiftVisible = computed(() => Boolean(
       registrationGift.value.status === 'claimed' ||
       registrationGift.value.legacyClaimEnabled
     )
+))
+const dailyRedemptionDropVisible = computed(() => Boolean(
+  pointsSummaryLoaded.value &&
+    dailyRedemptionDrop.value.enabled &&
+    dailyRedemptionDrop.value.status !== 'admin_excluded'
 ))
 const transferTaskLabel = computed(() => {
   if (!pointsSummaryLoaded.value) return '读取中'
@@ -551,7 +578,7 @@ const transferDurationLabel = computed(() => {
 })
 const taskSummaryText = computed(() => {
   if (!pointsSummaryLoaded.value || !pointTasksLoaded.value) return '正在读取任务配置'
-  return `${2 + (registrationGiftVisible.value ? 1 : 0) + (transferTask.value.enabled ? 1 : 0) + pointTasks.value.length} 个可用任务`
+  return `${2 + (dailyRedemptionDropVisible.value ? 1 : 0) + (registrationGiftVisible.value ? 1 : 0) + (transferTask.value.enabled ? 1 : 0) + pointTasks.value.length} 个可用任务`
 })
 const checkInStatusSnapshot = ref(null)
 
@@ -804,6 +831,47 @@ const handleClaimRegistrationGift = async () => {
   }
 }
 
+const handleClaimDailyRedemptionDrop = async () => {
+  if (dailyRedemptionDropClaiming.value || !dailyRedemptionDrop.value.claimable) return
+
+  dailyRedemptionDropClaiming.value = true
+  try {
+    const response = await $fetch('/api/user/points/daily-redemption-drop/claim', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${useCookie('token').value}`
+      }
+    })
+
+    if (response.code === 200 && response.data) {
+      pointsSummary.value = {
+        ...pointsSummary.value,
+        dailyRedemptionDrop: response.data
+      }
+
+      if (response.data.claimed) {
+        applyPointsPayloadToUser(response.data)
+        refreshAccessControlConfig().catch(error => {
+          console.warn('Failed to refresh access control config after daily redemption drop claim:', error)
+        })
+        ElMessage.success(`领取成功，获得 ${response.data.points} 积分`)
+        await handlePointsChanged()
+        return
+      }
+
+      ElMessage.info(response.msg || response.data.message || '今日暂不可领取')
+      return
+    }
+
+    ElMessage.error(response.msg || '领取每日福利失败')
+  } catch (error) {
+    console.error('领取每日福利失败:', error)
+    ElMessage.error(error?.data?.message || '领取每日福利失败，请稍后重试')
+  } finally {
+    dailyRedemptionDropClaiming.value = false
+  }
+}
+
 const handleCheckInStatusLoaded = (status) => {
   checkInStatusSnapshot.value = status
 }
@@ -876,7 +944,8 @@ const getTypeName = (type) => {
     task: '任务奖励',
     transfer: '转存奖励',
     registration_gift: '注册礼包',
-    redemption: '兑换码奖励'
+    redemption: '兑换码奖励',
+    daily_redemption_drop: '每日福利'
   }
   return typeNames[type] || type
 }

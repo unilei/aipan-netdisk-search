@@ -1,4 +1,5 @@
 import prisma from "~/lib/prisma";
+import { FORUM_TOPIC_PUBLIC_STATUS } from "~/server/services/forum/topicTrash.mjs";
 
 export default defineEventHandler(async (event) => {
     try {
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
                     select: {
                         topics: {
                             where: {
-                                status: 'approved'
+                                status: FORUM_TOPIC_PUBLIC_STATUS
                             }
                         }
                     }
@@ -30,4 +31,4 @@ export default defineEventHandler(async (event) => {
             message: '获取论坛分类失败'
         }
     }
-}) 
+})

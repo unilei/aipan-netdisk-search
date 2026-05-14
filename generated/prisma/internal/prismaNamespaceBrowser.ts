@@ -83,6 +83,8 @@ export const ModelName = {
   RedemptionCodeCampaign: 'RedemptionCodeCampaign',
   RedemptionCode: 'RedemptionCode',
   RedemptionCodeRedemption: 'RedemptionCodeRedemption',
+  DailyRedemptionDrop: 'DailyRedemptionDrop',
+  DailyRedemptionDropClaim: 'DailyRedemptionDropClaim',
   NavigationCategory: 'NavigationCategory',
   NavigationItem: 'NavigationItem',
   Report: 'Report'
@@ -371,6 +373,10 @@ export const ForumTopicScalarFieldEnum = {
   isLocked: 'isLocked',
   viewCount: 'viewCount',
   status: 'status',
+  statusBeforeTrash: 'statusBeforeTrash',
+  trashedAt: 'trashedAt',
+  trashedById: 'trashedById',
+  trashReason: 'trashReason',
   categoryId: 'categoryId',
   authorId: 'authorId',
   lastActivityAt: 'lastActivityAt',
@@ -602,6 +608,43 @@ export const RedemptionCodeRedemptionScalarFieldEnum = {
 } as const
 
 export type RedemptionCodeRedemptionScalarFieldEnum = (typeof RedemptionCodeRedemptionScalarFieldEnum)[keyof typeof RedemptionCodeRedemptionScalarFieldEnum]
+
+
+export const DailyRedemptionDropScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  enabled: 'enabled',
+  releaseTime: 'releaseTime',
+  timezone: 'timezone',
+  dailyQuota: 'dailyQuota',
+  points: 'points',
+  pointsExpiresInMinutes: 'pointsExpiresInMinutes',
+  maxClaimsPerUserPerDay: 'maxClaimsPerUserPerDay',
+  requireEmailVerified: 'requireEmailVerified',
+  minimumAccountAgeDays: 'minimumAccountAgeDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DailyRedemptionDropScalarFieldEnum = (typeof DailyRedemptionDropScalarFieldEnum)[keyof typeof DailyRedemptionDropScalarFieldEnum]
+
+
+export const DailyRedemptionDropClaimScalarFieldEnum = {
+  id: 'id',
+  dropId: 'dropId',
+  userId: 'userId',
+  claimDate: 'claimDate',
+  claimNo: 'claimNo',
+  points: 'points',
+  expiresAt: 'expiresAt',
+  pointsHistoryId: 'pointsHistoryId',
+  ipHash: 'ipHash',
+  userAgentHash: 'userAgentHash',
+  createdAt: 'createdAt'
+} as const
+
+export type DailyRedemptionDropClaimScalarFieldEnum = (typeof DailyRedemptionDropClaimScalarFieldEnum)[keyof typeof DailyRedemptionDropClaimScalarFieldEnum]
 
 
 export const NavigationCategoryScalarFieldEnum = {

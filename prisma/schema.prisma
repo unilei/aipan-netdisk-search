@@ -58,6 +58,7 @@ model User {
   emailVerificationTokens   EmailVerificationToken[]
   redemptionCodeCampaigns   RedemptionCodeCampaign[]   @relation("RedemptionCodeCampaignCreator")
   redemptionCodeRedemptions RedemptionCodeRedemption[]
+  dailyRedemptionDropClaims DailyRedemptionDropClaim[]
 
   @@index([role])
   @@index([status])
@@ -370,6 +371,10 @@ model ForumTopic {
   isLocked       Boolean       @default(false)
   viewCount      Int           @default(0)
   status         String        @default("pending")
+  statusBeforeTrash String?
+  trashedAt      DateTime?
+  trashedById    Int?
+  trashReason    String?       @db.Text
   categoryId     Int
   authorId       Int
   lastActivityAt DateTime      @default(now())
@@ -384,6 +389,8 @@ model ForumTopic {
   @@index([authorId])
   @@index([lastActivityAt])
   @@index([status])
+  @@index([status, trashedAt])
+  @@index([trashedById])
 }
 
 // 论坛回复模型
@@ -546,6 +553,7 @@ model PointsHistory {
   pointTaskCompletion      PointTaskCompletion?
   registrationGiftGrant    RegistrationGiftGrant?
   redemptionCodeRedemption RedemptionCodeRedemption?
+  dailyRedemptionDropClaim DailyRedemptionDropClaim?
 
   @@index([userId])
   @@index([type])
@@ -703,6 +711,53 @@ model RedemptionCodeRedemption {
   @@index([userId])
   @@index([campaignId])
   @@index([codeId])
+  @@index([createdAt])
+}
+
+model DailyRedemptionDrop {
+  id                     Int      @id @default(autoincrement())
+  name                   String   @default("每日福利")
+  description            String?  @db.Text
+  enabled                Boolean  @default(false)
+  releaseTime            String   @default("12:00")
+  timezone               String   @default("Asia/Shanghai")
+  dailyQuota             Int      @default(100)
+  points                 Int      @default(100)
+  pointsExpiresInMinutes Int?
+  maxClaimsPerUserPerDay Int      @default(1)
+  requireEmailVerified   Boolean  @default(false)
+  minimumAccountAgeDays  Int      @default(0)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  claims DailyRedemptionDropClaim[]
+
+  @@index([enabled])
+  @@index([releaseTime])
+  @@index([createdAt])
+}
+
+model DailyRedemptionDropClaim {
+  id              Int       @id @default(autoincrement())
+  dropId          Int
+  userId          Int
+  claimDate       DateTime  @db.Date
+  claimNo         Int       @default(1)
+  points          Int
+  expiresAt       DateTime?
+  pointsHistoryId Int?      @unique
+  ipHash          String?
+  userAgentHash   String?
+  createdAt       DateTime  @default(now())
+
+  drop          DailyRedemptionDrop @relation(fields: [dropId], references: [id], onDelete: Cascade)
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pointsHistory PointsHistory?      @relation(fields: [pointsHistoryId], references: [id], onDelete: SetNull)
+
+  @@unique([dropId, userId, claimDate, claimNo])
+  @@index([dropId, claimDate])
+  @@index([userId])
+  @@index([claimDate])
   @@index([createdAt])
 }
 

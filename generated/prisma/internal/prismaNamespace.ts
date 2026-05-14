@@ -424,6 +424,8 @@ export const ModelName = {
   RedemptionCodeCampaign: 'RedemptionCodeCampaign',
   RedemptionCode: 'RedemptionCode',
   RedemptionCodeRedemption: 'RedemptionCodeRedemption',
+  DailyRedemptionDrop: 'DailyRedemptionDrop',
+  DailyRedemptionDropClaim: 'DailyRedemptionDropClaim',
   NavigationCategory: 'NavigationCategory',
   NavigationItem: 'NavigationItem',
   Report: 'Report'
@@ -442,7 +444,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "dailySearchStats" | "userVodConfig" | "tvboxSource" | "emailVerificationToken" | "forumCategory" | "forumTopic" | "forumPost" | "forumTopicReadState" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "transferPointGrant" | "pointTask" | "pointTaskCompletion" | "registrationGiftGrant" | "redemptionCodeCampaign" | "redemptionCode" | "redemptionCodeRedemption" | "navigationCategory" | "navigationItem" | "report"
+    modelProps: "user" | "resourceType" | "resource" | "post" | "postCategory" | "postToCategory" | "alist" | "comment" | "blogCategory" | "blogPostToCategory" | "blogPost" | "userResource" | "systemSettings" | "searchRecord" | "dailySearchStats" | "userVodConfig" | "tvboxSource" | "emailVerificationToken" | "forumCategory" | "forumTopic" | "forumPost" | "forumTopicReadState" | "notification" | "chatRoom" | "chatRoomUser" | "chatMessage" | "checkIn" | "pointsHistory" | "transferPointGrant" | "pointTask" | "pointTaskCompletion" | "registrationGiftGrant" | "redemptionCodeCampaign" | "redemptionCode" | "redemptionCodeRedemption" | "dailyRedemptionDrop" | "dailyRedemptionDropClaim" | "navigationCategory" | "navigationItem" | "report"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3036,6 +3038,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    DailyRedemptionDrop: {
+      payload: Prisma.$DailyRedemptionDropPayload<ExtArgs>
+      fields: Prisma.DailyRedemptionDropFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DailyRedemptionDropFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DailyRedemptionDropFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>
+        }
+        findFirst: {
+          args: Prisma.DailyRedemptionDropFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DailyRedemptionDropFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>
+        }
+        findMany: {
+          args: Prisma.DailyRedemptionDropFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>[]
+        }
+        create: {
+          args: Prisma.DailyRedemptionDropCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>
+        }
+        createMany: {
+          args: Prisma.DailyRedemptionDropCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DailyRedemptionDropCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>[]
+        }
+        delete: {
+          args: Prisma.DailyRedemptionDropDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>
+        }
+        update: {
+          args: Prisma.DailyRedemptionDropUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>
+        }
+        deleteMany: {
+          args: Prisma.DailyRedemptionDropDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DailyRedemptionDropUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DailyRedemptionDropUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>[]
+        }
+        upsert: {
+          args: Prisma.DailyRedemptionDropUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropPayload>
+        }
+        aggregate: {
+          args: Prisma.DailyRedemptionDropAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDailyRedemptionDrop>
+        }
+        groupBy: {
+          args: Prisma.DailyRedemptionDropGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DailyRedemptionDropGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DailyRedemptionDropCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DailyRedemptionDropCountAggregateOutputType> | number
+        }
+      }
+    }
+    DailyRedemptionDropClaim: {
+      payload: Prisma.$DailyRedemptionDropClaimPayload<ExtArgs>
+      fields: Prisma.DailyRedemptionDropClaimFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DailyRedemptionDropClaimFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DailyRedemptionDropClaimFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>
+        }
+        findFirst: {
+          args: Prisma.DailyRedemptionDropClaimFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DailyRedemptionDropClaimFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>
+        }
+        findMany: {
+          args: Prisma.DailyRedemptionDropClaimFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>[]
+        }
+        create: {
+          args: Prisma.DailyRedemptionDropClaimCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>
+        }
+        createMany: {
+          args: Prisma.DailyRedemptionDropClaimCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.DailyRedemptionDropClaimCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>[]
+        }
+        delete: {
+          args: Prisma.DailyRedemptionDropClaimDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>
+        }
+        update: {
+          args: Prisma.DailyRedemptionDropClaimUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>
+        }
+        deleteMany: {
+          args: Prisma.DailyRedemptionDropClaimDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DailyRedemptionDropClaimUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.DailyRedemptionDropClaimUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>[]
+        }
+        upsert: {
+          args: Prisma.DailyRedemptionDropClaimUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DailyRedemptionDropClaimPayload>
+        }
+        aggregate: {
+          args: Prisma.DailyRedemptionDropClaimAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDailyRedemptionDropClaim>
+        }
+        groupBy: {
+          args: Prisma.DailyRedemptionDropClaimGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DailyRedemptionDropClaimGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DailyRedemptionDropClaimCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DailyRedemptionDropClaimCountAggregateOutputType> | number
+        }
+      }
+    }
     NavigationCategory: {
       payload: Prisma.$NavigationCategoryPayload<ExtArgs>
       fields: Prisma.NavigationCategoryFieldRefs
@@ -3564,6 +3714,10 @@ export const ForumTopicScalarFieldEnum = {
   isLocked: 'isLocked',
   viewCount: 'viewCount',
   status: 'status',
+  statusBeforeTrash: 'statusBeforeTrash',
+  trashedAt: 'trashedAt',
+  trashedById: 'trashedById',
+  trashReason: 'trashReason',
   categoryId: 'categoryId',
   authorId: 'authorId',
   lastActivityAt: 'lastActivityAt',
@@ -3795,6 +3949,43 @@ export const RedemptionCodeRedemptionScalarFieldEnum = {
 } as const
 
 export type RedemptionCodeRedemptionScalarFieldEnum = (typeof RedemptionCodeRedemptionScalarFieldEnum)[keyof typeof RedemptionCodeRedemptionScalarFieldEnum]
+
+
+export const DailyRedemptionDropScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  enabled: 'enabled',
+  releaseTime: 'releaseTime',
+  timezone: 'timezone',
+  dailyQuota: 'dailyQuota',
+  points: 'points',
+  pointsExpiresInMinutes: 'pointsExpiresInMinutes',
+  maxClaimsPerUserPerDay: 'maxClaimsPerUserPerDay',
+  requireEmailVerified: 'requireEmailVerified',
+  minimumAccountAgeDays: 'minimumAccountAgeDays',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type DailyRedemptionDropScalarFieldEnum = (typeof DailyRedemptionDropScalarFieldEnum)[keyof typeof DailyRedemptionDropScalarFieldEnum]
+
+
+export const DailyRedemptionDropClaimScalarFieldEnum = {
+  id: 'id',
+  dropId: 'dropId',
+  userId: 'userId',
+  claimDate: 'claimDate',
+  claimNo: 'claimNo',
+  points: 'points',
+  expiresAt: 'expiresAt',
+  pointsHistoryId: 'pointsHistoryId',
+  ipHash: 'ipHash',
+  userAgentHash: 'userAgentHash',
+  createdAt: 'createdAt'
+} as const
+
+export type DailyRedemptionDropClaimScalarFieldEnum = (typeof DailyRedemptionDropClaimScalarFieldEnum)[keyof typeof DailyRedemptionDropClaimScalarFieldEnum]
 
 
 export const NavigationCategoryScalarFieldEnum = {
@@ -4091,6 +4282,8 @@ export type GlobalOmitConfig = {
   redemptionCodeCampaign?: Prisma.RedemptionCodeCampaignOmit
   redemptionCode?: Prisma.RedemptionCodeOmit
   redemptionCodeRedemption?: Prisma.RedemptionCodeRedemptionOmit
+  dailyRedemptionDrop?: Prisma.DailyRedemptionDropOmit
+  dailyRedemptionDropClaim?: Prisma.DailyRedemptionDropClaimOmit
   navigationCategory?: Prisma.NavigationCategoryOmit
   navigationItem?: Prisma.NavigationItemOmit
   report?: Prisma.ReportOmit
