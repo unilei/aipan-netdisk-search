@@ -12,8 +12,23 @@ export type SearchBody = {
     name: string
 }
 
+export type LinkService =
+    | 'BAIDU'
+    | 'XUNLEI'
+    | 'QUARK'
+    | 'ALIYUN'
+    | 'UC'
+    | 'TIANYI'
+    | 'MOBILE'
+    | '115'
+    | 'PIKPAK'
+    | '123'
+    | 'MAGNET'
+    | 'ED2K'
+    | 'OTHER'
+
 export type Link = {
-    service: 'BAIDU' | 'XUNLEI' | 'QUARK' | 'ALIYUN' | 'OTHER'
+    service: LinkService
     link: string
     pwd?: string
 }
@@ -49,12 +64,20 @@ export const CACHE_CONFIG = {
     RETRY_DELAY: 1000
 }
 
-export const SERVICE_DOMAINS: Record<Link['service'], string | string[]> = {
-    BAIDU: 'pan.baidu.com',
-    XUNLEI: 'pan.xunlei.com',
-    QUARK: 'pan.quark.cn',
-    ALIYUN: ['www.aliyundrive.com', 'www.alipan.com'],
-    OTHER: ''
+export const SERVICE_DOMAINS: Record<LinkService, readonly string[]> = {
+    BAIDU: ['pan.baidu.com'],
+    XUNLEI: ['pan.xunlei.com'],
+    QUARK: ['pan.quark.cn'],
+    ALIYUN: ['aliyundrive.com', 'alipan.com'],
+    UC: ['drive.uc.cn'],
+    TIANYI: ['cloud.189.cn'],
+    MOBILE: ['yun.139.com', 'caiyun.139.com'],
+    '115': ['115cdn.com', '115.com'],
+    PIKPAK: ['mypikpak.com', 'toapp.mypikpak.com'],
+    '123': ['123684.com', '123865.com', '123912.com', '123pan.com', '123pan.cn'],
+    MAGNET: ['magnet:?'],
+    ED2K: ['ed2k://'],
+    OTHER: []
 } as const
 
 // Cache initialization
@@ -149,31 +172,49 @@ export const fetchApi = async (url: string, body: SearchBody, token: string, app
     }
 }
 
+const normalizeExtractedUrl = (rawUrl: string) =>
+    rawUrl
+        .replace(/&amp;/g, '&')
+        .trim()
+        .split(/(?:提取码|访问码|密[码碼])[:：]/i)[0]
+        .replace(/[)\]】。；;,，]+$/g, '')
+        .trim()
+
+const extractPassword = (line: string, url: string) => {
+    const fromUrl = url.match(/[?&](?:pwd|password)=([a-zA-Z0-9]+)/i)?.[1]
+    if (fromUrl) return fromUrl
+
+    return line.match(/(?:提取码|访问码|密[码碼])[:：]?\s*([a-zA-Z0-9]+)/i)?.[1]
+}
+
+export const detectLinkService = (url: string): LinkService => {
+    const normalizedUrl = url.toLowerCase()
+    const service = Object.entries(SERVICE_DOMAINS)
+        .filter(([, domains]) => domains.length > 0)
+        .find(([, domains]) => domains.some(domain => normalizedUrl.includes(domain)))
+        ?.[0] as LinkService | undefined
+
+    return service || 'OTHER'
+}
+
 export const extractLinks = (answer: string | undefined): Link[] => {
     if (!answer?.trim()) return []
 
-    const urlRegex = /https?:\/\/[^\s]+/g
-    const codeRegex = /提取码[:：]\s*([a-zA-Z0-9]+)/
-
-    const serviceChecks = Object.entries(SERVICE_DOMAINS).map(([service, domain]) => ({
-        service,
-        check: Array.isArray(domain)
-            ? (url: string) => domain.some(d => url.includes(d))
-            : (url: string) => url.includes(domain)
-    }))
+    const urlRegex = /(?:https?:\/\/[^\s<>"']+|magnet:\?[^\s<>"']+|ed2k:\/\/[^\s<>"']+)/gi
+    const seen = new Set<string>()
 
     return answer.split('\n').reduce<Link[]>((acc, answerLine) => {
-        const urls = answerLine.match(urlRegex)
-        const url = urls?.[0]
-        if (!url) return acc
+        const urls = answerLine.match(urlRegex) || []
+        urls.forEach(rawUrl => {
+            const url = normalizeExtractedUrl(rawUrl)
+            if (!url || seen.has(url)) return
 
-        const codeMatch = answerLine.match(codeRegex)
-        const service = serviceChecks.find(({ check }) => check(url))?.service as Link['service'] || 'OTHER'
-
-        acc.push({
-            service,
-            link: url,
-            pwd: codeMatch?.[1]
+            seen.add(url)
+            acc.push({
+                service: detectLinkService(url),
+                link: url,
+                pwd: extractPassword(answerLine, url)
+            })
         })
         return acc
     }, [])
@@ -231,13 +272,17 @@ export const executeApiRequests = async (
             name: item.question,
             links: extractLinks(item.answer)
         }))
+        .filter(item => item.links.length > 0)
 
     const errorMessages = errors.map(e => {
         const pathname = new URL(e.url).pathname
         return `${pathname}: ${e.error}`
     }).join('; ')
 
-    console.log(errorMessages)
+    if (errorMessages) {
+        console.warn(errorMessages)
+    }
+
     return {
         list: transformedList,
         code: transformedList.length > 0 ? 200 : (errors.length === apiEndpoints.length ? 500 : 206),

@@ -6,6 +6,9 @@
     "api": "/api/sources/pansou"
   },
   {
+    "api": "/api/sources/sohaoju"
+  },
+  {
     "api": "/api/sources/xiaokupan"
   },
   {
@@ -13,12 +16,6 @@
   },
   {
     "api": "/api/sources/xccji"
-  },
-  {
-    "api": "/api/sources/vipray"
-  },
-  {
-    "api": "/api/sources/slowread"
   },
   {
     "api": "/api/sources/jso"
