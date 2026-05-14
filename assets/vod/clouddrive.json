@@ -9,6 +9,9 @@
     "api": "/api/sources/sohaoju"
   },
   {
+    "api": "/api/sources/external-pan"
+  },
+  {
     "api": "/api/sources/xiaokupan"
   },
   {
