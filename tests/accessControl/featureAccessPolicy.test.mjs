@@ -11,8 +11,6 @@ import {
 test("resolveFeatureAccessKeysForPath protects core resource APIs", () => {
   assert.deepEqual(resolveFeatureAccessKeysForPath("/api/sources/local"), [
     FEATURE_ACCESS_KEYS.netdiskSearch,
-    FEATURE_ACCESS_KEYS.aiSearch,
-    FEATURE_ACCESS_KEYS.dailyMovieResources,
   ]);
   assert.deepEqual(resolveFeatureAccessKeysForPath("/api/tv/sources"), [
     FEATURE_ACCESS_KEYS.tvLive,
@@ -35,6 +33,26 @@ test("resolveFeatureAccessKeysForPath protects core resource APIs", () => {
   assert.deepEqual(resolveFeatureAccessKeysForPath("/api/alist/get"), [
     FEATURE_ACCESS_KEYS.alist,
   ]);
+});
+
+test("source APIs follow netdisk search access instead of other resource entry points", () => {
+  const config = normalizeFeatureAccessConfig({
+    enabled: true,
+    requireLogin: true,
+    minPoints: 100,
+    protectedFeatures: {
+      netdiskSearch: false,
+      aiSearch: true,
+      dailyMovieResources: true,
+    },
+  });
+
+  const decision = evaluateFeatureAccessPolicy({
+    config,
+    featureKeys: resolveFeatureAccessKeysForPath("/api/sources/local"),
+  });
+
+  assert.equal(decision.allowed, true);
 });
 
 test("resolveFeatureAccessKeysForPath leaves public and unrelated APIs open", () => {

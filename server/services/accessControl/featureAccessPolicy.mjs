@@ -98,11 +98,7 @@ export const shouldProtectFeatures = (config, featureKeys) => {
 
 export const resolveFeatureAccessKeysForPath = (requestPath = "") => {
   if (requestPath.startsWith("/api/sources/")) {
-    return [
-      FEATURE_ACCESS_KEYS.netdiskSearch,
-      FEATURE_ACCESS_KEYS.aiSearch,
-      FEATURE_ACCESS_KEYS.dailyMovieResources,
-    ];
+    return [FEATURE_ACCESS_KEYS.netdiskSearch];
   }
 
   if (requestPath === "/api/tv/sources") {
