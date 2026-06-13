@@ -54,8 +54,9 @@ export default defineEventHandler(async (event) => {
       setResponseHeader(event, 'Content-Disposition', contentDisposition)
     }
 
-    if (contentLength) {
-      setResponseHeader(event, 'Content-Length', contentLength)
+    const parsedContentLength = contentLength ? Number.parseInt(contentLength, 10) : 0
+    if (Number.isFinite(parsedContentLength) && parsedContentLength > 0) {
+      setResponseHeader(event, 'Content-Length', parsedContentLength)
     }
 
     return response.body

@@ -132,3 +132,23 @@ npm run dev
 npm run build
 node --test tests/search/source1Results.test.mjs tests/search/userResourceSearchIndex.test.mjs tests/userResources/autoReview.test.mjs tests/userResources/autoReviewQueue.test.mjs tests/releases/releaseNotes.test.mjs
 ```
+
+## Lighthouse 性能审计
+
+本地先构建生产产物，再运行 Lighthouse CI：
+
+```bash
+npm run build
+npm run lighthouse:healthcheck
+npm run lighthouse:ci
+```
+
+默认报告会写入 `.lighthouseci/`。如果需要临时公开报告链接，可在运行时设置：
+
+```bash
+LHCI_UPLOAD_TARGET=temporary-public-storage npm run lighthouse:ci
+```
+
+LHCI 默认使用 `45173` 作为 Nuxt preview 端口，`45174` 作为 WebSocket 端口；如本地端口冲突，可设置 `LHCI_PORT` 和 `LHCI_WS_PORT` 覆盖。
+
+GitHub Actions 会在 PR 和手动触发时运行同样流程，并上传 `.lighthouseci/` 报告 artifact。当前阈值为 warning，不会因首次接入的历史分数阻断合并。

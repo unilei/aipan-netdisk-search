@@ -51,7 +51,7 @@ RUN rm -rf node_modules && \
   rm -rf dist && \
   rm -rf .git && \
   rm -rf .nuxt && \
-  find . -maxdepth 1 ! -name '.output' ! -name 'generated' ! -name 'prisma' ! -name 'ecosystem.config.js' ! -name '.' -exec rm -rf {} +
+  find . -maxdepth 1 ! -name '.output' ! -name 'generated' ! -name 'prisma' ! -name 'ecosystem.config.cjs' ! -name '.' -exec rm -rf {} +
 
 # 生产阶段
 FROM node:20.19.2-alpine
@@ -77,10 +77,10 @@ WORKDIR /app
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/prisma ./prisma 
 COPY --from=builder /app/generated ./generated
-COPY --from=builder /app/ecosystem.config.js ./ecosystem.config.js
+COPY --from=builder /app/ecosystem.config.cjs ./ecosystem.config.cjs
 
 # 安装 PM2 和与项目 schema 兼容的 Prisma CLI，供运行时和迁移容器使用
-RUN npm install -g pm2 prisma@6.18.0
+RUN npm install -g pm2 prisma@6.19.3
 
 # 设置环境变量
 ENV NUXT_HOST=0.0.0.0
@@ -93,4 +93,4 @@ EXPOSE 3000
 EXPOSE 3002
 
 # 使用 PM2 以 production 配置启动应用
-CMD ["pm2-runtime", "start", "ecosystem.config.js", "--env", "production"]
+CMD ["pm2-runtime", "start", "ecosystem.config.cjs", "--env", "production"]

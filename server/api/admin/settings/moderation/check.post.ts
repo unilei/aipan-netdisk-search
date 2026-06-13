@@ -5,6 +5,7 @@ import {
 } from "~/server/utils/moderation";
 
 const ADMIN_CONTEXTS = new Set(Object.values(MODERATION_CONTEXTS));
+type ModerationContext = (typeof MODERATION_CONTEXTS)[keyof typeof MODERATION_CONTEXTS];
 
 export default defineEventHandler(async (event) => {
   const user = event.context.user;
@@ -19,10 +20,10 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const text = String(body?.text || "");
   const requestedContext = String(body?.context || MODERATION_CONTEXTS.netdiskSearch);
-  const context = ADMIN_CONTEXTS.has(requestedContext)
+  const context = ADMIN_CONTEXTS.has(requestedContext as ModerationContext)
     ? requestedContext
     : MODERATION_CONTEXTS.netdiskSearch;
-  const decision = await evaluateModerationWithConfig(text, { context });
+  const decision = await evaluateModerationWithConfig(text, { context: context as ModerationContext });
 
   return {
     code: 200,

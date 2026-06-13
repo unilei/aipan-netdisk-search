@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
   const codes = await createRedemptionCodesForCampaign({
     campaignId,
     input: body,
+    client: prisma,
   });
 
   return {

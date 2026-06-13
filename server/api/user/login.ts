@@ -1,5 +1,6 @@
 import prisma from "~/lib/prisma";
 import jwt from "jsonwebtoken";
+import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
 import { verifyAndUpgradePassword } from "~/server/utils/password";
 
 export default defineEventHandler(async (event) => {
@@ -53,6 +54,9 @@ export default defineEventHandler(async (event) => {
             config.jwtSecret,
             { expiresIn: '24h' }
         );
+        const pointsBreakdown = await getUserPointsBreakdown(user.id, {
+            permanentPoints: user.points
+        });
 
         return {
             code: 200,
@@ -65,7 +69,13 @@ export default defineEventHandler(async (event) => {
                     email: user.email,
                     role: user.role,
                     isVerified: user.isVerified,
-                    emailVerificationRequired: user.emailVerificationRequired
+                    emailVerificationRequired: user.emailVerificationRequired,
+                    points: pointsBreakdown.effectivePoints,
+                    permanentPoints: pointsBreakdown.permanentPoints,
+                    temporaryPoints: pointsBreakdown.temporaryPoints,
+                    effectivePoints: pointsBreakdown.effectivePoints,
+                    nextExpiringAt: pointsBreakdown.nextExpiringAt,
+                    pointsBreakdown
                 },
                 showEmailActivationPrompt: !user.isVerified
             }

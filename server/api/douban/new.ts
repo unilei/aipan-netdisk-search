@@ -1,7 +1,7 @@
 import { getDataFromRedis, setDataInRedis } from '~/server/utils/redis';
 
 export default defineEventHandler(async (event) => {
-    const REDIS_KEY = 'douban_homepage_data';
+    const REDIS_KEY = 'douban_homepage_data_r2_v1';
     const CACHE_EXPIRATION = 60 * 60 * 24; // 缓存1天
 
     try {
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
         }
 
         // 如果没有缓存数据，从外部 API 获取新数据
-        // 使用用户提供的 API：https://iamyourfather.link0.me/api/v1/category
+        // 数据源会将豆瓣图片同步到 R2，并在 cover 字段返回公开 URL
         const response: any = await $fetch('https://iamyourfather.link0.me/api/v1/new', {
             method: 'GET'
         });

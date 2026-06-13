@@ -140,8 +140,11 @@ test("production deployment wires scheduled R2 database backups", () => {
     join(repoRoot, ".github/workflows/deploy.yml"),
     "utf8",
   );
+  const packageJson = JSON.parse(
+    readFileSync(join(repoRoot, "package.json"), "utf8"),
+  );
   const dockerfile = readFileSync(join(repoRoot, "Dockerfile"), "utf8");
-  const ecosystemConfig = readFileSync(join(repoRoot, "ecosystem.config.js"), "utf8");
+  const ecosystemConfig = readFileSync(join(repoRoot, "ecosystem.config.cjs"), "utf8");
 
   assert.match(compose, /postgres-backup:/);
   assert.match(compose, /DB_BACKUP_IMAGE/);
@@ -161,8 +164,11 @@ test("production deployment wires scheduled R2 database backups", () => {
   assert.match(workflow, /R2_ACCESS_KEY_ID/);
   assert.match(workflow, /R2_SECRET_ACCESS_KEY/);
 
+  assert.equal(packageJson.type, "module");
   assert.match(dockerfile, /aws-cli/);
   assert.match(dockerfile, /postgresql-client/);
+  assert.match(dockerfile, /ecosystem\.config\.cjs/);
+  assert.doesNotMatch(dockerfile, /ecosystem\.config\.js/);
   assert.match(ecosystemConfig, /R2_ACCESS_KEY_ID/);
   assert.match(ecosystemConfig, /POSTGRES_HOST/);
 });

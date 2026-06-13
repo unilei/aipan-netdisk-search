@@ -55,6 +55,7 @@ definePageMeta({
 
 // 基础设置
 const route = useRoute();
+const router = useRouter();
 
 // SEO配置
 const seoKeyword = computed(() => String(route.query.keyword || ''));
@@ -86,8 +87,7 @@ const { checkModeration } = useModerationCheck();
 // 关键词
 const keyword = ref(getLegacyDecodedQueryValue(route.query.keyword));
 const shouldShowAccessNotice = computed(() => {
-  return accessStatus.value.loading ||
-    (accessStatus.value.checked && !accessStatus.value.allowed);
+  return accessStatus.value.checked && !accessStatus.value.allowed;
 });
 
 // 根据登录状态选择搜索源
@@ -116,13 +116,49 @@ const startSearchLoadingState = () => {
   };
 };
 
-const search = (searchText) => {
-  keyword.value = searchText;
-  searchByKeyword();
+const startPendingSearchState = () => {
+  sources.value = [];
+  searchPerformed.value = true;
+  skeletonLoading.value = true;
+  loadingProgress.value = {
+    total: 0,
+    completed: 0,
+    isLoading: true,
+  };
+};
+
+const search = async (searchText) => {
+  const normalizedKeyword = String(searchText || "").trim();
+  keyword.value = normalizedKeyword;
+
+  if (!normalizedKeyword) {
+    if (route.query.keyword) {
+      await router.push({ path: route.path, query: {} });
+      return;
+    }
+
+    sources.value = [];
+    searchPerformed.value = false;
+    resetLoadingState();
+    return;
+  }
+
+  if (getLegacyDecodedQueryValue(route.query.keyword) === normalizedKeyword) {
+    searchByKeyword();
+    return;
+  }
+
+  await router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      keyword: normalizedKeyword,
+    },
+  });
 };
 
 // 搜索函数
-const searchByKeyword = async () => {
+const searchByKeyword = async (options = {}) => {
   if (!keyword.value || keyword.value.trim() === "") {
     sources.value = [];
     searchPerformed.value = false;
@@ -139,7 +175,7 @@ const searchByKeyword = async () => {
     return;
   }
 
-  const access = await ensureAccess();
+  const access = options.access || await ensureAccess();
   if (!access.allowed) {
     sources.value = [];
     searchPerformed.value = false;
@@ -160,17 +196,24 @@ const searchByKeyword = async () => {
 // 初始化
 onMounted(async () => {
   try {
+    if (keyword.value && keyword.value.trim() !== "") {
+      startPendingSearchState();
+    }
+
     await Promise.all([
+      userStore.ensureUserSession({ clearOnFailure: false }),
       getQuarkConfig(),
       getGroupQrConfig(),
-      ensureAccess()
     ]);
 
+    const access = await ensureAccess();
+
     if (keyword.value && keyword.value.trim() !== "") {
-      await searchByKeyword();
+      await searchByKeyword({ access });
     }
   } catch (error) {
     console.error('初始化失败:', error);
+    resetLoadingState();
   }
 });
 

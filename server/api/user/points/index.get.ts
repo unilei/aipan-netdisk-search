@@ -13,6 +13,11 @@ import {
 import { getRegistrationGiftStatusForUser } from "~/server/services/points/registrationGift.mjs";
 import { getDailyRedemptionDropStatusForUser } from "~/server/services/points/dailyRedemptionDrops.mjs";
 
+const getDailyDropStatus = getDailyRedemptionDropStatusForUser as (input: {
+    userId: number;
+    client: typeof prisma;
+}) => Promise<any>;
+
 export default defineEventHandler(async (event) => {
     try {
         // 确保用户已登录
@@ -61,7 +66,7 @@ export default defineEventHandler(async (event) => {
         const [transferTask, registrationGift, dailyRedemptionDrop] = await Promise.all([
             getTransferTaskConfig(),
             getRegistrationGiftStatusForUser({ userId }),
-            getDailyRedemptionDropStatusForUser({ userId })
+            getDailyDropStatus({ userId, client: prisma })
         ])
 
         return {

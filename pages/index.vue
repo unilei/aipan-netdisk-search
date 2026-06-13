@@ -1,5 +1,4 @@
 <script setup>
-import { useDoubanStore } from "~/stores/douban";
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
 import { MODERATION_CONTEXTS } from "~/composables/useModerationCheck";
 import { useDebounceFn } from "@vueuse/core";
@@ -7,16 +6,69 @@ import { useDebounceFn } from "@vueuse/core";
 definePageMeta({
   layout: "netdisk",
 });
-const doubanStore = useDoubanStore();
 const searchKeyword = ref("");
 const router = useRouter();
 const { locale, locales, setLocale, t } = useI18n();
 const { checkModeration } = useModerationCheck();
+const DEFERRED_DOUBAN_FALLBACK_DELAY = 15000;
+const DEFERRED_DOUBAN_INTERACTION_EVENTS = ["scroll", "wheel", "touchstart", "keydown"];
+const DEFAULT_HOME_NAVIGATION = [
+  {
+    id: "search",
+    name: "搜索工具",
+    items: [
+      { title: "网盘搜索", path: "/search", icon: "fa-search" },
+      { title: "磁力搜索", path: "/magnet", icon: "fa-magnet" },
+      { title: "学术搜索", path: "/academic", icon: "fa-graduation-cap" },
+    ],
+  },
+  {
+    id: "entertainment",
+    name: "娱乐工具",
+    items: [
+      { title: "音乐下载", path: "/music", icon: "fa-music" },
+      { title: "TV直播", path: "/tv", icon: "fa-tv" },
+      { title: "AList", path: "/alist", icon: "fa-server" },
+      { title: "小说阅读", path: "/novel", icon: "fa-book" },
+    ],
+  },
+  {
+    id: "tools",
+    name: "实用工具",
+    items: [
+      { title: "图片工具", path: "/image-tools", icon: "fa-image" },
+      { title: "文档转换", path: "/converter", icon: "fa-file-alt" },
+      { title: "二维码生成", path: "/qrcode", icon: "fa-qrcode" },
+      { title: "短链生成", path: "/shorturl", icon: "fa-link" },
+    ],
+  },
+  {
+    id: "learning",
+    name: "学习工具",
+    items: [
+      { title: "英语学习", path: "/english", icon: "fa-language" },
+      { title: "编程学习", path: "/coding", icon: "fa-code" },
+      { title: "在线课程", path: "/courses", icon: "fa-chalkboard-teacher" },
+    ],
+  },
+  {
+    id: "others",
+    name: "其他",
+    items: [
+      { title: "博客", path: "/blog", icon: "fa-blog" },
+      { title: "关于我们", path: "/about", icon: "fa-info-circle" },
+      { title: "联系我们", path: "/contact", icon: "fa-envelope" },
+    ],
+  },
+];
+let deferredDoubanTimer = null;
 
 // 清理函数，防止内存泄漏
 onUnmounted(() => {
   if (stopLocaleWatcher) stopLocaleWatcher();
   if (stopRouteWatcher) stopRouteWatcher();
+  cleanupDeferredDoubanSchedule();
+  window.removeEventListener("scroll", updateBacktopVisibility);
 });
 
 // SEO配置
@@ -108,6 +160,41 @@ const search = (keyword) => {
 };
 
 const doubanData = ref([]);
+const doubanLoading = ref(false);
+const doubanLoaded = ref(false);
+const showBacktop = ref(false);
+
+const cleanupDeferredDoubanSchedule = () => {
+  if (deferredDoubanTimer) {
+    window.clearTimeout(deferredDoubanTimer);
+    deferredDoubanTimer = null;
+  }
+
+  DEFERRED_DOUBAN_INTERACTION_EVENTS.forEach((eventName) => {
+    window.removeEventListener(eventName, loadDeferredDoubanData);
+  });
+};
+
+const loadDeferredDoubanData = async () => {
+  cleanupDeferredDoubanSchedule();
+
+  if (doubanLoading.value || doubanLoaded.value) {
+    return;
+  }
+
+  doubanLoading.value = true;
+
+  try {
+    const res = await $fetch('/api/douban/new');
+    doubanData.value = res?.code === 200 && Array.isArray(res.data) ? res.data : [];
+  } catch (error) {
+    console.error('Failed to load douban data:', error);
+    doubanData.value = [];
+  } finally {
+    doubanLoaded.value = true;
+    doubanLoading.value = false;
+  }
+};
 
 // 添加防抖处理，避免重复点击
 const goDouban = useDebounceFn((movie) => {
@@ -121,30 +208,46 @@ const goDouban = useDebounceFn((movie) => {
   });
 }, 300);
 
+const updateBacktopVisibility = () => {
+  showBacktop.value = window.scrollY > 360;
+};
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+
 // 导航数据
-const categories = ref([]);
+const categories = ref(DEFAULT_HOME_NAVIGATION);
+const activeCategory = ref(activeCategoryCookie.value || DEFAULT_HOME_NAVIGATION[0]?.id || "");
+
+const ensureActiveCategory = () => {
+  if (categories.value && categories.value.length > 0) {
+    const categoryExists = categories.value.some(c => c.id === activeCategory.value);
+    if (!categoryExists) {
+      activeCategory.value = activeCategoryCookie.value || categories.value[0]?.id || '';
+    }
+  } else {
+    activeCategory.value = '';
+  }
+};
 
 // 加载导航数据
 const loadNavigationData = async () => {
   try {
     const { data } = await $fetch('/api/navigation');
-    categories.value = data || [];
+    if (Array.isArray(data) && data.length > 0) {
+      categories.value = data;
+      ensureActiveCategory();
+    }
   } catch (error) {
     console.error('Failed to load navigation data:', error);
-    categories.value = [];
   }
 };
 
-const activeCategory = ref("");
-
-// 确保在页面加载之前初始化活跃分类
-onBeforeMount(async () => {
-  await loadNavigationData();
-  if (categories.value && categories.value.length > 0) {
-    activeCategory.value = activeCategoryCookie.value || categories.value[0]?.id || '';
-  } else {
-    activeCategory.value = '';
-  }
+// 确保在页面挂载前先使用本地导航，接口返回后再同步后台配置
+onBeforeMount(() => {
+  ensureActiveCategory();
+  void loadNavigationData();
 });
 
 // 监听activeCategory变化，只保存到cookie
@@ -155,31 +258,18 @@ watch(activeCategory, (newValue) => {
 // 监听语言变化，重新加载导航数据
 const stopLocaleWatcher = watch(locale, async () => {
   await loadNavigationData();
-  if (categories.value && categories.value.length > 0) {
-    // 检查当前活跃分类在新语言中是否存在
-    const categoryExists = categories.value.some(c => c.id === activeCategory.value);
-    if (!categoryExists) {
-      // 如果不存在，使用第一个分类
-      activeCategory.value = categories.value[0]?.id || '';
-    }
-  } else {
-    activeCategory.value = '';
-  }
+  ensureActiveCategory();
 });
 
-onMounted(async () => {
-  try {
-    // 加载豆瓣数据
-    await doubanStore.getDoubanData();
-    doubanData.value = doubanStore.doubanData;
-  } catch (error) {
-    console.error('Failed to load douban data:', error);
-    // 设置默认空数据，避免页面崩溃
-    doubanData.value = [];
-  }
-
+onMounted(() => {
   // 在页面加载完成后，将滚动位置重置到顶部
   window.scrollTo(0, 0);
+
+  DEFERRED_DOUBAN_INTERACTION_EVENTS.forEach((eventName) => {
+    window.addEventListener(eventName, loadDeferredDoubanData, { once: true, passive: true });
+  });
+  window.addEventListener("scroll", updateBacktopVisibility, { passive: true });
+  deferredDoubanTimer = window.setTimeout(loadDeferredDoubanData, DEFERRED_DOUBAN_FALLBACK_DELAY);
 });
 
 // 监听路由变化（使用节流优化性能）
@@ -201,7 +291,18 @@ const stopRouteWatcher = watch(
     <div class="custom-bg py-[60px] min-h-[calc(100vh-130px)] transition-colors duration-300">
       <div class="flex flex-col items-center justify-center gap-4 md:mt-[80px] mt-[30px]">
         <div class="flex items-center justify-center gap-2">
-          <img class="w-16 h-16 md:w-22 md:h-22 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
+          <picture class="block w-16 h-16 md:w-22 md:h-22">
+            <source srcset="/logo.webp" type="image/webp" />
+            <img
+              class="w-full h-full dark:opacity-90"
+              src="/logo.png"
+              width="96"
+              height="96"
+              alt="logo"
+              loading="eager"
+              fetchpriority="high"
+              decoding="sync" />
+          </picture>
           <div>
             <h1
               class="text-2xl font-bold dark:text-white bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
@@ -221,16 +322,28 @@ const stopRouteWatcher = watch(
               v-model="searchKeyword" :placeholder="$t('search_placeholder')" @keydown.enter="search(searchKeyword)" />
             <button type="button"
               class="search-btn absolute right-3 top-1/2 -translate-y-1/2 w-12 h-12 flex items-center justify-center rounded-full bg-linear-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-400 dark:to-blue-500 dark:hover:from-blue-500 dark:hover:to-blue-600 text-white transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-blue-500/50 dark:hover:shadow-blue-400/30"
+              :aria-label="$t('search_placeholder')"
+              :title="$t('search_placeholder')"
               @click="search(searchKeyword)">
-              <el-icon :size="22" class="transition-transform duration-300 group-hover:rotate-12">
-                <Search></Search>
-              </el-icon>
+              <svg
+                aria-hidden="true"
+                class="w-5 h-5 transition-transform duration-300 group-hover:rotate-12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.3-4.3"></path>
+              </svg>
             </button>
           </div>
         </div>
       </div>
 
-        <div v-if="categories.length > 0" class="max-w-[1240px] mx-auto mt-4 px-4">
+        <div class="max-w-[1240px] mx-auto mt-4 px-4 min-h-[176px] md:min-h-[112px]">
+          <template v-if="categories.length > 0">
           <!-- 导航分类标签 -->
           <div class="flex items-center justify-center gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
             <button v-for="category in categories" :key="category.id"
@@ -263,13 +376,49 @@ const stopRouteWatcher = watch(
               </template>
             </template>
           </div>
+          </template>
         </div>
-      <DoubanImageBox :doubanData="doubanData" @goDouban="goDouban"></DoubanImageBox>
-      <!-- Enhanced Backtop -->
-      <el-backtop :right="24" :bottom="24"
-        class="bg-linear-to-r! from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 w-12! h-12! transition-all duration-300 rounded-xl! group hover:scale-110 shadow-lg! hover:shadow-xl! dark:shadow-gray-900/30! backdrop-blur-sm flex items-center justify-center">
-        <i class="fas fa-arrow-up text-white group-hover:animate-bounce"></i>
-      </el-backtop>
+      <div
+        v-if="!doubanLoaded"
+        aria-hidden="true"
+        class="mx-5 xl:max-w-[1200px] xl:mx-auto my-10 min-h-[1400px]">
+        <div class="h-5 w-36 rounded bg-gray-200/70 dark:bg-gray-700/60 mb-4"></div>
+        <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8 gap-4 mt-[10px]">
+          <div
+            v-for="index in 16"
+            :key="index"
+            class="rounded-md overflow-hidden bg-white/70 dark:bg-gray-800/50 shadow-sm">
+            <div class="aspect-[270/405] bg-gray-200/60 dark:bg-gray-700/60"></div>
+            <div class="p-2 space-y-2">
+              <div class="h-3 rounded bg-gray-200/70 dark:bg-gray-700/70"></div>
+              <div class="h-2 w-1/2 mx-auto rounded bg-gray-200/60 dark:bg-gray-700/60"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <DoubanImageBox
+        v-else-if="doubanData.length > 0"
+        :doubanData="doubanData"
+        @goDouban="goDouban"></DoubanImageBox>
+      <button
+        v-show="showBacktop"
+        type="button"
+        class="fixed right-6 bottom-6 z-40 w-12 h-12 rounded-xl bg-linear-to-r from-purple-500 to-blue-500 text-white shadow-lg transition-all duration-300 hover:from-purple-600 hover:to-blue-600 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-300 dark:from-purple-400 dark:to-blue-400 dark:hover:from-purple-500 dark:hover:to-blue-500 dark:shadow-gray-900/30"
+        aria-label="返回顶部"
+        title="返回顶部"
+        @click="scrollToTop">
+        <svg
+          aria-hidden="true"
+          class="mx-auto h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="m18 15-6-6-6 6"></path>
+        </svg>
+      </button>
     </div>
   </div>
 </template>

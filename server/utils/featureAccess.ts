@@ -38,6 +38,26 @@ export interface FeatureAccessConfig {
   protectedFeatures: ProtectedFeatures;
 }
 
+type FeatureAccessDecision = {
+  allowed: boolean;
+  statusCode: number;
+  code: string;
+  message: string;
+  requiredPoints: number;
+  currentPoints: number;
+  needsUser: boolean;
+  userId?: number;
+};
+
+const evaluatePolicy = evaluateFeatureAccessPolicy as (input: {
+  config: FeatureAccessConfig;
+  featureKeys: FeatureAccessKey | FeatureAccessKey[];
+  token?: string;
+  decoded?: ReturnType<typeof verifyToken> | null;
+  user?: { points: number } | null;
+  userLoaded?: boolean;
+}) => FeatureAccessDecision;
+
 const parseStoredConfig = (value?: string | null) => {
   if (!value) return {};
 
@@ -111,7 +131,7 @@ const throwFeatureAccessError = (decision: {
   message: string;
   requiredPoints: number;
   currentPoints: number;
-}) => {
+}): never => {
   throw createError({
     statusCode: decision.statusCode,
     statusMessage: decision.code,
@@ -133,7 +153,7 @@ export const assertFeatureAccess = async (
   const token = getBearerToken(event);
   const decoded = token ? verifyToken(token) : null;
 
-  const initialDecision = evaluateFeatureAccessPolicy({
+  const initialDecision = evaluatePolicy({
     config,
     featureKeys,
     token,
@@ -152,8 +172,19 @@ export const assertFeatureAccess = async (
     };
   }
 
+  const userId = initialDecision.userId;
+  if (!Number.isInteger(userId)) {
+    throwFeatureAccessError({
+      statusCode: 401,
+      code: "LOGIN_REQUIRED",
+      message: "登录状态已失效，请重新登录",
+      requiredPoints: config.minPoints,
+      currentPoints: 0,
+    });
+  }
+
   const user = await prisma.user.findUnique({
-    where: { id: initialDecision.userId },
+    where: { id: userId },
     select: {
       id: true,
       role: true,
@@ -166,7 +197,7 @@ export const assertFeatureAccess = async (
       })
     : null;
 
-  const finalDecision = evaluateFeatureAccessPolicy({
+  const finalDecision = evaluatePolicy({
     config,
     featureKeys,
     token,
@@ -194,6 +225,17 @@ export const assertFeatureAccess = async (
     });
   }
 
+  if (!decoded) {
+    throwFeatureAccessError({
+      statusCode: 401,
+      code: "LOGIN_REQUIRED",
+      message: "登录状态已失效，请重新登录",
+      requiredPoints: config.minPoints,
+      currentPoints: 0,
+    });
+  }
+  const decodedUser = decoded as NonNullable<typeof decoded>;
+
   const featureUser = {
     ...user,
     points: finalDecision.currentPoints,
@@ -201,9 +243,9 @@ export const assertFeatureAccess = async (
   };
 
   event.context.user = {
-    ...decoded,
+    ...decodedUser,
     userId: user.id,
-    role: decoded.role || user.role,
+    role: decodedUser.role || user.role,
   };
   event.context.featureAccess = {
     config,

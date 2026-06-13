@@ -3,7 +3,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        inter: ["Inter", "sans-serif"],
+        inter: ["ui-sans-serif", "system-ui", "sans-serif"],
         "poetsen-one": ["Poetsen One", "sans-serif"],
         "sedan-sc": ["Sedan SC", "sans-serif"],
         "breiem-hand": ["Briem Hand", "sans-serif"],

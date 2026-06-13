@@ -9,7 +9,7 @@
         <a href="/">
           <img
             class="w-[40px] h-[40px]"
-            src="@/assets/my-logo.png"
+            src="/logo.png"
             alt="logo"
           />
         </a>

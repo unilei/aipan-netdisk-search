@@ -1,5 +1,11 @@
 import tailwindcss from '@tailwindcss/vite'
 import type { Plugin } from 'vite'
+import { fileURLToPath } from 'node:url'
+
+const NITRO_INLINE_ROOT_MODULES = [
+  fileURLToPath(new URL('./lib/prisma.js', import.meta.url)),
+  fileURLToPath(new URL('./utils/', import.meta.url)),
+]
 
 function tailwindcssWithSourceMapNoopGuard(): Plugin[] {
   return tailwindcss().map((plugin) => {
@@ -31,6 +37,11 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   experimental: {
     appManifest: false,
+    defaults: {
+      nuxtLink: {
+        prefetch: false,
+      },
+    },
   },
   routeRules: {
     '/admin': { ssr: false },
@@ -73,11 +84,8 @@ export default defineNuxtConfig({
         lang: 'zh-CN'
       },
       link: [
-        {
-          rel: 'stylesheet',
-          href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css',
-        },
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'preload', as: 'image', type: 'image/webp', href: '/logo.webp', fetchpriority: 'high' },
       ],
       meta: [
         { charset: 'utf-8' },
@@ -126,29 +134,7 @@ export default defineNuxtConfig({
         // 统一 referrer 策略
         { name: 'referrer', content: 'strict-origin-when-cross-origin' },
       ],
-      script: [
-        {
-          src: 'https://www.googletagmanager.com/gtag/js?id=G-17SPF6S871',
-          async: true,
-        },
-        {
-          src: '/ga.js',
-          defer: true,
-        },
-        {
-          src: '/qrcode.min.js',
-          defer: true,
-        },
-        {
-          src: 'https://challenges.cloudflare.com/turnstile/v0/api.js',
-          async: true,
-        },
-        {
-          src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8210373406341452',
-          async: true,
-          crossorigin: 'anonymous',
-        },
-      ],
+      script: [],
     },
   },
 
@@ -162,7 +148,6 @@ export default defineNuxtConfig({
   modules: [
     '@element-plus/nuxt',
     '@nuxtjs/device',
-    '@nuxtjs/google-fonts',
     '@nuxtjs/color-mode',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
@@ -208,22 +193,12 @@ export default defineNuxtConfig({
     classSuffix: '',
   },
 
-  googleFonts: {
-    display: 'swap',
-    prefetch: false,
-    preconnect: false,
-    preload: true,
-    download: false,
-    base64: false,
-    families: {
-      // Only load weights actually used in the project (400 normal, 500 medium, 600 semibold, 700 bold)
-      // Removed Noto Sans Simplified Chinese — CJK font files are too large; system font stack covers Chinese well
-      // Removed Poetsen One, Sedan SC, Briem Hand — not referenced in any font-family rule
-      Inter: [400, 500, 600, 700],
-    },
-  },
   plugins: [],
   nitro: {
+    compressPublicAssets: true,
+    externals: {
+      inline: NITRO_INLINE_ROOT_MODULES,
+    },
     devProxy: {
       '/aipanme': {
         target: '',
@@ -239,7 +214,13 @@ export default defineNuxtConfig({
       '/api/og-image': {
         headers: { 'Cache-Control': 'max-age=86400' },
         prerender: false
-      }
+      },
+      '/logo.png': {
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+      },
+      '/logo.webp': {
+        headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
+      },
     }
   },
   runtimeConfig: {
@@ -298,7 +279,9 @@ export default defineNuxtConfig({
     githubBranch: process.env.NUXT_PUBLIC_GITHUB_BRANCH || process.env.GITHUB_BRANCH,
     quarkCookie: process.env.NUXT_PUBLIC_QUARK_COOKIE || process.env.QUARK_COOKIE,
     public: {
-      WS_PORT: process.env.NUXT_PUBLIC_WS_PORT || '3002'
+      WS_PORT: process.env.NUXT_PUBLIC_WS_PORT || '3002',
+      enableThirdPartyScripts:
+        process.env.NUXT_PUBLIC_ENABLE_THIRD_PARTY_SCRIPTS !== 'false',
     },
   },
   sitemap: {

@@ -453,7 +453,7 @@ onBeforeUnmount(() => {
       <div class="flex flex-col items-center justify-center gap-3 mb-10">
         <div class="flex items-center gap-3 mb-2">
           <a href="/" class="transition-transform duration-200 hover:scale-110">
-            <img class="w-[50px] h-[50px]" src="@/assets/my-logo.png" alt="logo" />
+            <img class="w-[50px] h-[50px]" src="/logo.png" alt="logo" />
           </a>
           <h1
             class="text-[24px] sm:text-[28px] font-serif font-bold bg-clip-text text-transparent bg-linear-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">

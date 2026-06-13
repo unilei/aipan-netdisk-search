@@ -88,7 +88,7 @@ export default defineEventHandler(async (event) => {
                 },
                 take: maxResults,
             });
-            localResults = res.map((item) => mapStoredResourceToSourceItem(item));
+            localResults = res.map((item: any) => mapStoredResourceToSourceItem(item));
         }
 
         const userResourceResults = (publishedUserResources as any[]).map((document: any) =>

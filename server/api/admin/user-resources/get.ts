@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
     })
 
     const data = includeModeration
-        ? await Promise.all(resources.map(async (resource) => {
+        ? await Promise.all(resources.map(async (resource: any) => {
             const moderation = await evaluateModerationWithConfig(
                 `${resource.name || ''}\n${resource.description || ''}`,
                 { context: MODERATION_CONTEXTS.userResource }

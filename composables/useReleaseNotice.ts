@@ -1,4 +1,14 @@
 const RELEASE_SEEN_STORAGE_KEY = "aipan:last-seen-release";
+const RELEASE_NOTICE_IDLE_DELAY = 8000;
+const RELEASE_NOTICE_INTERACTION_EVENTS = ["pointerdown", "keydown", "touchstart", "scroll"];
+
+type LatestReleaseResponse = {
+  success: boolean;
+  data?: {
+    identity?: string;
+    title?: string;
+  } | null;
+};
 
 export const useReleaseNotice = () => {
   const route = useRoute();
@@ -21,7 +31,8 @@ export const useReleaseNotice = () => {
 
   const loadLatestRelease = async () => {
     try {
-      const res = await $fetch("/api/releases/latest");
+      const fetchJson = $fetch as (request: string, options?: Record<string, unknown>) => Promise<unknown>;
+      const res = (await fetchJson("/api/releases/latest")) as LatestReleaseResponse;
       latestReleaseIdentity.value = res?.data?.identity || "";
       latestReleaseTitle.value = res?.data?.title || "";
       syncReleaseReadState();
@@ -35,12 +46,36 @@ export const useReleaseNotice = () => {
     }
   };
 
+  let releaseNoticeTimer: number | null = null;
+
+  const cleanupReleaseNoticeSchedule = () => {
+    if (!process.client) return;
+
+    if (releaseNoticeTimer !== null) {
+      window.clearTimeout(releaseNoticeTimer);
+      releaseNoticeTimer = null;
+    }
+
+    RELEASE_NOTICE_INTERACTION_EVENTS.forEach((eventName) => {
+      window.removeEventListener(eventName, runScheduledReleaseNoticeLoad);
+    });
+  };
+
+  const runScheduledReleaseNoticeLoad = () => {
+    cleanupReleaseNoticeSchedule();
+    void loadLatestRelease();
+  };
+
   onMounted(() => {
-    loadLatestRelease();
+    RELEASE_NOTICE_INTERACTION_EVENTS.forEach((eventName) => {
+      window.addEventListener(eventName, runScheduledReleaseNoticeLoad, { once: true, passive: true });
+    });
+    releaseNoticeTimer = window.setTimeout(runScheduledReleaseNoticeLoad, RELEASE_NOTICE_IDLE_DELAY);
     window.addEventListener("aipan:release-seen", syncReleaseReadState);
   });
 
   onBeforeUnmount(() => {
+    cleanupReleaseNoticeSchedule();
     window.removeEventListener("aipan:release-seen", syncReleaseReadState);
   });
 

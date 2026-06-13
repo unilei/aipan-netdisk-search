@@ -1,5 +1,16 @@
 import { redeemCodeForUser } from "~/server/services/points/redemptionCodes.mjs";
+import prisma from "~/lib/prisma";
+import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
 import { createRateLimiter } from "~/server/utils/rateLimit";
+
+const redeemCode = redeemCodeForUser as (input: {
+  userId: number;
+  code: unknown;
+  ip: string;
+  userAgent?: string;
+  client: typeof prisma;
+  getUserPointsBreakdown: typeof getUserPointsBreakdown;
+}) => Promise<any>;
 
 const redemptionLimiter = createRateLimiter({
   windowMs: 60_000,
@@ -8,9 +19,10 @@ const redemptionLimiter = createRateLimiter({
 
 const getClientIp = (event: any) => {
   const forwardedFor = getRequestHeader(event, "x-forwarded-for");
-  return String(forwardedFor || event.node.req.socket?.remoteAddress || "unknown")
-    .split(",")[0]
-    .trim();
+  return (
+    String(forwardedFor || event.node.req.socket?.remoteAddress || "unknown").split(",")[0] ||
+    "unknown"
+  ).trim();
 };
 
 export default defineEventHandler(async (event) => {
@@ -34,11 +46,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await readBody(event);
-  const result = await redeemCodeForUser({
+  const result = await redeemCode({
     userId,
     code: body?.code,
     ip: clientIp,
     userAgent: getRequestHeader(event, "user-agent"),
+    client: prisma,
+    getUserPointsBreakdown,
   });
 
   return {

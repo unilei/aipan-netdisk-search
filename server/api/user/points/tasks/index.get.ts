@@ -35,8 +35,11 @@ export default defineEventHandler(async (event) => {
         },
       })
     : [];
-  const completedByTaskId = new Map(
-    completionCounts.map((item: any) => [item.taskId, item._count?._all || 0]),
+  const completedByTaskId = new Map<number, number>(
+    completionCounts.map((item: any): [number, number] => [
+      Number(item.taskId),
+      Number(item._count?._all || 0),
+    ]),
   );
 
   return {

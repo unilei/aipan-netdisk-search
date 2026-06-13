@@ -9,6 +9,7 @@ import {
 } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref, reactive, onMounted } from 'vue'
+import { readSheet } from 'read-excel-file/browser'
 
 definePageMeta({
     layout: 'admin',
@@ -388,32 +389,35 @@ const handleFileUpload = (e) => {
     const fileType = file.name.split('.').pop().toLowerCase()
     if (fileType === 'csv') {
         readCSV(file)
-    } else if (['xlsx', 'xls'].includes(fileType)) {
+    } else if (fileType === 'xlsx') {
         readExcel(file)
     } else {
         ElMessage.error('不支持的文件类型')
     }
 }
 
+const rowsToObjects = (rows) => {
+    if (!rows.length) return []
+
+    const headers = rows[0].map((header) => String(header ?? '').trim())
+
+    return rows.slice(1)
+        .filter((row) => row.some((cell) => cell !== null && cell !== undefined && String(cell).trim() !== ''))
+        .map((row) => headers.reduce((record, header, index) => {
+            if (header) {
+                record[header] = row[index] ?? ''
+            }
+            return record
+        }, {}))
+}
+
 const readExcel = async (file) => {
-    const XLSX = await import('xlsx')
-    const reader = new FileReader()
-    reader.onload = (e) => {
-        try {
-            const data = new Uint8Array(e.target.result)
-            const workbook = XLSX.read(data, { type: 'array' })
-            const sheetName = workbook.SheetNames[0]
-            const worksheet = workbook.Sheets[sheetName]
-            const jsonData = XLSX.utils.sheet_to_json(worksheet)
-            uploadData.value = jsonData
-        } catch (error) {
-            ElMessage.error('Excel文件解析失败：' + (error.message || '未知错误'))
-        }
+    try {
+        const rows = await readSheet(file)
+        uploadData.value = rowsToObjects(rows)
+    } catch (error) {
+        ElMessage.error('Excel文件解析失败：' + (error.message || '未知错误'))
     }
-    reader.onerror = () => {
-        ElMessage.error('文件读取失败')
-    }
-    reader.readAsArrayBuffer(file)
 }
 
 const readCSV = (file) => {
@@ -844,13 +848,12 @@ onMounted(() => {
                     <div class="mt-2 flex items-center space-x-3">
                         <el-tag size="small">CSV</el-tag>
                         <el-tag size="small" type="success">XLSX</el-tag>
-                        <el-tag size="small" type="warning">XLS</el-tag>
                     </div>
                 </div>
                 <div class="border-2 border-dashed border-gray-300 rounded-lg p-6">
                     <input 
                         class="w-full" 
-                        accept=".csv,.xlsx,.xls" 
+                        accept=".csv,.xlsx"
                         type="file" 
                         @change="handleFileUpload"
                     >

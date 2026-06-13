@@ -96,7 +96,7 @@ const headerClass = computed(() => {
 });
 
 onMounted(() => {
-  userStore.fetchUser();
+  userStore.ensureUserSession();
   window.addEventListener("scroll", handleScroll);
   document.addEventListener("click", closeDropdown);
 
@@ -120,7 +120,7 @@ onBeforeUnmount(() => {
           <div
             class="flex cursor-pointer items-center justify-center gap-2 md:gap-2 hover:scale-105 transition-transform duration-300"
             @click="goHome()">
-            <img class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90" src="@/assets/my-logo.png" alt="logo" />
+            <img class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90" src="/logo.png" alt="logo" />
             <div class="text-left">
               <h1
                 class="text-xs md:text-sm font-bold bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
@@ -215,6 +215,8 @@ onBeforeUnmount(() => {
               <!-- 主题切换按钮 -->
               <button
                 class="p-2 rounded-lg transition-all duration-200 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-300 dark:hover:bg-gray-800/80"
+                :aria-label="colorMode.preference === 'dark' ? '切换到浅色模式' : '切换到深色模式'"
+                :title="colorMode.preference === 'dark' ? '切换到浅色模式' : '切换到深色模式'"
                 @click="
                   colorMode.preference =
                   colorMode.preference === 'dark' ? 'light' : 'dark'

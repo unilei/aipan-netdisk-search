@@ -1,0 +1,84 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: aipan_lighthouse
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/aipan_lighthouse?schema=public
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/aipan_lighthouse_shadow?schema=public
+      ADMIN_USER: lighthouse
+      ADMIN_PASSWORD: lighthouse-password
+      ADMIN_EMAIL: lighthouse@example.com
+      JWT_SECRET: lighthouse-ci-jwt-secret
+      SETTINGS_ENCRYPTION_KEY: lighthouse-ci-settings-encryption-key-32
+      REDEMPTION_CODE_HASH_SECRET: lighthouse-ci-redemption-secret
+      NUXT_PUBLIC_ENABLE_THIRD_PARTY_SCRIPTS: "false"
+      TVBOX_SYNC_ENABLED: "false"
+      USER_RESOURCE_AUTO_REVIEW_QUEUE_ENABLED: "false"
+      USER_RESOURCE_AUTO_REVIEW_WORKER_ENABLED: "false"
+      REDIS_URL: ""
+      LHCI_PORT: "45173"
+      LHCI_WS_PORT: "45174"
+      WS_PORT: "45174"
+      PANSOU_API_URLS: http://127.0.0.1:1/api/search
+      NUXT_PUBLIC_GITHUB_BRANCH: ${{ github.ref_name }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare database
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Build Nuxt app
+        run: npm run build
+
+      - name: Run Lighthouse CI
+        run: npm run lighthouse:ci
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci
+          if-no-files-found: ignore

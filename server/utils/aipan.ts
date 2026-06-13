@@ -173,10 +173,10 @@ export const fetchApi = async (url: string, body: SearchBody, token: string, app
 }
 
 const normalizeExtractedUrl = (rawUrl: string) =>
-    rawUrl
+    (rawUrl
         .replace(/&amp;/g, '&')
         .trim()
-        .split(/(?:提取码|访问码|密[码碼])[:：]/i)[0]
+        .split(/(?:提取码|访问码|密[码碼])[:：]/i)[0] || '')
         .replace(/[)\]】。；;,，]+$/g, '')
         .trim()
 

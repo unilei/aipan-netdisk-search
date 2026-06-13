@@ -35,7 +35,12 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const nextNotes = upsertReleaseNote(notes, body, version);
+    const upsertNote = upsertReleaseNote as (
+      notes: any[],
+      payload: any,
+      originalVersion?: string | null,
+    ) => any[];
+    const nextNotes = upsertNote(notes, body, version);
     await saveReleaseNotesToSettings(prisma, nextNotes);
 
     return {

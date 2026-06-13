@@ -31,6 +31,7 @@ public/image-cache/*
 .shared
 .gemini
 .playwright-cli/
+.lighthouseci
 
 # Database backups
 *.sql

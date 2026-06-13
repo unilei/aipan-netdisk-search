@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
 
       if (result.queued) {
         queued += 1;
-      } else if (result.duplicate) {
+      } else if ("duplicate" in result && result.duplicate) {
         duplicate += 1;
       }
     } catch (error: any) {

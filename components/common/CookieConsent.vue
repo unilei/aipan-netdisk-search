@@ -4,28 +4,71 @@ import { ref, onMounted } from 'vue';
 const showBanner = ref(false);
 const showDetail = ref(false);
 
-const cookieSettings = ref({
+const DEFAULT_COOKIE_SETTINGS = {
   necessary: true, // 必需的Cookie，不可禁用
   analytics: true,  // 分析Cookie
   marketing: false  // 营销Cookie
-});
+};
+
+const NECESSARY_COOKIE_SETTINGS = {
+  necessary: true,
+  analytics: false,
+  marketing: false
+};
+
+const cookieSettings = ref({ ...DEFAULT_COOKIE_SETTINGS });
+
+const normalizeCookieConsent = (consent) => {
+  if (!consent) return null;
+
+  if (consent === 'accepted') {
+    return {
+      necessary: true,
+      analytics: true,
+      marketing: true
+    };
+  }
+
+  if (consent === 'necessary') {
+    return { ...NECESSARY_COOKIE_SETTINGS };
+  }
+
+  try {
+    const saved = JSON.parse(consent);
+    if (!saved || typeof saved !== 'object') return null;
+
+    return {
+      necessary: true,
+      analytics:
+        typeof saved.analytics === 'boolean'
+          ? saved.analytics
+          : DEFAULT_COOKIE_SETTINGS.analytics,
+      marketing:
+        typeof saved.marketing === 'boolean'
+          ? saved.marketing
+          : DEFAULT_COOKIE_SETTINGS.marketing
+    };
+  } catch {
+    return null;
+  }
+};
 
 // 检查是否已经同意Cookie
 onMounted(() => {
   const consent = localStorage.getItem('cookieConsent');
-  if (!consent) {
+  const saved = normalizeCookieConsent(consent);
+  if (!saved) {
+    if (consent) {
+      localStorage.removeItem('cookieConsent');
+      localStorage.removeItem('cookieConsentDate');
+    }
     // 延迟显示，避免影响页面加载
     setTimeout(() => {
       showBanner.value = true;
     }, 1000);
   } else {
-    // 加载已保存的设置
-    try {
-      const saved = JSON.parse(consent);
-      cookieSettings.value = { ...cookieSettings.value, ...saved };
-    } catch (e) {
-      console.error('Failed to parse cookie consent:', e);
-    }
+    cookieSettings.value = saved;
+    localStorage.setItem('cookieConsent', JSON.stringify(saved));
   }
 });
 
@@ -41,11 +84,7 @@ const acceptAll = () => {
 
 // 仅接受必要Cookie
 const acceptNecessary = () => {
-  cookieSettings.value = {
-    necessary: true,
-    analytics: false,
-    marketing: false
-  };
+  cookieSettings.value = { ...NECESSARY_COOKIE_SETTINGS };
   saveConsent();
 };
 

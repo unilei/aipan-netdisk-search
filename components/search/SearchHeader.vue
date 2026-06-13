@@ -27,6 +27,13 @@ const search = () => {
   emit("search", searchKeyword.value);
 };
 
+watch(
+  () => props.keyword,
+  (nextKeyword) => {
+    searchKeyword.value = nextKeyword || "";
+  }
+);
+
 const colorMode = useColorMode();
 
 console.log(colorMode.preference);
@@ -47,7 +54,7 @@ console.log(colorMode.preference);
           >
             <img
               class="w-6 h-6 md:w-12 md:h-12 dark:opacity-90"
-              src="@/assets/my-logo.png"
+              src="/logo.png"
               alt="logo"
             />
             <div class="text-left hidden md:block">

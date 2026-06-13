@@ -1,7 +1,7 @@
 import { deleteDataFromRedis } from '~/server/utils/redis';
 
 export default defineEventHandler(async (event) => {
-    const REDIS_KEY = 'douban_homepage_data';
+    const REDIS_KEY = 'douban_homepage_data_r2_v1';
 
     try {
         const result = await deleteDataFromRedis(REDIS_KEY);

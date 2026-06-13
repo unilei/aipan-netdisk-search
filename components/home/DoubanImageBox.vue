@@ -15,9 +15,9 @@ const imageLoadStatus = ref({});
 
 const getMovieKey = (sectionName, index) => `${sectionName}-${index}`;
 
-const getProxyImageUrl = (url) => {
+const getDoubanImageUrl = (url) => {
   if (!url) return placeHolderImage;
-  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+  return url;
 };
 
 const getImageStatus = (movieId, hasCover = true) => {
@@ -57,11 +57,11 @@ const setImageRef = (el, movieId, originalSrc) => {
 };
 
 const getImageLoadingMode = (sectionIndex, movieIndex) => {
-  return sectionIndex === 0 && movieIndex < 8 ? "eager" : "lazy";
+  return sectionIndex === 0 && movieIndex < 2 ? "eager" : "lazy";
 };
 
 const getImageFetchPriority = (sectionIndex, movieIndex) => {
-  return sectionIndex === 0 && movieIndex < 8 ? "high" : "auto";
+  return sectionIndex === 0 && movieIndex < 2 ? "high" : "auto";
 };
 
 const goDouban = (movie) => {
@@ -100,7 +100,7 @@ const goDouban = (movie) => {
 
           <img
             :ref="(el) => setImageRef(el, getMovieKey(item.name, index), movie.cover)"
-            :src="getProxyImageUrl(movie.cover)"
+            :src="getDoubanImageUrl(movie.cover)"
             class="w-full aspect-[270/405] object-cover transition-all duration-300 md:group-hover:scale-[1.8]" :class="{
               'opacity-100': getImageStatus(getMovieKey(item.name, index), !!movie.cover) !== 'error',
               'blur-[2px] scale-[1.01]': getImageStatus(getMovieKey(item.name, index), !!movie.cover) === 'loading',
@@ -108,6 +108,8 @@ const goDouban = (movie) => {
             }"
             :loading="getImageLoadingMode(i, index)"
             :fetchpriority="getImageFetchPriority(i, index)"
+            width="220"
+            height="330"
             decoding="async"
             @load="handleImageLoad(getMovieKey(item.name, index))"
             @error="handleImageError(getMovieKey(item.name, index))" :alt="movie.title"

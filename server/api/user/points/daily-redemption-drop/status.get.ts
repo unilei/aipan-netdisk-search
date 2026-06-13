@@ -1,4 +1,10 @@
 import { getDailyRedemptionDropStatusForUser } from "~/server/services/points/dailyRedemptionDrops.mjs";
+import prisma from "~/lib/prisma";
+
+const getDailyDropStatus = getDailyRedemptionDropStatusForUser as (input: {
+  userId: number;
+  client: typeof prisma;
+}) => Promise<any>;
 
 export default defineEventHandler(async (event) => {
   const userId = event.context.user?.userId;
@@ -9,8 +15,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const status = await getDailyRedemptionDropStatusForUser({
+  const status = await getDailyDropStatus({
     userId,
+    client: prisma,
   });
 
   return {

@@ -65,7 +65,7 @@ export default defineEventHandler(async (event) => {
     })
 
     const data = includeModeration
-        ? await Promise.all(posts.map(async (post) => {
+        ? await Promise.all(posts.map(async (post: any) => {
             const moderation = await evaluateModerationWithConfig(
                 `${post.title || ''}\n${post.content || ''}`,
                 { context: MODERATION_CONTEXTS.blogPost }

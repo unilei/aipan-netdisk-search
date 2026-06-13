@@ -67,15 +67,7 @@ export const useFeatureAccess = (featureKey: FeatureAccessKey) => {
       return false;
     }
 
-    if (
-      !userStore.loggedIn ||
-      userStore.user?.points === undefined ||
-      userStore.user?.points === null
-    ) {
-      await userStore.safeRefreshUser();
-    }
-
-    return userStore.loggedIn && Boolean(userStore.user);
+    return userStore.ensureUserSession({ clearOnFailure: false });
   };
 
   const evaluateAccess = async (

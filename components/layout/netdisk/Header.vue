@@ -74,7 +74,7 @@ const closeDropdown = (event) => {
 };
 
 onMounted(() => {
-  userStore.fetchUser();
+  userStore.ensureUserSession();
   document.addEventListener("click", closeDropdown);
 });
 
@@ -86,7 +86,12 @@ onBeforeUnmount(() => {
   <div class="backdrop-blur py-4 fixed top-0 left-0 w-full z-50">
     <div class="max-w-[1240px] mx-auto flex flex-row items-center justify-between px-[20px]">
       <!-- Mobile Menu Button -->
-      <button class="md:hidden text-slate-600 dark:text-white" @click="toggleMenu">
+      <button
+        class="md:hidden text-slate-600 dark:text-white"
+        :aria-label="isMenuOpen ? '关闭菜单' : '打开菜单'"
+        :aria-expanded="isMenuOpen"
+        @click="toggleMenu"
+      >
         <i v-if="!isMenuOpen" class="fa-solid fa-bars text-base"></i>
         <i v-else class="fa-solid fa-xmark text-base"></i>
       </button>
@@ -216,12 +221,52 @@ onBeforeUnmount(() => {
             </button>
           </div>
 
-          <el-button v-if="colorMode.preference === 'dark'" link @click="colorMode.preference = 'light'">
-            <i class="fa-solid fa-sun text-base"></i>
-          </el-button>
-          <el-button v-if="colorMode.preference === 'light'" link @click="colorMode.preference = 'dark'">
-            <i class="fa-solid fa-moon text-base"></i>
-          </el-button>
+          <button
+            v-if="colorMode.preference === 'dark'"
+            type="button"
+            class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-all duration-300 hover:bg-gray-200 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-blue-300"
+            aria-label="切换到浅色模式"
+            title="切换到浅色模式"
+            @click="colorMode.preference = 'light'">
+            <svg
+              aria-hidden="true"
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="m4.93 4.93 1.41 1.41"></path>
+              <path d="m17.66 17.66 1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="m6.34 17.66-1.41 1.41"></path>
+              <path d="m19.07 4.93-1.41 1.41"></path>
+            </svg>
+          </button>
+          <button
+            v-if="colorMode.preference === 'light'"
+            type="button"
+            class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-gray-600 transition-all duration-300 hover:bg-gray-200 hover:text-blue-600 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-blue-300"
+            aria-label="切换到深色模式"
+            title="切换到深色模式"
+            @click="colorMode.preference = 'dark'">
+            <svg
+              aria-hidden="true"
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 7.5A9 9 0 1 1 12 3Z"></path>
+            </svg>
+          </button>
 
           <!-- 通知组件 -->
           <NotificationIcon v-if="userStore.loggedIn" />
@@ -231,7 +276,7 @@ onBeforeUnmount(() => {
             <!-- 未登录状态显示登录按钮 -->
             <nuxt-link v-if="!userStore.loggedIn" to="/login" class="flex items-center">
               <button
-                class="text-gray-600 hover:from-blue-600 hover:to-purple-600 text-sm py-1.5 px-4 rounded-full transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
+                class="text-gray-600 dark:text-gray-100 hover:from-blue-600 hover:to-purple-600 text-sm py-1.5 px-4 rounded-full transition-all duration-300 flex items-center gap-1.5 hover:shadow-md">
                 <i class="fa-solid fa-user text-xs"></i>
                 <span>{{ $t('header.user.login') }}</span>
               </button>

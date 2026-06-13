@@ -15,6 +15,7 @@ export const DEFAULT_FEATURE_ACCESS_CONFIG = {
 
 export type FeatureAccessConfig = typeof DEFAULT_FEATURE_ACCESS_CONFIG;
 export type FeatureAccessKey = keyof FeatureAccessConfig["protectedFeatures"];
+type ProtectedFeatures = FeatureAccessConfig["protectedFeatures"];
 
 let pendingConfigRequest: Promise<FeatureAccessConfig> | null = null;
 
@@ -23,8 +24,8 @@ const normalizeAccessControlConfig = (
 ): FeatureAccessConfig => {
   const protectedFeatures =
     config?.protectedFeatures && typeof config.protectedFeatures === "object"
-      ? config.protectedFeatures
-      : {};
+      ? (config.protectedFeatures as Partial<ProtectedFeatures>)
+      : ({} as Partial<ProtectedFeatures>);
 
   return {
     enabled:
@@ -98,12 +99,10 @@ export const useAccessControlConfig = () => {
 
     loadingState.value = true;
 
-    pendingConfigRequest = $fetch<{ data?: FeatureAccessConfig }>(
-      "/api/access-control/config",
-      { timeout: 5000 },
-    )
+    pendingConfigRequest = $fetch("/api/access-control/config", { timeout: 5000 })
       .then((res) => {
-        const config = normalizeAccessControlConfig(res?.data);
+        const response = res as unknown as { data?: Partial<FeatureAccessConfig> };
+        const config = normalizeAccessControlConfig(response?.data);
         configState.value = config;
         loadedState.value = true;
         return config;

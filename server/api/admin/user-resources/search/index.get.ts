@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
             pageSize,
             search
         })
-        const data = result.documents.map((item) => ({
+        const data = result.documents.map((item: any) => ({
             documentId: item.documentId,
             score: item.score,
             ...item.document

@@ -108,7 +108,7 @@ export default defineEventHandler(async (event) => {
       code: 200,
       msg: "success",
       data: {
-        leaderboard: leaderboardRows.map((row) =>
+        leaderboard: leaderboardRows.map((row: LeaderboardRow) =>
           normalizeLeaderboardRow(row, currentUserId),
         ),
         currentUser: currentUserRows[0]
