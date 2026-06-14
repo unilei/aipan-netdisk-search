@@ -12,6 +12,8 @@ const { locale, locales, setLocale, t } = useI18n();
 const { checkModeration } = useModerationCheck();
 const DEFERRED_DOUBAN_FALLBACK_DELAY = 15000;
 const DEFERRED_DOUBAN_INTERACTION_EVENTS = ["scroll", "wheel", "touchstart", "keydown"];
+const DOUBAN_CLIENT_CACHE_TTL = 1000 * 60 * 30;
+const DOUBAN_RETRY_DELAY = 1000 * 60 * 2;
 const DEFAULT_HOME_NAVIGATION = [
   {
     id: "search",
@@ -159,10 +161,36 @@ const search = (keyword) => {
   debouncedSearch(keyword);
 };
 
-const doubanData = ref([]);
-const doubanLoading = ref(false);
-const doubanLoaded = ref(false);
+const doubanState = useState("homepage-douban-state", () => ({
+  data: [],
+  loaded: false,
+  loading: false,
+  fetchedAt: 0,
+  lastAttemptAt: 0,
+}));
+const doubanData = computed(() => Array.isArray(doubanState.value.data) ? doubanState.value.data : []);
+const doubanLoading = computed(() => doubanState.value.loading);
+const doubanLoaded = computed(() => doubanState.value.loaded);
 const showBacktop = ref(false);
+
+const patchDoubanState = (patch) => {
+  doubanState.value = {
+    ...doubanState.value,
+    ...patch,
+  };
+};
+
+const hasDoubanData = () => doubanData.value.length > 0;
+
+const isDoubanCacheFresh = () => {
+  return doubanState.value.loaded
+    && doubanState.value.fetchedAt > 0
+    && Date.now() - doubanState.value.fetchedAt < DOUBAN_CLIENT_CACHE_TTL;
+};
+
+const canAttemptDoubanLoad = () => {
+  return Date.now() - doubanState.value.lastAttemptAt >= DOUBAN_RETRY_DELAY;
+};
 
 const cleanupDeferredDoubanSchedule = () => {
   if (deferredDoubanTimer) {
@@ -175,25 +203,76 @@ const cleanupDeferredDoubanSchedule = () => {
   });
 };
 
-const loadDeferredDoubanData = async () => {
+const loadDeferredDoubanData = async ({ force = false, silent = false } = {}) => {
   cleanupDeferredDoubanSchedule();
 
-  if (doubanLoading.value || doubanLoaded.value) {
+  if (doubanLoading.value) {
     return;
   }
 
-  doubanLoading.value = true;
+  if (!force && isDoubanCacheFresh()) {
+    return;
+  }
+
+  if (!force && doubanLoaded.value && !canAttemptDoubanLoad()) {
+    return;
+  }
+
+  patchDoubanState({
+    loading: true,
+    lastAttemptAt: Date.now(),
+    loaded: silent || hasDoubanData() ? doubanState.value.loaded : false,
+  });
 
   try {
     const res = await $fetch('/api/douban/new');
-    doubanData.value = res?.code === 200 && Array.isArray(res.data) ? res.data : [];
+    if (res?.code === 200 && Array.isArray(res.data)) {
+      patchDoubanState({
+        data: res.data,
+        loaded: true,
+        fetchedAt: Date.now(),
+      });
+    } else if (!hasDoubanData()) {
+      patchDoubanState({
+        data: [],
+        loaded: true,
+      });
+    }
   } catch (error) {
     console.error('Failed to load douban data:', error);
-    doubanData.value = [];
+    if (!hasDoubanData()) {
+      patchDoubanState({
+        data: [],
+        loaded: true,
+      });
+    }
   } finally {
-    doubanLoaded.value = true;
-    doubanLoading.value = false;
+    patchDoubanState({
+      loading: false,
+    });
   }
+};
+
+const scheduleDeferredDoubanLoad = () => {
+  if (isDoubanCacheFresh()) {
+    return;
+  }
+
+  if (hasDoubanData()) {
+    if (canAttemptDoubanLoad()) {
+      void loadDeferredDoubanData({ force: true, silent: true });
+    }
+    return;
+  }
+
+  if (doubanLoaded.value && !canAttemptDoubanLoad()) {
+    return;
+  }
+
+  DEFERRED_DOUBAN_INTERACTION_EVENTS.forEach((eventName) => {
+    window.addEventListener(eventName, loadDeferredDoubanData, { once: true, passive: true });
+  });
+  deferredDoubanTimer = window.setTimeout(loadDeferredDoubanData, DEFERRED_DOUBAN_FALLBACK_DELAY);
 };
 
 // 添加防抖处理，避免重复点击
@@ -265,11 +344,8 @@ onMounted(() => {
   // 在页面加载完成后，将滚动位置重置到顶部
   window.scrollTo(0, 0);
 
-  DEFERRED_DOUBAN_INTERACTION_EVENTS.forEach((eventName) => {
-    window.addEventListener(eventName, loadDeferredDoubanData, { once: true, passive: true });
-  });
   window.addEventListener("scroll", updateBacktopVisibility, { passive: true });
-  deferredDoubanTimer = window.setTimeout(loadDeferredDoubanData, DEFERRED_DOUBAN_FALLBACK_DELAY);
+  scheduleDeferredDoubanLoad();
 });
 
 // 监听路由变化（使用节流优化性能）
@@ -378,26 +454,8 @@ const stopRouteWatcher = watch(
           </div>
           </template>
         </div>
-      <div
-        v-if="!doubanLoaded"
-        aria-hidden="true"
-        class="mx-5 xl:max-w-[1200px] xl:mx-auto my-10 min-h-[1400px]">
-        <div class="h-5 w-36 rounded bg-gray-200/70 dark:bg-gray-700/60 mb-4"></div>
-        <div class="grid grid-cols-2 xs:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-8 gap-4 mt-[10px]">
-          <div
-            v-for="index in 16"
-            :key="index"
-            class="rounded-md overflow-hidden bg-white/70 dark:bg-gray-800/50 shadow-sm">
-            <div class="aspect-[270/405] bg-gray-200/60 dark:bg-gray-700/60"></div>
-            <div class="p-2 space-y-2">
-              <div class="h-3 rounded bg-gray-200/70 dark:bg-gray-700/70"></div>
-              <div class="h-2 w-1/2 mx-auto rounded bg-gray-200/60 dark:bg-gray-700/60"></div>
-            </div>
-          </div>
-        </div>
-      </div>
       <DoubanImageBox
-        v-else-if="doubanData.length > 0"
+        v-if="doubanData.length > 0"
         :doubanData="doubanData"
         @goDouban="goDouban"></DoubanImageBox>
       <button

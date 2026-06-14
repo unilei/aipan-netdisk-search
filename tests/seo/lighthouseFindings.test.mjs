@@ -77,7 +77,7 @@ test("homepage refreshes its local cache for R2-backed Douban data", () => {
   assert.match(doubanCacheApi, /douban_homepage_data_r2_v1/);
 });
 
-test("homepage defers the heavy Douban movie grid outside the critical rendering path", () => {
+test("homepage defers the heavy Douban movie grid without rendering a loading skeleton", () => {
   const homePage = readProjectFile("pages/index.vue");
 
   assert.doesNotMatch(homePage, /useDoubanStore/);
@@ -85,9 +85,23 @@ test("homepage defers the heavy Douban movie grid outside the critical rendering
   assert.match(homePage, /cleanupDeferredDoubanSchedule/);
   assert.match(homePage, /removeEventListener\(eventName,\s*loadDeferredDoubanData\)/);
   assert.match(homePage, /DEFERRED_DOUBAN_FALLBACK_DELAY\s*=\s*15000/);
-  assert.match(homePage, /min-h-\[1400px\]/);
-  assert.match(homePage, /v-else-if="doubanData\.length > 0"/);
+  assert.doesNotMatch(homePage, /v-if="!doubanLoaded"/);
+  assert.doesNotMatch(homePage, /min-h-\[1400px\]/);
+  assert.doesNotMatch(homePage, /v-for="index in 16"/);
+  assert.match(homePage, /v-if="doubanData\.length > 0"/);
   assert.match(homePage, /DEFERRED_DOUBAN_INTERACTION_EVENTS/);
+});
+
+test("homepage reuses client cached Douban data when returning from another route", () => {
+  const homePage = readProjectFile("pages/index.vue");
+
+  assert.match(homePage, /DOUBAN_CLIENT_CACHE_TTL/);
+  assert.match(homePage, /useState\("homepage-douban-state"/);
+  assert.match(homePage, /const doubanData = computed/);
+  assert.doesNotMatch(homePage, /const doubanData = ref\(\[\]\)/);
+  assert.match(homePage, /isDoubanCacheFresh/);
+  assert.match(homePage, /if \(!force && isDoubanCacheFresh\(\)\) {\s*return;\s*}/s);
+  assert.match(homePage, /loadDeferredDoubanData\(\{ force: true, silent: true \}\)/);
 });
 
 test("homepage keeps late navigation data and LCP logo from shifting the first viewport", () => {
