@@ -24,7 +24,18 @@ const buildConfigKey = (config) =>
     config.password,
     config.caFingerprint,
     config.indexName,
+    config.requestTimeoutMs,
+    config.maxRetries,
   ].join("|");
+
+const parseInteger = (value, fallback, { min = 0, max = Number.MAX_SAFE_INTEGER } = {}) => {
+  const parsed = Number.parseInt(String(value ?? ""), 10);
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+
+  return Math.min(Math.max(parsed, min), max);
+};
 
 export function getElasticsearchBaseConfig(runtimeConfig = useRuntimeConfig()) {
   return {
@@ -41,6 +52,20 @@ export function getElasticsearchBaseConfig(runtimeConfig = useRuntimeConfig()) {
       runtimeConfig.elasticsearchCaFingerprint ||
       process.env.ELASTICSEARCH_CA_FINGERPRINT ||
       "",
+    requestTimeoutMs: parseInteger(
+      runtimeConfig.elasticsearchRequestTimeoutMs ||
+        process.env.NUXT_ELASTICSEARCH_REQUEST_TIMEOUT_MS ||
+        process.env.ELASTICSEARCH_REQUEST_TIMEOUT_MS,
+      3000,
+      { min: 500, max: 60000 }
+    ),
+    maxRetries: parseInteger(
+      runtimeConfig.elasticsearchMaxRetries ||
+        process.env.NUXT_ELASTICSEARCH_MAX_RETRIES ||
+        process.env.ELASTICSEARCH_MAX_RETRIES,
+      0,
+      { min: 0, max: 5 }
+    ),
   };
 }
 
@@ -82,8 +107,12 @@ function createSearchClient(config) {
       password: config.password,
     },
     caFingerprint: config.caFingerprint,
+    requestTimeout: config.requestTimeoutMs,
+    pingTimeout: config.requestTimeoutMs,
+    maxRetries: config.maxRetries,
     tls: {
       rejectUnauthorized: false,
+      timeout: config.requestTimeoutMs,
     },
   });
 }

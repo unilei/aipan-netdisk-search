@@ -6,24 +6,9 @@
     "api": "/api/sources/pansou"
   },
   {
-    "api": "/api/sources/sohaoju"
-  },
-  {
     "api": "/api/sources/external-pan"
   },
   {
     "api": "/api/sources/xiaokupan"
-  },
-  {
-    "api": "/api/sources/kkqws"
-  },
-  {
-    "api": "/api/sources/xccji"
-  },
-  {
-    "api": "/api/sources/duoduo"
-  },
-  {
-    "api": "/api/sources/jso"
   }
 ]

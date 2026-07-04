@@ -10,23 +10,23 @@ const readSourceApis = async (fileName) => {
   return sources.map((source) => source.api);
 };
 
-test("guest source config enables sohaoju and excludes broken sources", async () => {
+const expectedSources = [
+  "/api/sources/local",
+  "/api/sources/pansou",
+  "/api/sources/external-pan",
+  "/api/sources/xiaokupan",
+];
+
+test("guest source config only enables maintained sources", async () => {
   const apis = await readSourceApis("clouddrive.json");
 
-  assert.ok(apis.includes("/api/sources/sohaoju"));
-  assert.ok(apis.includes("/api/sources/external-pan"));
-  assert.equal(apis.includes("/api/sources/vipray"), false);
-  assert.equal(apis.includes("/api/sources/slowread"), false);
+  assert.deepEqual(apis, expectedSources);
   assert.equal(new Set(apis).size, apis.length);
 });
 
-test("login source config enables sohaoju and excludes broken sources", async () => {
+test("login source config only enables maintained sources", async () => {
   const apis = await readSourceApis("clouddrive-login.json");
 
-  assert.ok(apis.includes("/api/sources/sohaoju"));
-  assert.ok(apis.includes("/api/sources/external-pan"));
-  assert.ok(apis.includes("/api/sources/duoduo"));
-  assert.equal(apis.includes("/api/sources/vipray-auth"), false);
-  assert.equal(apis.includes("/api/sources/slowread"), false);
+  assert.deepEqual(apis, expectedSources);
   assert.equal(new Set(apis).size, apis.length);
 });

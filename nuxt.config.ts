@@ -265,6 +265,14 @@ export default defineNuxtConfig({
     elasticsearchCaFingerprint:
       process.env.NUXT_ELASTICSEARCH_CA_FINGERPRINT ||
       process.env.ELASTICSEARCH_CA_FINGERPRINT,
+    elasticsearchRequestTimeoutMs:
+      process.env.NUXT_ELASTICSEARCH_REQUEST_TIMEOUT_MS ||
+      process.env.ELASTICSEARCH_REQUEST_TIMEOUT_MS ||
+      '3000',
+    elasticsearchMaxRetries:
+      process.env.NUXT_ELASTICSEARCH_MAX_RETRIES ||
+      process.env.ELASTICSEARCH_MAX_RETRIES ||
+      '0',
     elasticsearchUserResourceIndex:
       process.env.NUXT_ELASTICSEARCH_USER_RESOURCE_INDEX ||
       process.env.ELASTICSEARCH_USER_RESOURCE_INDEX ||

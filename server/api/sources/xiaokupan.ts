@@ -27,11 +27,13 @@ interface XiaokupanDocument {
     name: string
     description: string
     url: string
+    password?: string
 }
 
 const SEARCH_BASE_URL = 'https://xiaokupan.com/s'
 
 const DIGITAL_DOCUMENT_REGEX = /\\"@type\\":\\"DigitalDocument\\",\\"name\\":\\"((?:\\\\.|[^"\\])*)\\",\\"description\\":\\"((?:\\\\.|[^"\\])*)\\",\\"url\\":\\"((?:\\\\.|[^"\\])*)\\",\\"dateModified\\":\\"((?:\\\\.|[^"\\])*)\\"/g
+const STREAM_RESOURCE_REGEX = /\{url:"((?:\\.|[^"\\])*)",password:"((?:\\.|[^"\\])*)",note:"((?:\\.|[^"\\])*)"/g
 
 const SERVICE_PATTERNS: Array<{ service: Link['service'], pattern: RegExp }> = [
     { service: 'BAIDU', pattern: /https?:\/\/pan\.baidu\.com\/s\/[A-Za-z0-9_-]+(?:\?pwd=[A-Za-z0-9]+)?/i },
@@ -77,6 +79,9 @@ const decodeJsonFragment = (value: string): string => {
 const normalizeWhitespace = (value: string): string => value.replace(/\s+/g, ' ').trim()
 
 const normalizeTitle = (title: string): string => normalizeWhitespace(title)
+    .replace(/^资源名称[:：]\s*/i, '')
+    .slice(0, 160)
+    .trim()
 
 const detectService = (url: string, description: string): Link['service'] => {
     const serviceMatch = SERVICE_PATTERNS.find(({ pattern }) => pattern.test(url))
@@ -141,6 +146,29 @@ const extractDocuments = (html: string): XiaokupanDocument[] => {
     return documents
 }
 
+const extractStreamDocuments = (html: string): XiaokupanDocument[] => {
+    const documents: XiaokupanDocument[] = []
+
+    for (const match of html.matchAll(STREAM_RESOURCE_REGEX)) {
+        const url = decodeJsonFragment(match[1] || '').trim()
+        const password = decodeJsonFragment(match[2] || '').trim()
+        const note = normalizeTitle(decodeJsonFragment(match[3] || ''))
+
+        if (!note || !url) {
+            continue
+        }
+
+        documents.push({
+            name: note,
+            description: note,
+            url,
+            password: password || undefined
+        })
+    }
+
+    return documents
+}
+
 const transformDocuments = (documents: XiaokupanDocument[]): TransformedResult => {
     const grouped = new Map<string, Link[]>()
 
@@ -151,16 +179,19 @@ const transformDocuments = (documents: XiaokupanDocument[]): TransformedResult =
         }
 
         const service = detectService(link, document.description)
-        const pwd = extractPassword(document.url)
+        const pwd = document.password || extractPassword(document.url)
         const links = grouped.get(document.name) || []
 
         const duplicate = links.some(existing => existing.link === link && existing.pwd === pwd)
         if (!duplicate) {
-            links.push({
+            const entry: Link = {
                 service,
-                link,
-                pwd
-            })
+                link
+            }
+            if (pwd) {
+                entry.pwd = pwd
+            }
+            links.push(entry)
         }
 
         grouped.set(document.name, links)
@@ -209,7 +240,10 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
             }
         })
 
-        const documents = extractDocuments(html)
+        const documents = [
+            ...extractDocuments(html),
+            ...extractStreamDocuments(html)
+        ]
         return transformDocuments(documents)
     } catch (error: any) {
         console.error('[Xiaokupan] 搜索失败:', error)
