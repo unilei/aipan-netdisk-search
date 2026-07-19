@@ -1,0 +1,13 @@
+[Unit]
+Description=Check nginx worker memory every five minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=5min
+AccuracySec=30s
+RandomizedDelaySec=30s
+Persistent=true
+Unit=nginx-memory-guard.service
+
+[Install]
+WantedBy=timers.target

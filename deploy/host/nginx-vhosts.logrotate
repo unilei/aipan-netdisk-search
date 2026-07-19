@@ -1,0 +1,16 @@
+/www/wwwlogs/*.log {
+    daily
+    maxsize 100M
+    rotate 14
+    missingok
+    notifempty
+    compress
+    delaycompress
+    dateext
+    sharedscripts
+    postrotate
+        if [ -s /www/server/nginx/logs/nginx.pid ]; then
+            kill -USR1 "$(cat /www/server/nginx/logs/nginx.pid)"
+        fi
+    endscript
+}

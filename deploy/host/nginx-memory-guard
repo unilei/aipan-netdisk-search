@@ -1,0 +1,42 @@
+#!/bin/sh
+set -eu
+
+threshold_kb="${NGINX_WORKER_MEMORY_LIMIT_KB:-786432}"
+nginx_bin="${NGINX_BIN:-/www/server/nginx/sbin/nginx}"
+
+if ! systemctl is-active --quiet nginx; then
+  exit 0
+fi
+
+breached=""
+for pid in $(pgrep -x nginx 2>/dev/null || true); do
+  status_file="/proc/${pid}/status"
+  cmdline_file="/proc/${pid}/cmdline"
+  [ -r "${status_file}" ] && [ -r "${cmdline_file}" ] || continue
+
+  cmdline=$(tr '\000' ' ' < "${cmdline_file}")
+  case "${cmdline}" in
+    *"worker process"*) ;;
+    *) continue ;;
+  esac
+
+  rss_kb=$(awk '/^VmRSS:/ { print $2 + 0 }' "${status_file}")
+  swap_kb=$(awk '/^VmSwap:/ { print $2 + 0 }' "${status_file}")
+  total_kb=$((rss_kb + swap_kb))
+
+  if [ "${total_kb}" -ge "${threshold_kb}" ]; then
+    breached="pid=${pid} rss_kb=${rss_kb} swap_kb=${swap_kb} total_kb=${total_kb}"
+    break
+  fi
+done
+
+[ -n "${breached}" ] || exit 0
+
+logger -t nginx-memory-guard "memory threshold exceeded (${breached}); validating configuration before restart"
+if "${nginx_bin}" -t; then
+  systemctl restart nginx
+  logger -t nginx-memory-guard "nginx restarted after worker memory threshold breach (${breached})"
+else
+  logger -p daemon.err -t nginx-memory-guard "nginx configuration check failed; restart skipped (${breached})"
+  exit 1
+fi

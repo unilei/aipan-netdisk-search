@@ -9,6 +9,7 @@
     "generate": "nuxt generate",
     "lighthouse:ci": "lhci autorun",
     "lighthouse:healthcheck": "lhci healthcheck --fatal",
+    "test:ops": "node --test tests/ops/*.test.mjs tests/backup/dbBackupScript.test.mjs",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node --env-file=.env .output/server/index.mjs"

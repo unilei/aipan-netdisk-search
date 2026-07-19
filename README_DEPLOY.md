@@ -103,6 +103,11 @@ APP_IMAGE=unilei/aipan-netdisk-search:latest
 DB_BACKUP_IMAGE=unilei/aipan-netdisk-search:db-backup-latest
 APP_PORT=3000
 WS_PORT=3002
+WEB_CONCURRENCY=2
+NODE_MAX_OLD_SPACE_SIZE_MB=320
+PM2_MAX_MEMORY_RESTART=384M
+APP_MEMORY_LIMIT=1024m
+APP_MEMORY_SWAP_LIMIT=1280m
 
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=change-me
@@ -152,6 +157,17 @@ PANSOU_MAX_RESULTS=300
 - ES 变量不完整时，`/api/sources/1` 会降级为只返回本地 `Resource`，但审核同步和 ES 索引页面会不可用。
 - `PANSOU_CLOUD_TYPES` 留空时不会向 PanSou 传 `cloud_types` 过滤条件，可返回 PanSou 服务端支持的全部链接类型。
 - `PANSOU_API_URLS` 必须显式配置，建议指向自建 PanSou 实例。缺失时 `/api/sources/pansou` 会返回配置错误，生产 compose 也会拒绝启动。若 PanSou 独立运行，需要把 `pansou` 容器连接到应用 compose 网络，让应用容器可访问 `http://pansou:8888`。
+- `WEB_CONCURRENCY=2` 适用于当前 4 核、约 5 GiB 的共享主机；PM2 会在单进程达到 `PM2_MAX_MEMORY_RESTART` 时回收该进程。
+- 生产 compose 默认限制应用为 1 GiB RAM / 1.25 GiB RAM+swap，并分别限制 PostgreSQL、Redis、迁移和备份容器。需要扩容时应同步调整 `*_MEMORY_LIMIT` 与 `*_MEMORY_SWAP_LIMIT`，不要删除边界。
+
+## 主机 nginx 内存保护
+
+`deploy/host/` 保存当前生产主机使用的 systemd 内存上限、worker 内存巡检和日志轮转配置。安装命令见 `deploy/host/README.md`。默认行为：
+
+- nginx cgroup 最多使用 1.5 GiB RAM 和 512 MiB swap；
+- 单个 worker 的 RSS + swap 达到 768 MiB 时，先执行 `nginx -t`，通过后受控重启；
+- systemd 每 5 分钟检查一次，nginx 异常退出时 5 秒后自动重启；
+- 虚拟主机日志每天轮转，单文件超过 100 MiB 时提前轮转，保留 14 代。
 
 ## PostgreSQL R2 备份
 

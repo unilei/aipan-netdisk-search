@@ -1,11 +1,27 @@
+const parsePositiveInteger = (value, fallback) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+};
+
+const webConcurrency = parsePositiveInteger(process.env.WEB_CONCURRENCY, 2);
+const nodeMaxOldSpaceSizeMb = parsePositiveInteger(
+  process.env.NODE_MAX_OLD_SPACE_SIZE_MB,
+  320,
+);
+const maxMemoryRestart = process.env.PM2_MAX_MEMORY_RESTART || "384M";
+
 module.exports = {
   apps: [
     {
       name: "aipan-netdisk-search",
       port: "3000",
       exec_mode: "cluster",
-      instances: "max",
+      instances: webConcurrency,
       script: "./.output/server/index.mjs",
+      node_args: [`--max-old-space-size=${nodeMaxOldSpaceSizeMb}`],
+      max_memory_restart: maxMemoryRestart,
+      exp_backoff_restart_delay: 100,
+      kill_timeout: 10000,
       watch: false,
       env: {
         NODE_ENV: "development",

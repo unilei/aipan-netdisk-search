@@ -81,12 +81,18 @@ x-app-env: &app-env
   NUXT_PUBLIC_QUARK_COOKIE: ${NUXT_PUBLIC_QUARK_COOKIE:-}
   TVBOX_SYNC_TIME: ${TVBOX_SYNC_TIME:-03:20}
   TVBOX_SYNC_ENABLED: ${TVBOX_SYNC_ENABLED:-true}
+  WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+  NODE_MAX_OLD_SPACE_SIZE_MB: ${NODE_MAX_OLD_SPACE_SIZE_MB:-320}
+  PM2_MAX_MEMORY_RESTART: ${PM2_MAX_MEMORY_RESTART:-384M}
 
 services:
   prisma-migrate:
     image: ${APP_IMAGE:-unilei/aipan-netdisk-search:latest}
     container_name: aipan-prisma-migrate
     restart: "no"
+    mem_limit: ${MIGRATION_MEMORY_LIMIT:-512m}
+    memswap_limit: ${MIGRATION_MEMORY_SWAP_LIMIT:-640m}
+    pids_limit: ${MIGRATION_PIDS_LIMIT:-128}
     environment:
       <<: *app-env
       SHADOW_DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}_shadow?schema=${DATABASE_SCHEMA:-public}
@@ -106,6 +112,10 @@ services:
     image: ${APP_IMAGE:-unilei/aipan-netdisk-search:latest}
     container_name: aipan-netdisk-search-app
     restart: always
+    mem_limit: ${APP_MEMORY_LIMIT:-1024m}
+    mem_reservation: ${APP_MEMORY_RESERVATION:-512m}
+    memswap_limit: ${APP_MEMORY_SWAP_LIMIT:-1280m}
+    pids_limit: ${APP_PIDS_LIMIT:-256}
     ports:
       - "${APP_PORT:-3000}:3000"
       - "${WS_PORT:-3002}:3002"
@@ -116,6 +126,16 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/health').then((response) => process.exit(response.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     networks:
       - aipan-network
 
@@ -123,6 +143,9 @@ services:
     image: ${DB_BACKUP_IMAGE:-unilei/aipan-netdisk-search:db-backup-latest}
     container_name: aipan-postgres-backup
     restart: unless-stopped
+    mem_limit: ${BACKUP_MEMORY_LIMIT:-256m}
+    memswap_limit: ${BACKUP_MEMORY_SWAP_LIMIT:-384m}
+    pids_limit: ${BACKUP_PIDS_LIMIT:-64}
     environment:
       DB_BACKUP_ENABLED: ${DB_BACKUP_ENABLED:-true}
       DB_BACKUP_TIME: ${DB_BACKUP_TIME:-03:00}
@@ -150,6 +173,10 @@ services:
     image: postgres:15-alpine
     container_name: aipan-postgres
     restart: always
+    mem_limit: ${POSTGRES_MEMORY_LIMIT:-768m}
+    mem_reservation: ${POSTGRES_MEMORY_RESERVATION:-256m}
+    memswap_limit: ${POSTGRES_MEMORY_SWAP_LIMIT:-1024m}
+    pids_limit: ${POSTGRES_PIDS_LIMIT:-128}
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -170,6 +197,10 @@ services:
     image: redis:alpine
     container_name: aipan-redis
     restart: always
+    mem_limit: ${REDIS_MEMORY_LIMIT:-256m}
+    mem_reservation: ${REDIS_MEMORY_RESERVATION:-64m}
+    memswap_limit: ${REDIS_MEMORY_SWAP_LIMIT:-384m}
+    pids_limit: ${REDIS_PIDS_LIMIT:-64}
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redis-data:/data

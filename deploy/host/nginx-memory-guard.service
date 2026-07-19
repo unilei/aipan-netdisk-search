@@ -1,0 +1,8 @@
+[Unit]
+Description=Restart nginx when a worker exceeds its memory safety threshold
+After=nginx.service
+
+[Service]
+Type=oneshot
+Environment=NGINX_WORKER_MEMORY_LIMIT_KB=786432
+ExecStart=/usr/local/sbin/nginx-memory-guard
