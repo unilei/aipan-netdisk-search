@@ -26,6 +26,20 @@ test("production compose constrains host resources", () => {
   assert.match(compose, /healthcheck:[\s\S]*127\.0\.0\.1:3000\/api\/health/);
 });
 
+test("production data stores are not exposed on public host interfaces", () => {
+  const compose = readFileSync(
+    join(repoRoot, "deploy/docker-compose.prod.yml"),
+    "utf8",
+  );
+
+  assert.doesNotMatch(compose, /["']?6379:6379["']?/);
+  assert.doesNotMatch(compose, /-\s*["']5432:5432["']/);
+  assert.match(
+    compose,
+    /127\.0\.0\.1:\$\{POSTGRES_HOST_PORT:-5432\}:5432/,
+  );
+});
+
 test("PM2 accepts bounded production overrides", () => {
   const previous = {
     WEB_CONCURRENCY: process.env.WEB_CONCURRENCY,

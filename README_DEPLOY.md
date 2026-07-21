@@ -9,7 +9,7 @@
 - Compose project：`aipan-docker`
 - 应用服务名：`aipan-netdisk-search`
 - 应用容器名：`aipan-netdisk-search-app`
-- PostgreSQL/Redis：随应用服务器 compose 启动
+- PostgreSQL/Redis：随应用服务器 compose 启动；Redis 不发布宿主机端口，PostgreSQL 仅绑定 `127.0.0.1` 供 SSH 隧道使用
 - PostgreSQL 备份：`postgres-backup` sidecar 每天定时上传到 Cloudflare R2，后台支持手动备份和下载
 - Elasticsearch VPS：通过 GitHub Actions Secret `ELASTICSEARCH_NODE` 配置
 - Elasticsearch 访问方式：`HTTPS + Basic Auth + CA fingerprint`
@@ -103,6 +103,7 @@ APP_IMAGE=unilei/aipan-netdisk-search:latest
 DB_BACKUP_IMAGE=unilei/aipan-netdisk-search:db-backup-latest
 APP_PORT=3000
 WS_PORT=3002
+POSTGRES_HOST_PORT=5432
 WEB_CONCURRENCY=2
 NODE_MAX_OLD_SPACE_SIZE_MB=320
 PM2_MAX_MEMORY_RESTART=384M
@@ -152,6 +153,7 @@ PANSOU_MAX_RESULTS=300
 
 注意：
 
+- Redis 仅允许同一 Docker 网络内的服务访问，不得添加 `6379:6379` 公网端口映射。PostgreSQL 的宿主机端口仅绑定 `127.0.0.1`；远程维护应使用 SSH 隧道，并关闭云防火墙/UFW 中对 `5432`、`6379` 的公网放行。
 - `SETTINGS_ENCRYPTION_KEY` 用于解密后台系统配置，已有生产环境必须复用原值。
 - `JWT_SECRET` 变更会导致已有登录 token 失效。
 - ES 变量不完整时，`/api/sources/1` 会降级为只返回本地 `Resource`，但审核同步和 ES 索引页面会不可用。

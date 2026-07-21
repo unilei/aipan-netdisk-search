@@ -1,49 +1,95 @@
-import { getDataFromRedis, setDataInRedis } from '~/server/utils/redis';
+import {
+    deleteDataFromRedis,
+    getDataFromRedis,
+    setDataInRedis,
+} from '~/server/utils/redis';
+import {
+    DOUBAN_HOMEPAGE_CACHE_KEY,
+    DOUBAN_HOMEPAGE_CACHE_TTL_SECONDS,
+    DOUBAN_HOMEPAGE_LAST_GOOD_CACHE_KEY,
+    DOUBAN_HOMEPAGE_LAST_GOOD_TTL_SECONDS,
+    countDoubanHomepageItems,
+    hasUsableDoubanHomepageData,
+    normalizeDoubanHomepageData,
+} from '~/utils/doubanHomepage.mjs';
+
+const DOUBAN_UPSTREAM_URL = 'https://iamyourfather.link0.me/api/v1/new';
+const DOUBAN_UPSTREAM_TIMEOUT_MS = 10_000;
 
 export default defineEventHandler(async (event) => {
-    const REDIS_KEY = 'douban_homepage_data_r2_v1';
-    const CACHE_EXPIRATION = 60 * 60 * 24; // 缓存1天
+    const cachedValue = await getDataFromRedis(DOUBAN_HOMEPAGE_CACHE_KEY);
+    const cachedData = normalizeDoubanHomepageData(cachedValue);
+
+    if (hasUsableDoubanHomepageData(cachedData)) {
+        return {
+            code: 200,
+            data: cachedData,
+            source: 'redis-cache',
+        };
+    }
+
+    if (cachedValue !== null) {
+        console.warn('[Douban homepage] Ignoring and removing an empty or invalid primary cache entry.');
+        await deleteDataFromRedis(DOUBAN_HOMEPAGE_CACHE_KEY);
+    }
+
+    const lastGoodValue = await getDataFromRedis(DOUBAN_HOMEPAGE_LAST_GOOD_CACHE_KEY);
+    const lastGoodData = normalizeDoubanHomepageData(lastGoodValue);
 
     try {
-        // 尝试从Redis获取缓存数据
-        const cachedData = await getDataFromRedis(REDIS_KEY);
-        if (cachedData) {
-            return {
-                code: 200,
-                data: cachedData,
-                source: 'redis-cache'
-            };
-        }
-
-        // 如果没有缓存数据，从外部 API 获取新数据
-        // 数据源会将豆瓣图片同步到 R2，并在 cover 字段返回公开 URL
-        const response: any = await $fetch('https://iamyourfather.link0.me/api/v1/new', {
-            method: 'GET'
+        const response: any = await $fetch(DOUBAN_UPSTREAM_URL, {
+            method: 'GET',
+            timeout: DOUBAN_UPSTREAM_TIMEOUT_MS,
+            retry: 1,
+            retryDelay: 250,
         });
+        const freshData = normalizeDoubanHomepageData(response?.data);
 
-        if (response.code !== 200 || !Array.isArray(response.data)) {
-            throw new Error('Failed to fetch data from new API');
+        if (response?.code !== 200 || !hasUsableDoubanHomepageData(freshData)) {
+            throw new Error(
+                `Upstream returned no usable movies (code=${String(response?.code)}, items=${countDoubanHomepageItems(freshData)})`,
+            );
         }
 
-        // 新 API 返回的 data 已经是符合前端格式的数组
-        // 每个元素包含 name 和 data 字段
-        const resultData = response.data;
+        const [primaryStored, lastGoodStored] = await Promise.all([
+            setDataInRedis(
+                DOUBAN_HOMEPAGE_CACHE_KEY,
+                freshData,
+                DOUBAN_HOMEPAGE_CACHE_TTL_SECONDS,
+            ),
+            setDataInRedis(
+                DOUBAN_HOMEPAGE_LAST_GOOD_CACHE_KEY,
+                freshData,
+                DOUBAN_HOMEPAGE_LAST_GOOD_TTL_SECONDS,
+            ),
+        ]);
 
-
-        // 将数据存入Redis缓存
-        await setDataInRedis(REDIS_KEY, resultData, CACHE_EXPIRATION);
+        if (!primaryStored || !lastGoodStored) {
+            console.warn('[Douban homepage] Fresh data was returned but one or more Redis writes failed.');
+        }
 
         return {
             code: 200,
-            data: resultData,
-            source: 'fresh-data'
+            data: freshData,
+            source: 'fresh-data',
+        };
+    } catch (error) {
+        if (hasUsableDoubanHomepageData(lastGoodData)) {
+            console.warn('[Douban homepage] Upstream refresh failed; serving last-known-good data.', error);
+            return {
+                code: 200,
+                data: lastGoodData,
+                source: 'stale-cache',
+                stale: true,
+            };
         }
 
-    } catch (e) {
-        console.error('Category API Error:', e);
+        console.error('[Douban homepage] No usable upstream or cached data is available.', error);
+        setResponseStatus(event, 502);
         return {
-            code: 500,
-            msg: 'error',
-        }
+            code: 502,
+            msg: 'Douban data is temporarily unavailable',
+            data: [],
+        };
     }
-})
+});

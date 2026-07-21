@@ -70,11 +70,12 @@ test("homepage movie posters use direct URLs returned by the Douban service", ()
 
 test("homepage refreshes its local cache for R2-backed Douban data", () => {
   const doubanApi = readProjectFile("server/api/douban/new.ts");
-  const doubanCacheApi = readProjectFile("server/api/cache/douban.ts");
+  const doubanCacheApi = readProjectFile("server/api/admin/cache/douban.delete.ts");
 
-  assert.match(doubanApi, /https:\/\/iamyourfather\.link0\.me\/api\/v1\/new/);
-  assert.match(doubanApi, /douban_homepage_data_r2_v1/);
-  assert.match(doubanCacheApi, /douban_homepage_data_r2_v1/);
+  assert.match(doubanApi, /DOUBAN_UPSTREAM_URL/);
+  assert.match(doubanApi, /DOUBAN_HOMEPAGE_CACHE_KEY/);
+  assert.match(doubanApi, /DOUBAN_HOMEPAGE_LAST_GOOD_CACHE_KEY/);
+  assert.match(doubanCacheApi, /requireAdmin\(event\)/);
 });
 
 test("homepage defers the heavy Douban movie grid without rendering a loading skeleton", () => {
@@ -89,6 +90,8 @@ test("homepage defers the heavy Douban movie grid without rendering a loading sk
   assert.doesNotMatch(homePage, /min-h-\[1400px\]/);
   assert.doesNotMatch(homePage, /v-for="index in 16"/);
   assert.match(homePage, /v-if="doubanData\.length > 0"/);
+  assert.match(homePage, /hasUsableDoubanHomepageData/);
+  assert.match(homePage, /scheduleDoubanRetry/);
   assert.match(homePage, /DEFERRED_DOUBAN_INTERACTION_EVENTS/);
 });
 

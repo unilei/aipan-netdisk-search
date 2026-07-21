@@ -1,6 +1,10 @@
 <script setup>
 import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
 import { MODERATION_CONTEXTS } from "~/composables/useModerationCheck";
+import {
+  hasUsableDoubanHomepageData,
+  normalizeDoubanHomepageData,
+} from "~/utils/doubanHomepage.mjs";
 import { useDebounceFn } from "@vueuse/core";
 
 definePageMeta({
@@ -64,12 +68,14 @@ const DEFAULT_HOME_NAVIGATION = [
   },
 ];
 let deferredDoubanTimer = null;
+let doubanRetryTimer = null;
 
 // 清理函数，防止内存泄漏
 onUnmounted(() => {
   if (stopLocaleWatcher) stopLocaleWatcher();
   if (stopRouteWatcher) stopRouteWatcher();
   cleanupDeferredDoubanSchedule();
+  cleanupDoubanRetrySchedule();
   window.removeEventListener("scroll", updateBacktopVisibility);
 });
 
@@ -168,7 +174,7 @@ const doubanState = useState("homepage-douban-state", () => ({
   fetchedAt: 0,
   lastAttemptAt: 0,
 }));
-const doubanData = computed(() => Array.isArray(doubanState.value.data) ? doubanState.value.data : []);
+const doubanData = computed(() => normalizeDoubanHomepageData(doubanState.value.data));
 const doubanLoading = computed(() => doubanState.value.loading);
 const doubanLoaded = computed(() => doubanState.value.loaded);
 const showBacktop = ref(false);
@@ -180,10 +186,11 @@ const patchDoubanState = (patch) => {
   };
 };
 
-const hasDoubanData = () => doubanData.value.length > 0;
+const hasDoubanData = () => hasUsableDoubanHomepageData(doubanData.value);
 
 const isDoubanCacheFresh = () => {
-  return doubanState.value.loaded
+  return hasDoubanData()
+    && doubanState.value.loaded
     && doubanState.value.fetchedAt > 0
     && Date.now() - doubanState.value.fetchedAt < DOUBAN_CLIENT_CACHE_TTL;
 };
@@ -203,6 +210,26 @@ const cleanupDeferredDoubanSchedule = () => {
   });
 };
 
+const cleanupDoubanRetrySchedule = () => {
+  if (doubanRetryTimer) {
+    window.clearTimeout(doubanRetryTimer);
+    doubanRetryTimer = null;
+  }
+};
+
+const scheduleDoubanRetry = () => {
+  if (doubanRetryTimer || hasDoubanData()) {
+    return;
+  }
+
+  const elapsed = Date.now() - doubanState.value.lastAttemptAt;
+  const retryDelay = Math.max(0, DOUBAN_RETRY_DELAY - elapsed);
+  doubanRetryTimer = window.setTimeout(() => {
+    doubanRetryTimer = null;
+    void loadDeferredDoubanData({ force: true });
+  }, retryDelay);
+};
+
 const loadDeferredDoubanData = async ({ force = false, silent = false } = {}) => {
   cleanupDeferredDoubanSchedule();
 
@@ -215,6 +242,7 @@ const loadDeferredDoubanData = async ({ force = false, silent = false } = {}) =>
   }
 
   if (!force && doubanLoaded.value && !canAttemptDoubanLoad()) {
+    scheduleDoubanRetry();
     return;
   }
 
@@ -226,9 +254,11 @@ const loadDeferredDoubanData = async ({ force = false, silent = false } = {}) =>
 
   try {
     const res = await $fetch('/api/douban/new');
-    if (res?.code === 200 && Array.isArray(res.data)) {
+    const normalizedData = normalizeDoubanHomepageData(res?.data);
+    if (res?.code === 200 && hasUsableDoubanHomepageData(normalizedData)) {
+      cleanupDoubanRetrySchedule();
       patchDoubanState({
-        data: res.data,
+        data: normalizedData,
         loaded: true,
         fetchedAt: Date.now(),
       });
@@ -237,6 +267,7 @@ const loadDeferredDoubanData = async ({ force = false, silent = false } = {}) =>
         data: [],
         loaded: true,
       });
+      scheduleDoubanRetry();
     }
   } catch (error) {
     console.error('Failed to load douban data:', error);
@@ -245,6 +276,7 @@ const loadDeferredDoubanData = async ({ force = false, silent = false } = {}) =>
         data: [],
         loaded: true,
       });
+      scheduleDoubanRetry();
     }
   } finally {
     patchDoubanState({
@@ -266,6 +298,7 @@ const scheduleDeferredDoubanLoad = () => {
   }
 
   if (doubanLoaded.value && !canAttemptDoubanLoad()) {
+    scheduleDoubanRetry();
     return;
   }
 
