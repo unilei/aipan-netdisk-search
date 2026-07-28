@@ -8,7 +8,7 @@
   "meta": {
     "title": "AIPAN.ME - All-in-One Resource Aggregation Platform | Cloud Drive Search·Music·Daily Picks·Games·Live TV",
     "description": "AIPAN.ME is an all-in-one resource aggregation platform for cloud drive search, online music, daily movie picks, live TV, TVBox, casual games, and FM radio.",
-    "keywords": "AIPAN.ME,cloud drive search,resource aggregation,online music,daily movie picks,live TV,FM radio,blog platform,forum community,casual games,entertainment platform,music player,TVBox,baidu netdisk,aliyun drive,quark drive,all-in-one"
+    "keywords": "AIPAN.ME,cloud drive search,resource aggregation,online music,daily movie picks,live TV,FM radio,blog platform,casual games,entertainment platform,music player,TVBox,baidu netdisk,aliyun drive,quark drive,all-in-one"
   },
   "broadcast": {
     "message": "Bookmark our site: https://link0.me/aipan"
@@ -22,7 +22,6 @@
     "navItems": {
       "music": "Music",
       "blog": "Blog",
-      "forum": "Forum",
       "chat": "Chat",
       "games": "Games",
       "home": "Home",

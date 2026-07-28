@@ -4,9 +4,9 @@
       <div class="mx-auto flex max-w-[1440px] items-center justify-between gap-3">
         <div class="flex min-w-0 items-center gap-3">
           <NuxtLink
-            to="/forum"
+            to="/"
             class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-900 dark:border-white/10 dark:bg-slate-900 dark:text-slate-400 dark:hover:text-white"
-            aria-label="返回论坛"
+            aria-label="返回首页"
           >
             <i class="fas fa-arrow-left text-sm"></i>
           </NuxtLink>
@@ -17,13 +17,6 @@
         </div>
 
         <div class="flex shrink-0 items-center gap-2">
-          <NuxtLink
-            to="/forum"
-            class="hidden h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-white/5 sm:inline-flex"
-          >
-            <i class="fas fa-comments mr-2 text-xs text-slate-400"></i>
-            论坛
-          </NuxtLink>
           <button
             class="inline-flex h-9 items-center rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
             type="button"
@@ -104,15 +97,8 @@
               </div>
               <p class="m-0 mt-4 text-sm font-medium text-slate-700 dark:text-slate-200">{{ emptyText }}</p>
               <p class="m-0 mt-2 text-xs leading-5 text-slate-500 dark:text-slate-400">{{ emptyHint }}</p>
-              <NuxtLink
-                v-if="activeTab === 'private'"
-                to="/forum"
-                class="mt-4 inline-flex h-9 items-center rounded-lg bg-slate-900 px-3 text-sm font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
-              >
-                去论坛找用户
-              </NuxtLink>
               <button
-                v-else
+                v-if="activeTab !== 'private'"
                 class="mt-4 inline-flex h-9 items-center rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white transition hover:bg-blue-700"
                 type="button"
                 @click="showCreateGroupDialog = true"
@@ -189,14 +175,8 @@
               <i class="fas fa-message text-xl"></i>
             </div>
             <h2 class="m-0 mt-5 text-lg font-semibold text-slate-900 dark:text-white">选择一个会话</h2>
-            <p class="m-0 mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">左侧会话列表会同步私信、群聊和公开聊天室。私信可从论坛作者或回复者入口发起。</p>
+            <p class="m-0 mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">左侧会话列表会同步私信、群聊和公开聊天室。</p>
             <div class="mt-5 flex justify-center gap-2">
-              <NuxtLink
-                to="/forum"
-                class="inline-flex h-9 items-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-white/5"
-              >
-                浏览论坛
-              </NuxtLink>
               <button
                 class="inline-flex h-9 items-center rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white transition hover:bg-blue-700"
                 type="button"
@@ -345,7 +325,7 @@ const newGroup = reactive({
 });
 
 const roomTabs = [
-  { key: "private", label: "私信", icon: "fas fa-user", description: "来自论坛作者和回复者的一对一消息" },
+  { key: "private", label: "私信", icon: "fas fa-user", description: "一对一消息" },
   { key: "group", label: "群聊", icon: "fas fa-users", description: "仅成员可见的多人会话" },
   { key: "public", label: "公开", icon: "fas fa-globe", description: "所有用户可见的公开聊天室" },
 ];
@@ -361,7 +341,7 @@ const emptyText = computed(() => {
 });
 
 const emptyHint = computed(() => {
-  if (activeTab.value === "private") return "你可以从论坛主题作者或回复者入口发起私信。";
+  if (activeTab.value === "private") return "收到私信后会显示在这里。";
   if (activeTab.value === "public") return "创建公开聊天室后，所有用户都可以发现并加入。";
   return "创建群聊后再邀请成员加入。";
 });

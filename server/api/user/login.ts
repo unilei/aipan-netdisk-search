@@ -37,6 +37,13 @@ export default defineEventHandler(async (event) => {
             }
         }
 
+        if (String(user.status || '').toLowerCase() !== 'active') {
+            return {
+                code: 403,
+                msg: '账号已被禁用'
+            }
+        }
+
         if (user.emailVerificationRequired && !user.isVerified) {
             return {
                 code: 403,
@@ -50,7 +57,7 @@ export default defineEventHandler(async (event) => {
 
         // 生成 JWT token
         const token = jwt.sign(
-            { userId: user.id, role: user.role },
+            { userId: user.id, role: String(user.role || 'user').toLowerCase() },
             config.jwtSecret,
             { expiresIn: '24h' }
         );

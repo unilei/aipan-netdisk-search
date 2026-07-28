@@ -15,6 +15,7 @@ test("public navigation groups user-facing features without admin links", async 
   assert.match(content, /path: "\/alist"/);
   assert.match(content, /path: "\/tvbox"/);
   assert.doesNotMatch(content, /key: "search"/);
+  assert.doesNotMatch(content, /path: "\/forum"/);
   assert.doesNotMatch(content, /\/admin/);
 });
 

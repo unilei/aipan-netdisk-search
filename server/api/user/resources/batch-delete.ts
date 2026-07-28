@@ -1,20 +1,29 @@
 import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event); // 读取请求体
-    const { ids } = body; // 期望接收到一个包含 ID 的数组
-    const userId = event.context.user.userId; // 获取用户 ID（如果需要）
+    const body = await readBody(event);
+    const { ids } = body;
+    const userId = event.context.user.userId;
 
-    if (!Array.isArray(ids) || ids.length === 0) {
+    if (!Array.isArray(ids) || ids.length === 0 || ids.length > 100) {
         throw createError({ statusCode: 400, statusMessage: 'Invalid request: No IDs provided' });
     }
 
+    const normalizedIds = [...new Set(ids.map((id) => Number(id)))];
+    if (normalizedIds.some((id) => !Number.isInteger(id) || id <= 0)) {
+        throw createError({ statusCode: 400, statusMessage: 'Invalid resource IDs' });
+    }
+
     try {
-        // 使用 Prisma 的 deleteMany 方法删除多个资源
-        await prisma.resource.deleteMany({
+        // 只删除当前用户尚未发布的投稿，绝不触碰正式 Resource 表。
+        const result = await prisma.userResource.deleteMany({
             where: {
                 id: {
-                    in: ids.map(id => Number(id)), // 将 ID 转换为数字
+                    in: normalizedIds,
+                },
+                creatorId: userId,
+                status: {
+                    not: 'published',
                 },
             },
         });
@@ -22,7 +31,9 @@ export default defineEventHandler(async (event) => {
         return {
             code: 200,
             msg: 'Resources deleted successfully',
-            data: [],
+            data: {
+                deletedCount: result.count,
+            },
         };
     } catch (error) {
         console.error('Error deleting resources:', error);

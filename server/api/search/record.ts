@@ -5,6 +5,11 @@ import {
     MODERATION_CONTEXTS,
     summarizeModerationDecision,
 } from "~/server/utils/moderation";
+import {
+    getSearchRankingDateRange,
+    mergeDailyRankingWithLastSearch,
+    normalizeSearchRankingPeriod,
+} from "~/server/services/search/searchRankingPeriod.mjs";
 
 const rateLimiter = createRateLimiter({ windowMs: 60_000, maxRequests: 30 });
 
@@ -105,40 +110,62 @@ export default defineEventHandler(async (event) => {
     if (event.method === 'GET') {
         try {
             const { period = 'all' } = getQuery(event);
+            const normalizedPeriod = normalizeSearchRankingPeriod(period);
 
-            let dateFilter = {};
-            const now = new Date();
+            if (normalizedPeriod === 'all') {
+                const records = await prisma.searchRecord.findMany({
+                    orderBy: {
+                        count: 'desc'
+                    },
+                    take: 100
+                });
 
-            switch (period) {
-                case 'day':
-                    dateFilter = {
-                        lastSearchAt: {
-                            gte: new Date(now.setHours(0, 0, 0, 0))
-                        }
-                    };
-                    break;
-                case 'week':
-                    dateFilter = {
-                        lastSearchAt: {
-                            gte: new Date(now.setDate(now.getDate() - 7))
-                        }
-                    };
-                    break;
-                case 'month':
-                    dateFilter = {
-                        lastSearchAt: {
-                            gte: new Date(now.setMonth(now.getMonth() - 1))
-                        }
-                    };
-                    break;
+                return {
+                    code: 200,
+                    data: records
+                };
             }
 
-            const records = await prisma.searchRecord.findMany({
-                where: dateFilter,
+            const now = new Date();
+            const dateRange = getSearchRankingDateRange(normalizedPeriod, now);
+            if (!dateRange) {
+                throw new Error('搜索排行周期无效');
+            }
+            const dailyRows = await prisma.dailySearchStats.groupBy({
+                by: ['keyword'],
+                _sum: {
+                    count: true
+                },
+                where: {
+                    date: {
+                        gte: dateRange.start,
+                        lt: dateRange.end
+                    }
+                },
                 orderBy: {
-                    count: 'desc'
+                    _sum: {
+                        count: 'desc'
+                    }
                 },
                 take: 100
+            });
+            const searchRecords = dailyRows.length
+                ? await prisma.searchRecord.findMany({
+                    where: {
+                        keyword: {
+                            in: dailyRows.map((row: any) => row.keyword)
+                        }
+                    },
+                    select: {
+                        keyword: true,
+                        lastSearchAt: true
+                    }
+                })
+                : [];
+            const records = mergeDailyRankingWithLastSearch({
+                dailyRows,
+                searchRecords,
+                fallbackDate: now
             });
 
             return {

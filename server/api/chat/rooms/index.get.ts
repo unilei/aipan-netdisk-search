@@ -92,7 +92,6 @@ const toRoomPayload = async ({
     type: room.type,
     isPublic: room.isPublic,
     privateKey: room.privateKey,
-    sourceForumTopicId: room.sourceForumTopicId,
     createdAt: room.createdAt,
     updatedAt: room.updatedAt,
     lastMessageAt: room.lastMessageAt || lastMessage?.createdAt || room.updatedAt,

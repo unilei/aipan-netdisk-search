@@ -19,6 +19,7 @@ export default defineEventHandler(async (event) => {
         const userId = user.userId || user.id
         const where = {
             userId,
+            type: { notIn: ['reply', 'topic'] },
             ...(isRead !== undefined ? { isRead } : {})
         }
 

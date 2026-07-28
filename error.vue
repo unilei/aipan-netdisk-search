@@ -52,7 +52,7 @@ const errorInfo = computed(() => {
 // 快捷链接
 const quickLinks = [
   { name: '首页', path: '/', icon: 'fa-home' },
-  { name: '导航', path: '/nav', icon: 'fa-compass' },
+  { name: '搜索', path: '/search', icon: 'fa-magnifying-glass' },
 ]
 
 // 返回上一页

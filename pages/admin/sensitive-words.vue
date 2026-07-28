@@ -384,8 +384,6 @@ const moderationContextOptions = [
   { label: "AI 搜索", value: "ai_search" },
   { label: "用户文章", value: "blog_post" },
   { label: "博客评论", value: "blog_comment" },
-  { label: "论坛主题", value: "forum_topic" },
-  { label: "论坛回复", value: "forum_reply" },
   { label: "用户投稿", value: "user_resource" },
 ];
 

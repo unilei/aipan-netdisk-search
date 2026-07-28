@@ -208,13 +208,7 @@ export default defineNuxtConfig({
     experimental: {
       wasm: true,
     },
-    // 确保 API 路由正确处理
     routeRules: {
-      // OG图片API - 长期缓存
-      '/api/og-image': {
-        headers: { 'Cache-Control': 'max-age=86400' },
-        prerender: false
-      },
       '/logo.png': {
         headers: { 'Cache-Control': 'public, max-age=31536000, immutable' },
       },

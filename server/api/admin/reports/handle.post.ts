@@ -114,14 +114,6 @@ async function handleReportedContent(report: any) {
           }).catch(() => {});
           break;
 
-        case 'topic':
-          // 禁用论坛主题
-          await prisma.forumTopic.update({
-            where: { id: parseInt(contentId) },
-            data: { status: 'rejected' }
-          }).catch(() => {});
-          break;
-
         case 'resource':
           // 删除用户资源
           await prisma.userResource.update({

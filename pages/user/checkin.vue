@@ -546,10 +546,11 @@ const registrationGiftClaiming = ref(false)
 const dailyRedemptionDropClaiming = ref(false)
 const openedPointTasks = ref({})
 const pointTaskReadyAt = ref({})
+const pointTaskClaimTokens = ref({})
+const pointTaskStarting = ref({})
 const pointTaskClaiming = ref({})
 const nowTick = ref(Date.now())
 let pointTaskTimer = null
-const POINT_TASK_READ_DELAY_SECONDS = 10
 const transferTask = computed(() => pointsSummary.value.transferTask || defaultTransferTask)
 const registrationGift = computed(() => pointsSummary.value.registrationGift || defaultRegistrationGift)
 const dailyRedemptionDrop = computed(() => pointsSummary.value.dailyRedemptionDrop || defaultDailyRedemptionDrop)
@@ -743,11 +744,36 @@ const setTaskState = (stateRef, key, value) => {
   }
 }
 
-const handleOpenPointTask = (task) => {
-  if (!task?.url || !task?.key) return
+const handleOpenPointTask = async (task) => {
+  if (!task?.url || !task?.key || pointTaskStarting.value[task.key]) return
+
   window.open(task.url, '_blank', 'noopener,noreferrer')
   setTaskState(openedPointTasks, task.key, true)
-  setTaskState(pointTaskReadyAt, task.key, Date.now() + POINT_TASK_READ_DELAY_SECONDS * 1000)
+  setTaskState(pointTaskStarting, task.key, true)
+
+  try {
+    const response = await $fetch(`/api/user/points/tasks/${encodeURIComponent(task.key)}/start`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${useCookie('token').value}`
+      }
+    })
+
+    if (response.code !== 200 || !response.data?.claimToken) {
+      throw new Error(response.msg || '任务计时启动失败')
+    }
+
+    setTaskState(pointTaskClaimTokens, task.key, response.data.claimToken)
+    setTaskState(pointTaskReadyAt, task.key, Number(response.data.readyAt))
+  } catch (error) {
+    setTaskState(openedPointTasks, task.key, false)
+    setTaskState(pointTaskReadyAt, task.key, 0)
+    setTaskState(pointTaskClaimTokens, task.key, '')
+    console.error('启动积分任务失败:', error)
+    ElMessage.error(error?.data?.message || error?.message || '任务计时启动失败')
+  } finally {
+    setTaskState(pointTaskStarting, task.key, false)
+  }
 }
 
 const getPointTaskRemainingSeconds = (task) => {
@@ -758,6 +784,11 @@ const getPointTaskRemainingSeconds = (task) => {
 
 const handleClaimPointTask = async (task) => {
   if (!task?.key || pointTaskClaiming.value[task.key] || getPointTaskRemainingSeconds(task) > 0) return
+  const claimToken = pointTaskClaimTokens.value[task.key]
+  if (!claimToken) {
+    ElMessage.info('请先打开任务并完成阅读')
+    return
+  }
 
   setTaskState(pointTaskClaiming, task.key, true)
   try {
@@ -765,6 +796,9 @@ const handleClaimPointTask = async (task) => {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${useCookie('token').value}`
+      },
+      body: {
+        claimToken
       }
     })
 
@@ -781,6 +815,8 @@ const handleClaimPointTask = async (task) => {
         console.warn('Failed to refresh access control config after point task claim:', error)
       })
       ElMessage.success(`领取成功，获得 ${response.data.points} 积分`)
+      setTaskState(pointTaskClaimTokens, task.key, '')
+      setTaskState(pointTaskReadyAt, task.key, 0)
       await fetchPointTasks()
       await handlePointsChanged()
       return

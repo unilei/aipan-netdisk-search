@@ -1,12 +1,7 @@
-import DOMPurify from 'dompurify'
+import { sanitizeHtmlContent } from "./sanitizeCore.mjs";
 
 /**
- * 使用 DOMPurify 对 HTML 内容进行 XSS 清理
- * SSR 时直接返回原文本（服务端数据来自受控源，风险可控）
+ * 使用同一套 DOMPurify 策略清理 SSR 与客户端渲染的富文本。
  */
-export const sanitizeHtml = (dirty: string): string => {
-    if (!dirty) return ''
-    // DOMPurify 依赖 window，服务端无法使用，直接返回原文本
-    if (import.meta.server) return dirty
-    return DOMPurify.sanitize(dirty)
-}
+export const sanitizeHtml = (dirty: string): string =>
+  sanitizeHtmlContent(dirty);

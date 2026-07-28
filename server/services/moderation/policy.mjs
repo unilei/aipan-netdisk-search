@@ -12,8 +12,6 @@ export const MODERATION_CONTEXTS = Object.freeze({
   aiSearch: "ai_search",
   blogPost: "blog_post",
   blogComment: "blog_comment",
-  forumTopic: "forum_topic",
-  forumReply: "forum_reply",
   userResource: "user_resource",
 });
 
@@ -41,11 +39,6 @@ const DEFAULT_CONFIG = Object.freeze({
 const SEARCH_CONTEXTS = new Set([
   MODERATION_CONTEXTS.netdiskSearch,
   MODERATION_CONTEXTS.aiSearch,
-]);
-
-const FORUM_CONTEXTS = new Set([
-  MODERATION_CONTEXTS.forumTopic,
-  MODERATION_CONTEXTS.forumReply,
 ]);
 
 const AMBIGUOUS_WORDS = new Set([
@@ -618,7 +611,7 @@ const resolveAction = ({ context, risk, hasMatches }) => {
     return MODERATION_ACTIONS.allow;
   }
 
-  if (FORUM_CONTEXTS.has(context) || context === MODERATION_CONTEXTS.userResource) {
+  if (context === MODERATION_CONTEXTS.userResource) {
     return MODERATION_ACTIONS.review;
   }
 

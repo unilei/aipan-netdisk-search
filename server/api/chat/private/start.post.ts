@@ -3,7 +3,7 @@ import { getUserPointsBreakdown } from "~/server/services/points/userPoints";
 import { getStoredPrivateMessageConfig } from "~/server/services/points/privateMessageEligibility.mjs";
 import { startPrivateConversation } from "~/server/services/chat/privateConversations.mjs";
 
-const startPrivateConversationWithTopic = startPrivateConversation as (input: {
+const startPrivateConversationService = startPrivateConversation as (input: {
   actor: {
     id: number;
     username?: string;
@@ -11,7 +11,6 @@ const startPrivateConversationWithTopic = startPrivateConversation as (input: {
   };
   recipientId: number;
   content: string;
-  sourceForumTopicId?: number | null;
   prismaClient: typeof prisma;
   getPointsBreakdown: typeof getUserPointsBreakdown;
   config: Record<string, unknown>;
@@ -30,13 +29,9 @@ export default defineEventHandler(async (event) => {
   const body = await readBody(event);
   const recipientId = Number(body?.recipientId);
   const content = typeof body?.content === "string" ? body.content : "";
-  const sourceForumTopicId = body?.sourceForumTopicId
-    ? Number(body.sourceForumTopicId)
-    : null;
-
   try {
     const config = await getStoredPrivateMessageConfig(prisma);
-    const result = await startPrivateConversationWithTopic({
+    const result = await startPrivateConversationService({
       actor: {
         id: user.userId,
         username: user.username,
@@ -44,7 +39,6 @@ export default defineEventHandler(async (event) => {
       },
       recipientId,
       content,
-      sourceForumTopicId,
       prismaClient: prisma,
       getPointsBreakdown: getUserPointsBreakdown,
       config,

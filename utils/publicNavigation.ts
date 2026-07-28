@@ -84,12 +84,6 @@ export const publicNavigation: PublicNavigationItem[] = [
         icon: "fa-solid fa-blog",
       },
       {
-        key: "forum",
-        labelKey: "header.navItems.forum",
-        path: "/forum",
-        icon: "fa-solid fa-comments",
-      },
-      {
         key: "chat",
         labelKey: "header.navItems.chat",
         path: "/chat",

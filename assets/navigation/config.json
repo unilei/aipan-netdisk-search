@@ -22,12 +22,6 @@
           "icon": "fa-headphones",
           "path": "/fm"
         },
-         {
-          "title": "音乐海报生成",
-          "description": "将你喜爱的音乐转化为精美的视觉艺术",
-          "icon": "fa-music",
-          "path": "/beat-prints"
-        },
         {
           "title": "每日电影推荐",
           "description": "发现精彩好片",
@@ -39,13 +33,7 @@
           "description": "享受本地音乐",
           "icon": "fa-music",
           "path": "/music/player"
-        },
-         {
-          "title": "新年倒计时",
-          "description": "倒计时迎接新的一年",
-          "icon": "fa-calendar-days",
-          "path": "/spring-festival"
-        } 
+        }
       ]
     },
     {

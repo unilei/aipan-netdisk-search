@@ -1,16 +1,37 @@
 import { createHash } from 'crypto';
 import { promises as fs } from 'fs';
+import { Agent as HttpAgent } from 'http';
+import { Agent as HttpsAgent } from 'https';
 import { join } from 'path';
 import { createError, defineEventHandler, getQuery } from 'h3';
 import axios from 'axios';
 import sharp from 'sharp';
+import {
+  assertSafeRedirectOptions,
+  assertSafeRemoteUrl,
+  assertSafeRemoteUrlShape,
+  safeDnsLookup,
+} from '~/server/services/security/outboundUrl.mjs';
 
 const CACHE_DIR = join(process.cwd(), 'public', 'image-cache');
 const CACHE_MAX_AGE = 31536000;
+const CACHE_MAX_FILES = 1000;
+const CACHE_MAX_BYTES = 256 * 1024 * 1024;
+const MAX_UPSTREAM_IMAGE_BYTES = 5 * 1024 * 1024;
+const MAX_INPUT_PIXELS = 40_000_000;
 const DEFAULT_IMAGE_WIDTH = 220;
 const MIN_IMAGE_WIDTH = 80;
 const MAX_IMAGE_WIDTH = 600;
 const DEFAULT_IMAGE_QUALITY = 75;
+const httpAgent = new HttpAgent({
+  keepAlive: true,
+  lookup: safeDnsLookup,
+});
+const httpsAgent = new HttpsAgent({
+  keepAlive: true,
+  lookup: safeDnsLookup,
+});
+let cachePrunePromise: Promise<void> | null = null;
 const IMAGE_PROXY_FALLBACK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400" role="img" aria-label="Image unavailable">
   <rect width="300" height="400" fill="#f1f5f9"/>
   <path d="M96 171h108a12 12 0 0 1 12 12v58a12 12 0 0 1-12 12H96a12 12 0 0 1-12-12v-58a12 12 0 0 1 12-12Zm9 62h90l-28-34-22 26-14-16-26 24Zm23-40a13 13 0 1 0 0-26 13 13 0 0 0 0 26Z" fill="#94a3b8"/>
@@ -50,6 +71,66 @@ function getImageQuality(value: unknown) {
   return Math.min(90, Math.max(45, Math.round(parsed)));
 }
 
+async function readCachedImage(cacheFile: string) {
+  const stats = await fs.stat(cacheFile);
+  if (!stats.isFile() || stats.size > MAX_UPSTREAM_IMAGE_BYTES) {
+    await fs.unlink(cacheFile).catch(() => {});
+    throw new Error('Invalid cached image');
+  }
+
+  return fs.readFile(cacheFile);
+}
+
+async function pruneCacheDirectory() {
+  const directoryEntries = await fs.readdir(CACHE_DIR, {
+    withFileTypes: true,
+  });
+  const cacheEntries = (
+    await Promise.all(
+      directoryEntries
+        .filter((entry) => entry.isFile() && entry.name.endsWith('.webp'))
+        .map(async (entry) => {
+          const path = join(CACHE_DIR, entry.name);
+          const stats = await fs.stat(path);
+          return {
+            path,
+            size: stats.size,
+            modifiedAt: stats.mtimeMs,
+          };
+        }),
+    )
+  ).sort((left, right) => left.modifiedAt - right.modifiedAt);
+
+  let remainingFiles = cacheEntries.length;
+  let remainingBytes = cacheEntries.reduce(
+    (total, entry) => total + entry.size,
+    0,
+  );
+
+  for (const entry of cacheEntries) {
+    if (
+      remainingFiles <= CACHE_MAX_FILES &&
+      remainingBytes <= CACHE_MAX_BYTES
+    ) {
+      break;
+    }
+
+    await fs.unlink(entry.path).catch(() => {});
+    remainingFiles -= 1;
+    remainingBytes -= entry.size;
+  }
+}
+
+async function pruneCache() {
+  if (!cachePrunePromise) {
+    cachePrunePromise = pruneCacheDirectory().finally(() => {
+      cachePrunePromise = null;
+    });
+  }
+
+  await cachePrunePromise;
+}
+
 function sendFallbackImage(event: any) {
   event.node.res.setHeader('Content-Type', 'image/svg+xml; charset=utf-8');
   event.node.res.setHeader('Cache-Control', 'public, max-age=300');
@@ -59,15 +140,25 @@ function sendFallbackImage(event: any) {
 
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
-  const imageUrl = query.url as string;
+  const requestedImageUrl = Array.isArray(query.url) ? query.url[0] : query.url;
   const imageWidth = getImageWidth(query.w ?? query.width);
   const imageQuality = getImageQuality(query.q ?? query.quality);
   const imageHeight = Math.round(imageWidth * 1.5);
 
-  if (!imageUrl) {
+  if (typeof requestedImageUrl !== 'string' || !requestedImageUrl) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Missing url parameter',
+    });
+  }
+
+  let imageUrl: string;
+  try {
+    imageUrl = assertSafeRemoteUrlShape(requestedImageUrl).toString();
+  } catch {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Invalid image URL',
     });
   }
 
@@ -75,7 +166,7 @@ export default defineEventHandler(async (event) => {
   const cacheFile = join(CACHE_DIR, getCacheFileName(imageUrl, imageWidth, imageQuality));
 
   try {
-    const cachedImage = await fs.readFile(cacheFile);
+    const cachedImage = await readCachedImage(cacheFile);
 
     event.node.res.setHeader('Content-Type', 'image/webp');
     event.node.res.setHeader('Cache-Control', `public, max-age=${CACHE_MAX_AGE}`);
@@ -87,6 +178,15 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
+    await assertSafeRemoteUrl(imageUrl);
+  } catch {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Image URL is not publicly reachable',
+    });
+  }
+
+  try {
     const response = await axios.get<ArrayBuffer>(imageUrl, {
       responseType: 'arraybuffer',
       headers: {
@@ -95,9 +195,35 @@ export default defineEventHandler(async (event) => {
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
       timeout: 5000,
+      httpAgent,
+      httpsAgent,
+      maxRedirects: 3,
+      maxContentLength: MAX_UPSTREAM_IMAGE_BYTES,
+      maxBodyLength: MAX_UPSTREAM_IMAGE_BYTES,
+      beforeRedirect: (options) => {
+        assertSafeRedirectOptions(options);
+      },
     });
 
-    const optimizedImage = await sharp(Buffer.from(response.data))
+    const contentType = (
+      String(response.headers['content-type'] || '').split(';')[0] || ''
+    )
+      .trim()
+      .toLowerCase();
+    if (!contentType.startsWith('image/')) {
+      throw new Error('Upstream response is not an image');
+    }
+
+    const sourceImage = Buffer.from(response.data);
+    if (sourceImage.length > MAX_UPSTREAM_IMAGE_BYTES) {
+      throw new Error('Upstream image is too large');
+    }
+
+    const optimizedImage = await sharp(sourceImage, {
+      failOn: 'warning',
+      limitInputPixels: MAX_INPUT_PIXELS,
+      sequentialRead: true,
+    })
       .webp({ quality: imageQuality })
       .resize(imageWidth, imageHeight, {
         fit: 'cover',
@@ -106,6 +232,9 @@ export default defineEventHandler(async (event) => {
       .toBuffer();
 
     await fs.writeFile(cacheFile, optimizedImage);
+    await pruneCache().catch((error) => {
+      console.warn('Image proxy cache pruning failed:', error?.message || error);
+    });
 
     event.node.res.setHeader('Content-Type', 'image/webp');
     event.node.res.setHeader('Cache-Control', `public, max-age=${CACHE_MAX_AGE}`);

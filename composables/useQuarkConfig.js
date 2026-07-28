@@ -93,13 +93,20 @@ export const useQuarkConfig = () => {
 
       const shareInfo = saveRes.data.share_info;
       if (shareInfo) {
-        await $fetch("/api/quark/post", {
+        const token = useCookie("token").value;
+        if (!token) {
+          return false;
+        }
+
+        await $fetch("/api/admin/quark/post", {
           method: "POST",
           body: {
             name,
             links: JSON.stringify([{ key: Date.now(), value: shareInfo.share_url }]),
             typeId: quarkConfig.value.typeId,
-            userId: quarkConfig.value.userId,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
           timeout: 30000, // 30秒超时
           retry: 2,

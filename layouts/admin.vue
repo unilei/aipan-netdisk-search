@@ -197,7 +197,6 @@ const menuGroups = [
     icon: 'fas fa-users',
     children: [
       { title: '聊天管理', path: '/admin/chat', icon: 'fas fa-comment-dots' },
-      { title: '论坛管理', path: '/admin/forum/topics', icon: 'fas fa-users' },
       { title: '举报管理', path: '/admin/reports', icon: 'fas fa-flag' }
     ]
   },

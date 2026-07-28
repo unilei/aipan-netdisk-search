@@ -27,6 +27,7 @@ logs
 .parcel-cache
 .npm
 .eslintcache
+public/image-cache
 
 # Git
 .git

@@ -8,6 +8,10 @@ import {
   toUserPointTask,
   validatePointTaskUrl,
 } from "../../server/services/points/pointTasks.mjs";
+import {
+  createPointTaskClaimChallenge,
+  verifyPointTaskClaimChallenge,
+} from "../../server/services/points/pointTaskChallenge.mjs";
 
 test("normalizePointTaskInput sanitizes configurable task fields", () => {
   const task = normalizePointTaskInput({
@@ -108,4 +112,89 @@ test("toUserPointTask exposes claim state without leaking admin fields", () => {
   assert.equal(task.status, "completed");
   assert.equal(task.canClaim, false);
   assert.equal(task.completedCount, 1);
+});
+
+test("point task claim challenge enforces server-side wait and task binding", () => {
+  const challenge = createPointTaskClaimChallenge({
+    secret: "test-secret",
+    userId: 7,
+    taskId: 11,
+    taskKey: "promo",
+    taskVersion: 1234,
+    claimNo: 1,
+    now: 1_000,
+    delayMs: 10_000,
+    ttlMs: 60_000,
+    nonce: "fixed-nonce",
+  });
+
+  assert.equal(verifyPointTaskClaimChallenge({
+    token: challenge.token,
+    secret: "test-secret",
+    userId: 7,
+    taskId: 11,
+    taskKey: "promo",
+    taskVersion: 1234,
+    claimNo: 1,
+    now: 10_999,
+  }).reason, "too_early");
+
+  assert.equal(verifyPointTaskClaimChallenge({
+    token: challenge.token,
+    secret: "test-secret",
+    userId: 7,
+    taskId: 11,
+    taskKey: "promo",
+    taskVersion: 1234,
+    claimNo: 1,
+    now: 11_000,
+  }).valid, true);
+
+  assert.equal(verifyPointTaskClaimChallenge({
+    token: challenge.token,
+    secret: "test-secret",
+    userId: 8,
+    taskId: 11,
+    taskKey: "promo",
+    taskVersion: 1234,
+    claimNo: 1,
+    now: 11_000,
+  }).reason, "mismatch");
+});
+
+test("point task claim challenge rejects tampering and expiration", () => {
+  const challenge = createPointTaskClaimChallenge({
+    secret: "test-secret",
+    userId: 7,
+    taskId: 11,
+    taskKey: "promo",
+    taskVersion: 1234,
+    claimNo: 1,
+    now: 1_000,
+    delayMs: 10_000,
+    ttlMs: 60_000,
+    nonce: "fixed-nonce",
+  });
+
+  assert.equal(verifyPointTaskClaimChallenge({
+    token: `${challenge.token.slice(0, -1)}x`,
+    secret: "test-secret",
+    userId: 7,
+    taskId: 11,
+    taskKey: "promo",
+    taskVersion: 1234,
+    claimNo: 1,
+    now: 11_000,
+  }).valid, false);
+
+  assert.equal(verifyPointTaskClaimChallenge({
+    token: challenge.token,
+    secret: "test-secret",
+    userId: 7,
+    taskId: 11,
+    taskKey: "promo",
+    taskVersion: 1234,
+    claimNo: 1,
+    now: 61_001,
+  }).reason, "expired");
 });

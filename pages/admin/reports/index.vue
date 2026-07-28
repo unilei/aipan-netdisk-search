@@ -38,7 +38,6 @@ const reasonLabels = {
 const contentTypeLabels = {
   post: '博客文章',
   comment: '评论',
-  topic: '论坛主题',
   message: '聊天消息',
   resource: '资源'
 };
@@ -122,7 +121,6 @@ const viewContent = (report) => {
   const routes = {
     post: `/blog/${report.contentId}`,
     comment: `/blog/${report.contentId}`,
-    topic: `/forum/topic/${report.contentId}`,
     resource: `/admin/user-resources`
   };
   

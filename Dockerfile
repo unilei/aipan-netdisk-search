@@ -8,24 +8,6 @@ WORKDIR /app
 # 设置 Node.js 内存限制
 ENV NODE_OPTIONS="--max-old-space-size=8192"
 
-# 安装系统依赖（canvas包编译所需）
-RUN apk add --no-cache \
-  python3 \
-  py3-pip \
-  make \
-  g++ \
-  cairo-dev \
-  jpeg-dev \
-  pango-dev \
-  musl-dev \
-  giflib-dev \
-  pixman-dev \
-  pangomm-dev \
-  libjpeg-turbo-dev \
-  freetype-dev \
-  fontconfig-dev \
-  ttf-dejavu
-
 # 复制依赖清单
 COPY package.json package-lock.json ./
 
@@ -57,19 +39,10 @@ RUN rm -rf node_modules && \
 FROM node:20.19.2-alpine
 LABEL authors="Lei"
 
-# 安装 Canvas 运行时依赖
+# 安装运行时运维依赖
 RUN apk add --no-cache \
   aws-cli \
-  cairo \
-  jpeg \
-  pango \
-  giflib \
-  pixman \
-  libjpeg-turbo \
-  freetype \
-  fontconfig \
-  postgresql-client \
-  ttf-dejavu
+  postgresql-client
 
 WORKDIR /app
 

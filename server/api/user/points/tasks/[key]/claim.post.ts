@@ -1,5 +1,6 @@
 import prisma from "~/lib/prisma";
 import { getUserPointsBreakdown, POINT_TYPES } from "~/server/services/points/userPoints";
+import { verifyPointTaskClaimChallenge } from "~/server/services/points/pointTaskChallenge.mjs";
 import { resolvePointTaskClaimDecision } from "~/server/services/points/pointTasks.mjs";
 
 export default defineEventHandler(async (event) => {
@@ -18,6 +19,19 @@ export default defineEventHandler(async (event) => {
       statusMessage: "任务标识不能为空",
     });
   }
+
+  const body = await readBody(event);
+  const claimToken = typeof body?.claimToken === "string"
+    ? body.claimToken
+    : "";
+  if (!claimToken) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "请先打开任务并完成阅读",
+    });
+  }
+
+  const config = useRuntimeConfig();
 
   try {
     const result = await prisma.$transaction(async (tx: any) => {
@@ -54,6 +68,38 @@ export default defineEventHandler(async (event) => {
           completedCount,
           pointsBreakdown: breakdown,
         };
+      }
+
+      const challenge = verifyPointTaskClaimChallenge({
+        token: claimToken,
+        secret: config.jwtSecret,
+        userId,
+        taskId: task.id,
+        taskKey: task.key,
+        taskVersion: task.updatedAt.getTime(),
+        claimNo: decision.claimNo,
+      });
+
+      if (!challenge.valid) {
+        const errorByReason: Record<string, { statusCode: number; message: string }> = {
+          too_early: {
+            statusCode: 425,
+            message: "请完成阅读后再领取积分",
+          },
+          expired: {
+            statusCode: 410,
+            message: "任务计时已过期，请重新打开任务",
+          },
+        };
+        const challengeError = errorByReason[challenge.reason] || {
+          statusCode: 400,
+          message: "任务领取凭证无效，请重新打开任务",
+        };
+
+        throw createError({
+          statusCode: challengeError.statusCode,
+          statusMessage: challengeError.message,
+        });
       }
 
       const updatedUser = await tx.user.update({

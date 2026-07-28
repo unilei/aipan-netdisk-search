@@ -9,7 +9,6 @@ test("chat schema includes private conversation metadata and read tracking", () 
 
   assert.match(schema, /privateKey\s+String\?\s+@unique/);
   assert.match(schema, /lastMessageAt\s+DateTime\?/);
-  assert.match(schema, /sourceForumTopicId\s+Int\?/);
   assert.match(schema, /lastReadAt\s+DateTime\?/);
   assert.match(schema, /@@index\(\[lastMessageAt\]\)/);
 });
@@ -61,21 +60,6 @@ test("socket no longer creates private rooms through a separate private_message 
   const socket = read("server/plugins/socket.ts");
 
   assert.doesNotMatch(socket, /socket\.on\(['"]private_message['"]/);
-});
-
-test("screen sharing socket events do not reuse chat room event names", () => {
-  const socket = read("server/plugins/socket.ts");
-  const screenSharing = read("composables/useScreenSharing.ts");
-
-  assert.equal((socket.match(/socket\.on\(['"]join_room['"]/g) || []).length, 1);
-  assert.equal((socket.match(/socket\.on\(['"]leave_room['"]/g) || []).length, 1);
-  assert.match(socket, /socket\.on\(['"]screen:join_room['"]/);
-  assert.match(socket, /socket\.emit\(['"]screen:error['"], \{ message: ['"]房间不存在或已关闭['"] \}/);
-
-  assert.match(screenSharing, /emit\(['"]screen:join_room['"]/);
-  assert.match(screenSharing, /emit\(['"]screen:create_room['"]/);
-  assert.doesNotMatch(screenSharing, /emit\(['"]join_room['"]/);
-  assert.doesNotMatch(screenSharing, /emit\(['"]create_room['"]/);
 });
 
 test("admin points page exposes private message threshold config", () => {

@@ -1,10 +1,10 @@
-import { verifyToken } from '~/server/model/user'
 import prisma from "~/lib/prisma";
 
 export default defineEventHandler(async (event) => {
     try {
         const id = event.context.params?.id
-        if (!id) {
+        const commentId = Number(id)
+        if (!Number.isInteger(commentId) || commentId <= 0) {
             return {
                 code: 400,
                 message: 'Missing comment ID',
@@ -12,16 +12,12 @@ export default defineEventHandler(async (event) => {
             }
         }
 
-        // 检查是否是管理员
-        const token = getHeader(event, 'authorization')?.split(' ')[1]
-        const user = token ? verifyToken(token) : null
-        const isAdmin = user?.userId != null // 如果能解析出 userId，说明是管理员
-
-        // 获取请求体中的删除token
-        const body = await readBody(event)
+        // 管理员身份由全局认证中间件按数据库当前角色写入上下文。
+        const isAdmin = event.context.user?.role === 'admin'
 
         // 如果不是管理员，则需要验证删除token
         if (!isAdmin) {
+            const body = await readBody(event)
             if (!body || !body.deleteToken) {
                 return {
                     code: 403,
@@ -32,7 +28,7 @@ export default defineEventHandler(async (event) => {
 
             // 检查评论是否存在并验证删除token
             const comment = await prisma.comment.findUnique({
-                where: { id: parseInt(id) },
+                where: { id: commentId },
                 select: { id: true, deleteToken: true }
             })
 
@@ -58,8 +54,8 @@ export default defineEventHandler(async (event) => {
         await prisma.comment.deleteMany({
             where: {
                 OR: [
-                    { id: parseInt(id) },
-                    { parentId: parseInt(id) }
+                    { id: commentId },
+                    { parentId: commentId }
                 ]
             }
         })
@@ -73,7 +69,7 @@ export default defineEventHandler(async (event) => {
         return {
             code: 500,
             message: 'Internal server error',
-            error: error instanceof Error ? error.message : 'Unknown error'
+            error: 'Comment deletion failed'
         }
     }
-}) 
+})

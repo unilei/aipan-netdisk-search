@@ -188,9 +188,19 @@ export const assertFeatureAccess = async (
     select: {
       id: true,
       role: true,
+      status: true,
       points: true,
     },
   });
+
+  if (user && String(user.status || "").toLowerCase() !== "active") {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "ACCOUNT_DISABLED",
+      message: "账号已被禁用",
+    });
+  }
+
   const pointsBreakdown = user
     ? await getUserPointsBreakdown(user.id, {
         permanentPoints: user.points,
@@ -234,7 +244,6 @@ export const assertFeatureAccess = async (
       currentPoints: 0,
     });
   }
-  const decodedUser = decoded as NonNullable<typeof decoded>;
 
   const featureUser = {
     ...user,
@@ -243,9 +252,9 @@ export const assertFeatureAccess = async (
   };
 
   event.context.user = {
-    ...decodedUser,
     userId: user.id,
-    role: decodedUser.role || user.role,
+    role: String(user.role || "user").toLowerCase(),
+    status: "active",
   };
   event.context.featureAccess = {
     config,

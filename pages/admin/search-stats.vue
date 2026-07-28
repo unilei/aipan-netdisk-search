@@ -393,7 +393,7 @@ const saveToQuarkAsync = async (link, name) => {
 
     let shareInfo = saveRes.data.share_info;
     if (shareInfo) {
-      await $fetch("/api/quark/post", {
+      await $fetch("/api/admin/quark/post", {
         method: "POST",
         body: {
           name,
@@ -401,7 +401,9 @@ const saveToQuarkAsync = async (link, name) => {
             { key: Date.now(), value: shareInfo.share_url },
           ]),
           typeId: quarkConfig.value.typeId,
-          userId: quarkConfig.value.userId,
+        },
+        headers: {
+          Authorization: `Bearer ${useCookie("token").value}`,
         },
       });
       return true;

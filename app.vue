@@ -7,14 +7,35 @@
 </template>
 
 <script setup>
-import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+import {
+  ArrowLeft,
+  Delete,
+  Document,
+  Edit,
+  House,
+  Loading,
+  PictureFilled,
+  Plus,
+  Refresh,
+} from "@element-plus/icons-vue";
 
 const nuxtApp = useNuxtApp();
 const colorMode = useColorMode();
 
-// 注册所有 Element Plus 图标
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  nuxtApp.vueApp.component(key, component);
+const globalElementPlusIcons = {
+  ArrowLeft,
+  Delete,
+  Document,
+  Edit,
+  House,
+  Loading,
+  PictureFilled,
+  Plus,
+  Refresh,
+};
+
+for (const [name, component] of Object.entries(globalElementPlusIcons)) {
+  nuxtApp.vueApp.component(name, component);
 }
 
 // 确保初始化时应用正确的 dark class
@@ -51,19 +72,4 @@ h6 {
   padding: 0;
 }
 
-/* @font-face {
-  font-family: "Douyin Meihao";
-  src: url("./assets/fonts/抖音美好体.ttf") format("truetype");
-  font-display: swap;
-  font-weight: 100 200 300 400 500 600 700 800 900;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Fangzheng Kaiti Jian";
-  src: url("./assets/fonts/方正楷体简体.ttf") format("truetype");
-  font-display: swap;
-  font-weight: 100 200 300 400 500 600 700 800 900;
-  font-style: normal;
-} */
 </style>

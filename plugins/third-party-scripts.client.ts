@@ -20,19 +20,6 @@ export default defineNuxtPlugin(() => {
         src: "/ga.js",
         defer: true,
       },
-      {
-        src: "/qrcode.min.js",
-        defer: true,
-      },
-      {
-        src: "https://challenges.cloudflare.com/turnstile/v0/api.js",
-        async: true,
-      },
-      {
-        src: "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8210373406341452",
-        async: true,
-        crossorigin: "anonymous",
-      },
     ],
   });
 });

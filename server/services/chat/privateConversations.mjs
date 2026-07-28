@@ -107,7 +107,6 @@ export const toPrivateRoomPayload = ({
     type: room.type,
     isPublic: room.isPublic,
     privateKey: room.privateKey,
-    sourceForumTopicId: room.sourceForumTopicId,
     createdAt: room.createdAt,
     updatedAt: room.updatedAt,
     lastMessageAt: room.lastMessageAt || room.updatedAt,
@@ -150,7 +149,6 @@ export const startPrivateConversation = async ({
   actor,
   recipientId,
   content,
-  sourceForumTopicId = null,
   prismaClient,
   getPointsBreakdown = getDefaultPointsBreakdown,
   config = {},
@@ -194,7 +192,6 @@ export const startPrivateConversation = async ({
           recipient,
           content: firstMessageContent,
           now,
-          sourceForumTopicId,
           senderUsername: actor?.username,
         });
       }
@@ -235,7 +232,6 @@ export const startPrivateConversation = async ({
         type: "private",
         isPublic: false,
         privateKey,
-        sourceForumTopicId: sourceForumTopicId || null,
         lastMessageAt: firstMessageContent ? now : null,
         creator: {
           connect: { id: actorId },
@@ -270,7 +266,6 @@ export const startPrivateConversation = async ({
         recipient,
         content: firstMessageContent,
         now,
-        sourceForumTopicId,
         senderUsername: actor?.username,
       });
     }
@@ -295,7 +290,6 @@ export const createPrivateMessage = async ({
   recipient,
   content,
   now = new Date(),
-  sourceForumTopicId = null,
   senderUsername,
 }) => {
   const message = await tx.chatMessage.create({
@@ -326,7 +320,6 @@ export const createPrivateMessage = async ({
     data: {
       updatedAt: now,
       lastMessageAt: now,
-      ...(sourceForumTopicId ? { sourceForumTopicId } : {}),
     },
   });
 

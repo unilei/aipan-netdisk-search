@@ -37,11 +37,18 @@ export const loginUser = async (email: string, password: string) => {
   if (!user) {
     return null;
   }
+  if (String(user.status || '').toLowerCase() !== 'active') {
+    return null;
+  }
   const passwordResult = await verifyAndUpgradePassword(user, password);
   if (!passwordResult.isValid) {
     return null;
   }
-  const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: "1d" });
+  const token = jwt.sign(
+    { userId: user.id, role: String(user.role || 'user').toLowerCase() },
+    JWT_SECRET,
+    { expiresIn: "1d" },
+  );
   return { user, token };
 };
 

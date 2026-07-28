@@ -24,12 +24,6 @@
             "path": "/fm"
           },
           {
-            "title": "音乐海报生成",
-            "description": "将你喜爱的音乐转化为精美的视觉艺术",
-            "icon": "fa-music",
-            "path": "/beat-prints"
-          },
-          {
             "title": "每日电影推荐",
             "description": "发现精彩好片",
             "icon": "fa-film",
@@ -40,12 +34,6 @@
             "description": "享受本地音乐",
             "icon": "fa-music",
             "path": "/music/player"
-          },
-          {
-            "title": "新年倒计时",
-            "description": "倒计时迎接新的一年",
-            "icon": "fa-calendar-days",
-            "path": "/spring-festival"
           }
         ]
       },
@@ -202,12 +190,6 @@
             "path": "/fm"
           },
           {
-            "title": "Music Poster",
-            "description": "Transform your favorite music into visual art",
-            "icon": "fa-music",
-            "path": "/beat-prints"
-          },
-          {
             "title": "Daily Movie Picks",
             "description": "Discover amazing films",
             "icon": "fa-film",
@@ -218,12 +200,6 @@
             "description": "Enjoy local music",
             "icon": "fa-music",
             "path": "/music/player"
-          },
-          {
-            "title": "New Year Countdown",
-            "description": "Countdown to welcome new year",
-            "icon": "fa-calendar-days",
-            "path": "/spring-festival"
           }
         ]
       },

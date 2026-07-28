@@ -127,28 +127,6 @@
 
       <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
         <div class="flex items-center space-x-2">
-          <el-icon :size="20" class="text-cyan-500">
-            <ChatLineRound />
-          </el-icon>
-          <h3 class="text-gray-500 dark:text-gray-400 text-sm font-medium">论坛主题数</h3>
-        </div>
-        <div class="mt-2 flex items-baseline">
-          <el-skeleton-item
-            v-if="stats.forumTopics.loading"
-            variant="text"
-            class="w-16 h-8"
-          />
-          <template v-else>
-            <span class="text-2xl font-semibold text-gray-900 dark:text-white">{{
-              stats.forumTopics.count
-            }}</span>
-            <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">个主题</span>
-          </template>
-        </div>
-      </div>
-
-      <div class="admin-card-bg p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-        <div class="flex items-center space-x-2">
           <el-icon :size="20" class="text-indigo-500">
             <ChatRound />
           </el-icon>
@@ -231,10 +209,6 @@ const stats = reactive({
     loading: true,
   },
   users: {
-    count: 0,
-    loading: true,
-  },
-  forumTopics: {
     count: 0,
     loading: true,
   },
@@ -333,23 +307,6 @@ const getUsersCount = async () => {
   }
 };
 
-// 获取论坛主题数量
-const getForumTopicsCount = async () => {
-  try {
-    const res = await $fetch("/api/admin/forum/topics/stats", {
-      method: "GET",
-      headers: {
-        authorization: "Bearer " + useCookie("token").value,
-      },
-    });
-    stats.forumTopics.count = res.count;
-  } catch (error) {
-    console.error("Failed to fetch forum topics count:", error);
-  } finally {
-    stats.forumTopics.loading = false;
-  }
-};
-
 // 获取聊天室数量
 const getChatRoomsCount = async () => {
   try {
@@ -394,7 +351,6 @@ onMounted(() => {
   getAlistSourcesCount();
   getCommentsCount();
   getUsersCount();
-  getForumTopicsCount();
   getChatRoomsCount();
   getReportsCount();
 });

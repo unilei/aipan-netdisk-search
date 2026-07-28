@@ -35,9 +35,9 @@ test("netdisk search blocks high confidence gambling, porn, and fraud phrases", 
   }
 });
 
-test("forum content sends medium risk terms to review and blocks high risk terms", () => {
+test("user resources send medium risk terms to review and block high risk terms", () => {
   const mediumDecision = evaluateContentModeration("招募兼职代理合作", {
-    context: MODERATION_CONTEXTS.forumTopic,
+    context: MODERATION_CONTEXTS.userResource,
   });
 
   assert.equal(mediumDecision.action, MODERATION_ACTIONS.review);
@@ -45,7 +45,7 @@ test("forum content sends medium risk terms to review and blocks high risk terms
   assert.equal(mediumDecision.needsReview, true);
 
   const highDecision = evaluateContentModeration("博彩代理推广", {
-    context: MODERATION_CONTEXTS.forumTopic,
+    context: MODERATION_CONTEXTS.userResource,
   });
 
   assert.equal(highDecision.action, MODERATION_ACTIONS.block);
@@ -100,8 +100,8 @@ test("custom rule library supports risk-level moderation", () => {
   assert.equal(searchDecision.shouldRecord, false);
   assert.equal(searchDecision.matches[0].source, "custom_library");
 
-  const forumDecision = evaluateContentModeration("冷门资源站合集", {
-    context: MODERATION_CONTEXTS.forumTopic,
+  const resourceDecision = evaluateContentModeration("冷门资源站合集", {
+    context: MODERATION_CONTEXTS.userResource,
     config: {
       customRules: [
         {
@@ -114,11 +114,11 @@ test("custom rule library supports risk-level moderation", () => {
     },
   });
 
-  assert.equal(forumDecision.action, MODERATION_ACTIONS.review);
-  assert.equal(forumDecision.needsReview, true);
+  assert.equal(resourceDecision.action, MODERATION_ACTIONS.review);
+  assert.equal(resourceDecision.needsReview, true);
 
   const disabledDecision = evaluateContentModeration("冷门资源站合集", {
-    context: MODERATION_CONTEXTS.forumTopic,
+    context: MODERATION_CONTEXTS.userResource,
     config: {
       customRules: [
         {
