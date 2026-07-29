@@ -5,7 +5,7 @@ const props = defineProps({
   contentType: {
     type: String,
     required: true,
-    validator: (value) => ['post', 'comment', 'topic', 'message', 'resource'].includes(value)
+    validator: (value) => ['post', 'comment', 'message', 'resource'].includes(value)
   },
   contentId: {
     type: [Number, String],

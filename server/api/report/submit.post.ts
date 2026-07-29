@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // 验证内容类型
-    const validTypes = ['post', 'comment', 'topic', 'message', 'resource'];
+    const validTypes = ['post', 'comment', 'message', 'resource'];
     if (!validTypes.includes(contentType)) {
       return {
         code: 400,

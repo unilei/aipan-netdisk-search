@@ -15,8 +15,7 @@ export default defineEventHandler(async (event) => {
         const count = await prisma.notification.count({
             where: {
                 userId,
-                isRead: false,
-                type: { notIn: ['reply', 'topic'] }
+                isRead: false
             }
         })
 

@@ -12,9 +12,7 @@ export default defineEventHandler(async (event) => {
     const status = query.status as string;
 
     // 构建查询条件
-    const where: any = {
-      contentType: { not: 'topic' }
-    };
+    const where: any = {};
     if (status && status !== 'all') {
       where.status = status;
     }

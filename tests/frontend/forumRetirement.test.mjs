@@ -40,3 +40,29 @@ test("retired navigation migration removes persisted forum links", () => {
   assert.match(migration, /'\/forum'/);
   assert.match(migration, /LIKE '\/forum\/%'/);
 });
+
+test("forum schema and historical data are permanently removed", () => {
+  const schema = read("prisma/schema.prisma");
+  const migration = read(
+    "prisma/migrations/20260728213000_drop_forum_data/migration.sql",
+  );
+
+  for (const model of [
+    "ForumCategory",
+    "ForumTopic",
+    "ForumPost",
+    "ForumTopicReadState",
+  ]) {
+    assert.doesNotMatch(schema, new RegExp(`model ${model}\\b`));
+    assert.match(migration, new RegExp(`DROP TABLE IF EXISTS "${model}"`));
+  }
+
+  assert.doesNotMatch(schema, /sourceForumTopicId/);
+  assert.match(migration, /DROP COLUMN IF EXISTS "sourceForumTopicId"/);
+  assert.match(migration, /DELETE FROM "Notification"/);
+  assert.match(migration, /DELETE FROM "Report"\s+WHERE "contentType" = 'topic'/);
+  assert.doesNotMatch(migration, /DELETE FROM "Report" AS report/);
+  assert.doesNotMatch(migration, /USING "ForumPost"/);
+  assert.match(migration, /^--[^\n]*\nBEGIN;/);
+  assert.match(migration, /COMMIT;\s*$/);
+});

@@ -29,13 +29,11 @@ export type AggregateChatRoom = {
 export type ChatRoomAvgAggregateOutputType = {
   id: number | null
   creatorId: number | null
-  sourceForumTopicId: number | null
 }
 
 export type ChatRoomSumAggregateOutputType = {
   id: number | null
   creatorId: number | null
-  sourceForumTopicId: number | null
 }
 
 export type ChatRoomMinAggregateOutputType = {
@@ -50,7 +48,6 @@ export type ChatRoomMinAggregateOutputType = {
   avatar: string | null
   privateKey: string | null
   lastMessageAt: Date | null
-  sourceForumTopicId: number | null
 }
 
 export type ChatRoomMaxAggregateOutputType = {
@@ -65,7 +62,6 @@ export type ChatRoomMaxAggregateOutputType = {
   avatar: string | null
   privateKey: string | null
   lastMessageAt: Date | null
-  sourceForumTopicId: number | null
 }
 
 export type ChatRoomCountAggregateOutputType = {
@@ -80,7 +76,6 @@ export type ChatRoomCountAggregateOutputType = {
   avatar: number
   privateKey: number
   lastMessageAt: number
-  sourceForumTopicId: number
   _all: number
 }
 
@@ -88,13 +83,11 @@ export type ChatRoomCountAggregateOutputType = {
 export type ChatRoomAvgAggregateInputType = {
   id?: true
   creatorId?: true
-  sourceForumTopicId?: true
 }
 
 export type ChatRoomSumAggregateInputType = {
   id?: true
   creatorId?: true
-  sourceForumTopicId?: true
 }
 
 export type ChatRoomMinAggregateInputType = {
@@ -109,7 +102,6 @@ export type ChatRoomMinAggregateInputType = {
   avatar?: true
   privateKey?: true
   lastMessageAt?: true
-  sourceForumTopicId?: true
 }
 
 export type ChatRoomMaxAggregateInputType = {
@@ -124,7 +116,6 @@ export type ChatRoomMaxAggregateInputType = {
   avatar?: true
   privateKey?: true
   lastMessageAt?: true
-  sourceForumTopicId?: true
 }
 
 export type ChatRoomCountAggregateInputType = {
@@ -139,7 +130,6 @@ export type ChatRoomCountAggregateInputType = {
   avatar?: true
   privateKey?: true
   lastMessageAt?: true
-  sourceForumTopicId?: true
   _all?: true
 }
 
@@ -241,7 +231,6 @@ export type ChatRoomGroupByOutputType = {
   avatar: string | null
   privateKey: string | null
   lastMessageAt: Date | null
-  sourceForumTopicId: number | null
   _count: ChatRoomCountAggregateOutputType | null
   _avg: ChatRoomAvgAggregateOutputType | null
   _sum: ChatRoomSumAggregateOutputType | null
@@ -279,7 +268,6 @@ export type ChatRoomWhereInput = {
   avatar?: Prisma.StringNullableFilter<"ChatRoom"> | string | null
   privateKey?: Prisma.StringNullableFilter<"ChatRoom"> | string | null
   lastMessageAt?: Prisma.DateTimeNullableFilter<"ChatRoom"> | Date | string | null
-  sourceForumTopicId?: Prisma.IntNullableFilter<"ChatRoom"> | number | null
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   users?: Prisma.ChatRoomUserListRelationFilter
   messages?: Prisma.ChatMessageListRelationFilter
@@ -297,7 +285,6 @@ export type ChatRoomOrderByWithRelationInput = {
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   privateKey?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  sourceForumTopicId?: Prisma.SortOrderInput | Prisma.SortOrder
   creator?: Prisma.UserOrderByWithRelationInput
   users?: Prisma.ChatRoomUserOrderByRelationAggregateInput
   messages?: Prisma.ChatMessageOrderByRelationAggregateInput
@@ -318,7 +305,6 @@ export type ChatRoomWhereUniqueInput = Prisma.AtLeast<{
   isPublic?: Prisma.BoolFilter<"ChatRoom"> | boolean
   avatar?: Prisma.StringNullableFilter<"ChatRoom"> | string | null
   lastMessageAt?: Prisma.DateTimeNullableFilter<"ChatRoom"> | Date | string | null
-  sourceForumTopicId?: Prisma.IntNullableFilter<"ChatRoom"> | number | null
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   users?: Prisma.ChatRoomUserListRelationFilter
   messages?: Prisma.ChatMessageListRelationFilter
@@ -336,7 +322,6 @@ export type ChatRoomOrderByWithAggregationInput = {
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   privateKey?: Prisma.SortOrderInput | Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  sourceForumTopicId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ChatRoomCountOrderByAggregateInput
   _avg?: Prisma.ChatRoomAvgOrderByAggregateInput
   _max?: Prisma.ChatRoomMaxOrderByAggregateInput
@@ -359,7 +344,6 @@ export type ChatRoomScalarWhereWithAggregatesInput = {
   avatar?: Prisma.StringNullableWithAggregatesFilter<"ChatRoom"> | string | null
   privateKey?: Prisma.StringNullableWithAggregatesFilter<"ChatRoom"> | string | null
   lastMessageAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ChatRoom"> | Date | string | null
-  sourceForumTopicId?: Prisma.IntNullableWithAggregatesFilter<"ChatRoom"> | number | null
 }
 
 export type ChatRoomCreateInput = {
@@ -372,7 +356,6 @@ export type ChatRoomCreateInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
   creator: Prisma.UserCreateNestedOneWithoutCreatedRoomsInput
   users?: Prisma.ChatRoomUserCreateNestedManyWithoutRoomInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutRoomInput
@@ -390,7 +373,6 @@ export type ChatRoomUncheckedCreateInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
   users?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutRoomInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutRoomInput
 }
@@ -405,7 +387,6 @@ export type ChatRoomUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedRoomsNestedInput
   users?: Prisma.ChatRoomUserUpdateManyWithoutRoomNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutRoomNestedInput
@@ -423,7 +404,6 @@ export type ChatRoomUncheckedUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   users?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutRoomNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutRoomNestedInput
 }
@@ -440,7 +420,6 @@ export type ChatRoomCreateManyInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
 }
 
 export type ChatRoomUpdateManyMutationInput = {
@@ -453,7 +432,6 @@ export type ChatRoomUpdateManyMutationInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type ChatRoomUncheckedUpdateManyInput = {
@@ -468,7 +446,6 @@ export type ChatRoomUncheckedUpdateManyInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 export type ChatRoomListRelationFilter = {
@@ -493,13 +470,11 @@ export type ChatRoomCountOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   privateKey?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
-  sourceForumTopicId?: Prisma.SortOrder
 }
 
 export type ChatRoomAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
-  sourceForumTopicId?: Prisma.SortOrder
 }
 
 export type ChatRoomMaxOrderByAggregateInput = {
@@ -514,7 +489,6 @@ export type ChatRoomMaxOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   privateKey?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
-  sourceForumTopicId?: Prisma.SortOrder
 }
 
 export type ChatRoomMinOrderByAggregateInput = {
@@ -529,13 +503,11 @@ export type ChatRoomMinOrderByAggregateInput = {
   avatar?: Prisma.SortOrder
   privateKey?: Prisma.SortOrder
   lastMessageAt?: Prisma.SortOrder
-  sourceForumTopicId?: Prisma.SortOrder
 }
 
 export type ChatRoomSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   creatorId?: Prisma.SortOrder
-  sourceForumTopicId?: Prisma.SortOrder
 }
 
 export type ChatRoomScalarRelationFilter = {
@@ -623,7 +595,6 @@ export type ChatRoomCreateWithoutCreatorInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
   users?: Prisma.ChatRoomUserCreateNestedManyWithoutRoomInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutRoomInput
 }
@@ -639,7 +610,6 @@ export type ChatRoomUncheckedCreateWithoutCreatorInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
   users?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutRoomInput
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutRoomInput
 }
@@ -685,7 +655,6 @@ export type ChatRoomScalarWhereInput = {
   avatar?: Prisma.StringNullableFilter<"ChatRoom"> | string | null
   privateKey?: Prisma.StringNullableFilter<"ChatRoom"> | string | null
   lastMessageAt?: Prisma.DateTimeNullableFilter<"ChatRoom"> | Date | string | null
-  sourceForumTopicId?: Prisma.IntNullableFilter<"ChatRoom"> | number | null
 }
 
 export type ChatRoomCreateWithoutUsersInput = {
@@ -698,7 +667,6 @@ export type ChatRoomCreateWithoutUsersInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
   creator: Prisma.UserCreateNestedOneWithoutCreatedRoomsInput
   messages?: Prisma.ChatMessageCreateNestedManyWithoutRoomInput
 }
@@ -715,7 +683,6 @@ export type ChatRoomUncheckedCreateWithoutUsersInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
   messages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutRoomInput
 }
 
@@ -745,7 +712,6 @@ export type ChatRoomUpdateWithoutUsersInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedRoomsNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutRoomNestedInput
 }
@@ -762,7 +728,6 @@ export type ChatRoomUncheckedUpdateWithoutUsersInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutRoomNestedInput
 }
 
@@ -776,7 +741,6 @@ export type ChatRoomCreateWithoutMessagesInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
   creator: Prisma.UserCreateNestedOneWithoutCreatedRoomsInput
   users?: Prisma.ChatRoomUserCreateNestedManyWithoutRoomInput
 }
@@ -793,7 +757,6 @@ export type ChatRoomUncheckedCreateWithoutMessagesInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
   users?: Prisma.ChatRoomUserUncheckedCreateNestedManyWithoutRoomInput
 }
 
@@ -823,7 +786,6 @@ export type ChatRoomUpdateWithoutMessagesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedRoomsNestedInput
   users?: Prisma.ChatRoomUserUpdateManyWithoutRoomNestedInput
 }
@@ -840,7 +802,6 @@ export type ChatRoomUncheckedUpdateWithoutMessagesInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   users?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutRoomNestedInput
 }
 
@@ -855,7 +816,6 @@ export type ChatRoomCreateManyCreatorInput = {
   avatar?: string | null
   privateKey?: string | null
   lastMessageAt?: Date | string | null
-  sourceForumTopicId?: number | null
 }
 
 export type ChatRoomUpdateWithoutCreatorInput = {
@@ -868,7 +828,6 @@ export type ChatRoomUpdateWithoutCreatorInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   users?: Prisma.ChatRoomUserUpdateManyWithoutRoomNestedInput
   messages?: Prisma.ChatMessageUpdateManyWithoutRoomNestedInput
 }
@@ -884,7 +843,6 @@ export type ChatRoomUncheckedUpdateWithoutCreatorInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   users?: Prisma.ChatRoomUserUncheckedUpdateManyWithoutRoomNestedInput
   messages?: Prisma.ChatMessageUncheckedUpdateManyWithoutRoomNestedInput
 }
@@ -900,7 +858,6 @@ export type ChatRoomUncheckedUpdateManyWithoutCreatorInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   privateKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastMessageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  sourceForumTopicId?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
 }
 
 
@@ -955,7 +912,6 @@ export type ChatRoomSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   avatar?: boolean
   privateKey?: boolean
   lastMessageAt?: boolean
-  sourceForumTopicId?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   users?: boolean | Prisma.ChatRoom$usersArgs<ExtArgs>
   messages?: boolean | Prisma.ChatRoom$messagesArgs<ExtArgs>
@@ -974,7 +930,6 @@ export type ChatRoomSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   avatar?: boolean
   privateKey?: boolean
   lastMessageAt?: boolean
-  sourceForumTopicId?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatRoom"]>
 
@@ -990,7 +945,6 @@ export type ChatRoomSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   avatar?: boolean
   privateKey?: boolean
   lastMessageAt?: boolean
-  sourceForumTopicId?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["chatRoom"]>
 
@@ -1006,10 +960,9 @@ export type ChatRoomSelectScalar = {
   avatar?: boolean
   privateKey?: boolean
   lastMessageAt?: boolean
-  sourceForumTopicId?: boolean
 }
 
-export type ChatRoomOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "type" | "createdAt" | "updatedAt" | "creatorId" | "isPublic" | "avatar" | "privateKey" | "lastMessageAt" | "sourceForumTopicId", ExtArgs["result"]["chatRoom"]>
+export type ChatRoomOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "description" | "type" | "createdAt" | "updatedAt" | "creatorId" | "isPublic" | "avatar" | "privateKey" | "lastMessageAt", ExtArgs["result"]["chatRoom"]>
 export type ChatRoomInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   users?: boolean | Prisma.ChatRoom$usersArgs<ExtArgs>
@@ -1042,7 +995,6 @@ export type $ChatRoomPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     avatar: string | null
     privateKey: string | null
     lastMessageAt: Date | null
-    sourceForumTopicId: number | null
   }, ExtArgs["result"]["chatRoom"]>
   composites: {}
 }
@@ -1480,7 +1432,6 @@ export interface ChatRoomFieldRefs {
   readonly avatar: Prisma.FieldRef<"ChatRoom", 'String'>
   readonly privateKey: Prisma.FieldRef<"ChatRoom", 'String'>
   readonly lastMessageAt: Prisma.FieldRef<"ChatRoom", 'DateTime'>
-  readonly sourceForumTopicId: Prisma.FieldRef<"ChatRoom", 'Int'>
 }
     
 

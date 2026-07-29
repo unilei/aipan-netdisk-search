@@ -108,26 +108,6 @@ export type TvboxSource = Prisma.TvboxSourceModel
  */
 export type EmailVerificationToken = Prisma.EmailVerificationTokenModel
 /**
- * Model ForumCategory
- * 
- */
-export type ForumCategory = Prisma.ForumCategoryModel
-/**
- * Model ForumTopic
- * 
- */
-export type ForumTopic = Prisma.ForumTopicModel
-/**
- * Model ForumPost
- * 
- */
-export type ForumPost = Prisma.ForumPostModel
-/**
- * Model ForumTopicReadState
- * 
- */
-export type ForumTopicReadState = Prisma.ForumTopicReadStateModel
-/**
  * Model Notification
  * 
  */

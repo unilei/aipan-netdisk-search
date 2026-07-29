@@ -2,7 +2,7 @@
 
 # 数据库迁移脚本 - AIPan网盘搜索应用
 # 该脚本将源数据库的内容迁移到目标数据库，并提供各种辅助功能
-# 支持完整的Prisma schema结构，包括用户、资源、博客、论坛、聊天、签到、导航等模块
+# 支持完整的Prisma schema结构，包括用户、资源、博客、聊天、签到、导航等模块
 
 # 设置颜色
 RED='\033[0;31m'
@@ -40,9 +40,6 @@ PRISMA_TABLES=(
     "SystemSettings"
     "SearchRecord"
     "UserVodConfig"
-    "ForumCategory"
-    "ForumTopic"
-    "ForumPost"
     "Notification"
     "ChatRoom"
     "ChatRoomUser"

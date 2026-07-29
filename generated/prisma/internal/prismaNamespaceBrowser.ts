@@ -67,10 +67,6 @@ export const ModelName = {
   UserVodConfig: 'UserVodConfig',
   TvboxSource: 'TvboxSource',
   EmailVerificationToken: 'EmailVerificationToken',
-  ForumCategory: 'ForumCategory',
-  ForumTopic: 'ForumTopic',
-  ForumPost: 'ForumPost',
-  ForumTopicReadState: 'ForumTopicReadState',
   Notification: 'Notification',
   ChatRoom: 'ChatRoom',
   ChatRoomUser: 'ChatRoomUser',
@@ -351,72 +347,6 @@ export const EmailVerificationTokenScalarFieldEnum = {
 export type EmailVerificationTokenScalarFieldEnum = (typeof EmailVerificationTokenScalarFieldEnum)[keyof typeof EmailVerificationTokenScalarFieldEnum]
 
 
-export const ForumCategoryScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  description: 'description',
-  slug: 'slug',
-  order: 'order',
-  icon: 'icon',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ForumCategoryScalarFieldEnum = (typeof ForumCategoryScalarFieldEnum)[keyof typeof ForumCategoryScalarFieldEnum]
-
-
-export const ForumTopicScalarFieldEnum = {
-  id: 'id',
-  title: 'title',
-  content: 'content',
-  slug: 'slug',
-  isSticky: 'isSticky',
-  isLocked: 'isLocked',
-  viewCount: 'viewCount',
-  status: 'status',
-  statusBeforeTrash: 'statusBeforeTrash',
-  trashedAt: 'trashedAt',
-  trashedById: 'trashedById',
-  trashReason: 'trashReason',
-  categoryId: 'categoryId',
-  authorId: 'authorId',
-  lastActivityAt: 'lastActivityAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ForumTopicScalarFieldEnum = (typeof ForumTopicScalarFieldEnum)[keyof typeof ForumTopicScalarFieldEnum]
-
-
-export const ForumPostScalarFieldEnum = {
-  id: 'id',
-  content: 'content',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  topicId: 'topicId',
-  authorId: 'authorId',
-  parentId: 'parentId'
-} as const
-
-export type ForumPostScalarFieldEnum = (typeof ForumPostScalarFieldEnum)[keyof typeof ForumPostScalarFieldEnum]
-
-
-export const ForumTopicReadStateScalarFieldEnum = {
-  id: 'id',
-  userId: 'userId',
-  topicId: 'topicId',
-  lastReadAt: 'lastReadAt',
-  unreadCount: 'unreadCount',
-  lastUnreadPostId: 'lastUnreadPostId',
-  lastUnreadAt: 'lastUnreadAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ForumTopicReadStateScalarFieldEnum = (typeof ForumTopicReadStateScalarFieldEnum)[keyof typeof ForumTopicReadStateScalarFieldEnum]
-
-
 export const NotificationScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
@@ -443,8 +373,7 @@ export const ChatRoomScalarFieldEnum = {
   isPublic: 'isPublic',
   avatar: 'avatar',
   privateKey: 'privateKey',
-  lastMessageAt: 'lastMessageAt',
-  sourceForumTopicId: 'sourceForumTopicId'
+  lastMessageAt: 'lastMessageAt'
 } as const
 
 export type ChatRoomScalarFieldEnum = (typeof ChatRoomScalarFieldEnum)[keyof typeof ChatRoomScalarFieldEnum]

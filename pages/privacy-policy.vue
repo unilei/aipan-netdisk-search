@@ -66,7 +66,7 @@ useHead({
                 <ul class="list-disc list-inside space-y-2 ml-4">
                   <li><strong>日志信息：</strong>设备型号、操作系统、浏览器类型、IP地址、访问时间、访问页面</li>
                   <li><strong>搜索记录：</strong>搜索关键词（用于统计分析和改进服务）</li>
-                  <li><strong>用户内容：</strong>博客文章、论坛帖子、评论、聊天消息</li>
+                  <li><strong>用户内容：</strong>博客文章、评论、资源投稿、聊天消息</li>
                   <li><strong>Cookie：</strong>用于保持登录状态、记住偏好设置、分析网站流量</li>
                 </ul>
               </div>
@@ -144,7 +144,7 @@ useHead({
 
               <div class="warning-box mt-4">
                 <p><i class="fas fa-exclamation-triangle mr-2"></i><strong>公开信息提示：</strong></p>
-                <p class="mt-2">您主动公开发布的内容（论坛帖子、博客文章、评论等）将被视为公开信息，任何人都可查看。请谨慎发布包含个人信息的内容。</p>
+                <p class="mt-2">您主动公开发布的内容（博客文章、评论、资源投稿等）将被视为公开信息，任何人都可查看。请谨慎发布包含个人信息的内容。</p>
               </div>
             </div>
           </section>
