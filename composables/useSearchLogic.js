@@ -68,6 +68,12 @@ export const useSearchLogic = () => {
     throw lastError;
   };
 
+  const getSourceMaxAttempts = (api) => {
+    // Xiaokupan already has a bounded server timeout and is frequently unavailable.
+    // Repeating it client-side would hold the search open without helping other sources.
+    return api === "/api/sources/xiaokupan" ? 1 : 3;
+  };
+
   // 处理单个搜索
   const handleSingleSearch = async (
     item,
@@ -113,11 +119,15 @@ export const useSearchLogic = () => {
         }
 
         // 缓存未命中，从API获取
-        const res = await fetchWithRetry(item.api, {
-          method: "POST",
-          body: { name: keyword },
-          signal: searchContext.signal,
-        });
+        const res = await fetchWithRetry(
+          item.api,
+          {
+            method: "POST",
+            body: { name: keyword },
+            signal: searchContext.signal,
+          },
+          getSourceMaxAttempts(item.api)
+        );
 
         if (res.list && Array.isArray(res.list)) {
           if (!isCurrentSearch()) {

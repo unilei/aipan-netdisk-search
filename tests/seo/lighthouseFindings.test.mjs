@@ -9,12 +9,16 @@ test("Lighthouse preview disables analytics and ad scripts through runtime confi
   const lighthouseConfig = readProjectFile("lighthouserc.cjs");
   const workflow = readProjectFile(".github/workflows/lighthouse.yml");
   const nuxtConfig = readProjectFile("nuxt.config.ts");
+  const thirdPartyPlugin = readProjectFile("plugins/third-party-scripts.client.ts");
 
   assert.match(lighthouseConfig, /NUXT_PUBLIC_ENABLE_THIRD_PARTY_SCRIPTS=false/);
   assert.match(workflow, /NUXT_PUBLIC_ENABLE_THIRD_PARTY_SCRIPTS:\s*"false"/);
   assert.match(nuxtConfig, /enableThirdPartyScripts/);
   assert.doesNotMatch(nuxtConfig, /googletagmanager\.com\/gtag\/js/);
   assert.doesNotMatch(nuxtConfig, /pagead2\.googlesyndication\.com/);
+  assert.match(thirdPartyPlugin, /hasAnalyticsConsent/);
+  assert.match(thirdPartyPlugin, /JSON\.parse\(consent\)\?\.analytics === true/);
+  assert.match(thirdPartyPlugin, /addEventListener\(COOKIE_CONSENT_EVENT, loadAnalytics\)/);
 });
 
 test("public pages defer local Font Awesome CSS outside the critical stylesheet", () => {
@@ -83,6 +87,7 @@ test("homepage defers the heavy Douban movie grid without rendering a loading sk
 
   assert.doesNotMatch(homePage, /useDoubanStore/);
   assert.match(homePage, /loadDeferredDoubanData/);
+  assert.match(homePage, /defineAsyncComponent\(\s*\(\) => import\("~\/components\/home\/DoubanImageBox\.vue"\)/s);
   assert.match(homePage, /cleanupDeferredDoubanSchedule/);
   assert.match(homePage, /removeEventListener\(eventName,\s*loadDeferredDoubanData\)/);
   assert.match(homePage, /DEFERRED_DOUBAN_FALLBACK_DELAY\s*=\s*15000/);
@@ -93,6 +98,16 @@ test("homepage defers the heavy Douban movie grid without rendering a loading sk
   assert.match(homePage, /hasUsableDoubanHomepageData/);
   assert.match(homePage, /scheduleDoubanRetry/);
   assert.match(homePage, /DEFERRED_DOUBAN_INTERACTION_EVENTS/);
+});
+
+test("guest navigation defers authenticated realtime notification dependencies", () => {
+  const netdiskHeader = readProjectFile("components/layout/netdisk/Header.vue");
+  const app = readProjectFile("app.vue");
+
+  assert.match(netdiskHeader, /defineAsyncComponent\(\s*\(\) => import\("~\/components\/NotificationIcon\.vue"\)/s);
+  assert.doesNotMatch(netdiskHeader, /import NotificationIcon from/);
+  assert.doesNotMatch(app, /@element-plus\/icons-vue/);
+  assert.doesNotMatch(app, /globalElementPlusIcons/);
 });
 
 test("homepage reuses client cached Douban data when returning from another route", () => {
@@ -121,6 +136,15 @@ test("homepage keeps late navigation data and LCP logo from shifting the first v
   assert.match(homePage, /min-h-\[176px\]/);
   assert.match(nuxtConfig, /href:\s*'\/logo\.webp'/);
   assert.match(nuxtConfig, /\/logo\.webp/);
+});
+
+test("homepage search affordance uses a bounded compositor-friendly animation", () => {
+  const homePage = readProjectFile("pages/index.vue");
+
+  assert.match(homePage, /animation:\s*search-pulse 2s ease-out 3/);
+  assert.match(homePage, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.doesNotMatch(homePage, /@keyframes (?:darkPulse|pulse)/);
+  assert.doesNotMatch(homePage, /@keyframes search-pulse[\s\S]*box-shadow/);
 });
 
 test("homepage avoids route chunk prefetching and non-critical release fetches during Lighthouse", () => {

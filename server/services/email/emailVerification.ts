@@ -26,14 +26,14 @@ const assertEmailServiceEnabled = async () => {
   if (!config.enabled) {
     throw createError({
       statusCode: 400,
-      statusMessage: "邮箱服务未启用",
+      message: "邮箱服务未启用",
     });
   }
 
   if (!config.siteUrl) {
     throw createError({
       statusCode: 400,
-      statusMessage: "站点地址未配置",
+      message: "站点地址未配置",
     });
   }
 
@@ -49,7 +49,7 @@ export const sendVerificationEmail = async (
   if (!user.email) {
     throw createError({
       statusCode: 400,
-      statusMessage: "用户邮箱不能为空",
+      message: "用户邮箱不能为空",
     });
   }
 
@@ -72,7 +72,7 @@ export const sendVerificationEmail = async (
     ) {
       throw createError({
         statusCode: 429,
-        statusMessage: "邮件发送过于频繁，请稍后再试",
+        message: "邮件发送过于频繁，请稍后再试",
       });
     }
   }
@@ -115,7 +115,7 @@ export const verifyEmailToken = async (token: string) => {
   if (!token) {
     throw createError({
       statusCode: 400,
-      statusMessage: "缺少验证 token",
+      message: "缺少验证 token",
     });
   }
 
@@ -131,28 +131,28 @@ export const verifyEmailToken = async (token: string) => {
   if (!tokenRecord) {
     throw createError({
       statusCode: 400,
-      statusMessage: "验证链接无效或已过期",
+      message: "验证链接无效或已过期",
     });
   }
 
   if (tokenRecord.consumedAt) {
     throw createError({
       statusCode: 400,
-      statusMessage: "该验证链接已被使用",
+      message: "该验证链接已被使用",
     });
   }
 
   if (tokenRecord.expiresAt.getTime() < Date.now()) {
     throw createError({
       statusCode: 400,
-      statusMessage: "验证链接已过期",
+      message: "验证链接已过期",
     });
   }
 
   if (tokenRecord.user.email !== tokenRecord.emailSnapshot) {
     throw createError({
       statusCode: 400,
-      statusMessage: "该验证链接已失效，请重新获取",
+      message: "该验证链接已失效，请重新获取",
     });
   }
 

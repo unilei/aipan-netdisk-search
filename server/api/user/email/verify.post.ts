@@ -24,11 +24,14 @@ export default defineEventHandler(async (event) => {
       },
     };
   } catch (error: any) {
-    console.error("邮箱验证失败:", error);
+    const statusCode = error.statusCode || 500;
+    if (statusCode >= 500) {
+      console.error("邮箱验证失败:", error);
+    }
 
     return {
-      code: error.statusCode || 500,
-      msg: error.statusMessage || error.message || "邮箱验证失败",
+      code: statusCode,
+      msg: error.message || error.statusMessage || "邮箱验证失败",
     };
   }
 });

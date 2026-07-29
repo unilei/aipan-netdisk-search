@@ -13,6 +13,12 @@ import {
 
 const SHARE_TOKEN_URL = 'https://drive-h.quark.cn/1/clouddrive/share/sharepage/token';
 const SHARE_DETAIL_URL = 'https://drive-h.quark.cn/1/clouddrive/share/sharepage/detail';
+const QUARK_FETCH_OPTIONS = {
+    timeout: 6000,
+    retry: 1,
+    retryDelay: 250,
+    retryStatusCodes: [408, 425, 429, 500, 502, 503, 504]
+};
  
 const createCommonParams = () => ({
     pr: 'ucpro',
@@ -57,6 +63,7 @@ const getShareToken = async (shareId: string): Promise<string> => {
     const query = createCommonParams();
 
     const response = await ofetch(SHARE_TOKEN_URL, {
+        ...QUARK_FETCH_OPTIONS,
         method: 'POST',
         query,
         body: {
@@ -90,6 +97,7 @@ const fetchShareDetail = async (shareLink: string): Promise<ShareDetail> => {
     const stoken = await getShareToken(shareId);
 
     const response = await ofetch(SHARE_DETAIL_URL, {
+        ...QUARK_FETCH_OPTIONS,
         method: 'GET',
         query: {
             pr: 'ucpro',
@@ -288,6 +296,7 @@ export default defineEventHandler(async (event) => {
         }
 
         if (error?.name === 'QUARK_TOKEN_ERROR') {
+            setResponseStatus(event, 502);
             return {
                 code: 502,
                 msg: `夸克接口 Token 获取失败：${error.message}`
@@ -295,20 +304,39 @@ export default defineEventHandler(async (event) => {
         }
 
         if (error?.name === 'QUARK_REMOTE_ERROR') {
+            setResponseStatus(event, 502);
             return {
                 code: 502,
                 msg: `夸克接口返回错误：${error.message}`
             };
         }
 
-        if (error?.status === 429) {
+        const upstreamStatus = error?.response?.status || error?.statusCode || error?.status;
+        if (upstreamStatus === 429) {
+            setResponseStatus(event, 429);
             return {
                 code: 429,
                 msg: '夸克接口请求过于频繁，请稍后重试'
             };
         }
 
+        if (error?.name === 'FetchError' || error?.cause?.name === 'TimeoutError') {
+            const isTimeout = error?.cause?.name === 'TimeoutError';
+            const statusCode = isTimeout ? 504 : 502;
+            console.warn('夸克接口请求失败:', {
+                statusCode,
+                upstreamStatus,
+                error: error?.cause?.name || error?.name
+            });
+            setResponseStatus(event, statusCode);
+            return {
+                code: statusCode,
+                msg: isTimeout ? '夸克接口请求超时，请稍后重试' : '夸克接口暂时不可用，请稍后重试'
+            };
+        }
+
         console.error('校验夸克分享链接失败:', error);
+        setResponseStatus(event, 500);
         return {
             code: 500,
             msg: '验证失败，请稍后重试'

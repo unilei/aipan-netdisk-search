@@ -1,11 +1,15 @@
 <script setup>
-import DoubanImageBox from "~/components/home/DoubanImageBox.vue";
+import { defineAsyncComponent } from "vue";
 import { MODERATION_CONTEXTS } from "~/composables/useModerationCheck";
 import {
   hasUsableDoubanHomepageData,
   normalizeDoubanHomepageData,
 } from "~/utils/doubanHomepage.mjs";
 import { useDebounceFn } from "@vueuse/core";
+
+const DoubanImageBox = defineAsyncComponent(
+  () => import("~/components/home/DoubanImageBox.vue"),
+);
 
 definePageMeta({
   layout: "netdisk",
@@ -571,45 +575,49 @@ const stopRouteWatcher = watch(
 }
 
 .search-btn {
-  animation: pulse 2s infinite;
+  --search-pulse-color: rgba(59, 130, 246, 0.4);
+  isolation: isolate;
 }
 
-@keyframes pulse {
+.search-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--search-pulse-color);
+  border-radius: inherit;
+  pointer-events: none;
+  animation: search-pulse 2s ease-out 3;
+}
+
+@keyframes search-pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+    opacity: 0.7;
+    transform: scale(1);
   }
 
-  70% {
-    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-  }
-
+  70%,
   100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    opacity: 0;
+    transform: scale(1.35);
   }
 }
 
 :root.dark .search-btn {
-  animation: darkPulse 2s infinite;
-}
-
-@keyframes darkPulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.4);
-  }
-
-  70% {
-    box-shadow: 0 0 0 10px rgba(96, 165, 250, 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0);
-  }
+  --search-pulse-color: rgba(96, 165, 250, 0.4);
 }
 
 /* 当输入框获得焦点时，停止按钮动画 */
-.el-input__wrapper.is-focus~.search-btn,
-input:focus+.search-btn {
+.el-input__wrapper.is-focus~.search-btn::after,
+input:focus+.search-btn::after {
   animation: none;
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-btn::after {
+    animation: none;
+    opacity: 0;
+  }
 }
 
 /* 图片渐进加载动画 */

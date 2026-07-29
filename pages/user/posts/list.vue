@@ -1,4 +1,14 @@
 <script setup>
+import {
+  ArrowLeft,
+  Delete,
+  Document,
+  Edit,
+  House,
+  Plus,
+  Refresh,
+} from "@element-plus/icons-vue";
+
 definePageMeta({
   middleware: ["auth"],
 });

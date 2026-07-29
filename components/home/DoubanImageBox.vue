@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue";
+import { Loading, PictureFilled } from "@element-plus/icons-vue";
 import placeHolderImage from "~/assets/placeholder.webp";
 
 defineProps({

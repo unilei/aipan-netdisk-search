@@ -1,10 +1,13 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import { defineAsyncComponent, ref, onMounted, onBeforeUnmount } from "vue";
 import { useColorMode, useRoute } from "#imports";
 import { useUserStore } from "~/stores/user";
-import NotificationIcon from "~/components/NotificationIcon.vue";
 import { useI18n } from "vue-i18n";
 import { publicNavigation, isPublicNavItemActive, isPublicNavPathActive } from "~/utils/publicNavigation";
+
+const NotificationIcon = defineAsyncComponent(
+  () => import("~/components/NotificationIcon.vue"),
+);
 
 const { t, locale, locales, setLocale } = useI18n();
 const colorMode = useColorMode();

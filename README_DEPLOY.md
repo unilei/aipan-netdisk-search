@@ -25,7 +25,9 @@
 - 也支持在 GitHub Actions 页面手动运行 `workflow_dispatch`
 - 应用镜像会推送到 Docker Hub，标签包含 `latest` 和 `sha-<commit>`
 - 数据库备份镜像会推送到同一仓库，标签包含 `db-backup-latest` 和 `db-backup-sha-<commit>`
-- 服务器会拉取新镜像、执行 Prisma migration，然后重启应用容器
+- 服务器会拉取新镜像、执行 Prisma migration，并先用不占宿主机端口的临时容器验证 `/api/health`
+- 临时容器通过后才替换正式应用；正式容器未在 90 秒内就绪时，脚本会自动恢复上一版环境文件和应用镜像
+- 同一时间只执行一个生产发布；新提交会等待正在进行的切换完成，不会中途取消远程脚本
 
 相关文件：
 
@@ -34,6 +36,17 @@
 - `deploy/remote-deploy.sh`
 - `deploy/.env.production.example`
 - `deploy/bootstrap-github-actions.sh`
+
+### 发布可用性边界
+
+当前应用容器直接绑定宿主机 `APP_PORT` 和 `WS_PORT`。普通 Docker Compose 无法让新旧两个容器同时绑定同一组端口，因此正式容器替换时仍可能出现一个很短的连接失败窗口。发布脚本通过以下方式缩短窗口并避免坏版本长时间在线：
+
+- 在旧应用继续服务时启动新镜像的临时容器，关闭其中的 TVBox 定时同步和自动审核 worker，完成健康预检后再切换；
+- 只替换应用容器，等应用健康后再启动备份 sidecar，避免辅助服务与应用争抢启动资源；
+- 切换失败时自动使用 `.env.rollback` 重建上一版应用，并再次验证健康状态；
+- `.env.rollback` 权限固定为 `0600`，保留最近一次成功发布前的镜像和配置引用。
+
+这不是严格的零停机发布。要完全消除端口释放窗口，需要先在宿主机 nginx 配置两个独立应用 upstream（使用不同的回环端口），发布时启动并验证空闲实例，再通过 `nginx -t` 和 reload 原子切流，最后下线旧实例。该模式还需要处理 Socket.IO 长连接排空，不能只靠 `docker compose up --wait` 实现。
 
 ## GitHub Actions Secrets
 
@@ -352,7 +365,9 @@ curl -s http://127.0.0.1:3000/api/sources/pansou \
 
 ## 回滚
 
-GitHub Actions 镜像会带 `sha-<commit>` 标签。如果需要回滚：
+GitHub Actions 镜像会带 `sha-<commit>` 标签。发布期间正式应用未通过健康检查时，`remote-deploy.sh` 会自动恢复 `.env.rollback` 并重建旧容器，工作流随后保持失败状态以便排查。
+
+如果发布已经成功、但后续需要人工回滚：
 
 1. 在 Docker Hub 找到上一个可用镜像标签。
 2. 修改服务器 `/www/wwwroot/aipan-docker/.env` 中的 `APP_IMAGE`。

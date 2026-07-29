@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3'
+import { setResponseStatus, type H3Event } from 'h3'
 import { $fetch } from 'ofetch'
 import { getSearchModerationFailure } from '~/server/utils/sourceModeration'
 
@@ -31,6 +31,7 @@ interface XiaokupanDocument {
 }
 
 const SEARCH_BASE_URL = 'https://xiaokupan.com/s'
+const SEARCH_TIMEOUT_MS = 6000
 
 const DIGITAL_DOCUMENT_REGEX = /\\"@type\\":\\"DigitalDocument\\",\\"name\\":\\"((?:\\\\.|[^"\\])*)\\",\\"description\\":\\"((?:\\\\.|[^"\\])*)\\",\\"url\\":\\"((?:\\\\.|[^"\\])*)\\",\\"dateModified\\":\\"((?:\\\\.|[^"\\])*)\\"/g
 const STREAM_RESOURCE_REGEX = /\{url:"((?:\\.|[^"\\])*)",password:"((?:\\.|[^"\\])*)",note:"((?:\\.|[^"\\])*)"/g
@@ -230,7 +231,8 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
         const searchUrl = `${SEARCH_BASE_URL}/${encodeURIComponent(searchTerm)}`
         const html = await $fetch<string>(searchUrl, {
             method: 'GET',
-            timeout: 15000,
+            timeout: SEARCH_TIMEOUT_MS,
+            retry: 0,
             parseResponse: (text) => text,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
@@ -246,11 +248,19 @@ export default defineEventHandler(async (event: H3Event): Promise<TransformedRes
         ]
         return transformDocuments(documents)
     } catch (error: any) {
-        console.error('[Xiaokupan] 搜索失败:', error)
+        const isTimeout = error?.cause?.name === 'TimeoutError' || error?.name === 'TimeoutError'
+        const statusCode = isTimeout ? 504 : 502
+
+        console.warn('[Xiaokupan] 上游搜索失败', {
+            statusCode,
+            error: error?.cause?.name || error?.name || 'UnknownError'
+        })
+        setResponseStatus(event, statusCode)
+
         return {
             list: [],
-            code: 500,
-            msg: error?.message || 'Error fetching data'
+            code: statusCode,
+            msg: isTimeout ? '小酷盘搜索超时，请稍后重试' : '小酷盘搜索暂时不可用'
         }
     }
 })

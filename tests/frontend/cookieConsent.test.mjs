@@ -14,5 +14,6 @@ test("cookie consent tolerates legacy stored decisions without noisy parse error
   assert.match(source, /normalizeCookieConsent/);
   assert.match(source, /consent\s*===\s*['"]accepted['"]/);
   assert.match(source, /consent\s*===\s*['"]necessary['"]/);
+  assert.match(source, /dispatchEvent\(new CustomEvent\(COOKIE_CONSENT_EVENT/);
   assert.doesNotMatch(source, /Failed to parse cookie consent/);
 });

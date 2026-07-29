@@ -5,51 +5,6 @@
     <CommonCookieConsent />
   </NuxtLayout>
 </template>
-
-<script setup>
-import {
-  ArrowLeft,
-  Delete,
-  Document,
-  Edit,
-  House,
-  Loading,
-  PictureFilled,
-  Plus,
-  Refresh,
-} from "@element-plus/icons-vue";
-
-const nuxtApp = useNuxtApp();
-const colorMode = useColorMode();
-
-const globalElementPlusIcons = {
-  ArrowLeft,
-  Delete,
-  Document,
-  Edit,
-  House,
-  Loading,
-  PictureFilled,
-  Plus,
-  Refresh,
-};
-
-for (const [name, component] of Object.entries(globalElementPlusIcons)) {
-  nuxtApp.vueApp.component(name, component);
-}
-
-// 确保初始化时应用正确的 dark class
-onMounted(() => {
-  if (process.client) {
-    const html = document.documentElement;
-    if (colorMode.value === 'dark') {
-      html.classList.add('dark');
-    } else {
-      html.classList.remove('dark');
-    }
-  }
-});
-</script>
 <style>
 body {
   background-color: #fcfcfd;

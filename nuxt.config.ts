@@ -84,7 +84,8 @@ export default defineNuxtConfig({
         lang: 'zh-CN'
       },
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' },
+        { rel: 'alternate icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'preload', as: 'image', type: 'image/webp', href: '/logo.webp', fetchpriority: 'high' },
       ],
       meta: [

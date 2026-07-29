@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 
 const showBanner = ref(false);
 const showDetail = ref(false);
+const COOKIE_CONSENT_EVENT = 'cookie-consent-updated';
 
 const DEFAULT_COOKIE_SETTINGS = {
   necessary: true, // 必需的Cookie，不可禁用
@@ -99,26 +100,10 @@ const saveConsent = () => {
   localStorage.setItem('cookieConsent', JSON.stringify(cookieSettings.value));
   localStorage.setItem('cookieConsentDate', new Date().toISOString());
   showBanner.value = false;
-  
-  // 这里可以根据用户选择启用/禁用相应的跟踪代码
-  if (cookieSettings.value.analytics) {
-    enableAnalytics();
-  }
-  if (cookieSettings.value.marketing) {
-    enableMarketing();
-  }
-};
 
-// 启用分析工具
-const enableAnalytics = () => {
-  // Google Analytics 已在 nuxt.config.ts 中配置
-  console.log('Analytics enabled');
-};
-
-// 启用营销工具
-const enableMarketing = () => {
-  // 如果有营销Cookie，在这里启用
-  console.log('Marketing enabled');
+  window.dispatchEvent(new CustomEvent(COOKIE_CONSENT_EVENT, {
+    detail: { ...cookieSettings.value }
+  }));
 };
 </script>
 

@@ -348,6 +348,15 @@
   </div>
 </template>
 <script setup>
+import {
+  ArrowLeft,
+  Delete,
+  Document,
+  House,
+  Plus,
+  Refresh,
+} from "@element-plus/icons-vue";
+
 const route = useRoute();
 const router = useRouter();
 const isEdit = ref(false);

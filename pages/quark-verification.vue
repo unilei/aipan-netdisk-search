@@ -405,7 +405,7 @@ const submitVerification = async () => {
     }
   } catch (error) {
     console.error('验证分享链接失败:', error);
-    verificationForm.error = '验证失败，请稍后重试';
+    verificationForm.error = error?.data?.msg || error?.data?.message || '验证失败，请稍后重试';
   } finally {
     verificationForm.loading = false;
   }
